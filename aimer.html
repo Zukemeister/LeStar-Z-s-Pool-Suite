@@ -195,8 +195,8 @@ html,body,#zoom-wrap{touch-action:pan-x pan-y;}
   left: 50%;
   transform: translateX(-50%);
   width: auto;
-  min-width: min(480px, 98vw);
-  max-width: 98vw;
+  min-width: min(480px, 96vw);
+  max-width: min(540px, 96vw);
   box-sizing: border-box;
   z-index: 9999;
   display: flex;
@@ -206,6 +206,8 @@ html,body,#zoom-wrap{touch-action:pan-x pan-y;}
   background: transparent;
   border: none;
   box-shadow: none;
+  font-size: 13px;
+  -webkit-text-size-adjust: none;
 }
 #btb-tab {
   display: flex;
@@ -2694,11 +2696,15 @@ function toggleBtb(){
       if (e.target.id === 'btb-arrow') return; // arrow button handles toggle itself
       var rect = btb.getBoundingClientRect();
       btb.style.transform = 'none';
-      btb.style.left = rect.left + 'px';
-      btb.style.top  = rect.top  + 'px';
       btb.style.bottom = 'auto';
+      var maxL = Math.max(0, window.innerWidth  - btb.offsetWidth);
+      var maxT = Math.max(0, window.innerHeight - btb.offsetHeight);
+      var cl = Math.max(0, Math.min(maxL, rect.left));
+      var ct = Math.max(0, Math.min(maxT, rect.top));
+      btb.style.left = cl + 'px';
+      btb.style.top  = ct + 'px';
       startX = e.clientX; startY = e.clientY;
-      origLeft = rect.left; origTop = rect.top;
+      origLeft = cl; origTop = ct;
       didDrag = false; activePtr = e.pointerId;
       // Do NOT capture yet — only capture once drag is confirmed
     });
