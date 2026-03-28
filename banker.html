@@ -1,0 +1,3049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LeStar Z Banker">
+  <link rel="apple-touch-icon" href="/icon-apple.png">
+  <link rel="manifest" href="/manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.1, maximum-scale=5.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Banker">
+<meta name="theme-color" content="#1a361a">
+<title>LeStar Z's Banker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,900&family=Playfair+Display:ital,wght@1,700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+button{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;}
+svg,.diagram-wrap,.card{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
+html,body{background:#141414;font-family:'Lato',sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px 8px 32px;min-height:100vh;}
+.outer-wrap{display:flex;flex-direction:row;align-items:flex-start;width:100%;max-width:762px;background:#1a361a;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);border:2px solid #2a4e2a;overflow:hidden;}
+.card{flex:1;min-width:0;padding:14px 12px 16px 12px;}
+.toolbar-col{display:none;}
+
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);}
+h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-bottom:2px;}
+.t-lestar{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
+.t-z{font-family:'Lato',sans-serif;font-style:italic;font-weight:900;font-size:clamp(20px,5.5vw,30px);color:#f0df70;line-height:1;display:inline-flex;align-items:center;margin:0 1px 0 2px;}
+.t-rest{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
+.sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:0.07em;}
+#help-btn{flex-shrink:0;width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;}
+
+/* ── DIAGRAM WRAP ── */
+.diagram-wrap{border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.svg-box{position:relative;width:100%;overflow:hidden;background:rgba(0,0,0,0.22);}
+.svg-box.top-box{padding-bottom:calc(260/460*100%);}
+.svg-box.aim-box{padding-bottom:calc(220/460*100%);}
+.svg-box svg{position:absolute;top:0;left:0;width:100%;height:100%;}
+.sep{height:2px;background:#000;}
+
+/* Rotate button on table */
+/* rot-btn now uses .tog class */
+
+/* ── RAIL TABS ── */
+#rail-tabs{display:flex;gap:5px;padding:4px 0 8px;flex-wrap:wrap;}
+.rail-tab{padding:4px 12px;border-radius:4px;font-size:0.68rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;border:1px solid;cursor:pointer;opacity:.38;transition:opacity .15s;font-family:'Lato',sans-serif;-webkit-tap-highlight-color:transparent;}
+.rail-tab.active{opacity:1;}
+#no-solution{display:none;font-size:0.72rem;color:rgba(255,255,255,0.35);padding:4px 0 8px;letter-spacing:1px;}
+
+/* ── SLIDERS ── */
+.sgroup{background:rgba(0,0,0,0.18);border-radius:7px;padding:7px 10px 6px 10px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.07);}
+.sgroup-title{font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#ddd;margin-bottom:6px;}
+.srow{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
+.srow:last-child{margin-bottom:0;}
+.slbl{font-size:11px;color:#e8e8e8;min-width:52px;font-weight:700;}
+.sval{font-size:15px;font-weight:900;min-width:70px;text-align:right;white-space:nowrap;color:#f0df70;}
+input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
+.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
+.sliders-unlocked input[type=range]{height:8px;}
+#sl-spd::-webkit-slider-thumb{background:#f0df70;}
+#sl-spn::-webkit-slider-thumb{background:#e870b0;}
+#sl-vert::-webkit-slider-thumb{background:#7dd3fc;}
+#sl-bias::-webkit-slider-thumb{background:#c890f0;}
+
+/* ── READOUTS ── */
+#readouts{margin-top:2px;padding:0 12px 4px 12px;}
+.ro-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.ro-row:last-child{border-bottom:none;}
+.ro-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);flex-shrink:0;padding-right:8px;}
+.ro-val{font-size:17px;font-weight:900;font-family:'Lato',sans-serif;color:#f0df70;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.ro-sub{font-size:11px;font-weight:700;color:#a0d0a0;}
+
+/* ── INFO OVERLAY ── */
+#info-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 20px 20px;overflow-y:auto;}
+#info-overlay.open{display:flex;}
+#info-inner{background:#1a361a;border:2px solid #2a4e2a;border-radius:10px;width:100%;max-width:560px;padding:20px 18px 24px;position:relative;}
+#info-close{position:absolute;top:10px;right:12px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:22px;cursor:pointer;line-height:1;font-family:'Lato',sans-serif;}
+#info-inner h2{font-family:'Playfair Display',serif;font-style:italic;color:#f0df70;font-size:1.2rem;margin-bottom:12px;}
+#info-inner p{font-size:0.78rem;color:rgba(255,255,255,0.88);line-height:1.7;margin-bottom:10px;}
+#info-inner p.intro{font-size:0.82rem;color:#fff;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.12);}
+#info-inner ol{font-size:0.82rem;color:rgba(255,255,255,0.88);line-height:1.8;padding-left:1.4em;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.12);}
+#info-inner p:last-child{margin-bottom:0;}
+#info-inner strong{color:#f0df70;}
+
+/* ── TOGGLE BUTTONS ── */
+.tog{flex:1;height:24px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:flex;align-items:center;justify-content:center;transition:filter .15s;}
+.tog.dim{filter:brightness(0.42) saturate(0.5);}
+#cal-btn.active{background:rgba(240,223,112,0.22);border-color:#f0df70;}
+/* ── BOUNCE RAIL PILLS ── */
+#bounce-pills{display:flex;gap:4px;padding:4px 0 2px;}
+.bpill{height:22px;padding:0 10px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:inline-flex;align-items:center;background:rgba(240,223,112,0.18);color:rgba(240,223,112,0.6);outline:none;-webkit-tap-highlight-color:transparent;}
+.bpill.active{background:#f0df70;color:#1a1a1a;}
+#cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
+#cal-panel.open{display:block;}
+#cal-instruction{font-size:12px;color:#ffffff;font-weight:700;margin-bottom:8px;line-height:1.55;}
+#cal-status{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.05em;margin-bottom:8px;text-transform:uppercase;}
+.cal-shots{display:flex;gap:8px;margin-bottom:10px;}
+.cal-shot-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);}
+.cal-shot-dot.done{background:#4ade80;border-color:#4ade80;}
+.cal-actions{display:flex;gap:6px;margin-bottom:6px;}
+.cal-action-btn{flex:1;padding:8px 4px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;letter-spacing:0.08em;cursor:pointer;text-transform:uppercase;}
+.cal-action-btn.primary{background:rgba(74,222,128,0.15);border-color:#4ade80;color:#4ade80;}
+.cal-action-btn.danger{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.4);color:#ff8080;}
+#cal-result{font-size:11px;color:#88ee88;margin-top:6px;display:none;line-height:1.65;}
+
+footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:10px 8px 4px;letter-spacing:1.5px;text-transform:uppercase;margin-top:12px;}
+
+@media (orientation: landscape) {
+  .outer-wrap { max-width: 100% !important; }
+  .card { max-width: 100% !important; }
+}
+/* ── EDGE CONTROL PANEL ── */
+#edge-panel-wrap { display: contents; }
+#edge-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px 0;
+  width: 62px;
+  pointer-events: all;
+  touch-action: manipulation;
+  background: #1a2e1a;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+.ep-section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 5px 5px 4px;
+}
+.ep-section-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 3px;
+}
+.ep-btn-row {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+}
+.ep-btn {
+  flex: 1;
+  height: 30px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(30,45,30,0.97);
+  color: #e8e8e0;
+  font-family: 'Lato', sans-serif;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.1s;
+}
+.ep-btn:active { background: rgba(255,255,255,0.25); }
+.ep-btn.on     { background: #f0df70; color: #1a1400; border-color: #f0df70; }
+.ep-btn.locked { background: #ff6060; color: #1a0000; border-color: #ff6060; }
+.ep-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 1px 0; }
+.ep-section.zoom   { background: rgba(60,80,160,0.92); }
+.ep-section.snap   { background: rgba(30,100,30,0.92); }
+.ep-section.lock   { background: rgba(120,30,30,0.92); }
+.ep-section.zero   { background: rgba(120,70,0,0.92); }
+.ep-section.zoom   .ep-section-label { color: #a0c0ff; }
+.ep-section.snap   .ep-section-label { color: #80e880; }
+.ep-section.lock   .ep-section-label { color: #ff9090; }
+.ep-section.zero   .ep-section-label { color: #ffc060; }
+.snap-label {
+  position: fixed;
+  pointer-events: none;
+  font-family: 'Lato', sans-serif; font-size: 11px; font-weight: 900;
+  color: #f0df70; background: rgba(0,0,0,0.7);
+  padding: 2px 5px; border-radius: 4px;
+  white-space: nowrap; transition: opacity 0.4s; z-index: 600;
+}
+
+#sl-bias-fat::-webkit-slider-thumb,#sl-bias-med::-webkit-slider-thumb,#sl-bias-thin::-webkit-slider-thumb{background:#c890f0;}
+#sl-bias-fat,#sl-bias-med,#sl-bias-thin{-webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;}
+@media(orientation:landscape) and (max-height:600px){
+  html,body{padding:0!important;margin:0;align-items:stretch;}
+  .outer-wrap{max-width:100%!important;width:100%!important;border-radius:0;margin:0;}
+}
+/* ── BOTTOM TOOLBAR ── */
+#btb {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  min-width: min(540px, 98vw);
+  max-width: 98vw;
+  box-sizing: border-box;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  touch-action: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+#btb-tab {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: grab;
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+/* TOOLS pill — always yellow background, always brown text */
+#btb-pill {
+  display: inline-flex;
+  align-items: center;
+  background: #f0df70;
+  border-radius: 7px;
+  padding: 0 0 0 2px;
+  border: none;
+  pointer-events: auto;
+}
+#btb-pill #btb-arrow { color: #1a1400; }
+#btb-pill #btb-label { color: #1a1400; }
+#btb-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border: none;
+  padding: 4px 0 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+#btb-panel .btb-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+#btb-panel .btb-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+}
+#btb-panel .btb-row {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+}
+.btb-row2 {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  padding: 3px 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.btb-row2 .ep-btn {
+  flex: 1;
+  height: 36px;
+  font-size: 10px;
+  padding: 0 2px;
+  min-width: 0;
+}
+/* group button colors */
+.ep-btn.g-zoom { background:rgba(60,80,160,0.85); border-color:rgba(100,120,220,0.6); }
+.ep-btn.g-lock { background:rgba(120,30,30,0.85); border-color:rgba(200,60,60,0.6); }
+.ep-btn.g-snap { background:rgba(30,100,30,0.85); border-color:rgba(60,180,60,0.6); }
+.ep-btn.g-zero { background:rgba(120,70,0,0.85);  border-color:rgba(200,120,0,0.6); }
+.ep-btn.g-bias { background:rgba(90,30,130,0.85); border-color:rgba(160,80,220,0.6); }
+.ep-btn.g-tog  { background:rgba(110,90,0,0.85);  border-color:rgba(220,180,0,0.5); }
+.ep-btn.g-swap { background:rgba(0,70,35,0.85);   border-color:rgba(0,160,70,0.5); }
+.ep-btn.g-zoom.on  { background:#f0df70; color:#1a1400; }
+.ep-btn.g-snap.on  { background:#f0df70; color:#1a1400; }
+.ep-btn.g-bias.on  { background:#f0df70; color:#1a1400; }
+.ep-btn.g-tog.on   { background:#f0df70; color:#1a1400; }
+.ep-btn.g-swap.on  { background:#a0d0a0; color:#001a00; }
+.btb-row2 .ep-btn:not(.on):not(.locked) { opacity: 1; }
+.ep-btn.g-lock.locked { background:#ff6060; color:#1a0000; }
+/* pad body so content isn't hidden under bottom bar */
+
+body { padding-bottom: 80px !important; }
+
+.vbtn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:5px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.85);font-size:15px;font-weight:900;cursor:pointer;touch-action:manipulation;vertical-align:middle;-webkit-user-select:none;user-select:none;margin:0 2px;}
+.vbtn:active{background:rgba(255,255,255,0.25);}
+</style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const w = reg.installing;
+          w.addEventListener('statechange', () => {
+            if (w.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version available — show quiet notice
+              const n = document.createElement('div');
+              n.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#1a4a1a;color:#f0df70;font-family:Lato,sans-serif;font-size:12px;font-weight:900;padding:8px 16px;border-radius:20px;z-index:9999;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);';
+              n.textContent = '↑ Update available — tap to refresh';
+              n.onclick = () => { w.postMessage({type:'SKIP_WAITING'}); location.reload(); };
+              document.body.appendChild(n);
+            }
+          });
+        });
+      });
+    }
+  </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New version available — reload silently
+            window.location.reload();
+          }
+        });
+      });
+    });
+  });
+}
+const SHOT_LIBRARY = [
+  { name: 'Cross Side 1',  cb:{x:130,y:205}, ob:{x:130,y:80},  pocket:'BM', sol:1, cut:27,  rh:true,  desc:'CB sq26f, OB sq2g — 27°R · P5' },
+  { name: 'Cross Side 2',  cb:{x:180,y:205}, ob:{x:180,y:80},  pocket:'BM', sol:1, cut:14,  rh:true,  desc:'CB sq27f, OB sq3g — 14°R · P5' },
+  { name: 'Cross Side 3',  cb:{x:80, y:180}, ob:{x:130,y:80},  pocket:'BM', sol:1, cut:2,   rh:false, desc:'CB sq17g, OB sq2g — 2°L · P5' },
+  { name: 'End Rail 1',    cb:{x:230,y:155}, ob:{x:130,y:130}, pocket:'TR', sol:0, cut:2,   rh:false, desc:'CB sq20f, OB sq10g — 2°L · P3' },
+  { name: 'End Rail 2',    cb:{x:230,y:180}, ob:{x:80, y:130}, pocket:'TR', sol:0, cut:4,   rh:false, desc:'CB sq20g, OB sq9g — 4°L · P3' },
+];
+let libraryOpen = false;
+// ── USER SHOT LIBRARY ──────────────────────────────────────────
+let userShots = [];
+
+function loadUserShots() {
+  try { userShots = JSON.parse(localStorage.getItem('lz-banker-shots') || '[]'); } catch(e) { userShots=[]; }
+}
+function saveUserShots() {
+  try { localStorage.setItem('lz-banker-shots', JSON.stringify(userShots)); } catch(e) {}
+}
+
+function saveCurrentShot() {
+  const input = document.getElementById('shot-name-input');
+  const name = (input ? input.value.trim() : '') || ('Shot ' + (userShots.length + 1));
+  // Find active pocket key
+  const pocketKey = Object.keys(POCKETS).find(k => {
+    const p = POCKETS[k];
+    return Math.hypot(p.x - S.target.x, p.y - S.target.y) < 5;
+  }) || 'TL';
+  userShots.push({
+    name,
+    cb: {...S.cb}, ob: {...S.ob},
+    pocket: pocketKey,
+    speed: S.speed, spin: S.spin,
+    ts: Date.now()
+  });
+  saveUserShots();
+  if (input) input.value = '';
+  buildShotList();
+}
+
+function loadUserShot(idx) {
+  const shot = userShots[idx];
+  if (!shot) return;
+  S.ob = {...shot.ob}; S.cb = {...shot.cb};
+  if (shot.pocket && POCKETS[shot.pocket]) selectPocket(shot.pocket);
+  render();
+}
+
+function deleteUserShot(idx) {
+  userShots.splice(idx, 1);
+  saveUserShots();
+  buildShotList();
+}
+
+function buildShotList() {
+  const el = document.getElementById('shot-library-list');
+  if (!el) return;
+  // Preset shots first
+  let html = '<div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px;margin-bottom:3px;">PRESETS</div>';
+  html += SHOT_LIBRARY.map((s,i) =>
+    '<div data-preset="' + i + '" class="shot-lib-item" style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
+    '<div><div style="font-size:10px;font-weight:900;color:#f0df70">' + s.name + '</div>' +
+    '<div style="font-size:8px;color:rgba(255,255,255,0.4)">' + s.desc + '</div></div>' +
+    '</div>'
+  ).join('');
+  // User shots
+  if (userShots.length) {
+    html += '<div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px;margin:5px 0 3px;">MY SHOTS</div>';
+    html += userShots.map((s,i) => {
+      const d = new Date(s.ts);
+      const dt = (d.getMonth()+1)+'/'+d.getDate();
+      return '<div style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">' +
+        '<div onclick="loadUserShot('+i+')" style="flex:1;cursor:pointer;">' +
+        '<div style="font-size:10px;font-weight:900;color:#7dd3fc">' + s.name + '</div>' +
+        '<div style="font-size:8px;color:rgba(255,255,255,0.4)">' + dt + ' · ' + s.pocket + '</div></div>' +
+        '<button onclick="deleteUserShot('+i+')" style="font-size:9px;padding:1px 4px;border-radius:3px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;cursor:pointer;margin-left:4px;">✕</button>' +
+        '</div>';
+    }).join('');
+  }
+  el.innerHTML = html;
+  // Preset click handler
+  el.querySelectorAll('[data-preset]').forEach(item => {
+    item.addEventListener('click', () => {
+      loadShot(parseInt(item.dataset.preset));
+    });
+  });
+}
+
+function toggleShotLibrary() {
+  libraryOpen = !libraryOpen;
+  const panel = document.getElementById('shot-library-panel');
+  if (panel) panel.style.display = libraryOpen ? 'block' : 'none';
+}
+function loadShot(idx) {
+  const shot = SHOT_LIBRARY[idx];
+  if (!shot) return;
+  S.ob = {...shot.ob}; S.cb = {...shot.cb};
+  if (shot.pocket && POCKETS[shot.pocket]) {
+    S.target = { x: POCKETS[shot.pocket].x, y: POCKETS[shot.pocket].y };
+  }
+  S.activeSol  = shot.sol !== undefined ? shot.sol : 0;
+  S.diagCutDeg = shot.cut !== undefined ? shot.cut : null;
+  S._diagDragRh = shot.rh !== undefined ? shot.rh : undefined;
+  shotLocked = (shot.cut !== undefined);
+  render();
+  // Force readouts directly — override whatever render computed
+  if (shot.cut !== undefined) {
+    const _aimF = Math.sin(Math.min(shot.cut, 90) * Math.PI/180);
+    const _dir  = shot.cut < 0.5 ? '' : (shot.rh ? ' L' : ' R');
+    const _frac = (function(f){
+      if(f>=0.875)return'full ball'; if(f>=0.75)return'⅞ ball';
+      if(f>=0.625)return'¾ ball';   if(f>=0.5) return'⅝ ball';
+      if(f>=0.375)return'½ ball';   if(f>=0.25)return'⅜ ball';
+      if(f>=0.125)return'¼ ball';   return '⅛ ball';
+    })(_aimF);
+    const sT = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+    sT('ro-cut',  shot.cut.toFixed(1)+'°'+_dir);
+    sT('ro-frac', _frac);
+    sT('ro-aim',  Math.round(_aimF*100)+'%'+_dir);
+  }
+}
+
+</script>
+  <link rel="manifest" href="manifest-banker.json">
+  <link rel="apple-touch-icon" href="icon-banker-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LZ Banker">
+  <meta name="theme-color" content="#1a361a">
+</head>
+<body>
+<!-- Persistent gradients for aiming diagram (Aimer protocol) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="CGB" cx="36%" cy="28%">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="48%" stop-color="#d8d2c4"/><stop offset="100%" stop-color="#908070"/>
+    </radialGradient>
+    <radialGradient id="OGdB" cx="50%" cy="28%">
+      <stop offset="0%" stop-color="#ff6060"/>
+      <stop offset="40%" stop-color="#cc1010"/>
+      <stop offset="100%" stop-color="#6a0808"/>
+    </radialGradient>
+    <radialGradient id="OGB" cx="50%" cy="28%">
+      <stop offset="0%" stop-color="#ff9090"/>
+      <stop offset="35%" stop-color="#ee2020"/>
+      <stop offset="80%" stop-color="#aa0808"/>
+      <stop offset="100%" stop-color="#6a0808"/>
+    </radialGradient>
+    <marker id="Tarr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0,0 9,3.5 0,7" fill="rgba(255,255,255,0.92)"/>
+    </marker>
+  </defs>
+</svg>
+<div class="outer-wrap">
+<div id="zoom-wrap" style="flex:1;min-width:0;transform-origin:top left;isolation:isolate;overflow:hidden;"><div class="card">
+
+<!-- ── HEADER ── -->
+<div class="hdr">
+  <button id="help-btn" onclick="toggleInfo()">?</button>
+  <div style="text-align:center;flex:1;padding:0 8px;">
+    <h1><span class="t-lestar">LeStar&nbsp;</span><span class="t-z">Z</span><span class="t-rest">'s Banker</span></h1>
+    <p class="sub">place the balls · pick a pocket · find the bank</p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0;">
+    <button id="table-btn" onclick="toggleTable()" style="padding:4px 10px;border-radius:14px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.06em;cursor:pointer;white-space:nowrap;">POOL</button>
+    <div style="display:flex;gap:3px;">
+      <button id="size-btn" onclick="cycleTableSize()" style="padding:3px 8px;border-radius:10px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;cursor:pointer;">9ft</button>
+      <button id="unit-btn" onclick="toggleUnits()" style="padding:3px 8px;border-radius:10px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;cursor:pointer;">FT</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TABLE + AIMING DIAGRAM ── -->
+<div id="block-sliders"><div class="sgroup">
+  <div class="srow">
+    <span class="slbl">speed</span>
+    <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
+      <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
+    <span class="sval" id="sv-spd">med</span>
+  </div>
+  <div class="srow" style="margin-top:6px">
+    <span class="slbl">spin</span>
+    <input type="range" id="sl-spn" min="-4" max="4" value="0" step="1" oninput="onSliders()">
+      <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
+    <span class="sval" id="sv-spn" style="color:#e870b0">center</span>
+  </div>
+  <div class="srow" style="margin-top:6px">
+    <span class="slbl">vert</span>
+    <input type="range" id="sl-vert" min="-4" max="4" value="0" step="1" oninput="onSliders()">
+      <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
+    <span class="sval" id="sv-vert" style="color:#7dd3fc">center</span>
+  </div>
+  <div class="srow" style="margin-top:6px">
+    <span class="slbl" style="color:#c890f0;font-size:9px;">FAT</span>
+    <input type="range" id="sl-bias-fat" min="-12" max="12" value="0" oninput="onSliders()">
+    <span id="sv-bias-fat-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('fat',-1)">−</button><span id="sv-bias-fat" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('fat',1)">+</button></span>
+  </div>
+  <div class="srow" style="margin-top:4px">
+    <span class="slbl" style="color:#c890f0;font-size:9px;">MED</span>
+    <input type="range" id="sl-bias-med" min="-12" max="12" value="0" oninput="onSliders()">
+    <span id="sv-bias-med-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('med',-1)">−</button><span id="sv-bias-med" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('med',1)">+</button></span>
+  </div>
+  <div class="srow" style="margin-top:4px">
+    <span class="slbl" style="color:#c890f0;font-size:9px;">THIN</span>
+    <input type="range" id="sl-bias-thin" min="-12" max="12" value="0" oninput="onSliders()">
+    <span id="sv-bias-thin-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('thin',-1)">−</button><span id="sv-bias-thin" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('thin',1)">+</button></span>
+  </div>
+</div>
+</div><!-- /block-sliders -->
+<div class="diagram-wrap">
+
+  <!-- BIRD'S EYE TABLE -->
+  <div class="svg-box top-box" style="position:relative;">
+    <svg id="tbl" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg" style="touch-action:none;">
+    <defs>
+      <radialGradient id="gFelt" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#1e6b35"/><stop offset="100%" stop-color="#134d25"/>
+      </radialGradient>
+      <radialGradient id="gPocket" cx="35%" cy="35%" r="70%">
+        <stop offset="0%" stop-color="#1a1a1a"/><stop offset="100%" stop-color="#050a05"/>
+      </radialGradient>
+      <radialGradient id="gBall" cx="35%" cy="30%" r="65%">
+        <stop offset="0%" stop-color="#fff"/><stop offset="60%" stop-color="#f0f0e8"/><stop offset="100%" stop-color="#d8d8d0"/>
+      </radialGradient>
+      <radialGradient id="gOB" cx="34%" cy="26%" r="70%">
+        <stop offset="0%" stop-color="#ff9060"/><stop offset="40%" stop-color="#e04010"/><stop offset="100%" stop-color="#601808"/>
+      </radialGradient>
+      <marker id="arr-ob" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#7dd3fc"/></marker>
+      <marker id="arr-bk" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#4ade80"/></marker>
+      <marker id="arr-ai" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#f0df70" opacity=".7"/></marker>
+    </defs>
+
+    <g id="tbl-content">
+    <!-- Wood rail -->
+    <rect x="0" y="0" width="460" height="260" rx="9" fill="#3d2b1f"/>
+    <rect x="1.5" y="1.5" width="457" height="257" rx="8" fill="none" stroke="#5a3f2c" stroke-width="2"/>
+    <!-- Cushion strips (rubber, between rail and felt) -->
+    <rect x="30" y="17" width="400" height="13" fill="#1a6830"/>
+    <rect x="30" y="230" width="400" height="13" fill="#1a6830"/>
+    <rect x="17" y="30" width="13" height="200" fill="#1a6830"/>
+    <rect x="430" y="30" width="13" height="200" fill="#1a6830"/>
+    <!-- Felt -->
+    <rect x="30" y="30" width="400" height="200" fill="url(#gFelt)"/>
+    <rect x="30" y="30" width="400" height="200" fill="none" stroke="#0f3d1c" stroke-width="1"/>
+    <!-- Pockets — drawn after felt so dark circles cover junction correctly -->
+    <circle cx="30"  cy="30"  r="17" fill="#060a06"/>
+    <circle cx="430" cy="30"  r="17" fill="#060a06"/>
+    <circle cx="30"  cy="230" r="17" fill="#060a06"/>
+    <circle cx="430" cy="230" r="17" fill="#060a06"/>
+    <!-- Side pockets — tapered jaws, rounded back, clean felt edge -->
+    <path d="M 210,30 L 215,16 A 15,9 0 0 1 245,16 L 250,30 Z" fill="#060a06"/>
+    <path d="M 210,230 L 215,244 A 15,9 0 0 0 245,244 L 250,230 Z" fill="#060a06"/>
+    <!-- Diamonds -->
+    <polygon points="80,10 84,15 80,20 76,15" fill="#c8a84b"/><polygon points="130,10 134,15 130,20 126,15" fill="#c8a84b"/>
+    <polygon points="180,10 184,15 180,20 176,15" fill="#c8a84b"/><polygon points="280,10 284,15 280,20 276,15" fill="#c8a84b"/>
+    <polygon points="330,10 334,15 330,20 326,15" fill="#c8a84b"/><polygon points="380,10 384,15 380,20 376,15" fill="#c8a84b"/>
+    <polygon points="80,240 84,245 80,250 76,245" fill="#c8a84b"/><polygon points="130,240 134,245 130,250 126,245" fill="#c8a84b"/>
+    <polygon points="180,240 184,245 180,250 176,245" fill="#c8a84b"/><polygon points="280,240 284,245 280,250 276,245" fill="#c8a84b"/>
+    <polygon points="330,240 334,245 330,250 326,245" fill="#c8a84b"/><polygon points="380,240 384,245 380,250 376,245" fill="#c8a84b"/>
+    <polygon points="10,80 15,76 20,80 15,84" fill="#c8a84b"/><polygon points="10,130 15,126 20,130 15,134" fill="#c8a84b"/>
+    <polygon points="10,180 15,176 20,180 15,184" fill="#c8a84b"/><polygon points="440,80 445,76 450,80 445,84" fill="#c8a84b"/>
+    <polygon points="440,130 445,126 450,130 445,134" fill="#c8a84b"/><polygon points="440,180 445,176 450,180 445,184" fill="#c8a84b"/>
+    <!-- Diamond numbers -->
+    <text x="80"  y="7"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">1</text>
+    <text x="130" y="7"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+    <text x="180" y="7"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+    <text x="280" y="7"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">5</text>
+    <text x="330" y="7"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">6</text>
+    <text x="380" y="7"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">7</text>
+    <text x="80"  y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">1</text>
+    <text x="130" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+    <text x="180" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+    <text x="280" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">5</text>
+    <text x="330" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">6</text>
+    <text x="380" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">7</text>
+    <text x="3"   y="83"  fill="#907020" font-size="7" font-family="Helvetica">1</text>
+    <text x="3"   y="133" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+    <text x="3"   y="183" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+    <text x="452" y="83"  fill="#907020" font-size="7" font-family="Helvetica">1</text>
+    <text x="452" y="133" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+    <text x="452" y="183" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+    <text x="30"  y="26"  text-anchor="middle" fill="#604a14" font-size="6.5" font-family="Helvetica">0</text>
+    <text x="430" y="26"  text-anchor="middle" fill="#604a14" font-size="6.5" font-family="Helvetica">8</text>
+    <text x="230" y="26"  text-anchor="middle" fill="#604a14" font-size="6.5" font-family="Helvetica">4</text>
+    <text x="6"   y="32"  fill="#604a14" font-size="6.5" font-family="Helvetica">0</text>
+    <text x="6"   y="232" fill="#604a14" font-size="6.5" font-family="Helvetica">4</text>
+
+    <!-- ── MAP OVERLAY ── -->
+    <g id="map-layer" opacity="0" style="pointer-events:none">
+      <!-- Rail labels -->
+      <text x="230" y="43" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2">TOP RAIL</text>
+      <text x="230" y="224" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2">BOTTOM RAIL</text>
+      <text x="40" y="132" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2" transform="rotate(-90,40,132)">LEFT RAIL</text>
+      <text x="420" y="132" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2" transform="rotate(90,420,132)">RIGHT RAIL</text>
+
+      <!-- Diamond grid lines — horizontal (across top/bottom rails) -->
+      <line x1="80"  y1="30" x2="80"  y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+      <line x1="130" y1="30" x2="130" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+      <line x1="180" y1="30" x2="180" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+      <line x1="230" y1="30" x2="230" y2="230" stroke="#7dd3fc" stroke-width="1.2" opacity="0.75"/>
+      <line x1="280" y1="30" x2="280" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+      <line x1="330" y1="30" x2="330" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+      <line x1="380" y1="30" x2="380" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+
+      <!-- Diamond grid lines — vertical (across left/right rails) -->
+      <line x1="30" y1="80"  x2="430" y2="80"  stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+      <line x1="30" y1="130" x2="430" y2="130" stroke="#7dd3fc" stroke-width="1.2" opacity="0.75"/>
+      <line x1="30" y1="180" x2="430" y2="180" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+
+      <!-- Pocket-to-diamond lines (corner pockets to 1st diamond each side) -->
+      <line x1="30"  y1="30"  x2="80"  y2="30"  stroke="#7dd3fc" stroke-width="0.5" opacity="0.4"/>
+      <line x1="30"  y1="30"  x2="30"  y2="80"  stroke="#7dd3fc" stroke-width="0.5" opacity="0.4"/>
+      <line x1="430" y1="30"  x2="380" y2="30"  stroke="#7dd3fc" stroke-width="0.5" opacity="0.4"/>
+      <line x1="430" y1="30"  x2="430" y2="80"  stroke="#7dd3fc" stroke-width="0.5" opacity="0.4"/>
+      <line x1="30"  y1="230" x2="80"  y2="230" stroke="#7dd3fc" stroke-width="0.5" opacity="0.4"/>
+      <line x1="30"  y1="230" x2="30"  y2="180" stroke="#7dd3fc" stroke-width="0.5" opacity="0.4"/>
+      <line x1="430" y1="230" x2="380" y2="230" stroke="#7dd3fc" stroke-width="0.5" opacity="0.4"/>
+      <line x1="430" y1="230" x2="430" y2="180" stroke="#7dd3fc" stroke-width="0.5" opacity="0.4"/>
+
+      <!-- Diamond number labels — top rail -->
+      <text x="80"  y="27" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">1</text>
+      <text x="130" y="27" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">2</text>
+      <text x="180" y="27" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">3</text>
+      <text x="280" y="27" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">5</text>
+      <text x="330" y="27" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">6</text>
+      <text x="380" y="27" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">7</text>
+
+      <!-- Diamond number labels — bottom rail -->
+      <text x="80"  y="238" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">1</text>
+      <text x="130" y="238" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">2</text>
+      <text x="180" y="238" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">3</text>
+      <text x="280" y="238" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">5</text>
+      <text x="330" y="238" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">6</text>
+      <text x="380" y="238" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">7</text>
+
+      <!-- Diamond number labels — left rail -->
+      <text x="22" y="83"  text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">1</text>
+      <text x="22" y="133" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">2</text>
+      <text x="22" y="183" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">3</text>
+
+      <!-- Diamond number labels — right rail -->
+      <text x="438" y="83"  text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">1</text>
+      <text x="438" y="133" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">2</text>
+      <text x="438" y="183" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.8">3</text>
+
+      <!-- Center spot -->
+      <circle cx="230" cy="130" r="3" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.6"/>
+      <circle cx="230" cy="130" r="0.8" fill="#7dd3fc" opacity="0.6"/>
+      <text x="236" y="128" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.6">CENTER</text>
+    </g>
+
+    <g id="map2-layer" opacity="0" style="pointer-events:none">
+      <line x1="35" y1="30" x2="35" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="40" y1="30" x2="40" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="45" y1="30" x2="45" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="50" y1="30" x2="50" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="55" y1="30" x2="55" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="55" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+      <text x="55" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+      <line x1="60" y1="30" x2="60" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="65" y1="30" x2="65" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="70" y1="30" x2="70" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="75" y1="30" x2="75" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="85" y1="30" x2="85" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="90" y1="30" x2="90" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="95" y1="30" x2="95" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="100" y1="30" x2="100" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="105" y1="30" x2="105" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="105" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+      <text x="105" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+      <line x1="110" y1="30" x2="110" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="115" y1="30" x2="115" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="120" y1="30" x2="120" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="125" y1="30" x2="125" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="135" y1="30" x2="135" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="140" y1="30" x2="140" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="145" y1="30" x2="145" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="150" y1="30" x2="150" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="155" y1="30" x2="155" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="155" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+      <text x="155" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+      <line x1="160" y1="30" x2="160" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="165" y1="30" x2="165" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="170" y1="30" x2="170" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="175" y1="30" x2="175" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="185" y1="30" x2="185" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="190" y1="30" x2="190" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="195" y1="30" x2="195" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="200" y1="30" x2="200" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="205" y1="30" x2="205" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="205" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+      <text x="205" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+      <line x1="210" y1="30" x2="210" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="215" y1="30" x2="215" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="220" y1="30" x2="220" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="225" y1="30" x2="225" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="235" y1="30" x2="235" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="240" y1="30" x2="240" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="245" y1="30" x2="245" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="250" y1="30" x2="250" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="255" y1="30" x2="255" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="255" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">4.5</text>
+      <text x="255" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">4.5</text>
+      <line x1="260" y1="30" x2="260" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="265" y1="30" x2="265" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="270" y1="30" x2="270" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="275" y1="30" x2="275" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="285" y1="30" x2="285" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="290" y1="30" x2="290" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="295" y1="30" x2="295" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="300" y1="30" x2="300" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="305" y1="30" x2="305" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="305" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">5.5</text>
+      <text x="305" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">5.5</text>
+      <line x1="310" y1="30" x2="310" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="315" y1="30" x2="315" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="320" y1="30" x2="320" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="325" y1="30" x2="325" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="335" y1="30" x2="335" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="340" y1="30" x2="340" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="345" y1="30" x2="345" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="350" y1="30" x2="350" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="355" y1="30" x2="355" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="355" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">6.5</text>
+      <text x="355" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">6.5</text>
+      <line x1="360" y1="30" x2="360" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="365" y1="30" x2="365" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="370" y1="30" x2="370" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="375" y1="30" x2="375" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="385" y1="30" x2="385" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="390" y1="30" x2="390" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="395" y1="30" x2="395" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="400" y1="30" x2="400" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="405" y1="30" x2="405" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="405" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">7.5</text>
+      <text x="405" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">7.5</text>
+      <line x1="410" y1="30" x2="410" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="415" y1="30" x2="415" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="420" y1="30" x2="420" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="425" y1="30" x2="425" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="35" x2="430" y2="35" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="40" x2="430" y2="40" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="45" x2="430" y2="45" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="50" x2="430" y2="50" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="55" x2="430" y2="55" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="27" y="56.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+      <text x="433" y="56.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+      <line x1="30" y1="60" x2="430" y2="60" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="65" x2="430" y2="65" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="70" x2="430" y2="70" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="75" x2="430" y2="75" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="85" x2="430" y2="85" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="90" x2="430" y2="90" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="95" x2="430" y2="95" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="100" x2="430" y2="100" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="105" x2="430" y2="105" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="27" y="106.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+      <text x="433" y="106.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+      <line x1="30" y1="110" x2="430" y2="110" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="115" x2="430" y2="115" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="120" x2="430" y2="120" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="125" x2="430" y2="125" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="135" x2="430" y2="135" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="140" x2="430" y2="140" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="145" x2="430" y2="145" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="150" x2="430" y2="150" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="155" x2="430" y2="155" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="27" y="156.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+      <text x="433" y="156.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+      <line x1="30" y1="160" x2="430" y2="160" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="165" x2="430" y2="165" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="170" x2="430" y2="170" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="175" x2="430" y2="175" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="185" x2="430" y2="185" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="190" x2="430" y2="190" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="195" x2="430" y2="195" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="200" x2="430" y2="200" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="205" x2="430" y2="205" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+      <text x="27" y="206.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+      <text x="433" y="206.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+      <line x1="30" y1="210" x2="430" y2="210" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="215" x2="430" y2="215" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="220" x2="430" y2="220" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <line x1="30" y1="225" x2="430" y2="225" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+      <text x="30" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+      <text x="30" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+      <text x="80" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+      <text x="80" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+      <text x="130" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+      <text x="130" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+      <text x="180" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+      <text x="180" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+      <text x="230" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+      <text x="230" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+      <text x="280" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">5</text>
+      <text x="280" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">5</text>
+      <text x="330" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">6</text>
+      <text x="330" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">6</text>
+      <text x="380" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">7</text>
+      <text x="380" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">7</text>
+      <text x="430" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">8</text>
+      <text x="430" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">8</text>
+      <text x="26" y="32" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+      <text x="434" y="32" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+      <text x="26" y="82" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+      <text x="434" y="82" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+      <text x="26" y="132" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+      <text x="434" y="132" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+      <text x="26" y="182" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+      <text x="434" y="182" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+      <text x="26" y="232" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+      <text x="434" y="232" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+      <text x="55" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">1</text>
+      <text x="105" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">2</text>
+      <text x="155" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">3</text>
+      <text x="205" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">4</text>
+      <text x="255" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">5</text>
+      <text x="305" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">6</text>
+      <text x="355" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">7</text>
+      <text x="405" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">8</text>
+      <text x="55" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">9</text>
+      <text x="105" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">10</text>
+      <text x="155" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">11</text>
+      <text x="205" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">12</text>
+      <text x="255" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">13</text>
+      <text x="305" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">14</text>
+      <text x="355" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">15</text>
+      <text x="405" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">16</text>
+      <text x="55" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">17</text>
+      <text x="105" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">18</text>
+      <text x="155" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">19</text>
+      <text x="205" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">20</text>
+      <text x="255" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">21</text>
+      <text x="305" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">22</text>
+      <text x="355" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">23</text>
+      <text x="405" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">24</text>
+      <text x="55" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">25</text>
+      <text x="105" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">26</text>
+      <text x="155" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">27</text>
+      <text x="205" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">28</text>
+      <text x="255" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">29</text>
+      <text x="305" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">30</text>
+      <text x="355" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">31</text>
+      <text x="405" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">32</text>
+    </g>
+    <!-- ── DYNAMIC LAYER ── -->
+    <g id="dyn">
+      <!-- Pocket snap highlights (shown briefly on tap) -->
+      <circle id="phl-TL" cx="30"  cy="30"  r="16" fill="none" stroke="#f0df70" stroke-width="2"   opacity="0"/>
+      <circle id="phl-TM" cx="230" cy="30"  r="14" fill="none" stroke="#f0df70" stroke-width="2"   opacity="0"/>
+      <circle id="phl-TR" cx="430" cy="30"  r="16" fill="none" stroke="#f0df70" stroke-width="2"   opacity="0"/>
+      <circle id="phl-BL" cx="30"  cy="230" r="16" fill="none" stroke="#f0df70" stroke-width="2"   opacity="0"/>
+      <circle id="phl-BM" cx="230" cy="230" r="14" fill="none" stroke="#f0df70" stroke-width="2"   opacity="0"/>
+      <circle id="phl-BR" cx="430" cy="230" r="16" fill="none" stroke="#f0df70" stroke-width="2"   opacity="0"/>
+      <!-- Pocket number labels -->
+      <text x="48"  y="44"  font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="rgba(240,223,112,0.55)" text-anchor="middle">1</text>
+      <text x="230" y="44"  font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="rgba(240,223,112,0.55)" text-anchor="middle">2</text>
+      <text x="412" y="44"  font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="rgba(240,223,112,0.55)" text-anchor="middle">3</text>
+      <text x="48"  y="222" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="rgba(240,223,112,0.55)" text-anchor="middle">6</text>
+      <text x="230" y="222" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="rgba(240,223,112,0.55)" text-anchor="middle">5</text>
+      <text x="412" y="222" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="rgba(240,223,112,0.55)" text-anchor="middle">4</text>
+
+      <!-- Free draggable target -->
+      <!-- Ghost ball -->
+
+      <!-- Free draggable target — solid dot only -->
+      <!-- Second object ball — draggable reference, not wired to physics -->
+      <circle id="ob2-shadow" cx="401" cy="211" r="10" fill="#000" opacity="0.32"/>
+      <circle id="ob2"        cx="400" cy="210" r="10" fill="url(#gOB)" stroke="#903010" stroke-width="1" opacity="0.55"/>
+      <circle id="ob2-hi"     cx="396" cy="206" r="3.5" fill="#fff" opacity="0.35"/>
+
+      <!-- Shot lines -->
+      <line id="ob-path"  x1="0" y1="0" x2="0" y2="0" stroke="#7dd3fc" stroke-width="1.8" marker-end="url(#arr-ob)" opacity="0"/>
+      <line id="bk-path"  x1="0" y1="0" x2="0" y2="0" stroke="#4ade80" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr-bk)" opacity="0"/>
+      <!-- 2nd cushion path (violet) -->
+      <line id="bk-path2" x1="0" y1="0" x2="0" y2="0" stroke="#a78bfa" stroke-width="1.2" stroke-dasharray="6,4" opacity="0"/>
+      <!-- Rail contact dots — contact-dot is draggable -->
+      <circle id="contact-dot"  cx="0" cy="0" r="9" fill="rgba(255,255,255,0.15)" stroke="#ffffff" stroke-width="2" opacity="0"/>
+      <circle id="contact-dot2" cx="0" cy="0" r="5" fill="none" stroke="#a78bfa" stroke-width="1.6" opacity="0"/>
+      <!-- Invisible hit zone for contact dot — always receives pointer events -->
+
+      <!-- Ghost ball (toggleable) -->
+      <line id="cb-ghost-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0"/>
+      <circle id="ghost-ball" cx="0" cy="0" r="10" fill="rgba(255,255,255,.06)" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3,3" opacity="0"/>
+
+      <!-- Object ball -->
+      <circle id="ob-shadow" cx="281" cy="131" r="10" fill="#000" opacity="0.32"/>
+      <circle id="ob"        cx="280" cy="130" r="10" fill="url(#gOB)" stroke="#903010" stroke-width="1"/>
+      <circle id="ob-hi"     cx="276" cy="126" r="3.5" fill="#fff" opacity="0.45"/>
+
+      <!-- Cue ball -->
+      <circle id="cb-shadow" cx="151" cy="131" r="10" fill="#000" opacity="0.32"/>
+      <circle id="cb"        cx="150" cy="130" r="10" fill="url(#gBall)" stroke="#ccccbb" stroke-width="1"/>
+      <circle id="cb-hi"     cx="146" cy="126" r="3.5" fill="#fff" opacity="0.55"/>
+      <circle id="cb-dot"    cx="150" cy="130" r="1.5" fill="#999" opacity="0.4"/>
+
+      <!-- Calibration markers -->
+      <circle id="cal-predicted" cx="0" cy="0" r="10" fill="none" stroke="#f0df70" stroke-width="2" stroke-dasharray="4,3" opacity="0"/>
+      <text id="cal-predicted-lbl" x="0" y="0" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#f0df70" opacity="0">PREDICTED</text>
+      <circle id="cal-actual" cx="0" cy="0" r="8" fill="#ff6060" stroke="#fff" stroke-width="1.5" opacity="0"/>
+      <text id="cal-actual-lbl" x="0" y="0" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#ff8080" opacity="0">ACTUAL</text>
+
+      <!-- Pocket tap zones (invisible, on top) -->
+    </g><!-- dyn -->
+    </g><!-- tbl-content -->
+    </svg>
+  </div><!-- top-box -->
+
+  <div class="sep"></div>
+
+  <!-- READOUT BAR -->
+  <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;gap:6px;margin:4px 0;height:52px;contain:layout style;width:100%;box-sizing:border-box;padding:0 4px;">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:#7fd0f0;text-transform:uppercase;margin-bottom:3px;">Contact</div>
+      <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;contain:strict;">
+        <div id="r-cp" style="color:#7fd0f0;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;">Inside Edge</div>
+      <div style="display:flex;gap:4px;flex:1;width:100%;">
+        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;display:flex;align-items:center;justify-content:center;contain:strict;">
+          <div id="r-aim" style="color:#e87030;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
+        </div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1.5;display:flex;align-items:center;justify-content:center;contain:strict;">
+          <div id="r-frc" style="color:#88ee88;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;">Cut</div>
+      <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;contain:strict;">
+        <div id="r-ang" style="color:#f0df70;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;">CB-OB</div>
+      <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;contain:strict;">
+        <div id="r-dist" style="color:#a0d0a0;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AIMING DIAGRAM — full-width interactive, CB draggable, OB centered -->
+  <div id="aim-wrap" style="width:100%;aspect-ratio:460/320;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;">
+    <svg id="botsvg" viewBox="0 0 460 320" preserveAspectRatio="xMidYMid meet"
+         style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;"
+         xmlns="http://www.w3.org/2000/svg">
+    </svg>
+  </div><!-- aim-wrap -->
+
+</div><!-- diagram-wrap -->
+
+
+
+</div>
+
+<!-- ── CALIBRATION PANEL ── -->
+<div id="cal-panel">
+  <div id="cal-instruction"></div>
+  <div id="cal-status" style="font-size:10px;color:rgba(255,255,255,0.5);margin:3px 0;"></div>
+  <div class="cal-actions" style="display:flex;gap:4px;flex-wrap:wrap;">
+    <button class="cal-action-btn primary" id="cal-rec1-btn" onclick="calRecord1()">① RECORD PREDICTED</button>
+    <button class="cal-action-btn primary" id="cal-rec2-btn" onclick="calRecord2()" style="display:none;background:#1a5a3a;">② RECORD ACTUAL</button>
+    <button class="cal-action-btn" onclick="calUndo()">UNDO</button>
+    <button class="cal-action-btn danger" onclick="calReset()">RESET ALL</button>
+    <button class="cal-action-btn" onclick="toggleCalLibrary()" style="background:#2a3a5a;color:#aaccff;">LIBRARY</button>
+  </div>
+  <div id="cal-result" style="margin-top:4px;"></div>
+  <div id="cal-library" style="display:none;margin-top:6px;max-height:120px;overflow-y:auto;font-size:10px;color:rgba(255,255,255,0.6);border-top:1px solid rgba(255,255,255,0.1);padding-top:4px;"></div>
+</div>
+<!-- ── BOUNCE PANEL ── -->
+<div id="swap-container" style="display:flex;flex-direction:column;">
+<div id="block-ball"><div id="bounce-pills"></div>
+<div id="bounce-nums" style="display:none;text-align:center;font-size:11px;color:rgba(255,255,255,0.5);padding:2px 0 4px;letter-spacing:1px;"></div>
+<div id="bounce-wrap" style="display:none;background:rgba(0,0,0,0.28);border-radius:4px;margin-bottom:6px;overflow:hidden;">
+  <svg id="bounce-svg" viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+    <rect width="460" height="150" fill="rgba(0,0,0,0.28)"/>
+  </svg>
+</div>
+</div><!-- /block-ball -->
+
+
+</div><!-- /swap-container -->
+
+  <!-- SHOT LIBRARY PANEL — floating, draggable -->
+  <div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
+    <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
+      <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SHOT LIBRARY</span>
+      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+    </div>
+    <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
+    <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
+      <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
+        style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
+      <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
+    </div>
+  </div>
+
+<!-- ── READOUTS ── -->
+<div id="readouts">
+  <div class="ro-row">
+    <span class="ro-lbl">CUT ANGLE</span>
+    <span class="ro-val" id="ro-cut" style="font-size:22px;color:#e87030">—</span>
+  </div>
+  <div class="ro-row">
+    <span class="ro-val" id="ro-frac" style="font-size:22px;color:#88ee88">—</span>
+  </div>
+  <div class="ro-row">
+    <span class="ro-val" id="ro-aim" style="font-size:22px;color:#e87030">—</span>
+  </div>
+  <div class="ro-row">
+    <span class="ro-lbl">THROW ADJUSTMENT</span>
+    <span class="ro-val" id="ro-throw" style="color:#e870b0">—</span>
+  </div>
+  <div class="ro-row">
+    <span class="ro-lbl">CB → OB DISTANCE</span>
+    <span class="ro-val" id="ro-dist" style="color:#a0d0a0">—</span>
+  </div>
+  <div class="ro-row">
+    <span class="ro-lbl">CONTACT RAIL ◆ DIAMOND</span>
+    <span class="ro-val" id="ro-contact">—</span>
+  </div>
+  <div class="ro-row" id="ro-contact2-row" style="display:none">
+    <span class="ro-lbl">2ND CONTACT RAIL ◆ DIAMOND</span>
+    <span class="ro-val" id="ro-contact2" style="color:#a78bfa">—</span>
+  </div>
+  <div class="ro-row">
+    <span class="ro-lbl">REBOUND ANGLE AT RAIL</span>
+    <span class="ro-val" id="ro-reb">—</span>
+  </div>
+  <div class="ro-row">
+    <span class="ro-lbl">TARGET</span>
+    <span class="ro-val" id="ro-pocket" style="color:#4ade80">—</span>
+  </div>
+</div>
+
+
+
+<script>
+const DEG = 180/Math.PI, RAD = Math.PI/180;
+const Rb  = 82;   // OB radius in botsvg viewBox units
+const BOT_OCX = 148;
+
+const speedFactors = [0, 0.95, 0.72, 0.45, 0.22, 0.08];
+const spinLabels = {
+  '-4':'2 tips L','-3':'1½ tips L','-2':'1 tip L','-1':'½ tip L',
+  '0':'center','1':'½ tip R','2':'1 tip R','3':'1½ tips R','4':'2 tips R'
+};
+const FRACTIONS = [
+  {maxDeg:5,  label:'Full ball'},  {maxDeg:20, label:'¾ ball'},
+  {maxDeg:35, label:'½ ball'},    {maxDeg:52, label:'¼ ball'},
+  {maxDeg:70, label:'⅛ ball'},    {maxDeg:90, label:'Edge ball'},
+];
+
+const S = {
+  ob:         {x:230, y:150},   // OB just above center
+  cb:         {x:130, y:200},   // CB bottom-left — clear angled approach
+  ob2:        {x:370, y:190},   // reference ball
+  target:     {x:430, y:30},    // TR pocket — default until user taps a pocket
+  diagCutDeg: null,
+  _diagDragRh: undefined,
+  activeSol:  0,
+  speed:      0.5,
+  spin:       0,
+  vert:       0,    // vertical spin: +4=max follow, -4=max draw
+  bias:       0,
+  snooker:    false,
+  tableSize:  9,
+  metric:     false,
+  rotation:   0,
+  cushions:   1,
+};
+let drag = null;
+let diagDrag = false;
+let ghostOpacity = 0.65;  // CB opacity in ball diagram
+let shotLocked = false;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONSTANTS (table geometry)
+// ─────────────────────────────────────────────────────────────────────────────
+const TL = { left:30, right:430, top:30, bottom:230 };
+const DU = 50;
+const BALL_R = 10;
+const RAIL_SHORT = { top:'TOP', bottom:'BTM', left:'LFT', right:'RGT' };
+const POCKETS = {
+  TL:{x:30, y:30, label:'Top Left',  num:1}, TM:{x:230,y:30, label:'Top Mid',   num:2}, TR:{x:430,y:30, label:'Top Right', num:3},
+  BL:{x:30,y:230,label:'Bot Left',   num:6}, BM:{x:230,y:230,label:'Bot Mid',   num:5}, BR:{x:430,y:230,label:'Bot Right', num:4},
+  // Numeric aliases
+  '1':{x:30, y:30, label:'Top Left',  num:1}, '2':{x:230,y:30, label:'Top Mid',   num:2}, '3':{x:430,y:30, label:'Top Right', num:3},
+  '4':{x:430,y:230,label:'Bot Right', num:4}, '5':{x:230,y:230,label:'Bot Mid',   num:5}, '6':{x:30,y:230, label:'Bot Left',  num:6},
+};
+const RAIL_COLORS = { top:'#f0df70', bottom:'#7dd3fc', left:'#f87171', right:'#4ade80' };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TABLE PROFILE — calibrated separately from player BIAS
+// tableK1: 1-cushion correction (negative = tighter, positive = looser)
+// tableK2: 2nd-cushion correction (second rail often plays differently)
+// ─────────────────────────────────────────────────────────────────────────────
+let tableK1 = 0.00;
+let tableK2 = 0.00;
+
+function loadTableProfile() {
+  try {
+    const p = JSON.parse(localStorage.getItem('lz-banker-profile') || '{}');
+    if (typeof p.k1 === 'number') tableK1 = p.k1;
+    if (typeof p.k2 === 'number') tableK2 = p.k2;
+  } catch(e) {}
+}
+
+function saveTableProfile() {
+  try { localStorage.setItem('lz-banker-profile', JSON.stringify({k1:tableK1, k2:tableK2})); } catch(e) {}
+}
+
+function profileStr() {
+  const k1 = Math.round(tableK1 * 100), k2 = Math.round(tableK2 * 100);
+  const desc = v => v === 0 ? 'uncalibrated' : (v > 0 ? '+' + v : '' + v);
+  return '1-rail: <strong>' + desc(k1) + '</strong>' +
+         '&nbsp;&nbsp;|&nbsp;&nbsp;' +
+         '2-rail: <strong>' + desc(k2) + '</strong>';
+}
+
+function kFactor(cushionNum, obToRailDist) {
+  // cushionNum: 1 = first rail, 2 = second rail
+  const base   = S.snooker ? 0.90 : 0.88;
+  const tbl    = cushionNum === 2 ? tableK2 : tableK1;
+  const player = 0;  // bias applied to Z_aim in buildSol1, not kFactor
+
+  // OB rolling topspin effect (Alciatore: fully rolling OB plays ~1 diamond longer)
+  // OB starts sliding after CB contact, develops topspin over distance from cloth friction
+  // Full roll develops over ~100px at medium speed; faster shots need more distance
+  const rollDist = 100 * (0.5 + S.speed * 0.8);  // px needed for full roll
+  const rollFactor = obToRailDist
+    ? Math.min(1, obToRailDist / rollDist)
+    : 0.5;  // default assume half-rolled if distance unknown
+  // Full roll adds ~0.09 to k (plays longer); stun adds 0
+  const rollingBonus = rollFactor * 0.09;
+
+  // Vertical spin (follow/draw) — modifies rolling bonus
+  // Follow adds more topspin on top of natural roll; draw subtracts
+  const vertBonus = S.vert * 0.012;
+
+  return Math.max(0.40, Math.min(0.99, base - S.speed * 0.24 + tbl + player + rollingBonus + vertBonus));
+}
+
+// Forward ray from (px,py) in direction (dx,dy), finds nearest rail
+function rayHit(px, py, dx, dy, excludeRail) {
+  const rails = [
+    {name:'top',    h:true,  v:TL.top   },
+    {name:'bottom', h:true,  v:TL.bottom},
+    {name:'left',   h:false, v:TL.left  },
+    {name:'right',  h:false, v:TL.right },
+  ];
+  // Snap hit point to corner if within this many px — kills corner wobble
+  const CORNER_SNAP = 14;
+  let best = null;
+  for (const r of rails) {
+    if (r.name === excludeRail) continue;
+    let t, ix, iy;
+    if (r.h) {
+      if (Math.abs(dy) < 1e-9) continue;
+      t = (r.v - py) / dy; if (t < 0.5) continue;
+      ix = px + t*dx; iy = r.v;
+      if (ix < TL.left-0.5 || ix > TL.right+0.5) continue;
+    } else {
+      if (Math.abs(dx) < 1e-9) continue;
+      t = (r.v - px) / dx; if (t < 0.5) continue;
+      ix = r.v; iy = py + t*dy;
+      if (iy < TL.top-0.5 || iy > TL.bottom+0.5) continue;
+    }
+    // Snap to nearest corner pocket if close
+    const corners = [{x:TL.left,y:TL.top},{x:TL.right,y:TL.top},{x:TL.left,y:TL.bottom},{x:TL.right,y:TL.bottom}];
+    for (const c of corners) {
+      if (Math.hypot(ix-c.x, iy-c.y) < CORNER_SNAP) { ix=c.x; iy=c.y; break; }
+    }
+    if (!best || t < best.t) best = {t, x:ix, y:iy, rail:r.name};
+  }
+  return best;
+}
+
+// Compressed rebound direction at rail
+function reboundDir(dx, dy, rail, k) {
+  let rdx, rdy;
+  if (rail === 'top' || rail === 'bottom') { rdx=dx*k; rdy=-dy; }
+  else { rdx=-dx; rdy=dy*k; }
+  // OB running english from cut (induced by cut angle)
+  return {dx:rdx, dy:rdy};
+}
+
+// snapToPocket — small threshold, only catches exact corner geometry hits
+// (heavy lifting is done inside rayHit's CORNER_SNAP logic)
+function snapToPocket(pt, threshold) {
+  threshold = threshold || 14;
+  const corners = [{x:TL.left,y:TL.top},{x:TL.right,y:TL.top},{x:TL.left,y:TL.bottom},{x:TL.right,y:TL.bottom}];
+  let best = null, bestD = threshold;
+  for (const c of corners) {
+    const d = Math.hypot(pt.x-c.x, pt.y-c.y);
+    if (d < bestD) { bestD=d; best=c; }
+  }
+  return best ? {x:best.x, y:best.y} : pt;
+}
+
+// Compute display shot from table geometry.
+// Table geometry (sol.contact) is always authoritative.
+// Forward solve: derive all lines from CB/OB positions and cut angle.
+// When diagDrag is active, cut angle comes from diagram. Otherwise from CB→OB geometry.
+function computeDiagShot(sol) {
+  // CB→OB direction
+  const cbx = S.ob.x - S.cb.x, cby = S.ob.y - S.cb.y;
+  const cbl = Math.hypot(cbx, cby);
+  const cbToObAngle = Math.atan2(cby, cbx);
+
+  // When a preset shot is locked, use stated angle directly — skip geometry
+  if (shotLocked && S.diagCutDeg !== null && S._diagDragRh !== undefined) {
+    const cutDeg = S.diagCutDeg;
+    const rh     = S._diagDragRh;
+    const side   = rh ? 1 : -1;
+    const deptAngle = cbToObAngle + side * cutDeg * RAD;
+    const ddx = Math.cos(deptAngle), ddy = Math.sin(deptAngle);
+    // Find rail intersection
+    let tMin = 9999, hitRail = null;
+    if (ddy < 0) { const t=(TL.top   -S.ob.y)/ddy; if(t>0&&t<tMin){tMin=t;hitRail='top';} }
+    if (ddy > 0) { const t=(TL.bottom-S.ob.y)/ddy; if(t>0&&t<tMin){tMin=t;hitRail='bottom';} }
+    if (ddx < 0) { const t=(TL.left  -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='left';} }
+    if (ddx > 0) { const t=(TL.right -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='right';} }
+    const contact = hitRail ? {x:S.ob.x+ddx*tMin, y:S.ob.y+ddy*tMin, rail:hitRail} : sol.contact;
+    sol.contact = contact; sol.θ = deptAngle;
+    const aimF = Math.sin(Math.min(cutDeg,90)*RAD);
+    // Rebound
+    const pocket = S.target || sol._reboundEnd;
+    const k = kFactor(1, Math.hypot(contact.x-S.ob.x, contact.y-S.ob.y));
+    let rdx=ddx, rdy=ddy;
+    if (contact.rail==='top'||contact.rail==='bottom'){rdy=-ddy;rdx=ddx*k;}
+    else{rdx=-ddx;rdy=ddy*k;}
+    const _rLen = 400;
+    const rbEnd = pocket ? snapToPocket(pocket) : snapToPocket({x:contact.x+rdx*_rLen, y:contact.y+rdy*_rLen});
+    return {
+      θ: deptAngle, contact, _reboundEnd: rbEnd,
+      cutDeg, Z_des:cutDeg*RAD, Z_aim:cutDeg*RAD,
+      aimFraction:aimF, diagFraction:aimF,
+      rebDeg: angleFromRail(rdx,rdy,contact.rail),
+      inducedRailSpin:0, cueSpin:0, cross:false, rail:contact.rail,
+      ob:{...S.ob}, cb:{...S.cb}
+    };
+  }
+
+  // OB departure from the bank solution (authoritative rail contact)
+  const solθ = Math.atan2(sol.contact.y - S.ob.y, sol.contact.x - S.ob.x);
+  const sdx = Math.cos(solθ), sdy = Math.sin(solθ);
+
+  // Cut angle and side from table geometry
+  let tableCutDeg = 0;
+  if (cbl > 1) {
+    tableCutDeg = Math.acos(Math.max(-1, Math.min(1, (cbx/cbl)*sdx + (cby/cbl)*sdy))) * DEG;
+  }
+  const crossZ  = cbx * sdy - cby * sdx;
+  const tableRh = crossZ > 0;
+
+  if (S.diagCutDeg === null) S.diagCutDeg = 0;  // always start at center
+  const cutDeg = Math.min(90, S.diagCutDeg);
+
+  const rh = (diagDrag && S._diagDragRh !== undefined) ? S._diagDragRh : tableRh;
+  if (!diagDrag && (S._diagDragRh === undefined || S.diagCutDeg === null)) S._diagDragRh = tableRh;
+
+  // OB departure: CB→OB direction + cut rotation + cut-induced throw (CIT)
+  // Alciatore/Marlow model: throw peaks near ½ ball, reduces at faster speeds
+  const mu0 = 0.06;  // ball-to-ball friction coefficient (clean dry balls)
+  const muEff = mu0 * Math.exp(-S.speed * 2.5);  // decreases with speed
+  const cutRad2 = Math.min(cutDeg, 90) * RAD;
+  // CIT: throw angle toward CB approach side, peaks at ~45° cut
+  const throwAngle = Math.atan(muEff * Math.sin(2 * cutRad2) / 2);
+  // side: rh=true means CB left of line → OB throws left → positive rotation in SVG (downward)
+  const side = rh ? 1 : -1;
+  const departureAngle = cbToObAngle + side * cutRad2 - side * throwAngle;
+  const dx = Math.cos(departureAngle), dy = Math.sin(departureAngle);
+
+  // Forward ray: find where OB goes from OB position in departure direction
+  const hit = rayHit(S.ob.x, S.ob.y, dx, dy, null);
+  const contact = hit
+    ? {x: hit.x, y: hit.y, rail: hit.rail}
+    : sol.contact;  // fallback
+
+  // Rebound from contact — using Mathavan/Alciatore cushion model
+  const obToRailDist = Math.hypot(contact.x - S.ob.x, contact.y - S.ob.y);
+  const k = kFactor(1, obToRailDist);
+  let rdx = dx, rdy = dy;
+  if (contact.rail === 'top' || contact.rail === 'bottom') { rdy = -dy; rdx = dx * k; }
+  else { rdx = -dx; rdy = dy * k; }
+
+  // Cut-induced spin on OB at rail
+  const inducedSpin = Math.sin(cutRad2) * Math.cos(cutRad2) * 0.20 * side;
+  // Cue-applied sidespin effect — sign depends on rail
+  // Running english (spin matching ball's travel direction along rail) opens the angle
+  // Check sign: for top/bottom rails, dx gives travel direction; for left/right, dy does
+  // Running english = spin matching rebound direction along rail = opens angle
+  const alongSign = (contact.rail === 'top' || contact.rail === 'bottom')
+    ? Math.sign(rdx)   // horiz rail: rebound along-rail = rdx
+    : Math.sign(rdy);  // vert rail: rebound along-rail = rdy
+  const cueSpin = S.spin * 0.08 * alongSign;
+  const totalSpin = inducedSpin + cueSpin;
+
+  const cosS = Math.cos(totalSpin), sinS = Math.sin(totalSpin);
+  const rdxS = rdx*cosS - rdy*sinS, rdyS = rdx*sinS + rdy*cosS;
+  const rLen = Math.hypot(rdxS, rdyS);
+  rdx = rdxS/rLen; rdy = rdyS/rLen;
+  const rebound = rayHit(contact.x, contact.y, rdx, rdy, contact.rail);
+  let reboundEnd, contact2 = null;
+
+  if (S.cushions === 2 && rebound) {
+    // Second cushion — separate table constant kFactor(2)
+    contact2 = {x: rebound.x, y: rebound.y, rail: rebound.rail};
+    const k2 = kFactor(2, Math.hypot(contact2.x - contact.x, contact2.y - contact.y));
+    let rdx2 = rdx, rdy2 = rdy;
+    if (contact2.rail === 'top' || contact2.rail === 'bottom') { rdy2 = -rdy2; rdx2 = rdx2 * k2; }
+    else { rdx2 = -rdx2; rdy2 = rdy2 * k2; }
+    const rLen2 = Math.hypot(rdx2, rdy2);
+    rdx2 /= rLen2; rdy2 /= rLen2;
+    const rebound2 = rayHit(contact2.x, contact2.y, rdx2, rdy2, contact2.rail);
+    reboundEnd = rebound2
+      ? snapToPocket({x: rebound2.x, y: rebound2.y})
+      : snapToPocket({x: contact2.x + rdx2*400, y: contact2.y + rdy2*400});
+  } else {
+    reboundEnd = rebound
+      ? snapToPocket({x: rebound.x, y: rebound.y})
+      : snapToPocket({x: contact.x + rdx*400, y: contact.y + rdy*400});
+  }
+
+  let rebDeg;
+  if (contact.rail === 'top' || contact.rail === 'bottom')
+    rebDeg = Math.abs(Math.atan2(Math.abs(dy), Math.abs(dx)) * DEG);
+  else
+    rebDeg = Math.abs(Math.atan2(Math.abs(dx), Math.abs(dy)) * DEG);
+
+  return {
+    ...sol,
+    θ: departureAngle,
+    contact, rail: contact.rail,
+    contact2,
+    cutDeg,
+    aimFraction: calibratedAimFrac(cutDeg),
+    _reboundEnd: reboundEnd, rebDeg,
+  };
+}
+
+// Find rail contact point for OB banking into pocket off a given rail
+function bankContact(ob, pocket, railName) {
+  const obToRailDist = Math.hypot(
+    railName === 'left' || railName === 'right' ? (railName === 'left' ? TL.left : TL.right) - ob.x : ob.x - ob.x,
+    railName === 'top'  || railName === 'bottom' ? (railName === 'top' ? TL.top : TL.bottom) - ob.y : ob.y - ob.y
+  );
+  const k = kFactor(1, Math.abs(
+    railName === 'top' ? ob.y - TL.top :
+    railName === 'bottom' ? TL.bottom - ob.y :
+    railName === 'left' ? ob.x - TL.left :
+    TL.right - ob.x
+  ));
+  const rails = {
+    top:    {h:true,  v:TL.top},
+    bottom: {h:true,  v:TL.bottom},
+    left:   {h:false, v:TL.left},
+    right:  {h:false, v:TL.right},
+  };
+  const r = rails[railName];
+  let cx, cy, A;
+  if (r.h) {
+    const dp = Math.abs(ob.y - r.v), dt = Math.abs(pocket.y - r.v);
+    if (dp < 2 || dt < 2) return null;
+    if ((ob.y - r.v) * (pocket.y - r.v) <= 0) return null;
+    A = dt / (dp * k);
+    cx = (pocket.x + A * ob.x) / (1 + A); cy = r.v;
+    if (cx < TL.left || cx > TL.right) return null;
+  } else {
+    const dp = Math.abs(ob.x - r.v), dt = Math.abs(pocket.x - r.v);
+    if (dp < 2 || dt < 2) return null;
+    if ((ob.x - r.v) * (pocket.x - r.v) <= 0) return null;
+    A = dt / (dp * k);
+    cy = (pocket.y + A * ob.y) / (1 + A); cx = r.v;
+    if (cy < TL.top || cy > TL.bottom) return null;
+  }
+  return {x:cx, y:cy, rail:railName};
+}
+
+// Compute all valid bank solutions for current OB + pocket
+function allSolutions() {
+  return solutions1Rail();
+}
+
+function solutions1Rail() {
+  const pocket = S.target;
+  return ['top','bottom','left','right']
+    .map(r => bankContact(S.ob, pocket, r))
+    .filter(c => c !== null)
+    .map(contact => buildSol1(contact));
+}
+
+function calibratedAimFrac(cutDeg) {
+  if (cutDeg < 0.01) return 0;
+  const cr = Math.sin(Math.min(cutDeg,90)*RAD);
+  const cz = Math.cos(47*RAD);
+  // Taper corrections from 0 at 0° to full at 25° — prevents cliff-edge jump at low angles
+  // Pure sin(θ) is the correct geometric baseline; corrections build smoothly on top
+  const taper = Math.min(1, cutDeg / 25);
+  let f;
+  if (cutDeg < 47) {
+    const cd = Math.cos(Math.min(cutDeg,90)*RAD) - cz;
+    f = Math.min(1, cr + (cd>0 ? taper * 0.706*Math.pow(cd,0.592) : 0));
+  } else { f = cr; }
+  return Math.min(1, f + taper * 0.064*Math.cos(Math.min(cutDeg,90)*RAD)**2);
+}
+function buildSol1(contact) {
+  const θ = Math.atan2(contact.y - S.ob.y, contact.x - S.ob.x);
+
+  // ── Spin physics stage 1: throw at OB contact ──
+  // Aimer protocol: cutThrow + spinThrow, modulated by speed factor
+  const cbToOb  = {x: S.ob.x - S.cb.x, y: S.ob.y - S.cb.y};
+  const d       = Math.hypot(cbToOb.x, cbToOb.y);
+  let cutDeg = 0, Z_des = 0, Z_aim = 0, aimFraction = 0, squirtFraction = 0;
+  if (d > 1) {
+    const cbToObUnit = {x: cbToOb.x/d, y: cbToOb.y/d};
+    const depUnit    = {x: Math.cos(θ), y: Math.sin(θ)};
+    const dot  = Math.max(-1, Math.min(1, cbToObUnit.x*depUnit.x + cbToObUnit.y*depUnit.y));
+    Z_des  = Math.acos(dot);
+    cutDeg = Z_des * DEG;
+    // ── CALIBRATED CORRECTION (replaces bell curve + throw) ────
+    const COS_ZERO_B = Math.cos(47 * RAD);
+    const cutRaw = Math.sin(Z_des);
+    let baseFrac;
+    if (cutDeg < 47) {
+      const cosDiff = Math.cos(Z_des) - COS_ZERO_B;
+      const aimer_corr = cosDiff > 0 ? 0.706 * Math.pow(cosDiff, 0.592) : 0;
+      baseFrac = Math.min(1, cutRaw + aimer_corr);
+    } else {
+      baseFrac = cutRaw;
+    }
+    // ── CROSS-BANK INDUCED SPIN ─────────────────────────────────
+    // Calibrated from table data: +6% at 27°, +5% at 14°
+    const railCorr = 0.064 * Math.cos(Z_des) * Math.cos(Z_des);
+    baseFrac = Math.min(1, baseFrac + railCorr);
+    Z_aim = Math.max(0, Math.min(Math.PI/2, Math.asin(baseFrac)));
+    // Spin throw (kept)
+    const spinThrow = S.spin * 1.2 * RAD;
+    Z_aim = Math.max(0, Math.min(Math.PI/2, Z_aim + spinThrow));
+    // Squirt: S.spin tips * 0.5°/tip, fades at steep cuts
+    const squirtAngle = S.spin * 0.5 * RAD;
+    const squirtFade  = cutRaw < 0.005 ? 0 : Math.max(0, Math.min(1, 1 - (cutRaw - 0.55) / 0.30));
+    squirtFraction    = Math.max(-0.25, Math.min(0.25, (d/2.25) * Math.tan(squirtAngle) * squirtFade));
+    aimFraction       = Math.max(0, Math.min(1, Math.sin(Z_aim) - squirtFraction));
+  }
+
+  // Ghost ball: where CB center must be to achieve aimFraction contact
+  // aimFraction = sin(cut angle) = lateral offset / (2*BALL_R)
+  // ghost is behind OB along the required approach direction, adjusted for throw
+  const ghost = {
+    x: S.ob.x - 2 * BALL_R * Math.cos(θ),
+    y: S.ob.y - 2 * BALL_R * Math.sin(θ),
+  };
+
+  // ── Spin physics stage 2: OB running english at rail ──
+  // OB arrives at rail with induced side spin from cut.
+  // Running english (spin in direction of travel) opens rebound; reverse closes it.
+  // Induced spin magnitude: spin * cos(cutAngle) * 0.10 rad
+  const inducedRailSpin = S.spin * Math.cos(Z_des) * 0.10;
+
+  const dx = Math.cos(θ), dy = Math.sin(θ);
+  let rebDeg;
+  if (contact.rail === 'top' || contact.rail === 'bottom')
+    rebDeg = Math.abs(Math.atan2(Math.abs(dy), Math.abs(dx)) * DEG);
+  else
+    rebDeg = Math.abs(Math.atan2(Math.abs(dx), Math.abs(dy)) * DEG);
+  // Adjust rebound angle display for induced spin
+  rebDeg = Math.max(0, rebDeg + inducedRailSpin * DEG);
+
+  const cross = cbToOb.x * dy - cbToOb.y * dx;
+  return {
+    contact, contact2:null, θ, ghost,
+    cutDeg, Z_des, Z_aim, aimFraction, squirtFraction,
+    rebDeg, cross, rail:contact.rail,
+    label: RAIL_SHORT[contact.rail]
+  };
+}
+
+function solutions2Rail() {
+  const pocket = S.target;
+  const k = kFactor();
+  const railNames = ['top','bottom','left','right'];
+  const results = [];
+
+  for (const r1 of railNames) {
+    for (const r2 of railNames) {
+      if (r1 === r2) continue;
+
+      // Use virtual image method:
+      // Virtual image of pocket through r2, then find c1 on r1 from OB to virtual image
+      const vImg = virtualImage(pocket, r2, k);
+      if (!vImg) continue;
+      const c1 = bankContact(S.ob, vImg, r1);
+      if (!c1) continue;
+
+      // Now find c2 on r2 from c1 to pocket
+      const c2 = bankContact(c1, pocket, r2);
+      if (!c2) continue;
+
+      // Verify geometry makes sense — c1 and c2 should not be too close
+      if (Math.hypot(c1.x-c2.x, c1.y-c2.y) < 15) continue;
+
+      const θ = Math.atan2(c1.y - S.ob.y, c1.x - S.ob.x);
+      // Build full solution using buildSol1 which handles all spin physics
+      const base = buildSol1(c1);
+      // Override rail/contact with 2-cushion specifics
+      base.contact  = c1;
+      base.contact2 = c2;
+      base.rail2    = r2;
+      base.label    = RAIL_SHORT[r1] + '→' + RAIL_SHORT[r2];
+      results.push(base);
+    }
+  }
+  return results.slice(0, 6); // cap at 6 solutions
+}
+
+// Virtual image of target point T reflected through rail (for 2-cushion)
+function virtualImage(T, railName, k) {
+  const rails = {
+    top:    {h:true,  v:TL.top},
+    bottom: {h:true,  v:TL.bottom},
+    left:   {h:false, v:TL.left},
+    right:  {h:false, v:TL.right},
+  };
+  const r = rails[railName];
+  if (r.h) {
+    const d = T.y - r.v;
+    if (Math.abs(d) < 2) return null;
+    return {x: T.x, y: r.v - d / k};
+  } else {
+    const d = T.x - r.v;
+    if (Math.abs(d) < 2) return null;
+    return {x: r.v - d / k, y: T.y};
+  }
+}
+
+function ballFraction(deg) {
+  for (const f of FRACTIONS) if (deg <= f.maxDeg) return f.label;
+  return 'Edge ball';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AIMER-STYLE BOTTOM DIAGRAM
+// ─────────────────────────────────────────────────────────────────────────────
+function fracStr(hf) {
+  if (hf < 0.005)  return 'full ball';
+  if (hf < 0.125)  return '⅛ ball';
+  if (hf < 0.250)  return '¼ ball';
+  if (hf < 0.375)  return '⅜ ball';
+  if (hf < 0.500)  return '½ ball';
+  if (hf < 0.625)  return '⅝ ball';
+  if (hf < 0.750)  return '¾ ball';
+  if (hf < 0.875)  return '⅞ ball';
+  if (hf < 0.9375) return '15/16 ball';
+  if (hf < 0.9999) return 'thin cut';
+  return 'miss';
+}
+
+function clipToBox(ox,oy,tx,ty,W,H,m){
+  var dx=tx-ox,dy=ty-oy;
+  if(!dx&&!dy) return [tx,ty];
+  var t=1;
+  if(dx<0) t=Math.min(t,(m-ox)/dx); else if(dx>0) t=Math.min(t,(W-m-ox)/dx);
+  if(dy<0) t=Math.min(t,(m-oy)/dy); else if(dy>0) t=Math.min(t,(H-m-oy)/dy);
+  t=Math.max(0,Math.min(1,t));
+  return [ox+t*dx, oy+t*dy];
+}
+
+function drawBot(sol) {
+  var W=460, H=320, r=Rb;
+  var DRAG_RANGE = 224;
+
+  // Use diagram drag if active, else show neutral (0°) until user drags
+  var cutDeg = (S.diagCutDeg !== null && S.diagCutDeg !== undefined) ? S.diagCutDeg : 0;
+  // Ensure at least a sliver so CB is always visible
+  cutDeg = Math.max(0, Math.min(90, cutDeg));
+  var cutRaw = Math.sin(cutDeg * RAD);
+
+  // OB always centered; CB slides left (rh) or right (!rh)
+  var ocx = W/2;
+  var ocy = 148;
+  var laX1 = 8, laX2 = W-8;
+
+  var rh = (S._diagDragRh !== undefined && S.diagCutDeg !== null)
+           ? S._diagDragRh
+           : (sol.cross < 0);
+  // Apply bias to display aim fraction only — doesn't affect table geometry
+  var biasedZ = Math.max(0, Math.min(Math.PI/2, Math.asin(Math.max(0,Math.min(1,cutRaw))) + S.bias * 0.60 * RAD));
+  var aimF = (typeof biasOn !== 'undefined' && biasOn) ? Math.sin(biasedZ) : cutRaw;
+  var ccx  = rh ? ocx - aimF*2*r : ocx + aimF*2*r;
+  var edgeX   = rh ? ccx + r : ccx - r;
+  var clipX   = rh ? edgeX : (ocx - r);
+  var revealW = rh ? Math.max(0,(ocx+r)-edgeX) : Math.max(0,edgeX-(ocx-r));
+  var aimP = Math.round(aimF*100);
+
+  // Ticks and fraction labels ON the centerline — Aimer exact
+  var tickData = [
+    {f:1/8, lh:'⅛', rh:'⅞', s:9,  h:6},
+    {f:2/8, lh:'¼', rh:'¾', s:13, h:9},
+    {f:3/8, lh:'⅜', rh:'⅝', s:9,  h:6},
+    {f:4/8, lh:'½', rh:'½', s:17, h:13},
+    {f:5/8, lh:'⅝', rh:'⅜', s:9,  h:6},
+    {f:6/8, lh:'¾', rh:'¼', s:13, h:9},
+    {f:7/8, lh:'⅞', rh:'⅛', s:9,  h:6}
+  ];
+  var ticks = '';
+  // Edge ticks (0, 8, 16 = 0%, 50%, 100%)
+  [0, 0.5, 1].forEach(function(t) {
+    var tx = (ocx-r) + t*(2*r);
+    var big = (t===0||t===1), half = (t===0.5);
+    var th = big?17:13, sw = big?2.2:1.5, op = big?1.0:0.65;
+    ticks += '<line x1="'+tx+'" y1="'+(ocy-th)+'" x2="'+tx+'" y2="'+(ocy+th)+'" stroke="#7fd0f0" stroke-width="'+sw+'" opacity="'+op+'"/>';
+  });
+  // Percentage labels above
+  ticks += '<text x="'+(ocx-r)+'" y="'+(ocy-r-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">'+(rh?'100%':'0%')+'</text>';
+  ticks += '<text x="'+ocx+'" y="'+(ocy-r-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>';
+  ticks += '<text x="'+(ocx+r)+'" y="'+(ocy-r-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">'+(rh?'0%':'100%')+'</text>';
+  // Fraction ticks + labels on centerline
+  tickData.forEach(function(fd) {
+    var tx = (ocx-r) + fd.f*2*r;
+    var lbl = rh ? fd.rh : fd.lh;
+    var half = fd.f === 0.5;
+    ticks += '<line x1="'+tx+'" y1="'+(ocy-fd.h/2)+'" x2="'+tx+'" y2="'+(ocy+fd.h/2)+'" stroke="#ffffff" stroke-width="'+(half?'2.5':'1.5')+'" opacity="'+(half?'1':'0.6')+'"/>';
+    ticks += '<text x="'+tx+'" y="'+(ocy+fd.h/2+fd.s+2)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="'+fd.s+'" font-weight="'+(fd.s>=13?'700':'400')+'" fill="#ffffff" opacity="'+(half?'1':'0.65')+'">'+lbl+'</text>';
+  });
+
+  var out = '<rect width="460" height="'+H+'" fill="rgba(0,0,0,0.28)"/>';
+  out += '<defs><clipPath id="revClip"><rect x="'+clipX+'" y="'+(ocy-r)+'" width="'+revealW+'" height="'+(2*r)+'"/></clipPath></defs>';
+
+  // OB — Aimer exact
+  out += '<circle cx="'+ocx+'" cy="'+ocy+'" r="'+r+'" fill="url(#OGdB)" stroke="#2a0606" stroke-width="1.5"/>';
+  out += '<circle cx="'+ocx+'" cy="'+ocy+'" r="'+r+'" fill="url(#OGB)" stroke="none" clip-path="url(#revClip)"/>';
+  out += '<circle cx="'+ocx+'" cy="'+ocy+'" r="'+r+'" fill="none" stroke="#8a1818" stroke-width="1.5" clip-path="url(#revClip)"/>';
+
+  // Line A — Aimer exact
+  out += '<line x1="'+laX1+'" y1="'+ocy+'" x2="'+laX2+'" y2="'+ocy+'" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round"/>';
+  out += '<text x="'+(laX1-8)+'" y="'+(ocy+5)+'" text-anchor="end" font-family="Lato,sans-serif" font-size="15" font-weight="900" fill="#b0e8ff">A</text>';
+  out += ticks;
+
+  // CB — Aimer exact
+  out += '<circle cx="'+ccx+'" cy="'+ocy+'" r="'+r+'" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5" opacity="'+ghostOpacity+'"/>';
+  out += '<line x1="'+(ccx-r*0.74)+'" y1="'+ocy+'" x2="'+(ccx+r*0.74)+'" y2="'+ocy+'" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>';
+  out += '<line x1="'+ccx+'" y1="'+(ocy-r*0.74)+'" x2="'+ccx+'" y2="'+(ocy+r*0.74)+'" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>';
+  // Tip dot: moves horizontally with side spin, vertically with vert spin
+  var spinDir = rh ? 1 : -1;
+  var tipX = ccx + spinDir * (S.spin/4) * 0.62 * r;
+  var tipY = ocy - (S.vert/4) * 0.62 * r;
+  out += '<circle cx="'+tipX+'" cy="'+tipY+'" r="'+(r*0.10)+'" fill="#000" opacity="0.85"/>';
+
+  // Edge marker + badge — Aimer exact
+  var showCut = S.diagCutDeg !== null && S.diagCutDeg > 0.5;
+  var showMarker = true;  // always show lines
+  if (showMarker) {
+    out += '<line x1="'+edgeX+'" y1="'+(ocy-r+6)+'" x2="'+edgeX+'" y2="'+(ocy+r-6)+'" stroke="#e87030" stroke-width="4" stroke-linecap="round" stroke-dasharray="6,4"/>';
+    var lblX = Math.max(72, Math.min(edgeX, W-76));
+    out += '<text x="'+lblX+'" y="'+(ocy-r-8)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080">inside edge</text>';
+    var bx = Math.max(44, Math.min(edgeX, W-44));
+  }
+  if (!showCut) {
+    var hintX = rh ? ocx-r-70 : ocx+r+24;
+    var anchor = rh ? 'end' : 'start';
+    out += '<text x="'+hintX+'" y="'+(ocy+5)+'" text-anchor="'+anchor+'" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)">'+(rh?'◄ Drag to begin':'Drag ▶ to begin')+'</text>';
+  }
+
+  // Left — Ball Fraction
+  // Center — Aim Point
+  // Right — Cut Angle badge
+
+  // Gold dashed ring on CB
+  if (showMarker) {
+    out += '<circle cx="'+ccx+'" cy="'+ocy+'" r="'+r+'" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="'+ghostOpacity+'"/>';
+  }
+  // Contact Point line (blue) — midpoint between OB and CB centers, drawn last
+  if (showMarker) {
+    var _cpX = (ocx + ccx) / 2;
+    out += '<text x="'+_cpX+'" y="'+(ocy-r-36)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#7fd0f0">Contact Point</text>';
+    out += '<line x1="'+_cpX+'" y1="'+(ocy-r+4)+'" x2="'+_cpX+'" y2="'+(ocy+r-4)+'" stroke="#7fd0f0" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round"/>';
+  }
+  if (S.spin !== 0) out += '<text x="'+(W-8)+'" y="'+(H-8)+'" text-anchor="end" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#e870b0">'+spinLabels[String(S.spin)]+'</text>';
+
+
+  // Vernier aim buttons
+  out += '<g onclick="vernierAim(-1)" style="cursor:pointer;touch-action:manipulation;"><rect x="8" y="'+(H-52)+'" width="44" height="44" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><text x="30" y="'+(H-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="22" font-weight="900" fill="rgba(255,255,255,0.9)">&#9664;</text></g>';
+  out += '<g onclick="vernierAim(1)" style="cursor:pointer;touch-action:manipulation;"><rect x="58" y="'+(H-52)+'" width="44" height="44" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><text x="80" y="'+(H-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="22" font-weight="900" fill="rgba(255,255,255,0.9)">&#9654;</text></g>';
+
+  // Fraction tick labels — Aimer style: uniform 18px, weight 700, opacity 0.82
+  var tkLabels = rh ? ['\u215e','\u00be','\u215d','\u00bd','\u215c','\u00bc','\u215b'] : ['\u215b','\u00bc','\u215c','\u00bd','\u215d','\u00be','\u215e'];
+  for (var ti=0; ti<7; ti++) {
+    var tf = (ti+1)/8;
+    var tx = (ocx-r) + tf*2*r;
+    out += '<text x="'+tx+'" y="'+(ocy+r+26)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">'+tkLabels[ti]+'</text>';
+  }
+
+  // OPACITY buttons — top right
+  out += '<g onclick="ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;"><rect x="314" y="'+(H-36)+'" width="32" height="24" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><text x="330" y="'+(H-16)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="15" font-weight="900" fill="rgba(255,255,255,0.7)">−</text></g>';
+  out += '<text x="369" y="'+(H-18)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>';
+  out += '<g onclick="ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;"><rect x="402" y="'+(H-36)+'" width="32" height="24" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><text x="418" y="'+(H-16)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="15" font-weight="900" fill="rgba(255,255,255,0.7)">+</text></g>';
+  document.getElementById('botsvg').innerHTML = out;
+}
+
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function toDiamond(x,y,rail){return(rail==='top'||rail==='bottom')?((x-TL.left)/DU).toFixed(2):((y-TL.top)/DU).toFixed(2);}
+function ballFraction(deg){for(const f of FRACTIONS)if(deg<=f.maxDeg)return f.label;return 'Edge ball';}
+const $ = id => document.getElementById(id);
+function sL(id,x1,y1,x2,y2){const e=$(id);if(!e)return;e.setAttribute('x1',x1);e.setAttribute('y1',y1);e.setAttribute('x2',x2);e.setAttribute('y2',y2);}
+function sC(id,cx,cy){const e=$(id);if(!e)return;e.setAttribute('cx',cx);e.setAttribute('cy',cy);}
+function sV(id,v){const e=$(id);if(e)e.style.opacity=v?'1':'0';}
+function sT(id,v){const e=$(id);if(e)e.textContent=v;}
+function sA(id,attr,v){const e=$(id);if(e)e.setAttribute(attr,v);}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────────────────────────────────────
+// Apply spin to rebound direction — used everywhere _reboundEnd is computed
+function applySpinToRebound(rdx, rdy, rail, cutDeg, side) {
+  const cutRad = Math.min(cutDeg||0, 90) * Math.PI/180;
+  const induced = Math.sin(cutRad) * Math.cos(cutRad) * 0.20 * (side||1);
+  const alongSign = (rail==='top'||rail==='bottom') ? Math.sign(rdx) : Math.sign(rdy);
+  const totalSpin = induced + S.spin * 0.08 * alongSign;
+  const c = Math.cos(totalSpin), s = Math.sin(totalSpin);
+  const nx = rdx*c - rdy*s, ny = rdx*s + rdy*c;
+  const len = Math.hypot(nx, ny);
+  if (len < 1e-9) return {dx: rdx, dy: rdy};  // safety: return original if degenerate
+  return {dx: nx/len, dy: ny/len};
+}
+function render() {
+  const {ob, cb} = S;
+
+  // Move balls
+  sC('ob',        ob.x,     ob.y);
+  sC('ob-shadow', ob.x+1.5, ob.y+2);
+  sC('ob-hi',     ob.x-3.5, ob.y-3.5);
+  sC('cb',        cb.x,     cb.y);
+  sC('cb-shadow', cb.x+1.5, cb.y+2);
+  sC('cb-hi',     cb.x-3.5, cb.y-3.5);
+  sC('cb-dot',    cb.x,     cb.y);
+
+  // Move second object ball (visual reference)
+  sC('ob2',        S.ob2.x,     S.ob2.y);
+  sC('ob2-shadow', S.ob2.x+1.5, S.ob2.y+2);
+  sC('ob2-hi',     S.ob2.x-3.5, S.ob2.y-3.5);
+
+  // Hide all dynamic lines
+  ['ob-path','bk-path','bk-path2','contact-dot','contact-dot2','ghost-ball'].forEach(id=>sV(id,false));
+  ['aim-cut-val','aim-cut-lbl','aim-frac-val','aim-frac-lbl'].forEach(id=>sV(id,false));
+
+  const sols = allSolutions();
+  if (sols.length === 0) {
+    sT('ro-pocket', '—');
+    ['ro-cut','ro-frac','ro-aim','ro-dist','ro-throw','ro-contact','ro-reb'].forEach(id=>sT(id,'—'));
+    $('ro-contact2-row').style.display = 'none';
+    document.getElementById('botsvg').innerHTML = '<rect width="460" height="320" fill="rgba(0,0,0,0.28)"/><text x="230" y="115" text-anchor="middle" font-family="Lato,sans-serif" font-size="13" fill="rgba(255,255,255,0.25)">No valid bank</text>';
+    return;
+  }
+  if (S.activeSol >= sols.length) S.activeSol = 0;
+  let baseSol = sols[S.activeSol];
+  const sol = computeDiagShot(baseSol);
+  const pocket = S.target;
+
+  // If a shot was loaded with a stated cut angle, override the OB departure direction
+  if (S.diagCutDeg !== null && S.diagCutDeg !== undefined && S._diagDragRh !== undefined) {
+    const cbToObAngle = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x);
+    const side = S._diagDragRh ? 1 : -1;
+    const deptAngle = cbToObAngle + side * S.diagCutDeg * RAD;
+    const ddx = Math.cos(deptAngle), ddy = Math.sin(deptAngle);
+    // Find rail intersection
+    let tMin = 9999, hitRail = null;
+    if (ddy < 0) { const t=(TL.top   -S.ob.y)/ddy; if(t>0&&t<tMin){tMin=t;hitRail='top';} }
+    if (ddy > 0) { const t=(TL.bottom-S.ob.y)/ddy; if(t>0&&t<tMin){tMin=t;hitRail='bottom';} }
+    if (ddx < 0) { const t=(TL.left  -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='left';} }
+    if (ddx > 0) { const t=(TL.right -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='right';} }
+    if (hitRail && tMin < 9999) {
+      sol.contact = { x: S.ob.x + ddx*tMin, y: S.ob.y + ddy*tMin, rail: hitRail };
+      sol.θ = deptAngle;
+      // Compute actual rebound from first contact
+      const k1 = kFactor(1, Math.abs(hitRail==='top'||hitRail==='bottom' ? S.ob.y-(hitRail==='top'?TL.top:TL.bottom) : S.ob.x-(hitRail==='left'?TL.left:TL.right)));
+      const rb = reboundDir(ddx, ddy, hitRail, k1);
+      if (S.cushions === 2) {
+        // First rebound hits second rail
+        const rebHit = rayHit(sol.contact.x, sol.contact.y, rb.dx, rb.dy, hitRail);
+        if (rebHit) {
+          sol.contact2 = {x: rebHit.x, y: rebHit.y, rail: rebHit.rail};
+          const k2 = kFactor(2, Math.hypot(sol.contact2.x - sol.contact.x, sol.contact2.y - sol.contact.y));
+          const rb2 = reboundDir(rb.dx, rb.dy, rebHit.rail, k2);
+          const rebHit2 = rayHit(sol.contact2.x, sol.contact2.y, rb2.dx, rb2.dy, rebHit.rail);
+          sol._reboundEnd = snapToPocket(rebHit2 ? {x:rebHit2.x, y:rebHit2.y} : {x:sol.contact2.x+rb2.dx*400, y:sol.contact2.y+rb2.dy*400});
+        } else {
+          sol.contact2 = null;
+          sol._reboundEnd = snapToPocket({x:sol.contact.x+rb.dx*400, y:sol.contact.y+rb.dy*400});
+        }
+      } else {
+        sol.contact2 = null;
+        const rebHit = rayHit(sol.contact.x, sol.contact.y, rb.dx, rb.dy, hitRail);
+        sol._reboundEnd = snapToPocket(rebHit ? {x:rebHit.x, y:rebHit.y} : {x:sol.contact.x+rb.dx*400, y:sol.contact.y+rb.dy*400});
+      }
+      // Update sol fields so readouts and diagram use the stated angle
+      sol.cutDeg = S.diagCutDeg;
+      sol.Z_des  = S.diagCutDeg * RAD;
+      sol.aimFraction = calibratedAimFrac(S.diagCutDeg);
+      sol.diagFraction = sol.aimFraction;
+      sol.Z_aim  = sol.Z_des;
+    }
+  }
+
+  // Apply bias: shift contact point along rail AFTER all overrides
+  if (typeof biasOn !== 'undefined' && biasOn && S.bias !== 0 && sol.contact) {
+    const DU_px = (TL.right - TL.left) / 8;
+    const shift = (S.bias / 6) * DU_px;
+    const rail = sol.contact.rail;
+    if (rail === 'top' || rail === 'bottom') {
+      const dir = (pocket.x > S.ob.x) ? 1 : -1;
+      const nx = Math.max(TL.left, Math.min(TL.right, sol.contact.x + shift * dir));
+      sol.contact = { ...sol.contact, x: nx };
+    } else {
+      const dir = (pocket.y > S.ob.y) ? 1 : -1;
+      const ny = Math.max(TL.top, Math.min(TL.bottom, sol.contact.y + shift * dir));
+      sol.contact = { ...sol.contact, y: ny };
+    }
+    const bdx = Math.cos(sol.θ), bdy = Math.sin(sol.θ);
+    const bk = kFactor(1, Math.hypot(sol.contact.x-S.ob.x, sol.contact.y-S.ob.y));
+    const brb = reboundDir(bdx, bdy, sol.contact.rail, bk);
+    const bHit = rayHit(sol.contact.x, sol.contact.y, brb.dx, brb.dy, sol.contact.rail);
+    sol._reboundEnd = snapToPocket(bHit ? {x:bHit.x,y:bHit.y} : {x:sol.contact.x+brb.dx*400,y:sol.contact.y+brb.dy*400});
+    sol.contact2 = null;
+  }
+
+  // ── TABLE GRAPHICS ──
+
+  // Ghost ball — always shown, starts congruent with OB at 0°
+  const _cbToObAngle = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x);
+  const _ghostAngle = _cbToObAngle + ((S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? (S._diagDragRh ? 1 : -1) * (sol.θ - _cbToObAngle) : 0);
+  const _ghostOffset = (S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? 2 * BALL_R : 0;
+  const gx = S.ob.x - _ghostOffset * Math.cos(_ghostAngle);
+  const gy = S.ob.y - _ghostOffset * Math.sin(_ghostAngle);
+  const _gb = $('ghost-ball');
+  if (_gb) {
+    _gb.setAttribute('fill', 'rgba(240,223,112,0.15)');
+    _gb.setAttribute('stroke', '#f0df70');
+    _gb.setAttribute('stroke-width', '2');
+    _gb.setAttribute('stroke-dasharray', '4,3');
+    _gb.setAttribute('r', String(BALL_R));
+    sC('ghost-ball', gx, gy);
+    sV('ghost-ball', true);
+  }
+  // CB → Ghost gold dashed line
+  const _cgl = $('cb-ghost-line');
+  if (_cgl) {
+    _cgl.setAttribute('x1', S.cb.x); _cgl.setAttribute('y1', S.cb.y);
+    _cgl.setAttribute('x2', gx);     _cgl.setAttribute('y2', gy);
+    _cgl.setAttribute('opacity', '1');
+  }
+
+  // OB path: OB → rail contact
+  const startOff = BALL_R + 2;
+  const obDx = sol.contact.x - ob.x, obDy = sol.contact.y - ob.y;
+  const obLen = Math.hypot(obDx, obDy);
+  if (obLen > 1) {
+    const nox = obDx/obLen, noy = obDy/obLen;
+    sL('ob-path', ob.x + nox*startOff, ob.y + noy*startOff, sol.contact.x, sol.contact.y);
+    sV('ob-path', true);
+  }
+
+  // ── SPIN + BIAS: rotate _reboundEnd around contact point ──
+  if (sol.contact && sol._reboundEnd) {
+    const cx = sol.contact.x, cy = sol.contact.y;
+    const ex = sol._reboundEnd.x - cx, ey = sol._reboundEnd.y - cy;
+    const rail = sol.contact.rail;
+    const along = (rail==='top'||rail==='bottom') ? Math.sign(ex) : Math.sign(ey);
+    const speedFactor = 1.2 - S.speed;
+    const cutFade = Math.cos(Math.min(S.diagCutDeg||0, 90) * Math.PI/180);
+    const spinAngle = S.spin * 0.04 * speedFactor * along * cutFade;
+    const biasVal = (typeof biasOn!=='undefined' && biasOn) ? S.bias : 0;
+    const biasAngle = biasVal * 0.0567 * cutFade;
+    const totalAngle = spinAngle + biasAngle;
+    if (Math.abs(totalAngle) > 0.001) {
+      const c = Math.cos(totalAngle), s = Math.sin(totalAngle);
+      const nx = ex*c - ey*s, ny = ex*s + ey*c;
+      const len = Math.hypot(nx, ny);
+      // Cast ray from contact in rotated direction — always lands on a rail
+      const hit = rayHit(cx, cy, nx/len, ny/len, rail);
+      sol._reboundEnd = snapToPocket(hit ? {x:hit.x, y:hit.y} : {x:cx+nx/len*400, y:cy+ny/len*400});
+    }
+  }
+
+  // Bank path: contact → rebound end (physics-computed) or pocket fallback
+  const bkTarget = sol._reboundEnd || pocket;
+  if (sol.contact2) {
+    sL('bk-path',  sol.contact.x, sol.contact.y, sol.contact2.x, sol.contact2.y);
+    sL('bk-path2', sol.contact2.x, sol.contact2.y, bkTarget.x, bkTarget.y);
+    sV('bk-path',  true);
+    sV('bk-path2', true);
+    sC('contact-dot2', sol.contact2.x, sol.contact2.y);
+    sV('contact-dot2', true);
+  } else {
+    sL('bk-path', sol.contact.x, sol.contact.y, bkTarget.x, bkTarget.y);
+    sV('bk-path', true);
+    sV('bk-path2', false);
+    sV('contact-dot2', false);
+  }
+
+  // Contact dot
+  sC('contact-dot', sol.contact.x, sol.contact.y);
+  sV('contact-dot', true);
+
+  // ── AIMING DIAGRAM ──
+  try {
+    drawBot(sol);
+  } catch(e) {
+    console.error('drawBot error:', e);
+  }
+  drawBankerBounce(sol);
+
+  // Pocket display
+  const _activePocket = S.target ? Object.entries(POCKETS).find(([k,p]) => !isNaN(k) && Math.hypot(p.x-S.target.x,p.y-S.target.y)<5) : null;
+  sT('ro-pocket', _activePocket ? _activePocket[1].num + ' — ' + _activePocket[1].label : '—');
+
+  // ── READOUTS ──
+  const displayCutDeg = Math.abs(S.diagCutDeg !== null ? S.diagCutDeg : sol.cutDeg) < 0.5 ? 0 : (S.diagCutDeg !== null ? S.diagCutDeg : sol.cutDeg);
+  // Pure geometric fraction — matches the ball diagram exactly (sin of cut angle)
+  // calibratedAimFrac is for banking aim correction only, not for display
+  const displayGeoF   = displayCutDeg < 0.5 ? 0 : Math.sin(Math.min(displayCutDeg, 90) * RAD);
+  const _bdir = displayCutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
+  sT('ro-cut', displayCutDeg < 0.5 ? '0°' : displayCutDeg.toFixed(1) + '°' + _bdir);
+  sT('ro-frac', fracStr(displayGeoF));
+  sT('ro-aim',  Math.round(displayGeoF * 100) + '%' + _bdir);
+  // Top readout bar — always update
+  const _raim = $('r-aim'); if(_raim) _raim.textContent = Math.round(displayGeoF*100)+'%'+_bdir;
+  const _rfrc = $('r-frc'); if(_rfrc) _rfrc.textContent = fracStr(displayGeoF);
+  const _rang = $('r-ang'); if(_rang) _rang.textContent = (displayCutDeg<0.5?'0':displayCutDeg.toFixed(1))+'°'+_bdir;
+  const _svgD = Math.hypot(S.ob.x-S.cb.x,S.ob.y-S.cb.y);
+  const _dft  = _svgD/400*S.tableSize;
+  const _rdist = $('r-dist'); if(_rdist) _rdist.textContent = _dft<1?Math.round(_dft*12)+'"':_dft.toFixed(1)+"'";
+  const _rcp = $('r-cp'); if(_rcp) _rcp.textContent = (displayCutDeg<0.5?'0':Math.round(displayGeoF*50))+'%'+_bdir;
+
+  // CB→OB distance
+  const svgDist = Math.hypot(S.ob.x - S.cb.x, S.ob.y - S.cb.y);
+  const distFt  = svgDist / 400 * S.tableSize;
+  const distEl  = $('ro-dist');
+  if (distEl) {
+    if (S.metric) {
+      const m = distFt * 0.3048;
+      distEl.textContent = m < 0.3 ? (m*100).toFixed(0)+'cm' : m.toFixed(2)+'m';
+    } else {
+      distEl.textContent = distFt < 1 ? Math.round(distFt*12)+'"' : distFt.toFixed(1)+"'";
+    }
+  }
+
+  const geoFrac   = Math.sin(sol.Z_des !== undefined ? sol.Z_des : displayCutDeg * RAD);
+  const throwDiff = Math.round(calibratedAimFrac(displayCutDeg) * 100) - Math.round(geoFrac * 100);
+  if (Math.abs(throwDiff) < 1 || sol.cutDeg < 1) {
+    sT('ro-throw', 'none');
+  } else {
+    sT('ro-throw', (throwDiff > 0 ? '+' : '') + throwDiff + '% aim ' + (throwDiff > 0 ? 'thinner' : 'fuller'));
+  }
+
+  sT('ro-contact', RAIL_SHORT[sol.rail] + ' ◆ ' + toDiamond(sol.contact.x, sol.contact.y, sol.rail));
+  sT('ro-reb',     sol.rebDeg.toFixed(1) + '° from rail');
+  
+
+  const row2 = $('ro-contact2-row');
+  if (sol.contact2) {
+    row2.style.display = 'flex';
+    sT('ro-contact2', RAIL_SHORT[sol.rail2] + ' ◆ ' + toDiamond(sol.contact2.x, sol.contact2.y, sol.rail2));
+  } else {
+    row2.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DIAGRAM DRAG (botsvg CB)
+// ─────────────────────────────────────────────────────────────────────────────
+const botsvg = document.getElementById('botsvg');
+
+function botSvgPt(e) {
+  const pt = botsvg.createSVGPoint();
+  const src = e.touches ? e.touches[0] : e;
+  pt.x = src.clientX; pt.y = src.clientY;
+  return pt.matrixTransform(botsvg.getScreenCTM().inverse());
+}
+
+botsvg.addEventListener('pointerdown', e => {
+  if (lockBalls) return;  // locked — let touch pass through for scroll/pinch
+  const _p = botSvgPt(e);
+  if (_p.y < 66 || _p.y > 230) return;  // dead zone above/below ball
+  e.preventDefault();
+  diagDrag = true;
+  botsvg.setPointerCapture(e.pointerId);
+  updateDiagCut(_p.x);
+  render();
+});
+botsvg.addEventListener('pointermove', e => {
+  if (!diagDrag) return; e.preventDefault();
+  updateDiagCut(botSvgPt(e).x);
+  render();
+});
+
+function updateDiagCut(svgX) {
+  const ocx = 230;
+  const DRAG_RANGE = 224;
+  const raw     = svgX - ocx;
+  const clamped = Math.max(-DRAG_RANGE, Math.min(DRAG_RANGE, raw));
+  // Clamp to 89° max so CB never goes past 100% on either side
+  S.diagCutDeg  = Math.min(90, Math.abs(clamped) / DRAG_RANGE * 90);
+  S._diagDragRh = (clamped < 0);
+}
+botsvg.addEventListener('pointerup',     () => { diagDrag = false; });
+botsvg.addEventListener('pointercancel', () => { diagDrag = false; });
+
+function renderDiagram() {
+  // Full render so the table ghost ball stays in sync with diagram CB position
+  render();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TABLE DRAG (tbl SVG)
+// ─────────────────────────────────────────────────────────────────────────────
+const svg = $('tbl');
+
+function svgPt(e) {
+  const src = e.touches ? e.touches[0] : e;
+  const svgEl = $('tbl');
+  const rect = svgEl.getBoundingClientRect();
+  const vb = svgEl.viewBox.baseVal;
+  return {
+    x: (src.clientX - rect.left) / rect.width  * vb.width,
+    y: (src.clientY - rect.top)  / rect.height * vb.height
+  };
+}
+function clampBall(x,y){return{x:Math.max(TL.left+BALL_R,Math.min(TL.right-BALL_R,x)),y:Math.max(TL.top+BALL_R,Math.min(TL.bottom-BALL_R,y))};}
+
+function clampTable(x,y){return{x:Math.max(TL.left,Math.min(TL.right,x)),y:Math.max(TL.top,Math.min(TL.bottom,y))};}
+
+svg.addEventListener('pointerdown', e => {
+  const p = svgPt(e);
+  // Calibration tap mode — always allow
+  if (calMode && calPhase === 'tap') { calTapActual(p); return; }
+  e.preventDefault();
+  const {ob, cb, ob2} = S;
+  // Ball dragging — only when TABLE unlocked
+  if (!lockTable) {
+    if (Math.hypot(p.x-ob.x,  p.y-ob.y)  < 36) { drag='ob';  svg.setPointerCapture(e.pointerId); return; }
+    if (Math.hypot(p.x-cb.x,  p.y-cb.y)  < 36) { drag='cb';  svg.setPointerCapture(e.pointerId); return; }
+    if (Math.hypot(p.x-ob2.x, p.y-ob2.y) < 36) { drag='ob2'; svg.setPointerCapture(e.pointerId); return; }
+  }
+  // Pocket selection — always allowed (tap nearest pocket)
+  let bestKey = null, bestD = Infinity;
+  for (const [k, pocket] of Object.entries(POCKETS)) {
+    const d = Math.hypot(p.x - pocket.x, p.y - pocket.y);
+    if (d < bestD) { bestD = d; bestKey = k; }
+  }
+  if (bestKey && bestD < 60) {
+    selectPocket(bestKey);
+    sV('phl-' + bestKey, true);
+    setTimeout(() => sV('phl-' + bestKey, false), 400);
+  }
+});
+svg.addEventListener('pointermove', e => {
+  if (!drag) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const p = svgPt(e);
+  if (drag==='ob') {
+    const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
+    S.ob={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
+    if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'ob');
+  } else if (drag==='cb') {
+    const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
+    S.cb={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
+    if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'cb');
+  } else if (drag==='ob2') { S.ob2=clampBall(p.x,p.y); }
+  render();
+});
+svg.addEventListener('pointerup',    () => { drag=null; });
+svg.addEventListener('pointercancel',() => { drag=null; });
+
+// Keyboard controls:
+// Left/Right → side spin  (sl-spn, -4..4)
+// Up/Down    → vertical english (sl-vert, -4..4)
+// [ / ]      → speed (sl-spd, 0..100, step 10)
+document.addEventListener('keydown', e => {
+  let handled = false;
+  const spd = $('sl-spd');
+  // Arrows move CB in the aiming diagram (like Aimer)
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    const oneDeg = Math.asin(0.01) * (180/Math.PI);
+    const cur = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+    const rh  = S._diagDragRh !== undefined ? S._diagDragRh : false;
+    let signed = rh ? -cur : cur;
+    signed += e.key === 'ArrowRight' ? oneDeg : -oneDeg;
+    signed = Math.max(-90, Math.min(90, signed));
+    if (Math.abs(signed) < 0.001) signed = e.key === 'ArrowRight' ? oneDeg : -oneDeg;
+    S._diagDragRh = signed < 0;
+    S.diagCutDeg  = Math.abs(signed);
+    diagDrag = true;
+    handled = true;
+  }
+  if (e.key === '[') { spd.value = Math.max(  0, parseInt(spd.value) - 10); handled = true; }
+  if (e.key === ']') { spd.value = Math.min(100, parseInt(spd.value) + 10); handled = true; }
+  if (!handled) return;
+  e.preventDefault();
+  onSliders();
+  render();
+  diagDrag = false;
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONTROLS
+// ─────────────────────────────────────────────────────────────────────────────
+function toggleCushions() {
+  S.cushions = S.cushions === 1 ? 2 : 1;
+  S.activeSol = 0;
+  $('btn-cushion').textContent = S.cushions === 1 ? '1 CUSHION' : '2 CUSHIONS';
+  render();
+}
+
+let mapOn = true;
+let snapOn = true;
+let snapLabelTimer = null;
+let SNAP_POINTS = [];
+const SNAP_RADIUS = 14;
+let lockTable = true;
+let lockBalls = true;
+let lockSliders = true;
+let biasOn = false;
+function toggleBias(){
+  biasOn = !biasOn;
+  const btn = document.getElementById('ep-bias');
+  if(btn){ btn.classList.toggle('on', biasOn); }
+  const bd = document.getElementById('bias-sliders');
+  if(bd) bd.style.opacity = biasOn ? '1' : '0.35';
+  onSliders();
+}
+let ghostOn = true;
+let bounceOn = false;
+
+function toggleGhost() {
+  ghostOn = !ghostOn;
+  const btn = $('btn-ghost');
+  
+  render();
+}
+function toggleMap() {
+  mapOn = !mapOn;
+  [$('map-layer'), $('map2-layer')].forEach(l => {
+    if (l) { l.style.transition='opacity 0.2s'; l.style.opacity = mapOn ? '1' : '0'; }
+  });
+  const mb = document.getElementById('btn-map');
+  if (mb) mb.classList.toggle('dim', !mapOn);
+}
+
+function toggleBounce() {
+  bounceOn = !bounceOn;
+  const wrap  = $('bounce-wrap');
+  const pills = $('bounce-pills');
+  const nums  = $('bounce-nums');
+  if (wrap)  wrap.style.display  = bounceOn ? 'block' : 'none';
+  if (nums)  nums.style.display  = bounceOn ? 'block' : 'none';
+  if (pills) pills.innerHTML = '';
+  render();
+}
+
+function angleFromRail(dx, dy, rail) {
+  let deg;
+  if (rail === 'top' || rail === 'bottom')
+    deg = Math.abs(Math.atan2(Math.abs(dy), Math.abs(dx)) * DEG);
+  else
+    deg = Math.abs(Math.atan2(Math.abs(dx), Math.abs(dy)) * DEG);
+  return deg.toFixed(1);
+}
+
+let bounceRailIdx = 0;  // 0 = 1st rail, 1 = 2nd rail
+
+function buildBouncePills(sol) {
+  const el = $('bounce-pills');
+  if (!el) return;
+  if (!bounceOn) { el.innerHTML = ''; return; }
+  const rails = [];
+  if (sol && sol.contact)  rails.push({label: RAIL_SHORT[sol.contact.rail] + ' (1ST)', idx: 0});
+  if (sol && sol.contact2) rails.push({label: RAIL_SHORT[sol.contact2.rail] + ' (2ND)', idx: 1});
+  if (rails.length < 2) bounceRailIdx = 0;
+  if (rails.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = rails.map(r =>
+    `<button class="bpill${bounceRailIdx===r.idx?' active':''}" onclick="bounceRailIdx=${r.idx};render()">${r.label}</button>`
+  ).join('');
+}
+
+function drawBankerBounce(sol) {
+  const svg = $('bounce-svg');
+  buildBouncePills(sol);
+  if (!svg || !bounceOn) return;
+
+  const W=460, H=150, TW=460;
+  svg.setAttribute('viewBox', `0 0 ${TW} ${H}`);
+
+  if (!sol || !sol.contact) {
+    svg.innerHTML = `<rect width="${TW}" height="${H}" fill="rgba(0,0,0,0.35)"/>` +
+      `<text x="${TW/2}" y="${H/2+5}" text-anchor="middle" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.25)">Aim to see bounce</text>`;
+    return;
+  }
+
+  // Pick which rail to show
+  const useSecond = bounceRailIdx === 1 && sol.contact2;
+  const contact   = useSecond ? sol.contact2 : sol.contact;
+  const rail = contact.rail;
+  const horiz = (rail === 'top' || rail === 'bottom');
+  const cy = H - 16;
+  const cx = TW / 2;
+  const RAY = 115;
+
+  // Incoming direction
+  const prevPt = useSecond ? sol.contact : S.ob;
+  const rawDx = contact.x - prevPt.x, rawDy = contact.y - prevPt.y;
+  const rawLen = Math.hypot(rawDx, rawDy) || 1;
+  const inDx = rawDx/rawLen, inDy = rawDy/rawLen;
+
+  // Rebound direction from _reboundEnd or contact2
+  let rbDx, rbDy;
+  const nextPt = useSecond ? sol._reboundEnd : (sol.contact2 || sol._reboundEnd);
+  if (nextPt) {
+    const rDx = nextPt.x - contact.x, rDy = nextPt.y - contact.y;
+    const rLen = Math.hypot(rDx, rDy) || 1;
+    rbDx = rDx/rLen; rbDy = rDy/rLen;
+  } else {
+    rbDx = horiz ? inDx : -inDx;
+    rbDy = horiz ? -inDy : inDy;
+  }
+
+  // Transform to diagram space
+  let inAlong, inInto, rbAlong, rbInto;
+  if (horiz) {
+    inAlong=inDx; inInto=inDy; rbAlong=rbDx; rbInto=rbDy;
+  } else {
+    const sign = (rail==='right') ? 1 : -1;
+    inAlong=inDy*sign; inInto=inDx; rbAlong=rbDy*sign; rbInto=rbDx;
+  }
+  if (inInto < 0) { inInto=-inInto; inAlong=-inAlong; }
+  if (rbInto > 0) { rbInto=-rbInto; rbAlong=-rbAlong; }
+  if (!horiz)     { inAlong=-inAlong; rbAlong=-rbAlong; }
+
+  const inLen=Math.hypot(inAlong,inInto), rbLen=Math.hypot(rbAlong,rbInto);
+  const inNx=inAlong/inLen, inNy=inInto/inLen;
+  const rbNx=rbAlong/rbLen, rbNy=rbInto/rbLen;
+
+  const ax=cx-inNx*RAY, ay=cy-inNy*RAY;
+  const rx=cx+rbNx*RAY, ry=cy+rbNy*RAY;
+
+  const inDeg  = angleFromRail(inDx, inDy, rail);
+  const outDeg = angleFromRail(rbDx, rbDy, rail);
+  // 2nd rail: IN/OUT labels are reversed due to geometry flip — swap them
+  const labelInDeg  = useSecond ? outDeg : inDeg;
+  const labelOutDeg = useSecond ? inDeg  : outDeg;
+
+  const RAIL_LONG = {top:'TOP RAIL',bottom:'BTM RAIL',left:'LFT RAIL',right:'RGT RAIL'};
+  const inOnRight = ax >= TW/2;
+  const inX = inOnRight ? TW-8 : 8;
+  const outX = inOnRight ? 8 : TW-8;
+  const inAnch  = inOnRight ? 'end' : 'start';
+  const outAnch = inOnRight ? 'start' : 'end';
+
+  // Colors match table diagram paths exactly
+  // ob-path=#7dd3fc, bk-path=#4ade80, bk-path2=#a78bfa
+  const inCol  = useSecond ? '#4ade80' : '#7dd3fc';
+  const outCol = useSecond ? '#a78bfa' : '#4ade80';
+
+  let out = `<rect width="${TW}" height="${H}" fill="rgba(0,0,0,0.35)"/>`;
+  out += `<rect x="0" y="0" width="${TW}" height="${cy}" fill="rgba(26,80,40,0.5)"/>`;
+  out += `<rect x="0" y="${cy}" width="${TW}" height="${H-cy}" fill="#1a6830"/>`;
+  out += `<circle cx="${cx}" cy="${cy+8}" r="10" fill="none" stroke="#ffffff" stroke-width="2.5"/>`;
+  out += `<circle cx="${cx}" cy="${cy+8}" r="3" fill="#ffffff"/>`;
+  out += `<line x1="${ax}" y1="${ay}" x2="${cx}" y2="${cy}" stroke="${inCol}" stroke-width="3" stroke-dasharray="8,4"/>`;
+  out += `<circle cx="${ax}" cy="${ay}" r="7" fill="${inCol}"/>`;
+  out += `<line x1="${cx}" y1="${cy}" x2="${rx}" y2="${ry}" stroke="${outCol}" stroke-width="3" stroke-dasharray="8,4"/>`;
+  out += `<text x="12" y="${cy+12}" text-anchor="start" font-family="Lato,sans-serif" font-size="11" font-weight="900" fill="#ffffff">${RAIL_LONG[rail]}</text>`;
+  out += `<text x="${TW-8}" y="${cy+12}" text-anchor="end" font-family="Lato,sans-serif" font-size="9" font-weight="700" letter-spacing="2" font-style="italic" fill="#c8703a">BOUNCE</text>`;
+  out += `<text x="${inX}" y="18" text-anchor="${inAnch}" font-family="Lato,sans-serif" font-size="10" font-weight="900" letter-spacing="2" fill="${inCol}">IN</text>`;
+  out += `<text x="${inX}" y="40" text-anchor="${inAnch}" font-family="Lato,sans-serif" font-size="22" font-weight="700" fill="#ffffff">${inDeg}°</text>`;
+  out += `<text x="${outX}" y="18" text-anchor="${outAnch}" font-family="Lato,sans-serif" font-size="10" font-weight="900" letter-spacing="2" fill="${outCol}">OUT</text>`;
+  out += `<text x="${outX}" y="40" text-anchor="${outAnch}" font-family="Lato,sans-serif" font-size="22" font-weight="700" fill="#ffffff">${outDeg}°</text>`;
+
+  svg.innerHTML = out;
+  // Update numbers below bounce diagram
+  const numsEl = document.getElementById('bounce-nums');
+  if (numsEl) {
+    const inDeg2  = angleFromRail(inDx, inDy, rail);
+    const outDeg2 = angleFromRail(rbDx, rbDy, rail);
+    const label = useSecond ? (RAIL_SHORT[sol.contact2.rail] + ' 2ND') : (RAIL_SHORT[contact.rail] + ' 1ST');
+    numsEl.textContent = 'IN  ' + inDeg2 + '°   |   ' + label + '   |   OUT  ' + outDeg2 + '°';
+  }
+}
+
+function nearestPocketLabel(pt) {
+  let best = null, bestD = Infinity;
+  for (const [k, p] of Object.entries(POCKETS)) {
+    const d = Math.hypot(pt.x - p.x, pt.y - p.y);
+    if (d < bestD) { bestD = d; best = p; }
+  }
+  return bestD < 30 ? best.label : 'open table';
+}
+
+function selectPocket(key) {
+  S.target = { x: POCKETS[key].x, y: POCKETS[key].y };
+  S.activeSol = 0;
+  
+  Object.keys(POCKETS).forEach(k => sV('phl-'+k, false));
+  // Show pocket number label
+  const _pn = POCKETS[key]?.num;
+  if (_pn) sT('ro-pocket', _pn + ' — ' + POCKETS[key].label);
+  render();
+}
+
+function selectSol(i) {
+  S.activeSol = i;
+  render();
+}
+
+const vertLabels = {
+  '-4':'max draw','-3':'heavy draw','-2':'draw','-1':'soft draw',
+  '0':'center','1':'soft follow','2':'follow','3':'heavy follow','4':'max follow'
+};
+
+function onSliders() {
+  S.speed = parseInt($('sl-spd').value) / 100;
+  S.spin  = parseInt($('sl-spn').value);
+  S.vert  = parseInt($('sl-vert').value);
+
+  // Three-zone bias — use current cut angle without calling computeDiagShot (avoids side effects)
+  const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+  if (typeof biasOn !== 'undefined' && biasOn) {
+    const bFat  = parseInt($('sl-bias-fat')?.value  || '0');
+    const bMed  = parseInt($('sl-bias-med')?.value  || '0');
+    const bThin = parseInt($('sl-bias-thin')?.value || '0');
+    if (cutDeg < 30)      S.bias = bFat + (bMed  - bFat)  * (cutDeg / 30);
+    else if (cutDeg < 60) S.bias = bMed + (bThin - bMed)  * ((cutDeg-30) / 30);
+    else                  S.bias = bThin;
+  } else {
+    S.bias = 0;
+  }
+  ['fat','med','thin'].forEach(z => {
+    const v = parseInt($('sl-bias-'+z)?.value || '0');
+    const el=$('sv-bias-'+z); if(el) el.textContent=(v===0?'0':(v>0?'+':'')+v);
+    const en=$('sv-bias-'+z+'-n'); if(en) en.textContent=Math.abs(v)===0?'0':Math.max(1,Math.round(Math.abs(v)/12*10));
+  });
+
+  $('sv-spd').textContent = S.speed < 0.28 ? 'slow' : S.speed < 0.72 ? 'med' : 'fast';
+  const _sv=parseInt($('sl-spd').value), _sn=Math.abs(parseInt($('sl-spn').value));
+  if($('sv-spd-n'))$('sv-spd-n').textContent=Math.max(1,Math.round(_sv/10));
+  if($('sv-spn-n'))$('sv-spn-n').textContent=_sn===0?'0':Math.max(1,Math.round(_sn/4*10/10));
+  const _vn=Math.abs(parseInt($('sl-vert').value));
+  if($('sv-vert-n'))$('sv-vert-n').textContent=_vn===0?'0':Math.max(1,Math.round(_vn/4*10/10));
+  $('sv-spn').textContent  = spinLabels[String(S.spin)];
+  $('sv-vert').textContent = vertLabels[String(S.vert)];
+  render();
+}
+
+function toggleTable() {
+  S.snooker = !S.snooker;
+  S.tableSize = S.snooker ? 12 : 9;
+  $('size-btn').textContent = S.tableSize + 'ft';
+  const btn = $('table-btn');
+  btn.textContent = S.snooker ? 'SNOOKER' : 'POOL';
+  btn.style.borderColor = S.snooker ? 'rgba(112,192,240,0.5)' : 'rgba(160,208,160,0.4)';
+  btn.style.color = S.snooker ? '#70c0f0' : '#a0d0a0';
+  render();
+}
+
+function cycleTableSize() {
+  const poolSizes    = [7, 8, 9];
+  const snookerSizes = [10, 12];
+  const sizes = S.snooker ? snookerSizes : poolSizes;
+  const idx = sizes.indexOf(S.tableSize);
+  S.tableSize = sizes[(idx + 1) % sizes.length];
+  $('size-btn').textContent = S.tableSize + 'ft';
+  render();
+}
+
+function toggleUnits() {
+  S.metric = !S.metric;
+  $('unit-btn').textContent = S.metric ? 'M' : 'FT';
+  render();
+}
+
+function toggleInfo() {
+  $('info-overlay').classList.toggle('open');
+}
+
+function cycleRotation() {
+  S.rotation = (S.rotation + 90) % 360;
+  const svgEl = $('tbl'), grp = $('tbl-content'), btn = $('rot-btn'), r = S.rotation;
+  if (r === 0) {
+    svgEl.setAttribute('viewBox','0 0 460 260');
+    grp.setAttribute('transform','');
+  } else if (r === 90) {
+    svgEl.setAttribute('viewBox','0 0 260 460');
+    grp.setAttribute('transform','translate(260,0) rotate(90)');
+  } else if (r === 180) {
+    svgEl.setAttribute('viewBox','0 0 460 260');
+    grp.setAttribute('transform','translate(460,260) rotate(180)');
+  } else {
+    svgEl.setAttribute('viewBox','0 0 260 460');
+    grp.setAttribute('transform','translate(0,460) rotate(270)');
+  }
+  btn.textContent = r === 0 ? '⟳ 0°' : `⟳ ${r}°`;
+  
+  render();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CALIBRATION
+// ─────────────────────────────────────────────────────────────────────────────
+let calMode = false;
+let calPhase = 'idle';   // 'setup' | 'tap'
+let calShots = [];        // [{predicted, bias, throwMult}]
+const CAL_MAX = 5;
+
+// Derived calibration constants (applied on top of defaults)
+let calBiasAdj   = 0;     // accumulated bias adjustment
+let calThrowAdj  = 1.0;   // throw multiplier (1.0 = default)
+
+function toggleCal() {
+  calMode = !calMode;
+  const btn = $('cal-btn');
+  if ($('cal-panel')) $('cal-panel').classList.toggle('open', calMode);
+  if (!calMode) {
+    calPhase = 'idle'; calPendingShot = null;
+    sV('cal-predicted', false); sV('cal-predicted-lbl', false);
+    sV('cal-actual',    false); sV('cal-actual-lbl',    false);
+  }
+  calUpdateUI(); render();
+}
+
+function calUpdateUI() {
+  const n = calShots.filter(s => s.actual).length;
+  const stat = $('cal-status');
+  const inst = $('cal-instruction');
+  const b1   = $('cal-rec1-btn');
+  const b2   = $('cal-rec2-btn');
+  if (stat) stat.textContent = n + ' shots stored';
+  if (!calMode) return;
+  if (calPhase === 'idle') {
+    if (inst) inst.textContent = 'Set up your bank shot. Tap ① to record what the app predicts.';
+    if (b1) b1.style.display = '';
+    if (b2) b2.style.display = 'none';
+  } else {
+    if (inst) inst.textContent = 'Shoot until it goes. Dial OB/sliders to match reality. Tap ②.';
+    if (b1) b1.style.display = 'none';
+    if (b2) b2.style.display = '';
+  }
+  updateCalLibrary();
+}
+
+function calRecord1() {
+  if (!calMode) return;
+  const sols = allSolutions();
+  if (!sols.length) { alert('No valid bank solution.'); return; }
+  const sol  = computeDiagShot(sols[S.activeSol] || sols[0]);
+  const pred = sol._reboundEnd;
+  if (!pred) return;
+  sC('cal-predicted', pred.x, pred.y);
+  $('cal-predicted-lbl').setAttribute('x', pred.x);
+  $('cal-predicted-lbl').setAttribute('y', pred.y - 14);
+  sV('cal-predicted', true); sV('cal-predicted-lbl', true);
+  sV('cal-actual',   false); sV('cal-actual-lbl',   false);
+  calPendingShot = {
+    ts: Date.now(),
+    predictedPos: {x: pred.x, y: pred.y},
+    ob: {...S.ob}, cb: {...S.cb},
+    cushions: S.cushions,
+    speed: S.speed, spin: S.spin,
+    actual: null
+  };
+  calPhase = 'predicted';
+  calUpdateUI();
+}
+
+function calRecord2() {
+  if (!calMode || !calPendingShot || calPhase !== 'predicted') return;
+  const sols = allSolutions();
+  const sol  = sols.length ? computeDiagShot(sols[S.activeSol] || sols[0]) : null;
+  const actual = sol && sol._reboundEnd ? sol._reboundEnd : calPendingShot.predictedPos;
+  calPendingShot.actual    = actual;
+  calPendingShot.actualPos = actual;
+  const dy = actual.y - calPendingShot.predictedPos.y;
+  const dx = actual.x - calPendingShot.predictedPos.x;
+  calPendingShot.kAdj = -dy * 0.001;
+  calShots.push(calPendingShot);
+  // Recompute k values
+  const shots1 = calShots.filter(s => s.actual && s.cushions === 1);
+  const shots2 = calShots.filter(s => s.actual && s.cushions === 2);
+  if (shots1.length) tableK1 = Math.max(-0.3, Math.min(0.3, shots1.reduce((s,sh)=>s+sh.kAdj,0)/shots1.length));
+  if (shots2.length) tableK2 = Math.max(-0.3, Math.min(0.3, shots2.reduce((s,sh)=>s+sh.kAdj,0)/shots2.length));
+  saveTableProfile();
+  sC('cal-actual', actual.x, actual.y);
+  $('cal-actual-lbl').setAttribute('x', actual.x);
+  $('cal-actual-lbl').setAttribute('y', actual.y + 16);
+  sV('cal-actual', true); sV('cal-actual-lbl', true);
+  const dirText = dy < -8 ? 'went long' : dy > 8 ? 'came up short' : Math.abs(dx) < 8 ? 'on target ✓' : dx < 0 ? 'went left' : 'went right';
+  const res = $('cal-result');
+  if (res) {
+    const k1 = (tableK1*100>=0?'+':'')+Math.round(tableK1*100)+'%';
+    const k2 = (tableK2*100>=0?'+':'')+Math.round(tableK2*100)+'%';
+    res.style.display='block';
+    res.innerHTML='<strong style="color:#f0df70">Shot '+calShots.filter(s=>s.actual).length+': '+dirText+'</strong><br>1-rail: '+k1+' · 2-rail: '+k2;
+  }
+  calPendingShot = null; calPhase = 'idle';
+  calUpdateUI(); render();
+}
+
+function toggleCalLibrary() {
+  calLibraryOpen = !calLibraryOpen;
+  const lib = $('cal-library');
+  if (lib) lib.style.display = calLibraryOpen ? 'block' : 'none';
+  updateCalLibrary();
+}
+
+function updateCalLibrary() {
+  const lib = $('cal-library');
+  if (!lib || !calLibraryOpen) return;
+  if (!calShots.length) { lib.innerHTML = '<em>No shots recorded yet.</em>'; return; }
+  lib.innerHTML = calShots.filter(s=>s.actual).slice().reverse().map((s,i) => {
+    const d = new Date(s.ts);
+    const t = (d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+    const dy = s.actual ? s.actual.y - s.predictedPos.y : 0;
+    const dir = dy < -8 ? 'long' : dy > 8 ? 'short' : '✓';
+    return '<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.06)">'+
+      '<span>'+t+' · '+s.cushions+'R</span>'+
+      '<span style="color:#f0df70">'+dir+'</span>'+
+      '</div>';
+  }).join('');
+}
+
+function calTapActual(p) { return false; }
+
+function calUndo() {
+  if (calPhase === 'predicted') {
+    calPhase = 'idle'; calPendingShot = null;
+    sV('cal-predicted', false); sV('cal-predicted-lbl', false);
+  } else if (calShots.length) {
+    calShots.pop();
+    saveTableProfile();
+  }
+  calUpdateUI();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+loadTableProfile();
+render();
+calUpdateUI();
+// Map and ghost are on by default — show map layer immediately
+const _ml = $('map-layer');
+if (_ml) { _ml.style.opacity = '1'; }
+SNAP_POINTS = buildSnapPoints();
+const _epB=document.getElementById('ep-bias');if(_epB){_epB.classList.add('on');_epB.textContent='ON';}
+
+loadUserShots();
+buildShotList();
+const _ml2 = $('map2-layer');
+if (_ml2) { _ml2.style.opacity = '1'; }
+// Start with ghost and map active
+
+// ── FLIP DIAGRAM ──────────────────────────────────────────────
+function flipDiagram() {
+  S._diagDragRh = !(S._diagDragRh === undefined ? false : S._diagDragRh);
+  render();
+}
+
+// ── SWAP PANELS ──────────────────────────────────────────────
+let panelsSwapped = true;
+function swapPanels() {
+  panelsSwapped = !panelsSwapped;
+  const card = document.querySelector('.card');
+  const sliders = document.getElementById('block-sliders');
+  const diagWrap = document.querySelector('.diagram-wrap');
+  const swapCont = document.getElementById('swap-container');
+  if (panelsSwapped) {
+    // Sliders above table
+    card.insertBefore(sliders, diagWrap);
+  } else {
+    // Sliders below table (inside swap-container, before block-ball)
+    const ball = document.getElementById('block-ball');
+    swapCont.insertBefore(sliders, ball);
+  }
+}
+
+// ── GLOBAL TOUCH SAFETY RESET (iOS pointer capture bug) ──────
+document.addEventListener('touchend', () => {
+  drag = null;
+  if (typeof diagDrag !== 'undefined') diagDrag = false;
+  if (typeof overlayDrag !== 'undefined') overlayDrag = null;
+}, {passive: true});
+document.addEventListener('touchcancel', () => {
+  drag = null;
+  if (typeof diagDrag !== 'undefined') diagDrag = false;
+  if (typeof overlayDrag !== 'undefined') overlayDrag = null;
+}, {passive: true});
+
+// ── SNAP SYSTEM ──────────────────────────────────────────────
+function buildSnapPoints() {
+  const pts = [], seen = new Set();
+  const DX=50, DY=50, OX=30, OY=30;
+  const BR=9, XMIN=OX+BR, XMAX=OX+8*DX-BR, YMIN=OY+BR, YMAX=OY+4*DY-BR;
+  function sc(x,y){return{x:Math.max(XMIN,Math.min(XMAX,x)),y:Math.max(YMIN,Math.min(YMAX,y))};}
+  function add(x,y,label){
+    const k=x+','+y; if(seen.has(k))return; seen.add(k); pts.push({x,y,label});
+  }
+  for(let row=0;row<4;row++){
+    for(let col=0;col<8;col++){
+      const n=row*8+col+1, x0=OX+col*DX, y0=OY+row*DY, cx=x0+DX/2, cy=y0+DY/2;
+      add(cx,cy,String(n));
+      const pa=sc(x0,   y0+DY); add(pa.x,pa.y,n+'a');
+      const pb=sc(x0,   cy);    add(pb.x,pb.y,n+'b');
+      const pc=sc(x0,   y0);    add(pc.x,pc.y,n+'c');
+      const pd=sc(cx,   y0);    add(pd.x,pd.y,n+'d');
+      const pe=sc(x0+DX,y0);    add(pe.x,pe.y,n+'e');
+      const pf=sc(x0+DX,cy);    add(pf.x,pf.y,n+'f');
+      const pg=sc(x0+DX,y0+DY); add(pg.x,pg.y,n+'g');
+      const ph=sc(cx,   y0+DY); add(ph.x,ph.y,n+'h');
+    }
+  }
+  return pts;
+}
+function nearestSnap(x,y){
+  let best=null,bestD=Infinity;
+  for(const pt of SNAP_POINTS){const d=Math.hypot(x-pt.x,y-pt.y);if(d<SNAP_RADIUS&&d<bestD){best=pt;bestD=d;}}
+  return best;
+}
+function applySnap(x,y){
+  if(!snapOn||!SNAP_POINTS.length)return{x,y,label:null};
+  const pt=nearestSnap(x,y);
+  return pt?{x:pt.x,y:pt.y,label:pt.label}:{x,y,label:null};
+}
+function showSnapLabel(svgEl,x,y,label,ballId){
+  const old=document.getElementById('snap-lbl-'+ballId);
+  if(old)old.remove(); if(!label)return;
+  const rect=svgEl.getBoundingClientRect(),vb=svgEl.viewBox.baseVal;
+  const scx=rect.left+(x/vb.width)*rect.width, scy=rect.top+(y/vb.height)*rect.height;
+  const lbl=document.createElement('div');
+  lbl.id='snap-lbl-'+ballId; lbl.className='snap-label';
+  lbl.textContent=(ballId==='cb'?'CB: ':'OB: ')+label;
+  lbl.style.left=(scx+12)+'px'; lbl.style.top=(scy-10)+'px'; lbl.style.opacity='1';
+  document.body.appendChild(lbl);
+  if(snapLabelTimer)clearTimeout(snapLabelTimer);
+  snapLabelTimer=setTimeout(()=>{lbl.style.opacity='0';setTimeout(()=>lbl.remove(),400);},2000);
+}
+let panMode = true;
+function togglePan(){
+  panMode = !panMode;
+  const btn = document.getElementById('ep-pan');
+  if(btn) btn.classList.toggle('on', panMode);
+}
+function toggleSnap(){
+  snapOn=!snapOn;
+  const btn=document.getElementById('ep-snap');
+  if(btn){btn.classList.toggle('on',snapOn);btn.blur();}
+  document.activeElement&&document.activeElement.blur();
+}
+
+// ── LOCK SYSTEM ──────────────────────────────────────────────
+function toggleLock(which){
+  if(which==='table')   lockTable  =!lockTable;
+  if(which==='balls')   lockBalls  =!lockBalls;
+  if(which==='sliders') lockSliders=!lockSliders;
+  const lt=document.getElementById('ep-lt'), ls=document.getElementById('ep-ls'), lb=document.getElementById('ep-lb');
+  if(lt){lt.classList.toggle('locked',lockTable);lt.classList.toggle('on',!lockTable);}
+  if(ls){ls.classList.toggle('locked',lockSliders);ls.classList.toggle('on',!lockSliders);}
+  if(lb){lb.classList.toggle('locked',lockBalls);lb.classList.toggle('on',!lockBalls);}
+  const topsvgEl=document.getElementById('tbl');
+  // touch-action managed per-drag
+  const bs=document.getElementById('botsvg');
+  
+  const sg=document.querySelector('.sgroup');
+  if(sg)sg.style.opacity=lockSliders?'0.4':'1';
+  document.querySelectorAll('.sgroup input[type=range]').forEach(el=>{el.disabled=lockSliders;});
+  const card=document.querySelector('.card'); if(card) card.classList.toggle('sliders-unlocked',!lockSliders);
+  document.activeElement&&document.activeElement.blur();
+}
+
+// ── ZERO BUTTONS ──────────────────────────────────────────────
+function zeroBall(){
+  S.diagCutDeg=null; S._diagDragRh=undefined;
+  render();
+  document.activeElement&&document.activeElement.blur();
+}
+function zeroSliders(){
+  if(lockSliders)return;
+  S.speed=0.5; S.spin=0; S.vert=0; S.bias=0;
+  $('sl-spd').value='50'; $('sl-spn').value='0';
+  $('sl-vert').value='0'; ['fat','med','thin'].forEach(z=>{const sl=$('sl-bias-'+z);if(sl)sl.value='0';});
+  onSliders();
+  document.activeElement&&document.activeElement.blur();
+}
+
+// Button zoom only — no pinch
+function edgeZoom(factor) {
+  const wrap = document.getElementById('zoom-wrap');
+  if (!wrap) return;
+  if (typeof _pz !== 'undefined') {
+    _pz.scale = Math.max(0.6, Math.min(4, _pz.scale * factor));
+    _pz.apply();
+  } else {
+    const cur = wrap._zscale || 1;
+    const next = Math.max(0.6, Math.min(4, cur * factor));
+    wrap._zscale = next;
+    wrap.style.transform = 'scale(' + next + ')';
+    wrap.style.transformOrigin = 'top left';
+  }
+}
+function edgeZoomReset() {
+  const wrap = document.getElementById('zoom-wrap');
+  if (!wrap) return;
+  if (typeof _pz !== 'undefined') {
+    _pz.scale = 1; _pz.tx = 0; _pz.ty = 0; _pz.apply();
+  } else {
+    wrap._zscale = 1;
+    wrap.style.transform = 'scale(1)';
+  }
+}
+
+const _pz = {
+  scale:1, tx:0, ty:0,
+  apply:function(){
+    const w=document.getElementById('zoom-wrap');
+    if(!w) return;
+    w._zscale=this.scale;
+    if(this.scale<=1){this.tx=0;this.ty=0;}
+    w.style.transform=`translate(${this.tx}px,${this.ty}px) scale(${this.scale})`;
+    w.style.transformOrigin='top left';
+  }
+};
+
+
+</script>
+</div><!-- /zoom-wrap -->
+
+<!-- ── EDGE CONTROL PANEL ── -->
+
+</div><!-- /outer-wrap -->
+<footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
+<div id="info-overlay">
+  <div id="info-inner">
+    <button id="info-close" onclick="toggleInfo()">✕</button>
+    <h2>LeStar Z's Banker</h2>
+    <p class="intro">A bank shot sends the object ball off a rail and into a pocket. This app calculates the geometry of that shot — where the ball needs to hit the rail, what angle you need to cut it, and how speed and spin change the result. Like all LeStar Z apps, it's a learning tool. Use it at the table to train your eye, then take that knowledge into the game.</p>
+
+    <p><strong>THE TABLE (top diagram):</strong> Shows a bird's-eye view of the table. Two balls are shown — white (cue ball) and red (object ball). Drag each one to match the actual positions on your table. Tap any of the six pockets to select your target. The app instantly draws the shot:</p>
+    <p>· <strong style="color:#f0df70">Gold dashed line</strong> — your approach: where the cue ball needs to travel to contact the object ball.<br>
+    · <strong style="color:#7dd3fc">Blue line</strong> — the object ball's path from your cue ball contact to the first rail.<br>
+    · <strong style="color:#4ade80">Green dashed line</strong> — the bank: object ball path from rail to pocket.<br>
+    · <strong style="color:#ffffff">White dashed circle</strong> — the ghost ball. This is the exact spot your cue ball center must pass through to send the object ball in the right direction. Aim for this.<br>
+    · <strong style="color:#ffffff">White ring on rail</strong> — the contact point on the rail. The diamond readout tells you where this falls in the standard diamond system.</p>
+
+    <p><strong>RAIL TABS:</strong> The colored buttons below the table show all valid rails for this bank. TOP, BTM, LFT, RGT. Tap one to switch. Some positions only have one valid option; others have two or three. In 2-CUSHION mode, tabs show rail pairs (e.g. TOP→LFT).</p>
+
+    <p><strong>THE AIMING DIAGRAM (bottom diagram):</strong> This is the Aimer view — a close-up of the object ball as you see it from behind the cue ball. The red ball is on the right. Your cue ball slides in from the left. The orange line (A) is the equator of the object ball — your reference line. The orange marker shows the inside edge of the cue ball at the required contact point. The percentage badge shows how much of the object ball you are hitting. The cut angle is shown top-right.</p>
+
+    <p><strong>SPEED:</strong> Faster shots compress the rail more, producing a shallower rebound angle. Slower shots rebound steeper. Match this to your intended shot power and the bank geometry shifts accordingly.</p>
+
+    <p><strong>SPIN:</strong> Side english on the cue ball does two things. First, it throws the object ball slightly off the pure geometric line — the diagram adjusts the aim point automatically. Second, the object ball arrives at the rail with its own running english from the cut, which opens or closes the rebound. The THROW ADJUSTMENT readout tells you how much to compensate.</p>
+
+    <p><strong>BIAS:</strong> Every table's rails play a little differently. If your banks consistently go long (past the pocket), push BIAS toward SHORT. If they come up short, push toward LONG. Dial this in over a practice session and it will make the whole app more accurate for your specific table.</p>
+
+    <p><strong>1 CUSHION / 2 CUSHIONS:</strong> Most banks use one rail. Occasionally the geometry requires two. Tap 2 CUSHIONS to see all valid two-rail routes — the app computes them using the same compressed-reflection physics, just chained twice. Two-cushion banks are harder to execute but sometimes the only option.</p>
+
+    <p><strong>DIAMONDS:</strong> The standard reference system. 0 at each corner, 4 at the side pockets on the long rails, 1–3 in between. A readout of TOP ◆ 2.50 means the contact point is exactly halfway between diamonds 2 and 3 on the top rail.</p>
+
+    <p><strong>ROTATE ⟳:</strong> Cycles the table through 0° / 90° / 180° / 270°. Turn it to match how you're standing at the table. Dragging works correctly at every orientation.</p>
+  </div>
+</div>
+<div id="btb">
+  <div id="btb-tab"><span id="btb-pill"><button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 6px;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button><span id="btb-label" style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding-right:8px;">TOOLS</span></span></div>
+  <div id="btb-panel" style="display:none;">
+    <div class="btb-row2">
+      <button class="ep-btn g-tog on" id="btn-cushion" onclick="toggleCushions()">1 CUSHION</button>
+      <button class="ep-btn g-tog on" id="btn-map"     onclick="toggleMap()">MAP</button>
+      <button class="ep-btn g-tog on" id="btn-ghost"   onclick="toggleGhost()">GHOST</button>
+      <button class="ep-btn g-tog"    id="cal-btn"     onclick="toggleCal()">CAL</button>
+      <button class="ep-btn g-tog"    id="btn-bounce"  onclick="toggleBounce()">BOUNCE</button>
+      <button class="ep-btn g-tog"    onclick="toggleShotLibrary()">SHOTS</button>
+      <button class="ep-btn g-swap"   id="btn-swap"    onclick="swapPanels()" title="Swap panels">⇅</button>
+    </div>
+    <div class="btb-row2">
+      <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">IN +</button>
+      <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">OUT −</button>
+      <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET</button>
+      <button class="ep-btn g-zoom" id="ep-pan" onclick="togglePan()">PAN</button>
+      <button class="ep-btn g-snap on" id="ep-snap" onclick="toggleSnap()">SNAP</button>
+      <button class="ep-btn g-bias" id="ep-bias" onclick="toggleBias()">BIAS</button>
+    </div>
+    <div class="btb-row2">
+      <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE</button>
+      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">BALL</button>
+      <button class="ep-btn g-lock" id="ep-ls" onclick="toggleLock('sliders')">SLIDERS</button>
+      <button class="ep-btn g-zero" onclick="zeroSliders()">ZERO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var btbVisible = false;
+function toggleBtb(){
+  btbVisible = !btbVisible;
+  document.getElementById('btb-panel').style.display = btbVisible ? 'flex' : 'none';
+  document.getElementById('btb-arrow').textContent = btbVisible ? '▼' : '▲';
+  var pill = document.getElementById('btb-pill');
+  if (pill) pill.classList.toggle('open', btbVisible);
+}
+// Floating drag via TOOLS bar
+(function(){
+  var btb, tab, startX, startY, origLeft, origTop, didDrag;
+  window.addEventListener('load', function(){
+    btb = document.getElementById('btb');
+    tab = document.getElementById('btb-tab');
+    if (!btb || !tab) return;
+    var activePtr = null;
+    tab.addEventListener('pointerdown', function(e){
+      if (e.target.id === 'btb-arrow') return; // arrow button handles toggle itself
+      var rect = btb.getBoundingClientRect();
+      btb.style.transform = 'none';
+      btb.style.left = rect.left + 'px';
+      btb.style.top  = rect.top  + 'px';
+      btb.style.bottom = 'auto';
+      startX = e.clientX; startY = e.clientY;
+      origLeft = rect.left; origTop = rect.top;
+      didDrag = false; activePtr = e.pointerId;
+      // Do NOT capture yet — capture only once drag is confirmed
+    });
+    tab.addEventListener('pointermove', function(e){
+      if (activePtr === null || e.pointerId !== activePtr) return;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (!didDrag && Math.hypot(dx,dy) > 8) {
+        didDrag = true;
+        try { tab.setPointerCapture(e.pointerId); } catch(ex){}
+      }
+      if (!didDrag) return;
+      var nx = origLeft + dx, ny = origTop + dy;
+      nx = Math.max(0, Math.min(window.innerWidth  - btb.offsetWidth,  nx));
+      ny = Math.max(0, Math.min(window.innerHeight - btb.offsetHeight, ny));
+      btb.style.left = nx + 'px';
+      btb.style.top  = ny + 'px';
+    });
+    tab.addEventListener('pointerup', function(e){
+      if (e.pointerId !== activePtr) return;
+      activePtr = null;
+      if (!didDrag) toggleBtb();
+    });
+    tab.addEventListener('pointercancel', function(e){
+      activePtr = null;
+    });
+  });
+})();
+</script>
+<script>
+// ── PAN VIA POINTER EVENTS ON ZOOM-WRAP ──────────────────────
+// Uses pointerId to avoid conflict with SVG ball drags which use setPointerCapture
+(function(){
+  var wrap = null;
+  var panPtr = null;
+  var panStartX=0, panStartY=0, panInitTx=0, panInitTy=0;
+
+  function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
+
+  function onDown(e){
+    if(!panMode) return;
+    if(_pz.scale <= 1) return;
+    panPtr = e.pointerId;
+    panStartX = e.clientX; panStartY = e.clientY;
+    panInitTx = _pz.tx;    panInitTy = _pz.ty;
+    getWrap().setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }
+
+  function onMove(e){
+    if(panPtr === null || e.pointerId !== panPtr) return;
+    var w = getWrap();
+    var ww = w.offsetWidth, wh = w.offsetHeight, sc = _pz.scale;
+    _pz.tx = Math.min(0, Math.max(ww*(1-sc), panInitTx + (e.clientX - panStartX)));
+    _pz.ty = Math.min(0, Math.max(wh*(1-sc), panInitTy + (e.clientY - panStartY)));
+    _pz.apply();
+    e.preventDefault();
+  }
+
+  function onUp(e){
+    if(e.pointerId === panPtr) panPtr = null;
+  }
+
+  window.addEventListener('load', function(){
+  // Load bias settings
+  try {
+    const b = JSON.parse(localStorage.getItem('lz-banker-bias') || '{}');
+    if (b.fat !== undefined) { const el = document.getElementById('sl-bias-fat'); if(el) el.value = b.fat; }
+    if (b.med !== undefined) { const el = document.getElementById('sl-bias-med'); if(el) el.value = b.med; }
+    if (b.thin !== undefined) { const el = document.getElementById('sl-bias-thin'); if(el) el.value = b.thin; }
+  } catch(e) {}
+
+    var w = getWrap();
+    if(!w) return;
+    w.addEventListener('pointerdown',   onDown,  {passive:false});
+    w.addEventListener('pointermove',   onMove,  {passive:false});
+    w.addEventListener('pointerup',     onUp);
+    w.addEventListener('pointercancel', onUp);
+  });
+})();
+</script>
+<script>
+window.addEventListener('load', function(){
+  const _lt = document.getElementById('ep-lt'); if(_lt){ _lt.classList.toggle('locked', lockTable); _lt.classList.toggle('on', !lockTable); }
+  const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
+  const _ls = document.getElementById('ep-ls'); if(_ls){ _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
+  const _pan = document.getElementById('ep-pan'); if(_pan) _pan.classList.toggle('on', typeof panMode !== 'undefined' && panMode);
+  const _snap = document.getElementById('ep-snap'); if(_snap) _snap.classList.toggle('on', true);
+  const sg = document.querySelector('.sgroup');
+  if(sg) sg.style.opacity = lockSliders ? '0.4' : '1';
+  document.querySelectorAll('.sgroup input[type=range]').forEach(el => { el.disabled = lockSliders; });
+  const card = document.querySelector('.card');
+  if(card) card.classList.toggle('sliders-unlocked', !lockSliders);
+});
+</script>
+<script>
+function vernierAim(dir){
+  const oneDeg=Math.asin(0.01)*(180/Math.PI);
+  const cur=S.diagCutDeg!==null?S.diagCutDeg:0;
+  const rh=S._diagDragRh!==undefined?S._diagDragRh:false;
+  let signed=rh?-cur:cur;
+  signed+=dir*oneDeg;
+  signed=Math.max(-90,Math.min(90,signed));
+  if(Math.abs(signed)<0.001)signed=dir*oneDeg;
+  S._diagDragRh=signed<0;S.diagCutDeg=Math.abs(signed);render();
+}
+function biasStep(zone,dir){
+  const el=document.getElementById('sl-bias-'+zone);
+  if(!el)return;
+  el.value=Math.max(-12,Math.min(12,parseInt(el.value)+dir));
+  onSliders();render();
+}
+</script>
+<script>
+// Shot library panel — floating, draggable, closeable
+(function(){
+  var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
+  var positioned = false;
+
+  function positionPanel() {
+    if (!panel) return;
+    var ref = document.querySelector('.svg-box.top-box') || document.getElementById('table-wrap');
+    var pw = panel.offsetWidth || 380;
+    var left, top;
+    if (ref) {
+      var r = ref.getBoundingClientRect();
+      left = r.left + (r.width - pw) / 2;
+      top  = r.bottom + 6;
+    } else {
+      left = 12; top = 160;
+    }
+    left = Math.max(4, Math.min(window.innerWidth - pw - 4, left));
+    top  = Math.max(4, Math.min(window.innerHeight - 200, top));
+    panel.style.left = left + 'px';
+    panel.style.top  = top  + 'px';
+    positioned = true;
+  }
+
+  window.addEventListener('load', function(){
+    panel  = document.getElementById('shot-library-panel');
+    header = document.getElementById('shot-lib-header');
+    if (!panel || !header) return;
+
+    header.addEventListener('pointerdown', function(e){
+      if (e.target.tagName === 'BUTTON') return;
+      var r = panel.getBoundingClientRect();
+      startX=e.clientX; startY=e.clientY;
+      origLeft=r.left; origTop=r.top;
+      didDrag=false; activePtr=e.pointerId;
+    });
+    header.addEventListener('pointermove', function(e){
+      if (activePtr===null || e.pointerId!==activePtr) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if (!didDrag && Math.hypot(dx,dy)>8){
+        didDrag=true;
+        try{ header.setPointerCapture(e.pointerId); }catch(ex){}
+      }
+      if (!didDrag) return;
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,  origLeft+dx));
+      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
+      panel.style.left=nx+'px'; panel.style.top=ny+'px';
+    });
+    header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+
+    // Position on first open
+    var origToggle = window.toggleShotLibrary;
+    window.toggleShotLibrary = function(){
+      origToggle();
+      if (!positioned && panel && panel.style.display !== 'none'){
+        requestAnimationFrame(positionPanel);
+      }
+    };
+  });
+})();
+</script>
+</body>
+</html>

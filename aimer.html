@@ -1,0 +1,2821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LeStar Z Aimer">
+  <link rel="apple-touch-icon" href="/icon-apple.png">
+  <link rel="manifest" href="/manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.1, maximum-scale=5.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aimer">
+<meta name="theme-color" content="#1a361a">
+<title>LeStar Z's Aimer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,900&family=Playfair+Display:ital,wght@1,700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+button{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;}
+svg,.diagram-wrap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
+html,body{background:#141414;font-family:'Lato',sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px 8px 32px;min-height:100vh;}@media(max-aspect-ratio:1/1){}.outer-wrap{width:100%;}
+@media(orientation:landscape) and (max-height:600px){html,body{padding:2px;}.outer-wrap{max-width:100%!important;width:100%;border-radius:0;}}
+.outer-wrap{display:flex;flex-direction:row;align-items:flex-start;width:100%;max-width:762px;background:#1a361a;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);border:2px solid #2a4e2a;overflow:hidden;}
+.card{flex:1;min-width:0;padding:14px 12px 16px 12px;}
+.toolbar-col{display:none;}
+.hdr{text-align:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);position:relative;}
+h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-bottom:2px;}
+.t-lestar{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
+.t-z{font-family:'Lato',sans-serif;font-style:italic;font-weight:900;font-size:clamp(20px,5.5vw,30px);color:#f0df70;line-height:1;display:inline-flex;align-items:center;margin:0 1px 0 2px;}
+.t-rest{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
+.sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:0.07em;}
+#help-btn{position:absolute;left:0;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;}
+#table-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);padding:4px 10px;border-radius:14px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.06em;cursor:pointer;line-height:1.2;}
+.diagram-wrap{border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.svg-box{position:relative;width:100%;overflow:hidden;background:rgba(0,0,0,0.22);}
+.svg-box.top-box{aspect-ratio:460/260;padding-bottom:0;}
+.svg-box.aim-box{aspect-ratio:460/220;padding-bottom:0;}
+.svg-box svg{position:absolute;top:0;left:0;width:100%;height:100%;}
+.sep{display:none;}
+/* rotation uses .tog class */
+/* Toggle buttons */
+.tog{flex:1;height:24px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:flex;align-items:center;justify-content:center;transition:filter .15s;}
+.tog.dim{filter:brightness(0.42) saturate(0.5);}
+/* Sliders */
+.sgroup{background:rgba(0,0,0,0.18);border-radius:7px;padding:7px 10px 6px 10px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.07);}
+.sgroup-title{font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#ddd;margin-bottom:6px;}
+.srow{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
+.srow:last-child{margin-bottom:0;}
+.slbl{font-size:11px;color:#e8e8e8;min-width:52px;font-weight:700;}
+.sval{font-size:15px;font-weight:900;width:80px;min-width:80px;max-width:80px;text-align:right;white-space:nowrap;overflow:hidden;color:#f0df70;}
+input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
+.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
+.sliders-unlocked input[type=range]{height:8px;}
+#cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
+#cal-panel.open{display:block;}
+#cal-instruction{font-size:11px;color:#fff;font-weight:700;margin-bottom:6px;line-height:1.5;}
+#cal-status{font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
+.cal-shots{display:flex;gap:8px;margin-bottom:8px;}
+.cal-shot-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);}
+.cal-shot-dot.done{background:#4ade80;border-color:#4ade80;}
+.cal-actions{display:flex;gap:6px;margin-bottom:6px;}
+.cal-action-btn{flex:1;padding:7px 4px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;letter-spacing:0.08em;cursor:pointer;text-transform:uppercase;}
+.cal-action-btn.primary{background:rgba(74,222,128,0.15);border-color:#4ade80;color:#4ade80;}
+.cal-action-btn.danger{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.4);color:#ff8080;}
+#cal-result{font-size:11px;color:#88ee88;margin-top:4px;display:none;line-height:1.6;}
+#sl-spd::-webkit-slider-thumb{background:#f0df70;}
+#sl-spn::-webkit-slider-thumb{background:#e870b0;}
+#sl-vert::-webkit-slider-thumb{background:#7dd3fc;}
+#sl-dist::-webkit-slider-thumb{background:#a0d0a0;}
+#sl-bias::-webkit-slider-thumb{background:#c890f0;}
+#sl-bias-fat::-webkit-slider-thumb{background:#c890f0;}
+#sl-bias-med::-webkit-slider-thumb{background:#c890f0;}
+#sl-bias-thin::-webkit-slider-thumb{background:#c890f0;}
+#sl-bias-fat, #sl-bias-med, #sl-bias-thin {
+  -webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;
+}
+/* Readouts */
+.readout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;}
+.ri{background:rgba(0,0,0,0.3);border-radius:6px;padding:10px 6px;text-align:center;border:1px solid rgba(255,255,255,0.08);height:72px;min-height:72px;max-height:72px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;contain:layout style;}.ri{background:rgba(0,0,0,0.3);border-radius:6px;padding:10px 6px;text-align:center;border:1px solid rgba(255,255,255,0.08);height:72px;min-height:72px;max-height:72px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
+.ri-lbl{font-size:10px;color:#ccc;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.ri-val{font-size:clamp(18px,5vw,28px);font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.comp-wrap{position:relative;height:22px;min-height:22px;max-height:22px;overflow:hidden;margin-bottom:6px;}
+#readouts{border-top:1px solid rgba(255,255,255,0.07);padding-top:8px;margin-top:4px;contain:layout style;}
+.ro-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);min-height:32px;}
+.ro-lbl{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);flex-shrink:0;}
+.ro-val{font-size:18px;font-weight:900;color:#fff;text-align:right;min-width:0;word-break:break-word;}
+#ro-throw{font-size:14px;min-height:1em;}
+.comp-row{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.55);white-space:nowrap;}
+.comp-val{font-weight:900;font-size:14px;}
+/* Info overlay */
+#info-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 20px 20px;overflow-y:auto;}
+#info-overlay.open{display:flex;}
+#info-inner{background:#1a361a;border:2px solid #2a4e2a;border-radius:10px;width:100%;max-width:560px;padding:20px 18px 24px;position:relative;}
+#info-close{position:absolute;top:10px;right:12px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:22px;cursor:pointer;line-height:1;font-family:'Lato',sans-serif;}
+#info-inner h2{font-family:'Playfair Display',serif;font-style:italic;color:#f0df70;font-size:1.2rem;margin-bottom:12px;}
+#info-inner p{font-size:0.78rem;color:rgba(255,255,255,0.88);line-height:1.7;margin-bottom:10px;}
+#info-inner strong{color:#f0df70;}
+footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:10px 8px 4px;letter-spacing:1.5px;text-transform:uppercase;margin-top:12px;}
+@media(orientation:landscape) and (max-height:600px){.card{flex:1;min-width:0;padding:14px 12px 16px 12px;}}
+
+/* ── EDGE CONTROL PANEL ── */
+
+
+
+
+#edge-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px 0;
+  width: 62px;
+  pointer-events: all;
+  touch-action: manipulation;
+  background: #1a2e1a;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+.ep-section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 5px 5px 4px;
+}
+.ep-section-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 3px;
+}
+.ep-btn-row {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+}
+.ep-btn {
+  flex: 1;
+  height: 30px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(30,45,30,0.97);
+  color: #e8e8e0;
+  font-family: 'Lato', sans-serif;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.1s;
+}
+.ep-btn:active { background: rgba(255,255,255,0.25); }
+.ep-btn.on     { background: #f0df70; color: #1a1400; border-color: #f0df70; }
+.ep-btn.locked { background: #ff6060; color: #1a0000; border-color: #ff6060; }
+.ep-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 1px 0; }
+.ep-section.zoom   { background: rgba(60,80,160,0.92); }
+.ep-section.snap   { background: rgba(30,100,30,0.92); }
+.ep-section.lock   { background: rgba(120,30,30,0.92); }
+.ep-section.zero   { background: rgba(120,70,0,0.92); }
+.ep-section.bias   { background: rgba(90,30,130,0.92); }
+.ep-section.zoom   .ep-section-label { color: #a0c0ff; }
+.ep-section.snap   .ep-section-label { color: #80e880; }
+.ep-section.lock   .ep-section-label { color: #ff9090; }
+.ep-section.zero   .ep-section-label { color: #ffc060; }
+.ep-section.bias   .ep-section-label { color: #d090ff; }
+/* Snap coordinate label on table */
+.snap-label {
+  position: absolute;
+  pointer-events: none;
+  font-family: 'Lato', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #f0df70;
+  background: rgba(0,0,0,0.7);
+  padding: 2px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: opacity 0.4s;
+  z-index: 10;
+}
+
+html,body,#zoom-wrap{touch-action:pan-x pan-y;}
+
+/* ── BOTTOM TOOLBAR ── */
+#btb {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  min-width: min(480px, 98vw);
+  max-width: 98vw;
+  box-sizing: border-box;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  touch-action: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+#btb-tab {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: grab;
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+/* TOOLS pill — always yellow background, always brown text */
+#btb-pill {
+  display: inline-flex;
+  align-items: center;
+  background: #f0df70;
+  border-radius: 7px;
+  padding: 0 0 0 2px;
+  border: none;
+  pointer-events: auto;
+}
+#btb-pill #btb-arrow { color: #1a1400; }
+#btb-pill #btb-label { color: #1a1400; }
+#btb-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border: none;
+  padding: 4px 0 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+#btb-panel .btb-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+#btb-panel .btb-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+}
+#btb-panel .btb-row {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+}
+.btb-row2 {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  padding: 3px 6px;
+  width: 100%;
+  max-width: 762px;
+  box-sizing: border-box;
+  background: transparent;
+}
+.btb-row2 .ep-btn {
+  flex: 1;
+  height: 36px;
+  font-size: 10px;
+  padding: 0 2px;
+  min-width: 0;
+}
+/* group button colors */
+.ep-btn.g-zoom { background:rgba(60,80,160,0.85); border-color:rgba(100,120,220,0.6); }
+.ep-btn.g-lock { background:rgba(120,30,30,0.85); border-color:rgba(200,60,60,0.6); }
+.ep-btn.g-snap { background:rgba(30,100,30,0.85); border-color:rgba(60,180,60,0.6); }
+.ep-btn.g-zero { background:rgba(120,70,0,0.85);  border-color:rgba(200,120,0,0.6); }
+.ep-btn.g-bias { background:rgba(90,30,130,0.85); border-color:rgba(160,80,220,0.6); }
+.ep-btn.g-zoom.on  { background:#f0df70; color:#1a1400; }
+.ep-btn.g-snap.on  { background:#f0df70; color:#1a1400; }
+.ep-btn.g-bias.on  { background:#f0df70; color:#1a1400; }
+.btb-row2 .ep-btn:not(.on):not(.locked) { opacity: 1; }
+.ep-btn.g-lock.locked { background:#ff6060; color:#1a0000; }
+/* pad body so content isn't hidden under bottom bar */
+body { padding-bottom: 80px !important; }
+
+.vbtn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:5px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.85);font-size:15px;font-weight:900;cursor:pointer;touch-action:manipulation;vertical-align:middle;-webkit-user-select:none;user-select:none;margin:0 2px;}
+.vbtn:active{background:rgba(255,255,255,0.25);}
+</style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const w = reg.installing;
+          w.addEventListener('statechange', () => {
+            if (w.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version available — show quiet notice
+              const n = document.createElement('div');
+              n.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#1a4a1a;color:#f0df70;font-family:Lato,sans-serif;font-size:12px;font-weight:900;padding:8px 16px;border-radius:20px;z-index:9999;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);';
+              n.textContent = '↑ Update available — tap to refresh';
+              n.onclick = () => { w.postMessage({type:'SKIP_WAITING'}); location.reload(); };
+              document.body.appendChild(n);
+            }
+          });
+        });
+      });
+    }
+  </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New version available — reload silently
+            window.location.reload();
+          }
+        });
+      });
+    });
+  });
+}
+// ── SHOT LIBRARY ─────────────────────────────────────────────
+// ── SHOT LIBRARY ─────────────────────────────────────────────────────────────
+// HOW TO ADD A SHOT:
+//
+// 1. Set up shot in app — place CB and OB, drag the aim line on the ball diagram
+//    until readouts show the cut angle and % you want
+// 2. Note: CB square+suffix, OB square+suffix, cut angle (from CUT readout),
+//    direction L or R (from readout), pocket the OB aims toward
+// 3. CB/OB coordinates from square grid:
+//      sq(n): row=(n-1)//8, col=(n-1)%8
+//      center: x=30+col*50+25, y=30+row*50+25
+//      suffix f=right-mid, g=lower-right, d=top-mid, etc. (clamped 9px inside rail)
+// 4. rh: true = right cut (OB departs to the right), false = left cut
+//
+// SHOT FORMAT:
+//   { name, cb:{x,y}, ob:{x,y}, cut (degrees), rh (bool), desc }
+//
+// HOW IT WORKS:
+//   The preset click handler in buildShotList() calls loadShot(idx).
+//   loadShot() sets S.diagCutDeg=shot.cut and S._diagDragRh=shot.rh,
+//   then calls render(). The readouts and ball diagram both read diagCutDeg
+//   directly — no geometry recomputation needed.
+//   KEY FIX (session 4): preset click handler MUST call loadShot(), not render()
+//   directly — otherwise diagCutDeg and rh are never set.
+// ─────────────────────────────────────────────────────────────────────────────
+// ── SHOT LIBRARY ─────────────────────────────────────────────
+// Positions use SVG coords: table is (30,30)→(430,230), 1 diamond = 50px
+// Near-rail shots: f≈y45 (15px from rail), g≈y55 (25px), e≈y38 (8px, clamped)
+// sq(n) grid: row=(n-1)//8, col=(n-1)%8; center=30+col*50+25, 30+row*50+25
+//   suffixes from center: f=(+25,0), g=(+25,+25), e=(+25,-25), h=(0,+37)
+// cut: angle in degrees between approach and required OB departure (to nearest pocket)
+// rh: true = contact on right side of OB (shooter's perspective)
+//
+const SHOT_LIBRARY = [
+
+  // ── CATEGORY A: Rail Band — Close ─────────────────────────────
+  // Both balls near top rail, ~3 diamonds apart. Target: TR corner.
+  { code:'A1', category:'Rail Band — Close', name:'A1 · Rail Straight',
+    cb:{x:130,y:45}, ob:{x:280,y:45}, cut:5.7, rh:false, pocket:'TR',
+    desc:'CB 2f · OB 5f → P3 — 5.7°R · ~9%',
+    teaching:'Both balls same distance from rail. Nearly full ball — the 10% contact reference. How much daylight on the right edge?',
+    difficulty:1 },
+
+  { code:'A2', category:'Rail Band — Close', name:'A2 · CB Tight, OB Low',
+    cb:{x:130,y:45}, ob:{x:280,y:60}, cut:17, rh:false, pocket:'TR',
+    desc:'CB 2f · OB 5g → P3 — 17°R · ~29%',
+    teaching:'OB drops off the rail. Required cut grows — notice how the overlap shifts when OB moves away from the cushion.',
+    difficulty:2 },
+
+  { code:'A3', category:'Rail Band — Close', name:'A3 · Both Off Rail',
+    cb:{x:130,y:60}, ob:{x:280,y:60}, cut:11.3, rh:false, pocket:'TR',
+    desc:'CB 2g · OB 5g → P3 — 11.3°R · ~19%',
+    teaching:'Both balls same distance off the rail. Smaller cut than A2 — same OB position but approach angle changes.',
+    difficulty:2 },
+
+  { code:'A4', category:'Rail Band — Close', name:'A4 · Straight-In Rail',
+    cb:{x:130,y:60}, ob:{x:280,y:45}, cut:0, rh:false, pocket:'TR',
+    desc:'CB 2g · OB 5f → P3 — 0°L · ~0%',
+    teaching:'CB off the rail, OB hugs it — dead straight shot. Your eyes want to add cut. Trust the diagram.',
+    difficulty:1 },
+
+  // ── CATEGORY B: Rail Band — Long ──────────────────────────────
+  // CB at 2g, OB at diamond 7. Target: TR corner.
+  { code:'A5', category:'Rail Band — Long', name:'A5 · Long Rail, OB Level',
+    cb:{x:130,y:60}, ob:{x:380,y:60}, cut:31, rh:false, pocket:'TR',
+    desc:'CB 2g · OB 7g → P3 — 31°R · ~51%',
+    teaching:'Same rail position as A3 but 5 diamonds of travel. Required cut jumps to half-ball. Distance compresses the angle.',
+    difficulty:2 },
+
+  { code:'A6', category:'Rail Band — Long', name:'A6 · Long Rail, OB Tight',
+    cb:{x:130,y:60}, ob:{x:380,y:45}, cut:13.3, rh:false, pocket:'TR',
+    desc:'CB 2g · OB 7f → P3 — 13.3°R · ~22%',
+    teaching:'OB tightens to rail. Cut drops as OB moves closer to the pocket line. Quarter-ball, not the thin cut instinct says.',
+    difficulty:2 },
+
+  { code:'A7', category:'Rail Band — Long', name:'A7 · OB Rail-Tight',
+    cb:{x:130,y:60}, ob:{x:380,y:38}, cut:4.1, rh:false, pocket:'TR',
+    desc:'CB 2g · OB 7e → P3 — 4.1°R · ~7%',
+    teaching:'OB nearly touching cushion, pocket almost dead ahead. Thinnest functional near-pocket cut in this series.',
+    difficulty:2 },
+
+  // ── CATEGORY C: Spot Zone ─────────────────────────────────────
+  // OB fixed at sq14g (x=330,y=130). CB varies. Target: TR corner.
+  { code:'A8', category:'Spot Zone', name:'A8 · Spot 45° (Half Ball)',
+    cb:{x:230,y:180}, ob:{x:330,y:130}, cut:18.4, rh:false, pocket:'TR',
+    desc:'CB sq20g · OB sq14g → P3 — 18.4°R · ~31%',
+    teaching:'Workhorse mid-range cut. Set up until the ghost ball feels automatic from this zone.',
+    difficulty:1 },
+
+  { code:'A9', category:'Spot Zone', name:'A9 · Spot Steep',
+    cb:{x:280,y:180}, ob:{x:330,y:130}, cut:0, rh:false, pocket:'TR',
+    desc:'CB sq21g · OB sq14g → P3 — 0°L · ~0%',
+    teaching:'Straight-in to TR from this position. Your address position is steep — own the full-ball reference here.',
+    difficulty:1 },
+
+  { code:'A10', category:'Spot Zone', name:'A10 · Spot Angled Right',
+    cb:{x:280,y:205}, ob:{x:330,y:130}, cut:11.3, rh:true, pocket:'TR',
+    desc:'CB sq29f · OB sq14g → P3 — 11.3°L · ~19%',
+    teaching:'CB deep below OB. Approach angle compresses the cut. Compare ghost ball to A8.',
+    difficulty:2 },
+
+  { code:'A11', category:'Spot Zone', name:'A11 · Spot Left Approach',
+    cb:{x:255,y:155}, ob:{x:330,y:130}, cut:26.6, rh:false, pocket:'TR',
+    desc:'CB sq21 · OB sq14g → P3 — 26.6°R · ~44%',
+    teaching:'Approach from left-center, mild cut. Nearly half-ball. The workhorse address for this OB position.',
+    difficulty:1 },
+
+  { code:'A12', category:'Spot Zone', name:'A12 · Spot Far Left',
+    cb:{x:305,y:205}, ob:{x:330,y:130}, cut:26.6, rh:true, pocket:'TR',
+    desc:'CB sq30 · OB sq14g → P3 — 26.6°L · ~44%',
+    teaching:'CB below and right of OB. Mirror of A11 in cut angle but opposite contact side. Compare the two feels.',
+    difficulty:2 },
+
+  // ── CATEGORY D: Side Pocket Line ──────────────────────────────
+  // CB at sq10h (x=105,y=142). Target: TM (top side pocket).
+  { code:'A13', category:'Side Pocket Line', name:'A13 · Side Pocket 13°',
+    cb:{x:105,y:142}, ob:{x:160,y:80}, cut:12.9, rh:true, pocket:'TM',
+    desc:'CB sq10h · OB sq3g → P2 — 12.9°L · ~22%',
+    teaching:'Steep approach, OB close to pocket. High percentage — but the steep angle demands a precise bridge.',
+    difficulty:2 },
+
+  { code:'A14', category:'Side Pocket Line', name:'A14 · Side Pocket 22°',
+    cb:{x:105,y:142}, ob:{x:185,y:92}, cut:22, rh:false, pocket:'TM',
+    desc:'CB sq10h · OB sq4h → P2 — 22°R · ~37%',
+    teaching:'Workhorse side-pocket angle. About 3/8-ball contact. Set this up until the ghost ball position is automatic.',
+    difficulty:2 },
+
+  { code:'A15', category:'Side Pocket Line', name:'A15 · Side Pocket 38°',
+    cb:{x:105,y:142}, ob:{x:210,y:80}, cut:37.6, rh:false, pocket:'TM',
+    desc:'CB sq10h · OB sq4g → P2 — 37.6°R · ~61%',
+    teaching:'OB shifts toward center, approach flattens to 38°. Just past half-ball. Compare ghost ball to A14.',
+    difficulty:2 },
+
+  { code:'A16', category:'Side Pocket Line', name:'A16 · Side Pocket Thin',
+    cb:{x:105,y:142}, ob:{x:160,y:55}, cut:38, rh:true, pocket:'TM',
+    desc:'CB sq10h · OB sq3f → P2 — 38°L · ~61%',
+    teaching:'OB tight to top rail. Similar cut to A15 but opposite approach. The margin for error is narrowest here.',
+    difficulty:3 },
+
+  // ── CATEGORY E: Mid Table ─────────────────────────────────────
+  // CB at sq12g (x=230,y=130). Target: BR corner.
+  { code:'A17', category:'Mid Table', name:'A17 · Center Straight-In',
+    cb:{x:230,y:130}, ob:{x:330,y:180}, cut:0, rh:false, pocket:'BR',
+    desc:'CB sq12g · OB sq22g → P4 — 0°L · ~0%',
+    teaching:'Straight-in from center table. Establish your zero reference here before exploring the cut series.',
+    difficulty:1 },
+
+  { code:'A18', category:'Mid Table', name:'A18 · Center 23° Cut',
+    cb:{x:230,y:130}, ob:{x:330,y:205}, cut:22.8, rh:false, pocket:'BR',
+    desc:'CB sq12g · OB sq30f → P4 — 22.8°R · ~38%',
+    teaching:'Mild cut, OB angled toward bottom rail. About 3/8-ball. Bread-and-butter mid-table cut shot.',
+    difficulty:1 },
+
+  { code:'A19', category:'Mid Table', name:'A19 · Center 34° Cut',
+    cb:{x:230,y:130}, ob:{x:355,y:155}, cut:33.7, rh:true, pocket:'BR',
+    desc:'CB sq12g · OB sq23 → P4 — 33.7°L · ~55%',
+    teaching:'OB hangs right, cut crosses half-ball line. More than it looks from address — trust the diagram.',
+    difficulty:2 },
+
+  { code:'A20', category:'Mid Table', name:'A20 · Long Diagonal',
+    cb:{x:230,y:130}, ob:{x:380,y:180}, cut:26.6, rh:true, pocket:'BR',
+    desc:'CB sq12g · OB sq23g → P4 — 26.6°L · ~44%',
+    teaching:'Long diagonal cut to the far zone. Speed is critical — aim is the same across speed range, CB path is not.',
+    difficulty:2 },
+
+  { code:'A21', category:'Mid Table', name:'A21 · OB on Bottom Rail',
+    cb:{x:230,y:130}, ob:{x:330,y:221}, cut:37.2, rh:false, pocket:'BR',
+    desc:'CB sq12g · OB sq30g rail → P4 — 37.2°R · ~60%',
+    teaching:'OB frozen on bottom rail. Rail shots require extra english to control CB — that is a separate drill.',
+    difficulty:3 },
+
+  { code:'A22', category:'Mid Table', name:'A22 · Rail, Shifted',
+    cb:{x:230,y:130}, ob:{x:380,y:221}, cut:21, rh:false, pocket:'BR',
+    desc:'CB sq12g · OB sq31g rail → P4 — 21°R · ~35%',
+    teaching:'OB on bottom rail, shifted toward corner. Confirm contact on the fraction ticks before every stroke.',
+    difficulty:3 },
+
+];
+
+// ── USER SHOT NOTES ───────────────────────────────────────────
+// Per-shot coaching notes keyed by shot code (e.g. 'A1'), stored in localStorage.
+// Separate from userShots (saved shots) — these annotate the preset library.
+let shotNotes = {};
+function loadShotNotes() {
+  try { shotNotes = JSON.parse(localStorage.getItem('lz-aimer-notes') || '{}'); } catch(e) { shotNotes={}; }
+}
+function saveShotNote(code, text) {
+  shotNotes[code] = text;
+  try { localStorage.setItem('lz-aimer-notes', JSON.stringify(shotNotes)); } catch(e) {}
+}
+loadShotNotes();
+
+let libraryOpen = false;
+
+// ── USER SHOT LIBRARY ──────────────────────────────────────────
+let userShots = [];
+
+function loadUserShots() {
+  try { userShots = JSON.parse(localStorage.getItem('lz-aimer-shots') || '[]'); } catch(e) { userShots=[]; }
+}
+function saveUserShots() {
+  try { localStorage.setItem('lz-aimer-shots', JSON.stringify(userShots)); } catch(e) {}
+}
+
+function saveCurrentShot() {
+  const input = document.getElementById('shot-name-input');
+  const name = (input ? input.value.trim() : '') || ('Shot ' + (userShots.length + 1));
+  const cutDeg = S.diagCutDeg || 0;
+  const dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
+  userShots.push({
+    name,
+    cb: {...S.cb}, ob: {...S.ob},
+    cut: cutDeg,
+    rh: S._diagDragRh,
+    ts: Date.now(),
+    desc: Math.round(cutDeg) + '°' + dir + ' · ' + Math.round((S.diagFraction||0)*100) + '%'
+  });
+  saveUserShots();
+  if (input) input.value = '';
+  buildShotList();
+}
+
+function loadUserShot(idx) {
+  const shot = userShots[idx];
+  if (!shot) return;
+  S.ob = {...shot.ob}; S.cb = {...shot.cb};
+  S.diagCutDeg = shot.cut;
+  S._diagDragRh = shot.rh;
+  render();
+}
+
+function deleteUserShot(idx) {
+  userShots.splice(idx, 1);
+  saveUserShots();
+  buildShotList();
+}
+
+function starsHtml(n) {
+  return '<span style="color:#f0df70;font-size:9px;">' + '★'.repeat(n) + '<span style="color:rgba(255,255,255,0.15);">' + '★'.repeat(5-n) + '</span></span>';
+}
+
+function buildShotList() {
+  const el = document.getElementById('shot-library-list');
+  if (!el) return;
+
+  // Group presets by category
+  const cats = [];
+  const catMap = {};
+  SHOT_LIBRARY.forEach((s, i) => {
+    if (!catMap[s.category]) { catMap[s.category] = []; cats.push(s.category); }
+    catMap[s.category].push({s, i});
+  });
+
+  let html = '';
+  cats.forEach(cat => {
+    html += '<div style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(255,223,112,0.7);text-transform:uppercase;padding:8px 10px 3px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.25);">' + cat + '</div>';
+    catMap[cat].forEach(({s, i}) => {
+      const note = shotNotes[s.code] || '';
+      const noteId = 'note-' + s.code;
+      const noteAreaId = 'notebox-' + s.code;
+      html +=
+        '<div style="border-bottom:1px solid rgba(255,255,255,0.08);">' +
+        // Shot header — clickable to load
+        '<div data-preset="' + i + '" class="shot-lib-item" style="padding:8px 10px 4px;cursor:pointer;display:flex;align-items:flex-start;gap:6px;">' +
+          '<div style="flex:1;">' +
+            '<div style="display:flex;align-items:center;gap:6px;">' +
+              '<span style="font-size:13px;font-weight:900;color:#f0df70;">' + s.name + '</span>' +
+              starsHtml(s.difficulty) +
+            '</div>' +
+            '<div style="font-size:10px;color:rgba(255,255,255,0.55);margin-top:2px;">' + s.desc + '</div>' +
+            '<div style="font-size:11px;color:rgba(160,220,160,0.85);margin-top:3px;font-style:italic;line-height:1.4;">' + s.teaching + '</div>' +
+          '</div>' +
+        '</div>' +
+        // Notes section
+        '<div style="padding:2px 6px 5px;">' +
+          '<div style="display:flex;align-items:center;gap:4px;">' +
+            '<span style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;">NOTES</span>' +
+            '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:7px;padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);cursor:pointer;">' + (note ? 'edit' : '+') + '</button>' +
+          '</div>' +
+          (note ? '<div id="' + noteId + '" style="font-size:8px;color:rgba(180,220,255,0.7);margin-top:2px;padding:3px 5px;background:rgba(0,0,0,0.2);border-radius:3px;">' + note.replace(/</g,'&lt;') + '</div>' : '<div id="' + noteId + '"></div>') +
+          '<div id="' + noteAreaId + '" style="display:none;margin-top:3px;">' +
+            '<textarea rows="2" style="width:100%;box-sizing:border-box;font-size:9px;background:rgba(0,0,0,0.3);color:#c8e8c8;border:1px solid rgba(255,255,255,0.15);border-radius:3px;padding:3px;resize:vertical;font-family:Lato,sans-serif;" placeholder="Your notes on this shot...">' + note.replace(/</g,'&lt;') + '</textarea>' +
+            '<div style="display:flex;gap:4px;margin-top:2px;">' +
+              '<button onclick="saveNote(\'' + s.code + '\')" style="font-size:8px;padding:2px 8px;border-radius:3px;border:none;background:#4ade80;color:#001a00;cursor:pointer;font-weight:900;">SAVE</button>' +
+              '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:8px;padding:2px 8px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;">CANCEL</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '</div>';
+    });
+  });
+
+  if (userShots.length) {
+    html += '<div style="font-size:7px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;padding:6px 6px 2px;border-top:1px solid rgba(255,255,255,0.06);">My Shots</div>';
+    html += userShots.map((s,i) => {
+      const d = new Date(s.ts);
+      const dt = (d.getMonth()+1)+'/'+d.getDate();
+      return '<div style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">' +
+        '<div onclick="loadUserShot('+i+')" style="flex:1;cursor:pointer;">' +
+        '<div style="font-size:10px;font-weight:900;color:#7dd3fc;">' + s.name + '</div>' +
+        '<div style="font-size:8px;color:rgba(255,255,255,0.4);">' + dt + ' · ' + s.desc + '</div></div>' +
+        '<button onclick="deleteUserShot('+i+')" style="font-size:9px;padding:1px 4px;border-radius:3px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;cursor:pointer;margin-left:4px;">✕</button>' +
+        '</div>';
+    }).join('');
+  }
+
+  el.innerHTML = html;
+  el.querySelectorAll('[data-preset]').forEach(item => {
+    item.addEventListener('click', () => { loadShot(parseInt(item.dataset.preset)); });
+  });
+}
+
+function toggleNoteBox(code) {
+  const box = document.getElementById('notebox-' + code);
+  if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveNote(code) {
+  const box = document.getElementById('notebox-' + code);
+  if (!box) return;
+  const ta = box.querySelector('textarea');
+  const text = ta ? ta.value.trim() : '';
+  saveShotNote(code, text);
+  box.style.display = 'none';
+  buildShotList();
+}
+
+function toggleShotLibrary() {
+  libraryOpen = !libraryOpen;
+  const panel = document.getElementById('shot-library-panel');
+  if (panel) panel.style.display = libraryOpen ? 'block' : 'none';
+  if (libraryOpen) { loadShotNotes(); buildShotList(); }
+}
+
+function loadShot(idx) {
+  const shot = SHOT_LIBRARY[idx];
+  if (!shot) return;
+  S.ob = {...shot.ob};
+  S.cb = {...shot.cb};
+  S.diagCutDeg = shot.cut;
+  S._diagDragRh = shot.rh !== undefined ? shot.rh : (shot.ob.x > shot.cb.x);
+  justShot = false;
+  render();
+  // Panel stays open so user can pick another shot
+}
+
+</script>
+  <link rel="manifest" href="manifest-aimer.json">
+  <link rel="apple-touch-icon" href="icon-aimer-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LZ Aimer">
+  <meta name="theme-color" content="#1a361a">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="gBall" cx="36%" cy="28%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="48%" stop-color="#d8d2c4"/>
+      <stop offset="100%" stop-color="#908070"/>
+    </radialGradient>
+    <radialGradient id="gOB" cx="50%" cy="28%">
+      <stop offset="0%" stop-color="#ff9090"/>
+      <stop offset="35%" stop-color="#ee2020"/>
+      <stop offset="80%" stop-color="#aa0808"/>
+      <stop offset="100%" stop-color="#6a0808"/>
+    </radialGradient>
+    <radialGradient id="OGdB" cx="50%" cy="28%">
+      <stop offset="0%" stop-color="#ff6060"/>
+      <stop offset="40%" stop-color="#cc1010"/>
+      <stop offset="100%" stop-color="#6a0808"/>
+    </radialGradient>
+    <radialGradient id="OGB" cx="50%" cy="28%">
+      <stop offset="0%" stop-color="#ff9090"/>
+      <stop offset="35%" stop-color="#ee2020"/>
+      <stop offset="80%" stop-color="#aa0808"/>
+      <stop offset="100%" stop-color="#6a0808"/>
+    </radialGradient>
+    <radialGradient id="CGB" cx="36%" cy="28%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="48%" stop-color="#d8d2c4"/>
+      <stop offset="100%" stop-color="#908070"/>
+    </radialGradient>
+    <marker id="arr-aim" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <polygon points="0,0 8,3.5 0,7" fill="#f0df70"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="outer-wrap">
+<div id="zoom-wrap" style="flex:1;min-width:0;transform-origin:top left;isolation:isolate;overflow:hidden;"><div class="card">
+  <div class="hdr">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+      <button id="help-btn" onclick="toggleInfo()" style="width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;flex-shrink:0;">?</button>
+      <div style="text-align:center;flex:1;padding:0 8px;">
+        <h1><span class="t-lestar">LeStar&nbsp;</span><span class="t-z">Z</span><span class="t-rest">'s Aimer</span></h1>
+        <p class="sub">place the balls · set the angle · find the aim point</p>
+      </div>
+      <div style="display:flex;gap:3px;align-items:center;flex-shrink:0;">
+        <button id="size-btn" onclick="cycleTableSize()" style="padding:2px 6px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;">9ft</button>
+        <button id="unit-btn" onclick="toggleUnits()" style="padding:2px 6px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;">FT</button>
+        <button id="table-btn" onclick="toggleTable()" style="padding:2px 7px;border-radius:10px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;white-space:nowrap;">POOL</button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- TABLE + DIAGRAM -->
+  <div class="diagram-wrap" id="block-ball-wrap">
+
+    <!-- TABLE -->
+    <div class="svg-box top-box" style="position:relative;">
+      <svg id="topsvg" viewBox="0 0 460 260" preserveAspectRatio="xMidYMid meet"
+           style="position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none;-webkit-user-select:none;user-select:none;overflow:hidden;"
+           xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="tFelt" cx="50%" cy="50%" r="70%">
+            <stop offset="0%" stop-color="#2d6a2d"/>
+            <stop offset="100%" stop-color="#1a4a1a"/>
+          </radialGradient>
+          <radialGradient id="tPocket" cx="35%" cy="35%" r="70%">
+            <stop offset="0%" stop-color="#1a1a1a"/><stop offset="100%" stop-color="#050a05"/>
+          </radialGradient>
+          <marker id="arr-ob" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
+            <polygon points="0 0,7 2.5,0 5" fill="#4ade80"/>
+          </marker>
+          <marker id="arr-stun"   markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
+            <polygon points="0 0,7 2.5,0 5" fill="rgba(255,255,255,0.9)"/>
+          </marker>
+          <marker id="arr-follow" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
+            <polygon points="0 0,7 2.5,0 5" fill="#f97316"/>
+          </marker>
+          <marker id="arr-draw"   markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
+            <polygon points="0 0,7 2.5,0 5" fill="#60a5fa"/>
+          </marker>
+        </defs>
+        <g id="tbl-content">
+        <!-- Wood rail -->
+        <rect x="0" y="0" width="460" height="260" rx="9" fill="#3d2b1f"/>
+        <rect x="1.5" y="1.5" width="457" height="257" rx="8" fill="none" stroke="#5a3f2c" stroke-width="2"/>
+        <!-- Cushion strips -->
+        <rect x="30" y="17" width="400" height="13" fill="#1a6830"/>
+        <rect x="30" y="230" width="400" height="13" fill="#1a6830"/>
+        <rect x="17" y="30" width="13" height="200" fill="#1a6830"/>
+        <rect x="430" y="30" width="13" height="200" fill="#1a6830"/>
+        <!-- Felt -->
+        <rect x="30" y="30" width="400" height="200" fill="url(#tFelt)"/>
+        <rect x="30" y="30" width="400" height="200" fill="none" stroke="#0f3d1c" stroke-width="1"/>
+        <!-- Pockets — dark circles drawn ON TOP of felt corners.
+             Felt rect clips the inner quadrant, leaving a natural arc pocket.
+             r=17 gives ~24px diagonal opening = 1.5 ball widths -->
+        <circle cx="30"  cy="30"  r="17" fill="#060a06"/>
+        <circle cx="430" cy="30"  r="17" fill="#060a06"/>
+        <circle cx="30"  cy="230" r="17" fill="#060a06"/>
+        <circle cx="430" cy="230" r="17" fill="#060a06"/>
+        <!-- Side pockets — round-backed cutouts carved into rail -->
+        <ellipse cx="230" cy="22" rx="20" ry="13" fill="#060a06"/>
+        <ellipse cx="230" cy="238" rx="20" ry="13" fill="#060a06"/>
+        <!-- Pocket numbers (BCA standard: 1=TL, 2=TM, 3=TR, 4=BR, 5=BM, 6=BL) -->
+        <text x="44"  y="44"  text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">1</text>
+        <text x="230" y="37"  text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">2</text>
+        <text x="416" y="44"  text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">3</text>
+        <text x="416" y="222" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">4</text>
+        <text x="230" y="224" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">5</text>
+        <text x="44"  y="222" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">6</text>
+        <!-- Diamonds top (y=10-22, fully on rail above cushion at y=17-30) -->
+        <polygon points="80,10 84,15 80,20 76,15"   fill="#c8a84b"/>
+        <polygon points="130,10 134,15 130,20 126,15" fill="#c8a84b"/>
+        <polygon points="180,10 184,15 180,20 176,15" fill="#c8a84b"/>
+        <polygon points="280,10 284,15 280,20 276,15" fill="#c8a84b"/>
+        <polygon points="330,10 334,15 330,20 326,15" fill="#c8a84b"/>
+        <polygon points="380,10 384,15 380,20 376,15" fill="#c8a84b"/>
+        <!-- Diamonds bottom -->
+        <polygon points="80,240 84,245 80,250 76,245"   fill="#c8a84b"/>
+        <polygon points="130,240 134,245 130,250 126,245" fill="#c8a84b"/>
+        <polygon points="180,240 184,245 180,250 176,245" fill="#c8a84b"/>
+        <polygon points="280,240 284,245 280,250 276,245" fill="#c8a84b"/>
+        <polygon points="330,240 334,245 330,250 326,245" fill="#c8a84b"/>
+        <polygon points="380,240 384,245 380,250 376,245" fill="#c8a84b"/>
+        <!-- Diamonds left -->
+        <polygon points="10,80  15,76  20,80  15,84"  fill="#c8a84b"/>
+        <polygon points="10,130 15,126 20,130 15,134" fill="#c8a84b"/>
+        <polygon points="10,180 15,176 20,180 15,184" fill="#c8a84b"/>
+        <!-- Diamonds right -->
+        <polygon points="440,80  445,76  450,80  445,84"  fill="#c8a84b"/>
+        <polygon points="440,130 445,126 450,130 445,134" fill="#c8a84b"/>
+        <polygon points="440,180 445,176 450,180 445,184" fill="#c8a84b"/>
+        <!-- Diamond numbers -->
+        <text x="80"  y="7"  text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">1</text>
+        <text x="130" y="7"  text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+        <text x="180" y="7"  text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+        <text x="280" y="7"  text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">5</text>
+        <text x="330" y="7"  text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">6</text>
+        <text x="380" y="7"  text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">7</text>
+        <text x="80"  y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">1</text>
+        <text x="130" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+        <text x="180" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+        <text x="280" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">5</text>
+        <text x="330" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">6</text>
+        <text x="380" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">7</text>
+        <text x="3"   y="83"  fill="#907020" font-size="7" font-family="Helvetica">1</text>
+        <text x="3"   y="133" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+        <text x="3"   y="183" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+        <text x="452" y="83"  fill="#907020" font-size="7" font-family="Helvetica">1</text>
+        <text x="452" y="133" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+        <text x="452" y="183" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+        <text x="30"  y="7"  text-anchor="middle" fill="#604a14" font-size="6.5" font-family="Helvetica">0</text>
+        <text x="430" y="7"  text-anchor="middle" fill="#604a14" font-size="6.5" font-family="Helvetica">8</text>
+        <text x="230" y="7"  text-anchor="middle" fill="#604a14" font-size="6.5" font-family="Helvetica">4</text>
+        <text x="3"   y="32"  fill="#604a14" font-size="6.5" font-family="Helvetica">0</text>
+        <text x="3"   y="232" fill="#604a14" font-size="6.5" font-family="Helvetica">4</text>
+
+        <!-- MAP OVERLAY -->
+        <g id="map-layer" opacity="0" style="pointer-events:none">
+          <text x="230" y="43" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2">TOP RAIL</text>
+          <text x="230" y="224" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2">BOTTOM RAIL</text>
+          <text x="40" y="132" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2" transform="rotate(-90,40,132)">LEFT RAIL</text>
+          <text x="420" y="132" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2" transform="rotate(90,420,132)">RIGHT RAIL</text>
+          <line x1="80"  y1="30" x2="80"  y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+          <line x1="130" y1="30" x2="130" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+          <line x1="180" y1="30" x2="180" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+          <line x1="230" y1="30" x2="230" y2="230" stroke="#7dd3fc" stroke-width="1.2" opacity="0.75"/>
+          <line x1="280" y1="30" x2="280" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+          <line x1="330" y1="30" x2="330" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+          <line x1="380" y1="30" x2="380" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+          <line x1="30" y1="80"  x2="430" y2="80"  stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+          <line x1="30" y1="130" x2="430" y2="130" stroke="#7dd3fc" stroke-width="1.2" opacity="0.75"/>
+          <line x1="30" y1="180" x2="430" y2="180" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+          <circle cx="230" cy="130" r="3" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.6"/>
+          <circle cx="230" cy="130" r="0.8" fill="#7dd3fc" opacity="0.6"/>
+          <text x="236" y="128" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.6">CENTER</text>
+        </g>
+
+        <g id="map2-layer" opacity="0" style="pointer-events:none">
+          <line x1="35" y1="30" x2="35" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="40" y1="30" x2="40" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="45" y1="30" x2="45" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="50" y1="30" x2="50" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="55" y1="30" x2="55" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="55" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+          <text x="55" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+          <line x1="60" y1="30" x2="60" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="65" y1="30" x2="65" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="70" y1="30" x2="70" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="75" y1="30" x2="75" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="85" y1="30" x2="85" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="90" y1="30" x2="90" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="95" y1="30" x2="95" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="100" y1="30" x2="100" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="105" y1="30" x2="105" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="105" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+          <text x="105" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+          <line x1="110" y1="30" x2="110" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="115" y1="30" x2="115" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="120" y1="30" x2="120" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="125" y1="30" x2="125" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="135" y1="30" x2="135" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="140" y1="30" x2="140" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="145" y1="30" x2="145" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="150" y1="30" x2="150" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="155" y1="30" x2="155" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="155" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+          <text x="155" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+          <line x1="160" y1="30" x2="160" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="165" y1="30" x2="165" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="170" y1="30" x2="170" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="175" y1="30" x2="175" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="185" y1="30" x2="185" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="190" y1="30" x2="190" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="195" y1="30" x2="195" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="200" y1="30" x2="200" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="205" y1="30" x2="205" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="205" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+          <text x="205" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+          <line x1="210" y1="30" x2="210" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="215" y1="30" x2="215" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="220" y1="30" x2="220" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="225" y1="30" x2="225" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="235" y1="30" x2="235" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="240" y1="30" x2="240" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="245" y1="30" x2="245" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="250" y1="30" x2="250" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="255" y1="30" x2="255" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="255" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">4.5</text>
+          <text x="255" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">4.5</text>
+          <line x1="260" y1="30" x2="260" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="265" y1="30" x2="265" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="270" y1="30" x2="270" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="275" y1="30" x2="275" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="285" y1="30" x2="285" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="290" y1="30" x2="290" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="295" y1="30" x2="295" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="300" y1="30" x2="300" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="305" y1="30" x2="305" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="305" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">5.5</text>
+          <text x="305" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">5.5</text>
+          <line x1="310" y1="30" x2="310" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="315" y1="30" x2="315" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="320" y1="30" x2="320" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="325" y1="30" x2="325" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="335" y1="30" x2="335" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="340" y1="30" x2="340" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="345" y1="30" x2="345" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="350" y1="30" x2="350" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="355" y1="30" x2="355" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="355" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">6.5</text>
+          <text x="355" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">6.5</text>
+          <line x1="360" y1="30" x2="360" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="365" y1="30" x2="365" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="370" y1="30" x2="370" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="375" y1="30" x2="375" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="385" y1="30" x2="385" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="390" y1="30" x2="390" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="395" y1="30" x2="395" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="400" y1="30" x2="400" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="405" y1="30" x2="405" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="405" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">7.5</text>
+          <text x="405" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">7.5</text>
+          <line x1="410" y1="30" x2="410" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="415" y1="30" x2="415" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="420" y1="30" x2="420" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="425" y1="30" x2="425" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="35" x2="430" y2="35" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="40" x2="430" y2="40" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="45" x2="430" y2="45" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="50" x2="430" y2="50" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="55" x2="430" y2="55" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="27" y="56.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+          <text x="433" y="56.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+          <line x1="30" y1="60" x2="430" y2="60" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="65" x2="430" y2="65" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="70" x2="430" y2="70" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="75" x2="430" y2="75" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="85" x2="430" y2="85" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="90" x2="430" y2="90" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="95" x2="430" y2="95" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="100" x2="430" y2="100" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="105" x2="430" y2="105" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="27" y="106.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+          <text x="433" y="106.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+          <line x1="30" y1="110" x2="430" y2="110" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="115" x2="430" y2="115" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="120" x2="430" y2="120" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="125" x2="430" y2="125" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="135" x2="430" y2="135" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="140" x2="430" y2="140" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="145" x2="430" y2="145" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="150" x2="430" y2="150" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="155" x2="430" y2="155" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="27" y="156.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+          <text x="433" y="156.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+          <line x1="30" y1="160" x2="430" y2="160" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="165" x2="430" y2="165" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="170" x2="430" y2="170" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="175" x2="430" y2="175" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="185" x2="430" y2="185" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="190" x2="430" y2="190" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="195" x2="430" y2="195" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="200" x2="430" y2="200" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="205" x2="430" y2="205" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+          <text x="27" y="206.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+          <text x="433" y="206.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+          <line x1="30" y1="210" x2="430" y2="210" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="215" x2="430" y2="215" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="220" x2="430" y2="220" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <line x1="30" y1="225" x2="430" y2="225" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+          <text x="30" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+          <text x="30" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+          <text x="80" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+          <text x="80" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+          <text x="130" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+          <text x="130" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+          <text x="180" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+          <text x="180" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+          <text x="230" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+          <text x="230" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+          <text x="280" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">5</text>
+          <text x="280" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">5</text>
+          <text x="330" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">6</text>
+          <text x="330" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">6</text>
+          <text x="380" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">7</text>
+          <text x="380" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">7</text>
+          <text x="430" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">8</text>
+          <text x="430" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">8</text>
+          <text x="26" y="32" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+          <text x="434" y="32" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+          <text x="26" y="82" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+          <text x="434" y="82" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+          <text x="26" y="132" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+          <text x="434" y="132" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+          <text x="26" y="182" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+          <text x="434" y="182" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+          <text x="26" y="232" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+          <text x="434" y="232" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+          <text x="55" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">1</text>
+          <text x="105" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">2</text>
+          <text x="155" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">3</text>
+          <text x="205" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">4</text>
+          <text x="255" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">5</text>
+          <text x="305" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">6</text>
+          <text x="355" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">7</text>
+          <text x="405" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">8</text>
+          <text x="55" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">9</text>
+          <text x="105" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">10</text>
+          <text x="155" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">11</text>
+          <text x="205" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">12</text>
+          <text x="255" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">13</text>
+          <text x="305" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">14</text>
+          <text x="355" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">15</text>
+          <text x="405" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">16</text>
+          <text x="55" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">17</text>
+          <text x="105" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">18</text>
+          <text x="155" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">19</text>
+          <text x="205" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">20</text>
+          <text x="255" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">21</text>
+          <text x="305" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">22</text>
+          <text x="355" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">23</text>
+          <text x="405" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">24</text>
+          <text x="55" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">25</text>
+          <text x="105" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">26</text>
+          <text x="155" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">27</text>
+          <text x="205" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">28</text>
+          <text x="255" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">29</text>
+          <text x="305" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">30</text>
+          <text x="355" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">31</text>
+          <text x="405" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">32</text>
+        </g>
+
+        <!-- DYNAMIC LAYER -->
+        <g id="dyn">
+          <!-- CB approach line (animation) -->
+          <line id="cb-line" x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-dasharray="4,3" opacity="0"/>
+          <!-- OB trail (animation) -->
+          <line id="ob-trail" x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,120,30,0.7)" stroke-width="4" stroke-linecap="round" opacity="0"/>
+          <!-- OB departure arrow — dashed green to rail -->
+          <line id="ob-arrow" x1="0" y1="0" x2="0" y2="0" stroke="#4ade80" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#arr-ob)" opacity="0"/>
+          <!-- Ghost ball -->
+          <line id="cb-ghost-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0"/>
+          <line id="ob-arrow-ext" x1="0" y1="0" x2="0" y2="0" stroke="#4ade80" stroke-width="1.4" stroke-dasharray="4,4" opacity="0"/>
+          <!-- CB path rays: stun/follow/draw -->
+          <line id="cb-stun"   x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-stun)"  opacity="0"/>
+          <line id="cb-follow" x1="0" y1="0" x2="0" y2="0" stroke="#f97316"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-follow)" opacity="0"/>
+          <line id="cb-draw"   x1="0" y1="0" x2="0" y2="0" stroke="#60a5fa"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-draw)"   opacity="0"/>
+          <!-- CB path scratch-threat dots at rail -->
+          <circle id="cb-stun-dot"   cx="0" cy="0" r="5" opacity="0"/>
+          <circle id="cb-follow-dot" cx="0" cy="0" r="5" opacity="0"/>
+          <circle id="cb-draw-dot"   cx="0" cy="0" r="5" opacity="0"/>
+          <circle id="ghost-ball" cx="0" cy="0" r="8" fill="rgba(255,255,255,0.10)" stroke="#f0df70" stroke-width="1.8" stroke-dasharray="4,3" opacity="0"/>
+          <!-- CB Path legend (shown when cbPathOn) -->
+          <g id="cb-path-legend" opacity="0">
+            <rect x="8" y="8" width="80" height="46" rx="4" fill="rgba(0,0,0,0.55)"/>
+            <line x1="13" y1="19" x2="30" y2="19" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="5,3"/>
+            <text x="34" y="22" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">STUN</text>
+            <line x1="13" y1="31" x2="30" y2="31" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
+            <text x="34" y="34" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">FOLLOW</text>
+            <line x1="13" y1="43" x2="30" y2="43" stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="5,3"/>
+            <text x="34" y="46" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#60a5fa">DRAW</text>
+          </g>
+          <!-- Object ball -->
+          <circle id="ob-shadow" cx="231" cy="151" r="8" fill="#000" opacity="0.32"/>
+          <circle id="ob"        cx="230" cy="150" r="8" fill="url(#gOB)" stroke="#903010" stroke-width="1" cursor="grab"/>
+          <circle id="ob-hi"     cx="226" cy="146" r="2.8" fill="#fff" opacity="0.45"/>
+          <!-- Cue ball -->
+          <circle id="cb-shadow" cx="131" cy="201" r="8" fill="#000" opacity="0.32"/>
+          <circle id="cb"        cx="130" cy="200" r="8" fill="url(#gBall)" stroke="#ccccbb" stroke-width="1" cursor="grab"/>
+          <circle id="cb-hi"     cx="127" cy="197" r="2.8" fill="#fff" opacity="0.55"/>
+          <circle id="cb-dot"    cx="130" cy="200" r="1.2" fill="#999" opacity="0.4"/>
+        </g>
+        </g><!-- tbl-content -->
+      </svg>
+    </div>
+
+    <div class="sep"></div>
+    <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;gap:6px;margin:4px 0;height:52px;contain:layout style;width:100%;box-sizing:border-box;">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:#4ade80;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Contact</div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+          <div id="r-cp" style="color:#4ade80;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Inside Edge</div>
+        <div style="display:flex;gap:4px;flex:1;width:100%;">
+          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+            <div id="r-aim" style="color:#e87030;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1.5;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+            <div id="r-frc" style="color:#88ee88;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Cut</div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+          <div id="r-ang" style="color:#f0df70;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">CB-OB</div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+          <div id="r-dist" style="color:#a0d0a0;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOT LIBRARY PANEL placeholder — actual panel is fixed/floating -->
+
+    <!-- EYE-LEVEL DIAGRAM -->
+    <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;">
+      <svg id="botsvg" viewBox="0 0 460 300" preserveAspectRatio="xMidYMid meet"
+           style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;"
+           xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="revClip"><rect id="revClipRect" x="0" y="0" width="0" height="0"/></clipPath>
+        </defs>
+        <rect width="460" height="300" fill="rgba(0,0,0,0.28)"/>
+        <!-- Static tick marks — never change -->
+        <g id="bot-ticks">
+          <line x1="230" y1="131" x2="230" y2="165" stroke="#7fd0f0" stroke-width="2.2" opacity="1.0"/>
+          <line x1="189" y1="136" x2="189" y2="160" stroke="#7fd0f0" stroke-width="1.5" opacity="0.65"/>
+          <line x1="271" y1="136" x2="271" y2="160" stroke="#7fd0f0" stroke-width="1.5" opacity="0.65"/>
+          <line x1="158" y1="143" x2="158" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="167" y1="143" x2="167" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="176" y1="143" x2="176" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="194" y1="143" x2="194" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="203" y1="143" x2="203" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="212" y1="143" x2="212" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="221" y1="143" x2="221" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="239" y1="143" x2="239" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="248" y1="143" x2="248" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="257" y1="143" x2="257" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="266" y1="143" x2="266" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="284" y1="143" x2="284" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="293" y1="143" x2="293" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="302" y1="143" x2="302" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <!-- left/right extreme ticks -->
+          <line x1="148" y1="131" x2="148" y2="165" stroke="#7fd0f0" stroke-width="2.2" opacity="1.0"/>
+          <line x1="312" y1="131" x2="312" y2="165" stroke="#7fd0f0" stroke-width="2.2" opacity="1.0"/>
+        </g>
+        <!-- Static fraction labels — never change -->
+        <!-- pct labels — two sets, toggled by rh -->
+        <g id="bot-pct-lh">
+          <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0%</text>
+          <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>
+          <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">100%</text>
+        </g>
+        <g id="bot-pct-rh" opacity="0">
+          <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">100%</text>
+          <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>
+          <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0%</text>
+        </g>
+        <!-- Fraction labels LH -->
+        <g id="bot-fracs-lh">
+          <text x="169" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅛</text>
+          <text x="189" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¼</text>
+          <text x="210" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅜</text>
+          <text x="251" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅝</text>
+          <text x="271" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¾</text>
+          <text x="292" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅞</text>
+        </g>
+        <!-- Fraction labels RH (flipped) -->
+        <g id="bot-fracs-rh" opacity="0">
+          <text x="169" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅞</text>
+          <text x="189" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¾</text>
+          <text x="210" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅝</text>
+          <text x="251" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅜</text>
+          <text x="271" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¼</text>
+          <text x="292" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅛</text>
+        </g>
+        <!-- OB fixed at center, r=82 -->
+        <circle id="bot-ob-dark" cx="230" cy="148" r="82" fill="url(#OGdB)" stroke="#2a0606" stroke-width="1.5"/>
+        <circle id="bot-ob-lit" cx="230" cy="148" r="82" fill="url(#OGB)" stroke="none" clip-path="url(#revClip)"/>
+        <circle id="bot-ob-rim" cx="230" cy="148" r="82" fill="none" stroke="#8a1818" stroke-width="1.5" clip-path="url(#revClip)"/>
+        <!-- Line A -->
+        <line x1="8" y1="148" x2="452" y2="148" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round"/>
+        <g id="frac-ticks"></g>
+        <text x="6" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="15" font-weight="900" fill="#b0e8ff">A</text>
+        <!-- CB -->
+        <circle id="bot-cb"   cx="230" cy="148" r="82" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5"/>
+        <line   id="bot-cb-h" x1="148" y1="148" x2="312" y2="148" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>
+        <line   id="bot-cb-v" x1="230" y1="66"  x2="230" y2="230" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>
+        <circle id="bot-tip"  cx="230" cy="148" r="8.2" fill="#000" opacity="0.85"/>
+        <!-- edge marker -->
+        <line   id="bot-edge-line" x1="230" y1="72" x2="230" y2="224" stroke="#e87030" stroke-width="4" stroke-linecap="round" stroke-dasharray="6,4" opacity="0"/>
+        <text   id="bot-edge-lbl"  x="230" y="50" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080" opacity="0">inside edge</text>
+        <!-- aim % badge -->
+        <rect   id="bot-aim-bg"  x="190" y="240" width="80" height="30" rx="7" fill="#e87030" opacity="0"/>
+        <text   id="bot-aim-pct" x="230" y="260" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="900" fill="white" opacity="0">0%</text>
+        <!-- hint text -->
+        <text   id="bot-hint" x="322" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)">Drag ▶ to begin</text>
+        <!-- Vernier aim buttons -->
+        <g onclick="vernierAim(-1)" style="cursor:pointer;touch-action:manipulation;">
+          <rect x="8" y="248" width="48" height="48" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <text x="32" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="rgba(255,255,255,0.9)">◀</text>
+        </g>
+        <g onclick="vernierAim(1)" style="cursor:pointer;touch-action:manipulation;">
+          <rect x="62" y="248" width="48" height="48" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <text x="86" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="rgba(255,255,255,0.9)">▶</text>
+        </g>
+        <!-- Gold dashed ring on CB -->
+        <circle id="bot-cb-gold" cx="230" cy="148" r="82" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="0"/>
+        <!-- Contact Point label -->
+        <text id="bot-contact-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#4ade80" opacity="0">Contact Point</text>
+        <!-- Contact point line — always on top -->
+        <line id="bot-contact-line" x1="230" y1="66" x2="230" y2="230" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0"/>
+        <!-- Opacity +/- buttons top-right -->
+        <g onclick="ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
+          <rect x="368" y="6" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+          <text x="386" y="23" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">−</text>
+        </g>
+        <text x="410" y="23" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>
+        <g onclick="ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
+          <rect x="424" y="6" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+          <text x="442" y="23" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">+</text>
+        </g>
+      </svg>
+    </div>
+
+  </div><!-- diagram-wrap -->
+
+
+  <!-- CALIBRATION PANEL -->
+  <div id="cal-panel">
+    <div id="cal-instruction"></div>
+    <div id="cal-status" style="font-size:10px;color:rgba(255,255,255,0.5);margin:3px 0;"></div>
+    <div class="cal-actions" style="display:flex;gap:4px;flex-wrap:wrap;">
+      <button class="cal-action-btn primary" id="cal-rec1-btn" onclick="calRecord1()">① RECORD PREDICTED</button>
+      <button class="cal-action-btn primary" id="cal-rec2-btn" onclick="calRecord2()" style="display:none;background:#1a5a3a;">② RECORD ACTUAL</button>
+      <button class="cal-action-btn" onclick="calUndo()">UNDO</button>
+      <button class="cal-action-btn danger" onclick="calReset()">RESET ALL</button>
+      <button class="cal-action-btn" onclick="toggleCalLibrary()" style="background:#2a3a5a;color:#aaccff;">LIBRARY</button>
+      <button class="cal-action-btn" onclick="calExport()" style="background:#2a4a2a;color:#4ade80;border-color:#4ade80;">EXPORT</button>
+    </div>
+    <div id="cal-result" style="margin-top:4px;"></div>
+    <div id="cal-library" style="display:none;margin-top:6px;max-height:140px;overflow-y:auto;font-size:10px;color:rgba(255,255,255,0.6);border-top:1px solid rgba(255,255,255,0.1);padding-top:4px;"></div>
+  </div>
+
+  <!-- SLIDERS -->
+  <div id="sliders-block"><div class="sgroup">
+    <div class="srow">
+      <span class="slbl">speed</span>
+      <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
+      <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
+      <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
+    </div>
+    <div class="srow" style="margin-top:6px">
+      <span class="slbl">spin</span>
+      <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
+      <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
+      <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
+    </div>
+    <div class="srow" style="margin-top:6px">
+      <span class="slbl">vert</span>
+      <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
+      <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
+      <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
+    </div>
+    <div id="bias-sliders">
+    <div class="srow" style="margin-top:6px">
+      <span class="slbl" style="color:#c890f0;font-size:9px;">FAT</span>
+      <input type="range" id="sl-bias-fat" min="-12" max="12" value="0" oninput="onSliders()">
+      <span id="sv-bias-fat-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('fat',-1)">−</button><span id="sv-bias-fat" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('fat',1)">+</button></span>
+    </div>
+    <div class="srow" style="margin-top:4px">
+      <span class="slbl" style="color:#c890f0;font-size:9px;">MED</span>
+      <input type="range" id="sl-bias-med" min="-12" max="12" value="0" oninput="onSliders()">
+      <span id="sv-bias-med-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('med',-1)">−</button><span id="sv-bias-med" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('med',1)">+</button></span>
+    </div>
+    <div class="srow" style="margin-top:4px">
+      <span class="slbl" style="color:#c890f0;font-size:9px;">THIN</span>
+      <input type="range" id="sl-bias-thin" min="-12" max="12" value="0" oninput="onSliders()">
+      <span id="sv-bias-thin-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('thin',-1)">−</button><span id="sv-bias-thin" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('thin',1)">+</button></span>
+    </div>
+    </div><!-- /bias-sliders -->
+  </div>
+  </div><!-- /sliders-block -->
+
+  <!-- SHOT ATTRIBUTES -->
+
+
+</div><!-- card -->
+
+<footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
+
+
+
+<script>
+const DEG = 180/Math.PI, RAD = Math.PI/180;
+const Rb = 82;
+const TL = {left:30, right:430, top:30, bottom:230};
+const BALL_R  = 8;   // CB/OB radius in SVG px
+
+// Felt spots — add to table SVG static content via JS at init
+function addFeltSpots() {
+  const g = $('tbl-content');
+  if (!g || $('felt-spots')) return;
+  const sp = document.createElementNS('http://www.w3.org/2000/svg','g');
+  sp.id = 'felt-spots';
+  // Head spot (1/4 from head/left rail): x=130, y=130
+  // Center spot: x=230, y=130
+  // Foot spot (1/4 from foot/right rail): x=330, y=130
+  sp.innerHTML =
+    `<circle cx="130" cy="130" r="2.5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>` +
+    `<circle cx="230" cy="130" r="2.5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>` +
+    `<circle cx="330" cy="130" r="2.5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>`;
+  // Insert before the dyn group
+  const dyn = $('dyn');
+  g.insertBefore(sp, dyn);
+}
+
+// ── STATE ──────────────────────────────────────────────────────
+const S = {
+  ob: {x:230, y:150},
+  cb: {x:130, y:200},
+  diagCutDeg: 0,
+  _diagDragRh: undefined,
+  speed:  0.5,
+  spin:   0,
+  vert:   0,
+  bias:   0,
+  snooker: false,
+  rotation: 0,
+  tableSize: 9,   // feet: 7, 9, 10, 12
+  metric: false,
+};
+let drag = null;
+let diagDrag = false;
+let mapOn = true;
+let snapOn = true;
+let snapLabelTimer = null;
+let lockTable = true;
+let lockBalls = true;
+let lockSliders = true;
+let biasOn = false;
+let SNAP_POINTS = [];  // built after DOM ready
+const SNAP_RADIUS = 14;
+const ghostOn = true;  // always on
+let cbPathOn = false;
+function toggleCbPath() {
+  cbPathOn = !cbPathOn;
+  const btn = document.getElementById('btn-cbpath');
+  if (btn) btn.classList.toggle('on', cbPathOn);
+  const leg = document.getElementById('cb-path-legend');
+  if (leg) leg.setAttribute('opacity', cbPathOn ? '1' : '0');
+  render();
+}
+let ghostOpacity = 0.5;
+let obPocketed = false;
+let justShot   = false;
+
+// ── HELPERS ────────────────────────────────────────────────────
+function $(id){ return document.getElementById(id); }
+function sV(id,v){ const e=$(id); if(e) e.setAttribute('opacity', v?'1':'0'); }
+function sC(id,x,y){ const e=$(id); if(e){e.setAttribute('cx',x);e.setAttribute('cy',y);} }
+function sL(id,x1,y1,x2,y2){ const e=$(id); if(e){e.setAttribute('x1',x1);e.setAttribute('y1',y1);e.setAttribute('x2',x2);e.setAttribute('y2',y2);} }
+
+// ── PHYSICS ────────────────────────────────────────────────────
+const speedFactor = [0, 0.95, 0.72, 0.45, 0.22, 0.08];
+const spinLabels = {
+  '-4':'2 tips L','-3':'1½ tips L','-2':'1 tip L','-1':'½ tip L',
+  '0':'center','1':'½ tip R','2':'1 tip R','3':'1½ tips R','4':'2 tips R'
+};
+const vertLabels = {
+  '-4':'max draw','-3':'heavy draw','-2':'draw','-1':'soft draw',
+  '0':'center','1':'soft follow','2':'follow','3':'heavy follow','4':'max follow'
+};
+
+function fracStr(hf){
+  // Each fraction label covers ±6.25% around its nominal value
+  const f = Math.abs(hf);
+  const prefix = hf < -0.03 ? 'over ' : '';
+  if(f < 0.0625)  return prefix + 'full ball';
+  if(f < 0.1875)  return prefix + '⅛ ball';
+  if(f < 0.3125)  return prefix + '¼ ball';
+  if(f < 0.4375)  return prefix + '⅜ ball';
+  if(f < 0.5625)  return prefix + '½ ball';
+  if(f < 0.6875)  return prefix + '⅝ ball';
+  if(f < 0.8125)  return prefix + '¾ ball';
+  if(f < 0.9375)  return prefix + '⅞ ball';
+  if(f < 0.9999)  return prefix + 'thin cut';
+  return 'miss';
+}
+
+function compute(cutDeg) {
+  // ── CALIBRATED AIM CORRECTION ──────────────────────────────
+  // Based on table data: at shallow-moderate cuts (< 47°), pure geometry
+  // undershoots the required aim point due to induced spin / contact effects.
+  // Model: aimFraction = sin(cut) + 0.706 * (cos(cut) - cos(47°))^0.592
+  // This correction is zero at 47°, peaks at shallow cuts, gone by 47°+.
+  // Bell curve and throw corrections removed — they overcorrected.
+
+  const COS_ZERO = Math.cos(47 * RAD);  // cos(47°) = 0.6820
+
+  const cutRaw = cutDeg >= 90 ? 1.0 : Math.sin(cutDeg * RAD);
+  const Z_des  = cutRaw >= 1.0 ? Math.PI/2 : Math.asin(cutRaw);
+  const biasRad = S.bias;
+
+  // ── CALIBRATED CORRECTION (replaces bell + throw) ──────────
+  let aimFrac;
+  if (cutDeg < 47) {
+    const cosDiff = Math.cos(cutDeg * RAD) - COS_ZERO;
+    const correction = cosDiff > 0 ? 0.706 * Math.pow(cosDiff, 0.592) : 0;
+    aimFrac = Math.min(1, cutRaw + correction);
+  } else {
+    aimFrac = cutRaw;  // pure geometry at 47°+
+  }
+
+  // Apply bias
+  const Z_aim = Math.max(0, Math.min(Math.PI/2, Math.asin(aimFrac) + biasRad));
+
+  // ── SPIN THROW (kept — measurable effect with spin) ──────────
+  const spinThrowDeg = S.spin * (S.speed < 0.28 ? 1.5 : S.speed < 0.72 ? 0.5 : 0.1);
+  const spinThrow = -spinThrowDeg * RAD;
+  const Z_aim_final = Math.max(0, Math.min(Math.PI/2, Z_aim + spinThrow));
+
+  // ── DISTANCE ────────────────────────────────────────────────
+  const svgDist  = Math.hypot(S.ob.x - S.cb.x, S.ob.y - S.cb.y);
+  const distFt   = svgDist / 400 * S.tableSize;
+  const distIn   = Math.min(distFt * 12, 84);
+
+  // ── SQUIRT ───────────────────────────────────────────────────
+  const squirtDeg      = S.spin * 0.3;
+  const squirtIn       = distIn * Math.tan(squirtDeg * RAD);
+  const squirtFrac     = squirtIn / 2.25;
+  const squirtFade     = Math.max(0, Math.min(1, 1 - (cutRaw - 0.7) / 0.25));
+  const squirtFraction = Math.max(-0.15, Math.min(0.15, squirtFrac * squirtFade));
+
+  const atExtreme    = cutRaw > 0.97;
+  const geoFrac      = cutRaw;
+  const diagFraction = atExtreme ? geoFrac : Math.max(-0.5, Math.min(1, geoFrac));
+  const aimFraction  = atExtreme ? geoFrac
+                     : Math.max(-0.5, Math.min(1, Math.sin(Z_aim_final) - squirtFraction));
+
+  const throwDiff = atExtreme ? 0
+                  : Math.round(Math.sin(Z_aim_final) * 100) - Math.round(geoFrac * 100);
+
+  return { Z_des, Z_aim: Z_aim_final, geoFrac, aimFraction, diagFraction, cutDeg, distFt,
+           throwDiff, squirtFraction };
+}
+
+// ── TABLE SVG ─────────────────────────────────────────────────
+function svgPt(e) {
+  const src = e.touches ? e.touches[0] : e;
+  const svgEl = document.getElementById('topsvg');
+  const rect = svgEl.getBoundingClientRect();
+  const vb = svgEl.viewBox.baseVal;
+  // Works on both desktop and iOS with CSS transform zoom
+  return {
+    x: (src.clientX - rect.left) / rect.width  * vb.width,
+    y: (src.clientY - rect.top)  / rect.height * vb.height
+  };
+}
+function clampBall(x, y) {
+  // Keep ball center on felt (TL defines felt edges)
+  x = Math.max(TL.left  + BALL_R + 1, Math.min(TL.right  - BALL_R - 1, x));
+  y = Math.max(TL.top   + BALL_R + 1, Math.min(TL.bottom - BALL_R - 1, y));
+  // Push out of corner pocket areas
+  const cornerPush = 28 + BALL_R;
+  if (x < TL.left  + cornerPush && y < TL.top    + cornerPush) { x = TL.left  + cornerPush; y = TL.top    + cornerPush; }
+  if (x > TL.right - cornerPush && y < TL.top    + cornerPush) { x = TL.right - cornerPush; y = TL.top    + cornerPush; }
+  if (x < TL.left  + cornerPush && y > TL.bottom - cornerPush) { x = TL.left  + cornerPush; y = TL.bottom - cornerPush; }
+  if (x > TL.right - cornerPush && y > TL.bottom - cornerPush) { x = TL.right - cornerPush; y = TL.bottom - cornerPush; }
+  return { x, y };
+}
+
+// Cut angle from current CB/OB positions
+function tableCutDeg() {
+  const cbx = S.ob.x - S.cb.x, cby = S.ob.y - S.cb.y;
+  const cbl = Math.hypot(cbx, cby);
+  if (cbl < 1) return 0;
+  // We need a departure direction — for the Aimer, use straight CB→OB (0° cut baseline)
+  // Then the cut angle IS the angle between the CB→OB line and... itself = 0?
+  // Actually for the Aimer we just use diagCutDeg directly as the user-set angle.
+  // The table positions set the APPROACH DIRECTION (which side the CB is on).
+  const cbToObAngle = Math.atan2(cby, cbx);
+  // cross product to determine rh
+  return { angle: cbToObAngle, rh: cby < 0 || (cby === 0 && cbx > 0) };
+}
+
+const svg = $('topsvg');
+svg.addEventListener('pointerdown', e => {
+  const p = svgPt(e);
+  if (calTapActual(p)) return;
+  if (lockTable) return;  // TABLE locked — no ball moves on table view
+  if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
+  if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
+});
+svg.addEventListener('pointermove', e => {
+  if (!drag) return; e.preventDefault();
+  const p = svgPt(e);
+  if (drag==='ob') {
+    const clamped = clampBall(p.x, p.y);
+    const snapped = applySnap(clamped.x, clamped.y);
+    S.ob = {x: snapped.x, y: snapped.y};
+    justShot = false;
+    if (snapped.label) showSnapLabel($('topsvg'), snapped.x, snapped.y, snapped.label, 'ob');
+  } else if (drag==='cb') {
+    const clamped = clampBall(p.x, p.y);
+    const snapped = applySnap(clamped.x, clamped.y);
+    S.cb = {x: snapped.x, y: snapped.y};
+    S.diagCutDeg = 0; S._diagDragRh = undefined; justShot = false;
+    if (snapped.label) showSnapLabel($('topsvg'), snapped.x, snapped.y, snapped.label, 'cb');
+  }
+  render();
+});
+svg.addEventListener('pointerup',    () => { drag=null; });
+svg.addEventListener('pointercancel',() => { drag=null; });
+
+// Update table ball positions and dynamic lines
+// Convert table inches back to SVG coords
+function tableToSvg(tx, ty) {
+  return { x: tx * 4 + 30, y: ty * 4 + 30 };
+}
+
+
+function renderTable(d) {
+  const ob = S.ob, cb = S.cb;
+
+  // OB
+  const obOpacity = obPocketed ? '0.85' : '1';
+  sC('ob',        ob.x,     ob.y);
+  sC('ob-shadow', ob.x+1.5, ob.y+2);
+  sC('ob-hi',     ob.x-4,   ob.y-4);
+  $('ob').setAttribute('opacity', obOpacity);
+  $('ob-shadow').setAttribute('opacity', '0.32');
+  $('ob-hi').setAttribute('opacity', '0.45');
+  // CB
+  sC('cb',        cb.x,     cb.y);
+  sC('cb-shadow', cb.x+1.5, cb.y+2);
+  sC('cb-hi',     cb.x-4,   cb.y-4);
+  sC('cb-dot',    cb.x,     cb.y);
+
+  const cbdx = ob.x - cb.x, cbdy = ob.y - cb.y;
+
+  // Arrow and ghost suppressed right after a shot until user moves something
+  if (justShot) { sV('ob-arrow', false); sV('ghost-ball', false); ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.opacity='0';}); return; }
+
+  // OB departure arrow
+  const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+  const rh = S._diagDragRh !== undefined ? S._diagDragRh : false;
+  const cbToObAngle = Math.atan2(cbdy, cbdx);
+  const side = rh ? 1 : -1;
+  // Spin throw on OB — matches compute(): slow=1.5°/tip, med=0.5°/tip, fast=0.1°/tip
+  const spinThrowDeg = S.spin * (S.speed < 0.28 ? 1.5 : S.speed < 0.72 ? 0.5 : 0.1);
+  const obSpinThrow  = -spinThrowDeg * RAD;
+  const biasAngle    = S.bias;  // already in radians
+  const obDepartAngle = cbToObAngle + side * Math.min(cutDeg, 90) * RAD + obSpinThrow + biasAngle;
+  const odx = Math.cos(obDepartAngle), ody = Math.sin(obDepartAngle);
+
+  // OB departure arrow — extends to cushion face (or 200px if pointing toward pocket)
+  const ox = ob.x, oy = ob.y;
+  let arrT = 9999;
+  if (ody < 0) arrT = Math.min(arrT, (TL.top    - oy) / ody);
+  if (ody > 0) arrT = Math.min(arrT, (TL.bottom - oy) / ody);
+  if (odx < 0) arrT = Math.min(arrT, (TL.left   - ox) / odx);
+  if (odx > 0) arrT = Math.min(arrT, (TL.right  - ox) / odx);
+  arrT = Math.max(20, arrT);
+  sL('ob-arrow', ox + odx*(BALL_R+2), oy + ody*(BALL_R+2),
+                 ox + odx*arrT,       oy + ody*arrT);
+  sV('ob-arrow', true);
+
+  // Ghost ball — show when GHOST is on
+  const _approachAngle = cbToObAngle + side * Math.min(cutDeg, 90) * RAD;
+  const _gx = S.ob.x - Math.cos(_approachAngle) * 2 * BALL_R;
+  const _gy = S.ob.y - Math.sin(_approachAngle) * 2 * BALL_R;
+  if (ghostOn) {
+    sC('ghost-ball', _gx, _gy);
+    $('ghost-ball').setAttribute('r', '9');
+    $('ghost-ball').setAttribute('fill', 'rgba(240,223,112,0.12)');
+    $('ghost-ball').setAttribute('stroke', '#f0df70');
+    sV('ghost-ball', true);
+  } else {
+    sV('ghost-ball', false);
+  }
+  // CB → Ghost gold dashed line
+  sL('cb-ghost-line', S.cb.x, S.cb.y, _gx, _gy);
+  sV('cb-ghost-line', true);
+  // OB departure extended back through CB
+  sL('ob-arrow-ext', ox - odx*40, oy - ody*40, ox - odx*(BALL_R+2), oy - ody*(BALL_R+2));
+  sV('ob-arrow-ext', true);
+
+  // ── CB PATH RAYS ─────────────────────────────────────────────
+  if (cbPathOn && cutDeg > 0.5) {
+    const cx = S.cb.x, cy = S.cb.y;
+    // CB departs from ghost ball position (where CB was at contact)
+    const gx = S.ob.x - Math.cos(_approachAngle) * 2 * BALL_R;
+    const gy = S.ob.y - Math.sin(_approachAngle) * 2 * BALL_R;
+
+    // Stun line: 90° to OB departure
+    const stunAngle = obDepartAngle + Math.PI/2 * (rh ? -1 : 1);
+    // Follow: narrows toward OB path — stun angle rotated toward obDepartAngle
+    const followFactor = 0.55; // how much follow closes the angle
+    const followAngle = stunAngle + (obDepartAngle - stunAngle) * followFactor;
+    // Draw: opens past 90°
+    const drawFactor = 0.55;
+    const drawAngle = stunAngle - (obDepartAngle - stunAngle) * drawFactor;
+
+    function rayToRail(sx, sy, angle) {
+      const dx = Math.cos(angle), dy = Math.sin(angle);
+      let t = 9999;
+      if (dy < 0) t = Math.min(t, (TL.top    - sy) / dy);
+      if (dy > 0) t = Math.min(t, (TL.bottom - sy) / dy);
+      if (dx < 0) t = Math.min(t, (TL.left   - sx) / dx);
+      if (dx > 0) t = Math.min(t, (TL.right  - sx) / dx);
+      t = Math.max(10, t);
+      return { x: sx + dx*t, y: sy + dy*t };
+    }
+
+    // Pocket positions for scratch threat detection
+    const _pockets = [
+      {x:TL.left, y:TL.top}, {x:(TL.left+TL.right)/2, y:TL.top}, {x:TL.right, y:TL.top},
+      {x:TL.left, y:TL.bottom}, {x:(TL.left+TL.right)/2, y:TL.bottom}, {x:TL.right, y:TL.bottom}
+    ];
+    const cornerR = 28, sideR = 22; // scratch zone radii in px
+
+    function isScratch(endPt) {
+      return _pockets.some((p, i) => {
+        const r = (i === 1 || i === 4) ? sideR : cornerR;
+        return Math.hypot(endPt.x - p.x, endPt.y - p.y) < r;
+      });
+    }
+
+    function drawRay(lineId, dotId, angle, baseColor, scratchColor) {
+      const end = rayToRail(gx, gy, angle);
+      const scratch = isScratch(end);
+      const el = document.getElementById(lineId);
+      const dot = document.getElementById(dotId);
+      if (el) {
+        sL(lineId, gx, gy, end.x, end.y);
+        el.style.opacity = '1';
+        el.setAttribute('stroke', scratch ? scratchColor : baseColor);
+      }
+      if (dot) {
+        dot.setAttribute('cx', end.x);
+        dot.setAttribute('cy', end.y);
+        dot.setAttribute('fill', scratch ? '#ef4444' : '#22c55e');
+        dot.style.opacity = '1';
+      }
+    }
+
+    drawRay('cb-stun',   'cb-stun-dot',   stunAngle,   'rgba(255,255,255,0.85)', '#ef4444');
+    drawRay('cb-follow', 'cb-follow-dot', followAngle, '#f97316',                '#ef4444');
+    drawRay('cb-draw',   'cb-draw-dot',   drawAngle,   '#60a5fa',                '#ef4444');
+  } else if (!cbPathOn) {
+    ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
+      .forEach(id => { const el = document.getElementById(id); if (el) el.style.opacity = '0'; });
+  }
+}
+
+// ── DIAGRAM ────────────────────────────────────────────────────
+const BOT_OCX = 230;  // OB always centered
+
+function drawBot(d) {
+  const W = 460, r = Rb, ocy = 148, ocx = 230;
+  const cbx = S.ob.x - S.cb.x, cby = S.ob.y - S.cb.y;
+  const rh = (S._diagDragRh !== undefined) ? S._diagDragRh : (cby < 0);
+  const cutDeg = d.cutDeg || 0;
+  const aimF  = Math.max(0, Math.min(1, Math.abs(d.diagFraction)));
+  const ccx   = Math.max(4, Math.min(W-4, rh ? ocx - aimF*2*r : ocx + aimF*2*r));
+  const edgeX = Math.max(4, Math.min(W-4, rh ? ccx+r : ccx-r));
+  const clipX = rh ? edgeX : (ocx-r);
+  const revealW = Math.max(0, rh ? (ocx+r)-edgeX : edgeX-(ocx-r));
+  const aimP  = Math.round(Math.abs(d.diagFraction) * 100);
+
+  $('revClipRect').setAttribute('x', clipX);
+  $('revClipRect').setAttribute('y', ocy-r);
+  $('revClipRect').setAttribute('width',  revealW);
+  $('revClipRect').setAttribute('height', 2*r);
+
+  sC('bot-cb', ccx, ocy);
+  const _botCb = $('bot-cb'); if (_botCb) _botCb.setAttribute('opacity', Math.max(0.15, ghostOpacity));
+  $('bot-cb-h').setAttribute('x1', ccx-r*0.74); $('bot-cb-h').setAttribute('x2', ccx+r*0.74);
+  $('bot-cb-h').setAttribute('y1', ocy);         $('bot-cb-h').setAttribute('y2', ocy);
+  $('bot-cb-v').setAttribute('x1', ccx); $('bot-cb-v').setAttribute('x2', ccx);
+  $('bot-cb-v').setAttribute('y1', ocy-r*0.74); $('bot-cb-v').setAttribute('y2', ocy+r*0.74);
+  sC('bot-tip', Math.max(ccx-r*0.7, Math.min(ccx+r*0.7, ccx+(S.spin/4)*0.62*r)),
+                Math.max(ocy-r*0.7, Math.min(ocy+r*0.7, ocy-(S.vert/4)*0.62*r)));
+  $('bot-pct-lh').setAttribute('opacity',   rh ? '0' : '1');
+  $('bot-pct-rh').setAttribute('opacity',   rh ? '1' : '0');
+  $('bot-fracs-lh').setAttribute('opacity', rh ? '0' : '1');
+  $('bot-fracs-rh').setAttribute('opacity', rh ? '1' : '0');
+
+  const showMarker = rh ? edgeX < ocx+r-3 : edgeX > ocx-r+3;
+  const op = showMarker ? '1' : '0';
+  // Show contact elements whenever there's any meaningful aim point
+  const showContact = Math.abs(ccx - ocx) > 5;
+  // Gold ring on CB
+  const _cLine = $('bot-contact-line');
+  // Contact point: on OB surface opposite the departure direction
+  // In the diagram (viewed along CB→OB axis), contact point is at angle (π - cutAngle) from OB center
+  // projected onto horizontal: ocx + r*cos(π - cutDeg) = ocx - r*cos(cutDeg) ... adjusted for side
+  const _cutR = Math.min(cutDeg, 90) * Math.PI / 180;
+  const _contactX = (ocx + ccx) / 2;
+  if (_cLine) { _cLine.setAttribute('x1',_contactX); _cLine.setAttribute('x2',_contactX); _cLine.setAttribute('y1',ocy-r+4); _cLine.setAttribute('y2',ocy+r-4); _cLine.setAttribute('opacity','1'); }
+  const _cLbl = $('bot-contact-lbl');
+  if (_cLbl) { _cLbl.setAttribute('x',_contactX); _cLbl.setAttribute('opacity','1'); }
+  const _gbg = $('bot-cb-gold');
+  if (_gbg) { _gbg.setAttribute('cx',ccx); _gbg.setAttribute('cy',ocy); _gbg.setAttribute('r',r); _gbg.setAttribute('opacity','1'); }
+  $('bot-edge-line').setAttribute('x1', edgeX); $('bot-edge-line').setAttribute('x2', edgeX);
+  $('bot-edge-line').setAttribute('opacity', op);
+  // "inside edge" label sits just above the pct labels row
+  $('bot-edge-lbl').setAttribute('x', Math.max(60, Math.min(edgeX, W-60)));
+  $('bot-edge-lbl').setAttribute('y', '22');
+  $('bot-edge-lbl').setAttribute('opacity', op);
+  const bx = Math.max(44, Math.min(edgeX, W-44));
+  $('bot-aim-bg').setAttribute('x',  bx-40);
+  $('bot-aim-bg').setAttribute('y',  '262');
+  $('bot-aim-bg').setAttribute('opacity',  op);
+  $('bot-aim-pct').setAttribute('x', bx);
+  $('bot-aim-pct').setAttribute('y', '282');
+  $('bot-aim-pct').setAttribute('opacity', op);
+  $('bot-aim-pct').textContent = Math.abs(aimP) + '%';
+  $('bot-hint').setAttribute('opacity', showMarker ? '0' : '1');
+  $('bot-hint').setAttribute('x', rh ? ocx-r-70 : ocx+r+24);
+  $('bot-hint').setAttribute('text-anchor', rh ? 'end' : 'start');
+  $('bot-hint').textContent = rh ? '◄ Drag to begin' : 'Drag ▶ to begin';
+  // Fraction ticks
+  const _tg = document.getElementById('frac-ticks');
+  if(_tg){
+    const _ns='http://www.w3.org/2000/svg'; while(_tg.firstChild)_tg.removeChild(_tg.firstChild);
+    [{f:1/8,lh:'⅛',rh:'⅞',s:9,h:6},{f:2/8,lh:'¼',rh:'¾',s:13,h:9},{f:3/8,lh:'⅜',rh:'⅝',s:9,h:6},
+     {f:4/8,lh:'½',rh:'½',s:17,h:13},{f:5/8,lh:'⅝',rh:'⅜',s:9,h:6},{f:6/8,lh:'¾',rh:'¼',s:13,h:9},{f:7/8,lh:'⅞',rh:'⅛',s:9,h:6}
+    ].forEach(fd=>{
+      const x=(ocx-r)+fd.f*2*r, lbl=rh?fd.rh:fd.lh, half=fd.f===0.5;
+      const tk=document.createElementNS(_ns,'line');
+      tk.setAttribute('x1',x);tk.setAttribute('x2',x);
+      tk.setAttribute('y1',ocy-fd.h/2);tk.setAttribute('y2',ocy+fd.h/2);
+      tk.setAttribute('stroke','#ffffff');tk.setAttribute('stroke-width',half?'2.5':'1.5');
+      tk.setAttribute('opacity',half?'1':'0.6');_tg.appendChild(tk);
+      const tx=document.createElementNS(_ns,'text');
+      tx.setAttribute('x',x);tx.setAttribute('y',ocy+fd.h/2+fd.s+2);
+      tx.setAttribute('text-anchor','middle');tx.setAttribute('font-family','Lato,sans-serif');
+      tx.setAttribute('font-size',fd.s);tx.setAttribute('font-weight',fd.s>=13?'700':'400');
+      tx.setAttribute('fill','#ffffff');tx.setAttribute('opacity',half?'1':'0.65');
+      tx.textContent=lbl;_tg.appendChild(tx);
+    });
+  }
+}
+
+// ── DIAGRAM DRAG ───────────────────────────────────────────────
+const botsvg = $('botsvg');
+
+function botSvgPt(e) {
+  const pt = botsvg.createSVGPoint();
+  const src = e.touches ? e.touches[0] : e;
+  pt.x = src.clientX; pt.y = src.clientY;
+  return pt.matrixTransform(botsvg.getScreenCTM().inverse());
+}
+
+function updateDiagCut(svgX) {
+  const ocx = 230;
+  const DRAG_RANGE = 224;
+  const raw = svgX - ocx;
+  const clamped = Math.max(-DRAG_RANGE, Math.min(DRAG_RANGE, raw));
+  S.diagCutDeg = Math.min(90, Math.abs(clamped) / DRAG_RANGE * 90);
+  S._diagDragRh = (clamped < 0);
+}
+
+botsvg.addEventListener('pointerdown', e => {
+  if (lockBalls) return;  // locked — let touch pass through for scroll/pinch
+  const p2 = botSvgPt(e);
+  // Dead zone: only respond within the ball's vertical extent (center 148 ± radius 82)
+  if (p2.y < 66 || p2.y > 230) return;
+  e.preventDefault(); diagDrag = true; justShot = false;
+  botsvg.setPointerCapture(e.pointerId);
+  updateDiagCut(p2.x);
+  render();
+});
+botsvg.addEventListener('pointermove', e => {
+  if (!diagDrag) return; e.preventDefault();
+  updateDiagCut(botSvgPt(e).x);
+  render();
+});
+botsvg.addEventListener('pointerup',    () => { diagDrag = false; });
+botsvg.addEventListener('pointercancel',() => { diagDrag = false; });
+
+// ── KEYBOARD ──────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  e.preventDefault(); justShot = false;
+  const oneDeg = Math.asin(0.01) * DEG;
+  const cur = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+  const rh  = S._diagDragRh !== undefined ? S._diagDragRh : false;
+  let signed = rh ? -cur : cur;
+  signed += e.key === 'ArrowRight' ? oneDeg : -oneDeg;
+  signed = Math.max(-90, Math.min(90, signed));
+  if (Math.abs(signed) < 0.001) signed = e.key === 'ArrowRight' ? oneDeg : -oneDeg;
+  S._diagDragRh = signed < 0;
+  S.diagCutDeg  = Math.abs(signed);
+  diagDrag = true;
+  render();
+  diagDrag = false;
+});
+
+// ── SLIDERS ────────────────────────────────────────────────────
+function onSliders() {
+  S.speed  = parseInt($('sl-spd').value)  / 100;
+  S.spin   = parseInt($('sl-spn').value) / 25;  // -4..4 continuously
+  S.vert   = parseInt($('sl-vert').value) / 25;  // -4..4 from -100..100
+  S.distFt = 0;  // auto-calculated in compute()
+  // Three-zone bias
+  if (biasOn) {
+    const cutDeg = S.diagCutDeg || 0;
+    const bFat  = parseInt($('sl-bias-fat').value)  * 0.60 * RAD;
+    const bMed  = parseInt($('sl-bias-med').value)  * 0.60 * RAD;
+    const bThin = parseInt($('sl-bias-thin').value) * 0.60 * RAD;
+    // Blend by zone: fat=0-30°, med=30-60°, thin=60-90°
+    if (cutDeg < 30)      S.bias = bFat + (bMed - bFat) * (cutDeg / 30);
+    else if (cutDeg < 60) S.bias = bMed + (bThin - bMed) * ((cutDeg - 30) / 30);
+    else                  S.bias = bThin;
+    // Update number displays
+    ['fat','med','thin'].forEach(z => {
+      const v = parseInt($('sl-bias-'+z).value);
+      const el = $('sv-bias-'+z); if(el) el.textContent = v === 0 ? '0' : (v>0?'+':'')+v;
+      const en = $('sv-bias-'+z+'-n'); if(en) en.textContent = Math.abs(v) === 0 ? '0' : Math.max(1,Math.round(Math.abs(v)/12*10));
+    });
+  } else {
+    S.bias = 0;
+  }
+
+  // Speed
+  $('sv-spd').textContent = S.speed < 0.28 ? 'slow' : S.speed < 0.72 ? 'med' : 'fast';
+  const spinPct = parseInt($('sl-spn').value);
+  $('sv-spn').textContent = spinPct === 0 ? '0%' : (spinPct > 0 ? '+' : '') + spinPct + '%';
+  $('sv-vert').textContent = vertLabels[String(S.vert)];
+
+  // Smooth vert label
+  const _v = S.vert;
+  $('sv-vert').textContent = _v <= -3.5 ? 'max draw' : _v <= -2 ? 'draw' : _v <= -0.5 ? 'low' : _v < 0.5 ? 'center' : _v < 2 ? 'high' : _v < 3.5 ? 'follow' : 'max follow';
+  // Intensity 1-10
+  const _sv = parseInt($('sl-spd').value), _sn = parseInt($('sl-spn').value), _vn = parseInt($('sl-vert').value);
+  if($('sv-spd-n')) $('sv-spd-n').textContent = Math.max(1,Math.round(_sv/10));
+  if($('sv-spn-n')) $('sv-spn-n').textContent = Math.abs(_sn)===0?'0':Math.max(1,Math.round(Math.abs(_sn)/10));
+  if($('sv-vert-n'))$('sv-vert-n').textContent= Math.abs(_vn)===0?'0':Math.max(1,Math.round(Math.abs(_vn)/10));
+
+
+  try { localStorage.setItem('lz-aimer-bias', JSON.stringify({
+    fat: parseInt(document.getElementById('sl-bias-fat')?.value||'0'),
+    med: parseInt(document.getElementById('sl-bias-med')?.value||'0'),
+    thin: parseInt(document.getElementById('sl-bias-thin')?.value||'0')
+  })); } catch(e) {}
+  render();
+}
+
+// ── MAIN RENDER ───────────────────────────────────────────────
+function render() {
+  const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+  const d = compute(cutDeg);
+  renderTable(d);
+  drawBot(d);
+
+  // Readouts show diagFraction (what you set up) — spin correction shown in adjustment row
+  const Zdeg = cutDeg < 0.5 ? 0 : Math.round(cutDeg * 10)/10;
+  const aimP = Math.round(Math.abs(d.diagFraction) * 100);
+  const _dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
+  const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%' + _dir;
+  const _rfrc = $('r-frc'); if (_rfrc) _rfrc.textContent = fracStr(d.diagFraction);
+  const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
+  const _cpEl = $('r-cp');
+  if (_cpEl) { const _cpPct = cutDeg < 0.5 ? 0 : Math.round(Math.abs(d.diagFraction) * 50); _cpEl.textContent = _cpPct + '%' + _dir; }
+
+  // Distance readout
+  const distEl = $('r-dist');
+  if (distEl) {
+    const ft = d.distFt;
+    if (S.metric) {
+      const m = ft * 0.3048;
+      distEl.textContent = m < 0.3 ? (m*100).toFixed(0)+'cm' : m.toFixed(2)+'m';
+    } else {
+      distEl.textContent = ft < 1 ? Math.round(ft*12)+'"' : ft.toFixed(1)+"'";
+    }
+  }
+
+  const throwEl = $('r-throw');
+  const td = d.throwDiff, sq = Math.round(d.squirtFraction * 100);
+  if (throwEl && Math.abs(td) < 1 && Math.abs(sq) < 1) {
+    throwEl.textContent = 'none'; throwEl.style.color = '#fff';
+  } else {
+    const parts = [];
+    if (Math.abs(td) >= 1) parts.push('throw: ' + (td > 0 ? 'aim thinner +' : 'aim fuller ') + Math.abs(td) + '%');
+    if (Math.abs(sq) >= 1) parts.push('squirt: ' + (sq > 0 ? 'aim fuller' : 'aim thinner') + ' ' + Math.abs(sq) + '%');
+    if (throwEl) { throwEl.textContent = parts.join('  ·  '); throwEl.style.color = '#e8a050'; }
+  }
+
+  // Shot attributes panel
+  const rocut  = $('ro-cut');  if (rocut)  rocut.textContent  = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
+  const rofrac = $('ro-frac'); if (rofrac) rofrac.textContent = fracStr(d.diagFraction);
+  const roaim  = $('ro-aim');  if (roaim)  roaim.textContent  = aimP + '%' + _dir;
+  const rodist = $('ro-dist'); if (rodist) {
+    const ft = d.distFt;
+    rodist.textContent = S.metric
+      ? (ft*0.3048 < 0.3 ? Math.round(ft*0.3048*100)+'cm' : (ft*0.3048).toFixed(2)+'m')
+      : (ft < 1 ? Math.round(ft*12)+'"' : ft.toFixed(1)+"'");
+  }
+  const rothrow = $('ro-throw');
+  if (rothrow) {
+    if (Math.abs(td) < 1 && Math.abs(sq) < 1) {
+      rothrow.textContent = 'none'; rothrow.style.color = 'rgba(255,255,255,0.4)';
+    } else {
+      const rparts = [];
+      if (Math.abs(td) >= 1) rparts.push((td > 0 ? 'aim thinner +' : 'aim fuller ') + Math.abs(td) + '%');
+      if (Math.abs(sq) >= 1) rparts.push('squirt ' + (sq > 0 ? 'fuller' : 'thinner') + ' ' + Math.abs(sq) + '%');
+      rothrow.textContent = rparts.join(' · ');
+      rothrow.style.color = '#e870b0';
+    }
+  }
+}
+
+function resetShot() {
+  sV('ob-arrow', false);
+  obPocketed = false;
+  justShot = false;
+  $('ob').setAttribute('fill','url(#gOB)');
+  $('ob').setAttribute('r', String(BALL_R));
+  $('ob').setAttribute('opacity','1');
+  $('ob-shadow').setAttribute('r', String(BALL_R));
+  $('ob-shadow').setAttribute('opacity','0.32');
+  $('ob-hi').setAttribute('opacity','0.45');
+  if (window._snapCb) {
+    S.cb = {...window._snapCb}; S.ob = {...window._snapOb};
+    S.diagCutDeg = window._snapCutDeg; S._diagDragRh = window._snapRh;
+  }
+  render();
+}
+
+// ── CALIBRATION ────────────────────────────────────────────────
+// Calibrates personal BIAS by comparing predicted vs actual OB position
+let calMode  = false;
+let calPhase = 'idle';  // idle | predicted
+let calPendingShot = null;
+
+// ── CALIBRATION VERSION ────────────────────────────────────────
+// Bump this string whenever correction coefficients are updated.
+// Causes local shot database to auto-clear on first load.
+const CAL_VERSION = '2026-03-25-v1';
+(function() {
+  const stored = localStorage.getItem('lz-aimer-cal-version');
+  if (stored !== CAL_VERSION) {
+    localStorage.removeItem('lz-aimer-shots');
+    localStorage.removeItem('lz-aimer-cal');
+    localStorage.setItem('lz-aimer-cal-version', CAL_VERSION);
+    console.log('CAL: version updated to ' + CAL_VERSION + ', shot database cleared.');
+  }
+})();
+
+let calShots = [];
+const CAL_MAX = 50;
+let calLibraryOpen = false;
+
+function loadAimProfile() {
+  try {
+    const p = JSON.parse(localStorage.getItem('lz-aimer-profile') || '{}');
+    if (typeof p.biasFat  === 'number' && $('sl-bias-fat'))  $('sl-bias-fat').value  = p.biasFat;
+    if (typeof p.biasMed  === 'number' && $('sl-bias-med'))  $('sl-bias-med').value  = p.biasMed;
+    if (typeof p.biasThin === 'number' && $('sl-bias-thin')) $('sl-bias-thin').value = p.biasThin;
+    if (Array.isArray(p.shots)) calShots = p.shots;
+  } catch(e) {}
+}
+function saveAimProfile() {
+  try {
+    localStorage.setItem('lz-aimer-profile', JSON.stringify({
+      biasFat:  parseInt($('sl-bias-fat')?.value  || '0'),
+      biasMed:  parseInt($('sl-bias-med')?.value  || '0'),
+      biasThin: parseInt($('sl-bias-thin')?.value || '0'),
+      shots: calShots.slice(-50)
+    }));
+  } catch(e) {}
+}
+
+function toggleCal() {
+  calMode = !calMode;
+  $('cal-panel').classList.toggle('open', calMode);
+  $('btn-cal').style.background = calMode ? 'rgba(74,222,128,0.3)' : '#4ade80';
+  if (!calMode) { calPhase = 'idle'; calPendingShot = null; }
+  calUpdateUI();
+}
+
+function calUpdateUI() {
+  const n = calShots.length;
+  const inst = $('cal-instruction');
+  const stat = $('cal-status');
+  const b1   = $('cal-rec1-btn');
+  const b2   = $('cal-rec2-btn');
+  if (stat) stat.textContent = n + '/' + CAL_MAX + ' shots stored';
+  if (!calMode) return;
+  if (calPhase === 'idle') {
+    if (inst) inst.textContent = 'Set up your shot. Tap ① to record what the app predicts.';
+    if (b1) b1.style.display = '';
+    if (b2) b2.style.display = 'none';
+  } else {
+    if (inst) inst.textContent = 'Shoot until it goes in. Then dial the ball graphic and sliders to match what worked. Tap ②.';
+    if (b1) b1.style.display = 'none';
+    if (b2) b2.style.display = '';
+  }
+  updateCalLibrary();
+}
+
+
+function calExport() {
+  if (!calShots.length) {
+    alert('No calibration shots saved yet.');
+    return;
+  }
+  // Format for curve fitting — extract what matters
+  const data = calShots
+    .filter(s => s.actualCut !== null && s.predictedCut !== null)
+    .map(s => ({
+      cut_deg:    parseFloat(s.predictedCut.toFixed(1)),
+      predicted:  parseFloat((Math.sin(s.predictedCut * Math.PI/180)).toFixed(4)),
+      actual:     parseFloat((Math.sin(s.actualCut   * Math.PI/180)).toFixed(4)),
+      speed:      parseFloat(s.speed.toFixed(2)),
+      spin:       s.spin || 0
+    }));
+  const json = JSON.stringify(data, null, 2);
+  // Copy to clipboard
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(json).then(() => {
+      const res = $('cal-result');
+      if (res) { res.style.display='block'; res.innerHTML='<span style="color:#4ade80">✓ Copied ' + data.length + ' shots to clipboard — paste to Claude</span>'; }
+    });
+  } else {
+    // Fallback — show in a text area
+    prompt('Copy this calibration data:', json);
+  }
+}
+
+function calRecord1() {
+  if (!calMode) return;
+  // Capture current predicted state
+  calPendingShot = {
+    ts: Date.now(),
+    cb: {...S.cb}, ob: {...S.ob},
+    cutDeg: S.diagCutDeg || 0,
+    rh: S._diagDragRh || false,
+    speed: S.speed, spin: S.spin, vert: S.vert,
+    biasFat:  parseInt($('sl-bias-fat')?.value  || '0'),
+    biasMed:  parseInt($('sl-bias-med')?.value  || '0'),
+    biasThin: parseInt($('sl-bias-thin')?.value || '0'),
+    predictedCut: S.diagCutDeg || 0,
+    actualCut: null
+  };
+  calPhase = 'predicted';
+  calUpdateUI();
+}
+
+function calRecord2() {
+  if (!calMode || !calPendingShot || calPhase !== 'predicted') return;
+  // Capture what the user dialed in as reality
+  calPendingShot.actualCut   = S.diagCutDeg || 0;
+  calPendingShot.actualSpeed = S.speed;
+  calPendingShot.actualSpin  = S.spin;
+  const err = calPendingShot.actualCut - calPendingShot.predictedCut;
+  calPendingShot.error = err;
+
+  calShots.push(calPendingShot);
+  if (calShots.length > CAL_MAX) calShots = calShots.slice(-CAL_MAX);
+  saveAimProfile();
+
+  // Update zone biases from calibration data
+  applyCalibrationToBias();
+
+  const res = $('cal-result');
+  if (res) {
+    const sign = err >= 0 ? '+' : '';
+    res.style.display = 'block';
+    res.innerHTML = '<strong style="color:#f0df70">Shot ' + calShots.length + ' saved</strong> · error: <span style="color:#c890f0">' + sign + err.toFixed(1) + '°</span>';
+  }
+  calPendingShot = null;
+  calPhase = 'idle';
+  calUpdateUI();
+  render();
+}
+
+function applyCalibrationToBias() {
+  if (!biasOn || !calShots.length) return;
+  const zones = {fat: [], med: [], thin: []};
+  calShots.forEach(s => {
+    if (s.error == null) return;
+    const z = s.predictedCut < 30 ? 'fat' : s.predictedCut < 60 ? 'med' : 'thin';
+    zones[z].push(s.error);
+  });
+  ['fat','med','thin'].forEach(z => {
+    if (!zones[z].length) return;
+    const avg = zones[z].reduce((a,b)=>a+b,0) / zones[z].length;
+    const sliderVal = Math.max(-12, Math.min(12, Math.round(avg / 0.15)));
+    const sl = $('sl-bias-' + z);
+    if (sl) sl.value = sliderVal;
+  });
+  onSliders();
+}
+
+function toggleCalLibrary() {
+  calLibraryOpen = !calLibraryOpen;
+  const lib = $('cal-library');
+  if (lib) lib.style.display = calLibraryOpen ? 'block' : 'none';
+  updateCalLibrary();
+}
+
+function updateCalLibrary() {
+  const lib = $('cal-library');
+  if (!lib || !calLibraryOpen) return;
+  if (!calShots.length) { lib.innerHTML = '<em>No shots recorded yet.</em>'; return; }
+  lib.innerHTML = calShots.slice().reverse().map((s, i) => {
+    const d = new Date(s.ts);
+    const dt = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+    const zone = s.predictedCut < 30 ? 'FAT' : s.predictedCut < 60 ? 'MED' : 'THIN';
+    const err = s.error != null ? (s.error >= 0 ? '+' : '') + s.error.toFixed(1) + '°' : '—';
+    const idx = calShots.length - 1 - i;
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.06);">' +
+      '<span>' + dt + ' · ' + zone + ' · ' + s.predictedCut.toFixed(0) + '°</span>' +
+      '<span style="color:#c890f0;margin:0 6px;">' + err + '</span>' +
+      '<button onclick="calDeleteShot(' + idx + ')" style="font-size:9px;padding:1px 4px;border-radius:3px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;cursor:pointer;">✕</button>' +
+      '</div>';
+  }).join('');
+}
+
+function calDeleteShot(idx) {
+  calShots.splice(idx, 1);
+  saveAimProfile();
+  applyCalibrationToBias();
+  updateCalLibrary();
+}
+
+function calTapActual(p) { return false; }  // legacy — no longer used
+
+function calUndo() {
+  if (calPhase === 'predicted') {
+    calPhase = 'idle'; calPendingShot = null;
+  } else if (calShots.length) {
+    calShots.pop();
+    saveAimProfile();
+    applyCalibrationToBias();
+  }
+  calUpdateUI();
+}
+
+function calReset() {
+  calShots = []; calPhase = 'idle'; calPendingShot = null;
+  saveAimProfile();
+  ['fat','med','thin'].forEach(z => { const sl=$('sl-bias-'+z); if(sl) sl.value='0'; });
+  onSliders();
+  const res = $('cal-result'); if (res) res.style.display = 'none';
+  calUpdateUI(); render();
+}
+
+// ── TOGGLES ────────────────────────────────────────────────────
+function toggleGhost() {
+  // ghost is permanent — no-op
+  render();
+}
+
+function toggleMap() {
+  mapOn = !mapOn;
+  ['map-layer','map2-layer'].forEach(id => {
+    const l = document.getElementById(id);
+    if (l) { l.style.transition='opacity 0.2s'; l.style.opacity = mapOn ? '1' : '0'; }
+  });
+  const mb = document.getElementById('btn-map');
+  if (mb) mb.classList.toggle('dim', !mapOn);
+}
+
+function cycleTableSize() {
+  const poolSizes    = [7, 8, 9];
+  const snookerSizes = [10, 12];
+  const sizes = S.snooker ? snookerSizes : poolSizes;
+  const idx = sizes.indexOf(S.tableSize);
+  S.tableSize = sizes[(idx + 1) % sizes.length];
+  $('size-btn').textContent = S.tableSize + 'ft';
+  render();
+}
+
+function toggleUnits() {
+  S.metric = !S.metric;
+  $('unit-btn').textContent = S.metric ? 'M' : 'FT';
+  render();
+}
+
+function toggleTable() {
+  S.snooker = !S.snooker;
+  // Set sensible default size for the game type
+  S.tableSize = S.snooker ? 12 : 9;
+  $('size-btn').textContent = S.tableSize + 'ft';
+  const btn = $('table-btn');
+  btn.textContent = S.snooker ? 'SNOOKER' : 'POOL';
+  btn.style.borderColor = S.snooker ? 'rgba(112,192,240,0.5)' : 'rgba(160,208,160,0.4)';
+  btn.style.color = S.snooker ? '#70c0f0' : '#a0d0a0';
+  render();
+}
+
+function toggleInfo() {
+  $('info-overlay').classList.toggle('open');
+}
+
+function rotateLeft() {
+  S.rotation = (S.rotation + 270) % 360;
+  applyRotation();
+}
+function rotateRight() {
+  S.rotation = (S.rotation + 90) % 360;
+  applyRotation();
+}
+function applyRotation() {
+  const svgEl = $('topsvg'), grp = $('tbl-content'), r = S.rotation;
+  if (r === 0) {
+    svgEl.setAttribute('viewBox','0 0 460 260');
+    grp.setAttribute('transform','');
+  } else if (r === 90) {
+    svgEl.setAttribute('viewBox','0 0 260 460');
+    grp.setAttribute('transform','translate(260,0) rotate(90)');
+  } else if (r === 180) {
+    svgEl.setAttribute('viewBox','0 0 460 260');
+    grp.setAttribute('transform','translate(460,260) rotate(180)');
+  } else {
+    svgEl.setAttribute('viewBox','0 0 260 460');
+    grp.setAttribute('transform','translate(0,460) rotate(270)');
+  }
+  // Go fullscreen on any non-zero rotation using CSS overlay (works on iOS)
+  const card = document.querySelector('.card');
+  const topBox = document.querySelector('.svg-box.top-box');
+  if (r !== 0) {
+    card.style.position = 'fixed';
+    card.style.top = '0'; card.style.left = '0';
+    card.style.width = '100vw'; card.style.height = '100dvh';
+    card.style.zIndex = '9999';
+    card.style.overflowY = 'auto';
+    card.style.borderRadius = '0';
+    card.style.padding = '4px';
+  } else {
+    card.style.position = '';
+    card.style.top = ''; card.style.left = '';
+    card.style.width = ''; card.style.height = '';
+    card.style.zIndex = '';
+    card.style.overflowY = '';
+    card.style.borderRadius = '';
+    card.style.padding = '';
+  }
+  render();
+}
+function cycleRotation() { rotateRight(); }
+
+// ── INIT ──────────────────────────────────────────────────────
+loadAimProfile();
+addFeltSpots();
+// Apply default states
+document.getElementById('map-layer').style.opacity = '1';
+if(document.getElementById('map2-layer')) document.getElementById('map2-layer').style.opacity='1';
+SNAP_POINTS = buildSnapPoints();
+// Build shot library list
+loadUserShots();
+buildShotList();
+const epSnap = document.getElementById('ep-snap');
+if (epSnap) epSnap.classList.add('active');
+const epBias = document.getElementById('ep-bias');
+if (epBias) { epBias.classList.add('on'); epBias.textContent = 'ON'; }
+render();
+// ── GLOBAL TOUCH SAFETY RESET (iOS pointer capture bug) ──────
+document.addEventListener('touchend', () => {
+  drag = null;
+  if (typeof diagDrag !== 'undefined') diagDrag = false;
+  if (typeof overlayDrag !== 'undefined') overlayDrag = null;
+}, {passive: true});
+document.addEventListener('touchcancel', () => {
+  drag = null;
+  if (typeof diagDrag !== 'undefined') diagDrag = false;
+  if (typeof overlayDrag !== 'undefined') overlayDrag = null;
+}, {passive: true});
+
+// ── SNAP SYSTEM ──────────────────────────────────────────────
+
+function toggleLock(which) {
+  if (which === 'table')   lockTable   = !lockTable;
+  if (which === 'balls')   lockBalls   = !lockBalls;
+  if (which === 'sliders') lockSliders = !lockSliders;
+
+  const _lt = document.getElementById('ep-lt'); if(_lt){ _lt.classList.toggle('locked', lockTable); _lt.classList.toggle('on', !lockTable); }
+  const _ls = document.getElementById('ep-ls'); if(_ls){ _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
+  const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
+
+  // Toggle touch-action on topsvg and botsvg so pinch/scroll pass through when locked
+  // touch-action managed per-drag on topsvg/botsvg
+
+  // Apply slider lock visually
+  const sg = document.querySelector('.sgroup');
+  if (sg) sg.style.opacity = lockSliders ? '0.4' : '1';
+  document.querySelectorAll('.sgroup input[type=range]').forEach(el => {
+    el.disabled = lockSliders;
+  });
+  // Big thumbs when unlocked
+  const card = document.querySelector('.card');
+  if (card) card.classList.toggle('sliders-unlocked', !lockSliders);
+
+  document.activeElement && document.activeElement.blur();
+}
+
+function zeroSliders() {
+  S.speed = 0.5; S.spin = 0; S.vert = 0; S.bias = 0;
+  $('sl-spd').value  = '50';
+  $('sl-spn').value  = '0';
+  $('sl-vert').value = '0';
+  ['fat','med','thin'].forEach(z => { const sl=$('sl-bias-'+z); if(sl) sl.value='0'; });
+  onSliders();
+  document.activeElement && document.activeElement.blur();
+}
+
+function toggleBias() {
+  biasOn = !biasOn;
+  const btn = document.getElementById('ep-bias');
+  if (btn) { btn.classList.toggle('on', biasOn);  btn.blur(); }
+  // Sliders always visible, toggle just enables/disables their effect
+  const bd = document.getElementById('bias-sliders');
+  if (bd) bd.style.opacity = biasOn ? '1' : '0.35';
+  document.activeElement && document.activeElement.blur();
+  onSliders();
+}
+
+function toggleSnap(e) {
+  snapOn = !snapOn;
+  const btn = document.getElementById('ep-snap');
+  if (btn) { btn.classList.toggle('on', snapOn); btn.blur(); }
+  document.activeElement && document.activeElement.blur();
+}
+
+// Build all snap points: centers + corners of 32 squares
+function buildSnapPoints() {
+  const pts = [];
+  const DX = 50, DY = 50;
+  const OX = 30, OY = 30;
+  const seen = new Set();
+
+  function add(x, y, label) {
+    const key = x + ',' + y;
+    if (seen.has(key)) return;  // deduplicate shared corners/edges
+    seen.add(key);
+    pts.push({x, y, label});
+  }
+
+  const BR = 9;  // ball radius + 1px gap — keep balls inside felt
+  const XMIN = OX + BR, XMAX = OX + 8*DX - BR;
+  const YMIN = OY + BR, YMAX = OY + 4*DY - BR;
+  function sc(x, y) { return { x: Math.max(XMIN, Math.min(XMAX, x)), y: Math.max(YMIN, Math.min(YMAX, y)) }; }
+
+  for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < 8; col++) {
+      const n = row * 8 + col + 1;
+      const x0 = OX + col * DX;
+      const y0 = OY + row * DY;
+      const cx = x0 + DX/2;
+      const cy = y0 + DY/2;
+
+      // Center
+      add(cx, cy, String(n));
+      // Perimeter clockwise from lower-left: a-h (clamped inside felt)
+      const pa = sc(x0,      y0+DY); add(pa.x, pa.y, n+'a');
+      const pb = sc(x0,      cy);    add(pb.x, pb.y, n+'b');
+      const pc = sc(x0,      y0);    add(pc.x, pc.y, n+'c');
+      const pd = sc(cx,      y0);    add(pd.x, pd.y, n+'d');
+      const pe = sc(x0+DX,   y0);    add(pe.x, pe.y, n+'e');
+      const pf = sc(x0+DX,   cy);    add(pf.x, pf.y, n+'f');
+      const pg = sc(x0+DX,   y0+DY); add(pg.x, pg.y, n+'g');
+      const ph = sc(cx,      y0+DY); add(ph.x, ph.y, n+'h');
+    }
+  }
+  return pts;
+}
+
+
+function nearestSnap(x, y) {
+  let best = null, bestD = Infinity;
+  for (const pt of SNAP_POINTS) {
+    const d = Math.hypot(x - pt.x, y - pt.y);
+    if (d < SNAP_RADIUS && d < bestD) {
+      best = pt; bestD = d;
+    }
+  }
+  return best;
+}
+
+function applySnap(x, y) {
+  if (!snapOn || !SNAP_POINTS || SNAP_POINTS.length === 0) return {x, y, label: null};
+  const pt = nearestSnap(x, y);
+  if (pt) return {x: pt.x, y: pt.y, label: pt.label};
+  return {x, y, label: null};
+}
+
+function showSnapLabel(svgEl, x, y, label, ballId) {
+  // Remove existing label for this ball
+  const existing = document.getElementById('snap-lbl-' + ballId);
+  if (existing) existing.remove();
+  if (!label) return;
+
+  // Convert SVG coords to screen coords
+  const rect = svgEl.getBoundingClientRect();
+  const vb = svgEl.viewBox.baseVal;
+  const scx = rect.left + (x / vb.width)  * rect.width;
+  const scy = rect.top  + (y / vb.height) * rect.height;
+
+  // Create floating label
+  const lbl = document.createElement('div');
+  lbl.id = 'snap-lbl-' + ballId;
+  lbl.className = 'snap-label';
+  lbl.textContent = (ballId === 'cb' ? 'CB: ' : 'OB: ') + label;
+  lbl.style.left = (scx + 12) + 'px';
+  lbl.style.top  = (scy - 10) + 'px';
+  lbl.style.opacity = '1';
+  document.body.appendChild(lbl);
+
+  // Fade after 2s
+  if (snapLabelTimer) clearTimeout(snapLabelTimer);
+  snapLabelTimer = setTimeout(() => {
+    lbl.style.opacity = '0';
+    setTimeout(() => lbl.remove(), 400);
+  }, 2000);
+}
+
+// ── EDGE ZOOM ────────────────────────────────────────────────
+let panMode = true;
+function togglePan(){
+  panMode = !panMode;
+  const btn = document.getElementById('ep-pan');
+  if(btn) btn.classList.toggle('on', panMode);
+}
+function edgeZoom(factor) {
+  const wrap = document.getElementById('zoom-wrap');
+  if (!wrap) return;
+  // Use pinch system's scale/tx/ty if available
+  if (typeof _pz !== 'undefined') {
+    _pz.scale = Math.max(0.6, Math.min(4, _pz.scale * factor));
+    _pz.apply();
+  } else {
+    const cur = wrap._zscale || 1;
+    const next = Math.max(0.6, Math.min(4, cur * factor));
+    wrap._zscale = next;
+    wrap.style.transform = 'scale(' + next + ')';
+    wrap.style.transformOrigin = 'top left';
+  }
+}
+function edgeZoomReset() {
+  const wrap = document.getElementById('zoom-wrap');
+  if (!wrap) return;
+  if (typeof _pz !== 'undefined') {
+    _pz.scale = 1; _pz.tx = 0; _pz.ty = 0; _pz.apply();
+  } else {
+    wrap._zscale = 1;
+    wrap.style.transform = 'scale(1)';
+  }
+}
+
+</script>
+<span id="r-throw" style="display:none"></span>
+</div><!-- /zoom-wrap -->
+<script>
+// Button zoom only — no pinch
+const _pz = {
+  scale:1, tx:0, ty:0,
+  apply:function(){
+    const w=document.getElementById('zoom-wrap');
+    if(!w) return;
+    w._zscale=this.scale;
+    if(this.scale<=1){this.tx=0;this.ty=0;}
+    w.style.transform=`translate(${this.tx}px,${this.ty}px) scale(${this.scale})`;
+    w.style.transformOrigin='top left';
+  }
+};
+
+
+// ── TOOLBAR FLOAT ──────────────────────────────────────────
+function positionToolbar(){
+  const ow = document.querySelector('.outer-wrap');
+  const tb = document.getElementById('toolbar-col');
+  if(!ow || !tb) return;
+  const owRect = ow.getBoundingClientRect();
+  tb.style.right = Math.max(0, window.innerWidth - owRect.right) + 'px';
+  // Counter any inherited scale from iOS Safari fixed+transform bug
+  const sc = (typeof _pz !== 'undefined') ? _pz.scale : 1;
+  if(sc !== 1){
+    tb.style.transform = `translateY(-50%) scale(${1/sc})`;
+    tb.style.transformOrigin = 'right center';
+  } else {
+    tb.style.transform = 'translateY(-50%)';
+  }
+}
+// Run once after layout, then only on resize
+window.addEventListener('load', positionToolbar);
+// Apply initial lock state
+window.addEventListener('load', function(){
+  try {
+    const b = JSON.parse(localStorage.getItem('lz-aimer-bias') || '{}');
+    if (b.fat !== undefined) { const el = document.getElementById('sl-bias-fat'); if(el) el.value = b.fat; }
+    if (b.med !== undefined) { const el = document.getElementById('sl-bias-med'); if(el) el.value = b.med; }
+    if (b.thin !== undefined) { const el = document.getElementById('sl-bias-thin'); if(el) el.value = b.thin; }
+  } catch(e) {}
+
+  const _lt = document.getElementById('ep-lt'); if(_lt){ _lt.classList.toggle('locked', lockTable); _lt.classList.toggle('on', !lockTable); }
+  const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
+  const _ls = document.getElementById('ep-ls'); if(_ls){ _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
+  const _pan = document.getElementById('ep-pan'); if(_pan) _pan.classList.toggle('on', panMode);
+  // Apply slider lock visually
+  const sg = document.querySelector('.sgroup');
+  if(sg) sg.style.opacity = lockSliders ? '0.4' : '1';
+  document.querySelectorAll('.sgroup input[type=range]').forEach(el => { el.disabled = lockSliders; });
+  const card = document.querySelector('.card');
+  if(card) card.classList.toggle('sliders-unlocked', !lockSliders);
+  // Apply bias
+  const biasBtn = document.getElementById('ep-bias');
+  if(biasBtn){ biasBtn.classList.toggle('on', biasOn); }
+});
+window.addEventListener('resize', positionToolbar, {passive:true});
+setTimeout(positionToolbar, 100); // fallback
+
+
+
+// ── TOOLBAR POSITIONING handled by CSS (position relative in flex row) ──
+// Swap panels
+let panelsSwapped=false;
+function swapPanels(){
+  panelsSwapped=!panelsSwapped;
+  const sliders  = document.getElementById('sliders-block');
+  const ballWrap = document.getElementById('block-ball-wrap');
+  const readouts = document.getElementById('readouts');
+  const card     = document.querySelector('.card');
+  if(panelsSwapped){
+    card.insertBefore(sliders, ballWrap);
+  } else {
+    card.insertBefore(sliders, readouts);
+  }
+}
+// Default to sliders-on-top layout
+window.addEventListener('load', function(){ swapPanels(); });
+</script>
+
+</div><!-- /outer-wrap -->
+
+
+<!-- INFO OVERLAY -->
+<div id="info-overlay">
+  <div id="info-inner">
+    <button id="info-close" onclick="toggleInfo()">✕</button>
+    <h2>LeStar Z's Aimer</h2>
+    <p><strong>THE TABLE:</strong> Drag the red (object ball) and white (cue ball) to match your real shot. The app immediately calculates the cut angle and aim point from their positions.</p>
+    <p><strong>THE DIAGRAM:</strong> Eye-level view showing where to aim on the OB. The orange dashed line is your aim point — where the inside edge of the CB must contact the OB. Drag the CB in the diagram to fine-tune, or use arrow keys (1% per press).</p>
+    <p><strong>SPEED:</strong> Faster shots reduce throw. Slower shots increase it.</p>
+    <p><strong>SIDE:</strong> Side english adds throw (OB deflects) and squirt (CB path deflects).</p>
+    <p><strong>VERT:</strong> Follow (top) or draw (bottom). Moves the tip dot on the CB graphic. Does not affect the aim point directly but affects CB path after contact.</p>
+    <p><strong>DIST:</strong> Distance from CB to OB. Squirt from side english accumulates over distance.</p>
+    <p><strong>BIAS:</strong> Your personal correction. If you consistently undercut, slide toward thinner. If you overcut, slide toward fuller.</p>
+    <p><strong>MAP:</strong> Overlay the diamond grid on the table for position reference.</p>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<script>
+// ── PAN VIA POINTER EVENTS ON ZOOM-WRAP ──────────────────────
+// Uses pointerId to avoid conflict with SVG ball drags which use setPointerCapture
+(function(){
+  var wrap = null;
+  var panPtr = null;
+  var panStartX=0, panStartY=0, panInitTx=0, panInitTy=0;
+
+  function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
+
+  function onDown(e){
+    if(!panMode) return;
+    if(_pz.scale <= 1) return;
+    panPtr = e.pointerId;
+    panStartX = e.clientX; panStartY = e.clientY;
+    panInitTx = _pz.tx;    panInitTy = _pz.ty;
+    getWrap().setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }
+
+  function onMove(e){
+    if(panPtr === null || e.pointerId !== panPtr) return;
+    var w = getWrap();
+    var ww = w.offsetWidth, wh = w.offsetHeight, sc = _pz.scale;
+    _pz.tx = Math.min(0, Math.max(ww*(1-sc), panInitTx + (e.clientX - panStartX)));
+    _pz.ty = Math.min(0, Math.max(wh*(1-sc), panInitTy + (e.clientY - panStartY)));
+    _pz.apply();
+    e.preventDefault();
+  }
+
+  function onUp(e){
+    if(e.pointerId === panPtr) panPtr = null;
+  }
+
+  window.addEventListener('load', function(){
+    var w = getWrap();
+    if(!w) return;
+    w.addEventListener('pointerdown',   onDown,  {passive:false});
+    w.addEventListener('pointermove',   onMove,  {passive:false});
+    w.addEventListener('pointerup',     onUp);
+    w.addEventListener('pointercancel', onUp);
+  });
+})();
+</script>
+
+
+<div id="btb">
+  <div id="btb-tab"><span id="btb-pill"><button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 6px;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button><span id="btb-label" style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding-right:8px;">TOOLS</span></span></div>
+  <div id="btb-panel" style="display:none;">
+    <div class="btb-row2">
+      <button class="ep-btn g-tog on" id="btn-map"    onclick="toggleMap()">MAP</button>
+      <button class="ep-btn g-tog"    id="btn-cal"    onclick="toggleCal()">CAL</button>
+      <button class="ep-btn g-tog"    onclick="toggleShotLibrary()">SOTS</button>
+      <button class="ep-btn g-tog"    id="btn-cbpath" onclick="toggleCbPath()">CB PATH</button>
+      <button class="ep-btn g-snap on" id="ep-snap"   onclick="toggleSnap()">SNAP</button>
+      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">BIAS</button>
+      <button class="ep-btn g-swap"   id="btn-swap"   onclick="swapPanels()">⇅</button>
+    </div>
+    <div class="btb-row2">
+      <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">IN +</button>
+      <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">OUT −</button>
+      <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET</button>
+      <button class="ep-btn g-zoom" id="ep-pan" onclick="togglePan()">PAN</button>
+    </div>
+    <div class="btb-row2">
+      <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE</button>
+      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">BALL</button>
+      <button class="ep-btn g-lock" id="ep-ls" onclick="toggleLock('sliders')">SLIDERS</button>
+      <button class="ep-btn g-zero" onclick="zeroSliders()">ZERO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var btbVisible = false;
+function toggleBtb(){
+  btbVisible = !btbVisible;
+  document.getElementById('btb-panel').style.display = btbVisible ? 'flex' : 'none';
+  document.getElementById('btb-arrow').textContent = btbVisible ? '▼' : '▲';
+  var pill = document.getElementById('btb-pill');
+  if (pill) pill.classList.toggle('open', btbVisible);
+}
+// Floating drag via TOOLS bar
+(function(){
+  var btb, tab, startX, startY, origLeft, origTop, didDrag;
+  window.addEventListener('load', function(){
+    btb = document.getElementById('btb');
+    tab = document.getElementById('btb-tab');
+    if (!btb || !tab) return;
+    var activePtr = null;
+    tab.addEventListener('pointerdown', function(e){
+      if (e.target.id === 'btb-arrow') return; // arrow button handles toggle itself
+      var rect = btb.getBoundingClientRect();
+      btb.style.transform = 'none';
+      btb.style.left = rect.left + 'px';
+      btb.style.top  = rect.top  + 'px';
+      btb.style.bottom = 'auto';
+      startX = e.clientX; startY = e.clientY;
+      origLeft = rect.left; origTop = rect.top;
+      didDrag = false; activePtr = e.pointerId;
+      // Do NOT capture yet — only capture once drag is confirmed
+    });
+    tab.addEventListener('pointermove', function(e){
+      if (activePtr === null || e.pointerId !== activePtr) return;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (!didDrag && Math.hypot(dx,dy) > 8) {
+        didDrag = true;
+        try { tab.setPointerCapture(e.pointerId); } catch(ex){}
+      }
+      if (!didDrag) return;
+      var nx = origLeft + dx, ny = origTop + dy;
+      nx = Math.max(0, Math.min(window.innerWidth  - btb.offsetWidth,  nx));
+      ny = Math.max(0, Math.min(window.innerHeight - btb.offsetHeight, ny));
+      btb.style.left = nx + 'px';
+      btb.style.top  = ny + 'px';
+    });
+    tab.addEventListener('pointerup', function(e){
+      if (e.pointerId !== activePtr) return;
+      activePtr = null;
+      if (!didDrag) toggleBtb();
+    });
+    tab.addEventListener('pointercancel', function(e){
+      activePtr = null;
+    });
+  });
+})();
+</script>
+
+<script>
+function vernierAim(dir) {
+  const oneDeg = Math.asin(0.01) * (180/Math.PI);
+  const cur = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+  const rh  = S._diagDragRh !== undefined ? S._diagDragRh : false;
+  let signed = rh ? -cur : cur;
+  signed += dir * oneDeg;
+  signed = Math.max(-90, Math.min(90, signed));
+  if (Math.abs(signed) < 0.001) signed = dir * oneDeg;
+  S._diagDragRh = signed < 0;
+  S.diagCutDeg  = Math.abs(signed);
+  render();
+}
+function biasStep(zone, dir) {
+  const el = document.getElementById('sl-bias-' + zone);
+  if (!el) return;
+  el.value = Math.max(-12, Math.min(12, parseInt(el.value) + dir));
+  onSliders(); render();
+}
+</script>
+<!-- SHOT LIBRARY — floating, draggable -->
+<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(420px,96vw);background:rgba(10,24,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
+  <!-- Drag header -->
+  <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
+    <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SOT LIBRARY</span>
+    <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+  </div>
+  <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
+  <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
+    <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
+      style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
+    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
+  </div>
+</div>
+
+<script>
+// Shot library panel — position under table on first open, then draggable
+(function(){
+  var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
+  var positioned = false;
+
+  function positionUnderTable() {
+    var topBox = document.querySelector('.svg-box.top-box');
+    if (!topBox || !panel) return;
+    var r = topBox.getBoundingClientRect();
+    var pw = panel.offsetWidth || 420;
+    var left = r.left + (r.width - pw) / 2;
+    left = Math.max(4, Math.min(window.innerWidth - pw - 4, left));
+    panel.style.left = left + 'px';
+    panel.style.top  = (r.bottom + 6) + 'px';
+    positioned = true;
+  }
+
+  window.addEventListener('load', function(){
+    panel  = document.getElementById('shot-library-panel');
+    header = document.getElementById('shot-lib-header');
+    if (!panel || !header) return;
+
+    header.addEventListener('pointerdown', function(e){
+      if (e.target.tagName === 'BUTTON') return;
+      var r = panel.getBoundingClientRect();
+      startX=e.clientX; startY=e.clientY;
+      origLeft=r.left; origTop=r.top;
+      didDrag=false; activePtr=e.pointerId;
+    });
+    header.addEventListener('pointermove', function(e){
+      if (activePtr===null || e.pointerId!==activePtr) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if (!didDrag && Math.hypot(dx,dy)>8){
+        didDrag=true;
+        try{ header.setPointerCapture(e.pointerId); }catch(ex){}
+      }
+      if (!didDrag) return;
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
+      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
+      panel.style.left=nx+'px'; panel.style.top=ny+'px';
+    });
+    header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+  });
+
+  // Hook into toggleShotLibrary to position on first open
+  var _orig = window.toggleShotLibrary;
+  window.addEventListener('load', function(){
+    var origToggle = window.toggleShotLibrary;
+    window.toggleShotLibrary = function(){
+      origToggle();
+      if (!positioned && panel && panel.style.display !== 'none') {
+        requestAnimationFrame(positionUnderTable);
+      }
+    };
+  });
+})();
+</script>
+</body>
+</html>

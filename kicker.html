@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LeStar Z Kicker">
+  <link rel="apple-touch-icon" href="/icon-apple.png">
+  <link rel="manifest" href="/manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.1, maximum-scale=5.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kicker">
+<title>LeStar Z's Kicker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,900&family=Playfair+Display:ital,wght@1,700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+button{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;outline:none;}
+html,body{background:#141414;font-family:'Lato',sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px 8px 32px;min-height:100vh;}
+#app{background:#1a361a;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);width:100%;max-width:700px;padding:14px 12px 16px 12px;border:2px solid #2a4e2a;display:flex;flex-direction:column;}
+
+/* ── HEADER / LOGO ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);}
+h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-bottom:3px;}
+.t-lestar{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
+.t-z{font-family:'Lato',sans-serif;font-style:italic;font-weight:900;font-size:clamp(20px,5.5vw,30px);color:#f0df70;line-height:1;display:inline-flex;align-items:center;margin:0 1px 0 2px;}
+.t-rest{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
+.sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:0.07em;}
+#help-btn{flex-shrink:0;width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;}
+/* Info overlay (full-screen) */
+#info-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 20px 20px;overflow-y:auto;}
+#info-overlay.open{display:flex;}
+#info-inner{background:#1a361a;border:2px solid #2a4e2a;border-radius:10px;width:100%;max-width:560px;padding:20px 18px 24px;position:relative;}
+#info-close{position:absolute;top:10px;right:12px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:22px;cursor:pointer;line-height:1;font-family:'Lato',sans-serif;}
+#info-inner h2{font-family:'Playfair Display',serif;font-style:italic;color:#f0df70;font-size:1.2rem;margin-bottom:12px;}
+#info-inner p{font-size:0.78rem;color:rgba(255,255,255,0.88);line-height:1.7;margin-bottom:10px;}
+#info-inner p:last-child{margin-bottom:0;}
+#info-inner p.intro{font-size:0.82rem;color:#ffffff;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.12);}
+#info-inner strong{color:#f0df70;}
+
+/* ── TABLE ── */
+#table-wrap{position:relative;width:100%;padding:4px 0 4px;background:transparent;}
+#tbl{width:100%;height:auto;display:block;touch-action:none;-webkit-user-select:none;user-select:none;}
+
+/* ── ACTION BUTTONS — Banker tog style ── */
+#rail-row{display:flex;gap:5px;padding:6px 0 4px;margin-bottom:2px;}
+#rail-row button{flex:1;min-width:0;height:24px;border-radius:6px;border:none;outline:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#f0df70;color:#1a1400;-webkit-tap-highlight-color:transparent;}
+
+/* ── SLIDERS ── */
+.sgroup{background:rgba(0,0,0,0.18);border-radius:7px;padding:7px 10px 6px 10px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.07);}
+.sgroup-title{font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#ddd;margin-bottom:6px;}
+.srow{display:flex;align-items:center;gap:8px;}
+.slbl{font-size:11px;color:#e8e8e8;min-width:52px;font-weight:700;}
+.sval{font-size:15px;font-weight:900;min-width:62px;text-align:right;white-space:nowrap;color:#f0df70;}
+input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
+#sl-spd::-webkit-slider-thumb{background:#f0df70;}
+#sl-spn::-webkit-slider-thumb{background:#e870b0;}
+#sl-bias::-webkit-slider-thumb{background:#c890f0;}
+
+/* ── READOUTS ── */
+#readouts{padding:0 2px 4px;background:transparent;}
+.seg-block{border-left:3px solid #444;padding-left:9px;margin:6px 0 2px;}
+.seg-hdr{font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:5px 0 2px;}
+.ro-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.ro-row:last-child{border-bottom:none;}
+.ro-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);}
+.ro-val{font-size:15px;font-weight:900;font-family:'Lato',sans-serif;text-align:right;max-width:65%;}
+
+/* ── BOUNCE METRICS ── */
+#contact-wrap{width:100%;background:rgba(0,0,0,0.28);border-radius:4px;overflow:hidden;}
+#contact-svg{width:100%;height:auto;display:block;}
+#contact-pills{display:flex;gap:4px;padding:5px 0 3px;justify-content:flex-start;}
+.cpill{height:24px;padding:0 8px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center;background:rgba(240,223,112,0.22);color:rgba(240,223,112,0.6);-webkit-tap-highlight-color:transparent;outline:none;}
+.cpill.active{background:#f0df70;color:#1a1a1a;}
+
+/* ── CALIBRATION ── */
+#cal-panel{display:none;width:100%;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:6px;padding:12px 12px 14px;margin-bottom:6px;}
+#cal-panel.open{display:block;}
+#cal-instruction{font-size:12px;color:#ffffff;font-weight:700;margin-bottom:8px;line-height:1.55;}
+#cal-status{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.05em;margin-bottom:8px;text-transform:uppercase;}
+.cal-shots{display:flex;gap:8px;margin-bottom:10px;}
+.cal-shot-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);}
+.cal-shot-dot.done{background:#4ade80;border-color:#4ade80;}
+.cal-actions{display:flex;gap:6px;margin-bottom:6px;}
+.cal-action-btn{flex:1;padding:8px 4px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;letter-spacing:0.08em;cursor:pointer;text-transform:uppercase;}
+.cal-action-btn.primary{background:rgba(74,222,128,0.15);border-color:#4ade80;color:#4ade80;}
+.cal-action-btn.danger{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.4);color:#ff8080;}
+#cal-result{font-size:11px;color:#88ee88;margin-top:6px;display:none;line-height:1.65;}
+
+/* ── INSTRUCTIONS ── */
+footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.18);padding:10px 8px 4px;letter-spacing:1.5px;text-transform:uppercase;margin-top:auto;}
+
+@media (orientation: landscape) {
+  #app, .card { max-width: 100% !important; }
+}
+/* ── EDGE CONTROL PANEL ── */
+#edge-panel-wrap { display: contents; }
+#edge-panel {
+  position: fixed; right: 2px; top: 50%; transform: translateY(-50%);
+  z-index: 500; display: flex; flex-direction: column; align-items: center;
+  gap: 6px; padding: 8px 4px;
+  background: rgba(255,255,248,0.95);
+  border-radius: 10px 0 0 10px; border: 1px solid rgba(0,0,0,0.15); border-right: none;
+  box-shadow: -2px 0 12px rgba(0,0,0,0.2);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  pointer-events: all; touch-action: manipulation;
+}
+.vbtn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:5px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.85);font-size:14px;font-weight:900;cursor:pointer;touch-action:manipulation;vertical-align:middle;margin:0 2px;}
+.vbtn:active{background:rgba(255,255,255,0.25);}
+.ep-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  border: 1.5px solid rgba(0,0,0,0.15); background: rgba(255,255,255,0.9);
+  color: #333; font-family: 'Lato', sans-serif; font-size: 10px; font-weight: 900;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  outline: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.ep-btn:active { background: rgba(220,220,210,0.9); }
+.ep-btn.active { background: #2a5a2a; color: #f0df70; border-color: #2a5a2a; }
+.ep-btn.locked { background: #7a1a1a; color: #ffaaaa; border-color: #7a1a1a; }
+.ep-sep { width: 24px; height: 1px; background: rgba(0,0,0,0.12); margin: 2px 0; }
+.ep-label { font-family: 'Lato', sans-serif; font-size: 7px; font-weight: 900;
+  letter-spacing: 1px; color: rgba(0,0,0,0.35); text-transform: uppercase; }
+.snap-label {
+  position: fixed; pointer-events: none;
+  font-family: 'Lato', sans-serif; font-size: 11px; font-weight: 900;
+  color: #f0df70; background: rgba(0,0,0,0.7);
+  padding: 2px 5px; border-radius: 4px; white-space: nowrap;
+  transition: opacity 0.4s; z-index: 600;
+}
+
+#sl-bias-fat::-webkit-slider-thumb,#sl-bias-med::-webkit-slider-thumb,#sl-bias-thin::-webkit-slider-thumb{background:#c890f0;}
+#sl-bias-fat,#sl-bias-med,#sl-bias-thin{-webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;}
+</style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const w = reg.installing;
+          w.addEventListener('statechange', () => {
+            if (w.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version available — show quiet notice
+              const n = document.createElement('div');
+              n.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#1a4a1a;color:#f0df70;font-family:Lato,sans-serif;font-size:12px;font-weight:900;padding:8px 16px;border-radius:20px;z-index:9999;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);';
+              n.textContent = '↑ Update available — tap to refresh';
+              n.onclick = () => { w.postMessage({type:'SKIP_WAITING'}); location.reload(); };
+              document.body.appendChild(n);
+            }
+          });
+        });
+      });
+    }
+  </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New version available — reload silently
+            window.location.reload();
+          }
+        });
+      });
+    });
+  });
+}
+// ── SHOT LIBRARY ─────────────────────────────────────────────────────────────
+// HOW TO ADD A SHOT:
+//
+// 1. Set up the shot in the app — place CB, drag aim handle to the right rail/diamond
+// 2. Note: CB square + suffix (e.g. sq28f), which rail, which diamond, how many rails,
+//    which pocket the ball ends at (P1-P6)
+// 3. Calculate aim angle in radians:
+//      Left rail:   Math.atan2((30 + diamond*50) - cb.y,  30 - cb.x)
+//      Right rail:  Math.atan2((30 + diamond*50) - cb.y, 430 - cb.x)
+//      Top rail:    Math.atan2(30 - cb.y,  (30 + diamond*50) - cb.x)
+//      Bottom rail: Math.atan2(230 - cb.y, (30 + diamond*50) - cb.x)
+// 4. CB coordinates from square grid:
+//      sq(n): row=(n-1)//8, col=(n-1)%8
+//      center: x=30+col*50+25, y=30+row*50+25
+//      suffix f (right-mid): x=30+col*50+50, y=30+row*50+25  (clamped to 421)
+//      suffix g (lower-right): x=30+col*50+50, y=30+row*50+50 (clamped to 221)
+//      suffix d (top-mid): x=30+col*50+25, y=30+row*50       (clamped to 39)
+// 5. OB target ball: place near the destination pocket
+//      P1=TL(39,39), P2=TM(230,39), P3=TR(421,39)
+//      P4=BL(39,221), P5=BM(230,221), P6=BR(421,221)
+//
+// SHOT FORMAT:
+//   { name, cb:{x,y}, angle (radians), rails (integer), ob:{x,y} (optional), desc }
+//
+// HOW IT WORKS:
+//   loadShot() sets S.aimAngle and S.numRails directly. The render pipeline uses
+//   aimAngle as the source of truth — no override needed (unlike Banker).
+//   The preset click handler in buildShotList() calls loadShot(idx) directly.
+//   Moving the CB clears the shot (aimAngle updates from drag).
+//
+// POCKET NUMBERS: 1=TL, 2=TM(top side), 3=TR, 4=BL, 5=BM(bottom side), 6=BR
+// ─────────────────────────────────────────────────────────────────────────────
+const SHOT_LIBRARY = [
+  { name: '5-Rail → P1', cb:{x:230,y:205}, angle:-2.6104, rails:5,
+    ob:{x:39, y:39},  desc:'CB sq28f → left rail @ 1.15, 5 rails → P1 (TL)' },
+  { name: '5-Rail → P2', cb:{x:130,y:205}, angle:-2.4429, rails:5,
+    ob:{x:230,y:39},  desc:'CB sq26f → left rail @ 1.82, 5 rails → P2 (TM)' },
+  { name: '4-Rail → P3', cb:{x:130,y:205}, angle:-2.3064, rails:4,
+    ob:{x:421,y:39},  desc:'CB sq26f → left rail @ 1.29, 4 rails → P3 (TR)' },
+  { name: '3-Rail → P5', cb:{x:230,y:155}, angle:-2.4676, rails:3,
+    ob:{x:230,y:221}, desc:'CB sq20f → top rail @ 0.87, 3 rails → P5 (BM)' },
+  { name: '3-Rail → P4', cb:{x:230,y:180}, angle:-2.6049, rails:3,
+    ob:{x:39, y:221}, desc:'CB sq20g → left rail @ 0.62, 3 rails → P4 (BL)' },
+];
+let libraryOpen = false;
+// ── USER SHOT LIBRARY ──────────────────────────────────────────
+let userShots = [];
+
+function loadUserShots() {
+  try { userShots = JSON.parse(localStorage.getItem('lz-kicker-shots') || '[]'); } catch(e) { userShots=[]; }
+}
+function saveUserShots() {
+  try { localStorage.setItem('lz-kicker-shots', JSON.stringify(userShots)); } catch(e) {}
+}
+
+function saveCurrentShot() {
+  const input = document.getElementById('shot-name-input');
+  const name = (input ? input.value.trim() : '') || ('Shot ' + (userShots.length + 1));
+  userShots.push({
+    name,
+    cb: {...S.cb},
+    angle: S.aimAngle,
+    rails: S.numRails,
+    ob: S.obVisible ? {...S.ob} : null,
+    ts: Date.now(),
+    desc: S.numRails + '-rail · ' + (S.aimAngle).toFixed(3) + 'rad'
+  });
+  saveUserShots();
+  if (input) input.value = '';
+  buildShotList();
+}
+
+function loadUserShot(idx) {
+  const shot = userShots[idx];
+  if (!shot) return;
+  S.cb = {...shot.cb};
+  S.aimAngle = shot.angle;
+  S.numRails = shot.rails;
+  if (shot.ob) { S.ob = {...shot.ob}; S.obVisible = true; }
+  else { S.obVisible = false; }
+  buildPills(); render();
+}
+
+function deleteUserShot(idx) {
+  userShots.splice(idx, 1);
+  saveUserShots();
+  buildShotList();
+}
+
+function buildShotList() {
+  const el = document.getElementById('shot-library-list');
+  if (!el) return;
+  let html = '<div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px;margin-bottom:3px;">PRESETS</div>';
+  html += SHOT_LIBRARY.map((s,i) =>
+    '<div data-preset="' + i + '" class="shot-lib-item" style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;">' +
+    '<div style="font-size:10px;font-weight:900;color:#f0df70">' + s.name + '</div>' +
+    '<div style="font-size:8px;color:rgba(255,255,255,0.4)">' + s.desc + '</div>' +
+    '</div>'
+  ).join('');
+  if (userShots.length) {
+    html += '<div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px;margin:5px 0 3px;">MY SHOTS</div>';
+    html += userShots.map((s,i) => {
+      const d = new Date(s.ts);
+      const dt = (d.getMonth()+1)+'/'+d.getDate();
+      return '<div style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">' +
+        '<div onclick="loadUserShot('+i+')" style="flex:1;cursor:pointer;">' +
+        '<div style="font-size:10px;font-weight:900;color:#7dd3fc">' + s.name + '</div>' +
+        '<div style="font-size:8px;color:rgba(255,255,255,0.4)">' + dt + ' · ' + s.desc + '</div></div>' +
+        '<button onclick="deleteUserShot('+i+')" style="font-size:9px;padding:1px 4px;border-radius:3px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;cursor:pointer;margin-left:4px;">✕</button>' +
+        '</div>';
+    }).join('');
+  }
+  el.innerHTML = html;
+  el.querySelectorAll('[data-preset]').forEach(item => {
+    item.addEventListener('click', () => loadShot(parseInt(item.dataset.preset)));
+  });
+}
+
+function toggleShotLibrary() {
+  libraryOpen = !libraryOpen;
+  const panel = document.getElementById('shot-library-panel');
+  if (panel) panel.style.display = libraryOpen ? 'block' : 'none';
+  if (libraryOpen) buildShotList();
+}
+function loadShot(idx) {
+  const shot = SHOT_LIBRARY[idx];
+  if (!shot) return;
+  S.cb = {...shot.cb};
+  S.aimAngle = shot.angle;
+  S.numRails = shot.rails;
+  if (shot.ob) { S.ob = {...shot.ob}; S.obVisible = true; }
+  else { S.obVisible = false; }
+  S.targetOb = shot.ob ? {...shot.ob} : null;
+  buildPills(); render();
+}
+
+</script>
+  <link rel="manifest" href="manifest-kicker.json">
+  <link rel="apple-touch-icon" href="icon-kicker-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LZ Kicker">
+  <meta name="theme-color" content="#1a361a">
+</head>
+<body>
+<div id="zoom-wrap" style="width:100%;transform-origin:top left;"><div id="app">
+
+<header>
+<div class="hdr">
+  <button id="help-btn" onclick="toggleInfo()">?</button>
+  <div style="text-align:center;flex:1;padding:0 8px;">
+    <h1><span class="t-lestar">LeStar&nbsp;</span><span class="t-z">Z</span><span class="t-rest">'s Kicker</span></h1>
+    <p class="sub">place the cue ball · aim for a rail · see where it ends up</p>
+  </div>
+  <div style="display:flex;gap:3px;align-items:center;flex-shrink:0;">
+    <button id="size-btn" onclick="cycleTableSize()" style="padding:2px 6px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;">9ft</button>
+    <button id="unit-btn" onclick="toggleUnits()" style="padding:2px 6px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;">FT</button>
+    <button id="table-btn" onclick="toggleTable()" style="padding:2px 7px;border-radius:10px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;white-space:nowrap;">POOL</button>
+  </div>
+</div>
+</header>
+
+<!-- ── INFO OVERLAY ── -->
+<div id="info-overlay">
+  <div id="info-inner">
+    <button id="info-close" onclick="toggleInfo()">✕</button>
+    <h2>LeStar Z's Kicker</h2>
+    <p class="intro">This Kicker, like all of the LeStar Z apps, is designed to help you learn. You can't use it in games, but you can take the knowledge you gain from it to those games. To use it effectively:</p>
+    <ol style="color:rgba(255,255,255,0.88);font-size:0.82rem;line-height:1.8;padding-left:1.4em;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.12);">
+      <li>Put your phone with the app showing on the table.</li>
+      <li>Set the cue ball on the table and on the app to about the same position.</li>
+      <li>Choose a desired point on the table that the cue ball needs to go — to pocket an object ball, to kick an opponent's ball away, to play a safe.</li>
+      <li>Then add as many rails as necessary for the cue ball to get to that position.</li>
+      <li>Grab the endpoint of the last segment.</li>
+      <li>Put it on the target location.</li>
+      <li>The diagram will show you the path.</li>
+      <li>The readouts will tell you the speed and spin you need to get there.</li>
+      <li>Experiment and see if you can adjust yourself and the bias slider so that you can consistently calculate the shot.</li>
+    </ol>
+    <p><strong>AIM HANDLE (gold ●):</strong> Drag the white cue ball to your position on the table. Drag the gold handle to set your aim direction. The gold line shows the ball's path to the first rail contact.</p>
+    <p><strong>BOUNCE CHAIN:</strong> Each rail contact continues in a new color — blue, red, green, violet. Use ＋ ADD RAIL to extend the chain up to 5 rails; － REMOVE RAIL to trim it back.</p>
+    <p><strong>ENDPOINT HANDLE (white ●):</strong> The white dot at the end of the last segment is draggable. Pull it to any spot on the table and the app reverse-solves the aim angle to deliver the ball there. All segments update live. This answers "how do I aim to get it there?"</p>
+    <p><strong>ROTATE ⟳:</strong> The button on the table corner cycles through 0° / 90° / 180° / 270°. Useful for matching the table orientation to your view at the table. All dragging works at every rotation.</p>
+    <p><strong>SPEED:</strong> Controls rail compression. Faster shots produce a shallower rebound angle. Set this to match your intended shot power.</p>
+    <p><strong>SPIN:</strong> Running english (spin matching rail direction) opens the rebound angle. Reverse english closes it. Which is right or left depends on the shot geometry.</p>
+    <p><strong>BIAS:</strong> Accounts for your specific table's rail personality. Some tables play long; some play short. Adjust after observing a few real shots on your table.</p>
+    <p><strong>POOL / SNOOKER:</strong> Snooker tables are larger and the cushions play slightly truer — less compression at the same speed. The toggle adjusts the physics and labels the readouts accordingly.</p>
+    <p><strong>DIAMONDS:</strong> The standard diamond reference system. 0 at each corner, 4 at the side pockets on long rails, 1–3 in between. A readout of TOP ◆ 2.50 means halfway between diamonds 2 and 3 on the top rail.</p>
+  </div>
+</div>
+
+<div id="block-sliders"><div class="sgroup">
+  <div class="srow">
+    <span class="slbl">speed</span>
+    <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
+      <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
+      <span class="sval" id="sv-spd">med</span>
+  </div>
+  <div class="srow" style="margin-top:6px;">
+    <span class="slbl">spin</span>
+    <input type="range" id="sl-spn" min="-4" max="4" value="0" step="1" oninput="onSliders()">
+      <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
+      <span class="sval" id="sv-spn">center</span>
+  </div>
+  <div id="bias-sliders" style="display:none;">
+  <div class="srow" style="margin-top:6px">
+    <span class="slbl" style="color:#c890f0;font-size:9px;">FAT</span>
+    <input type="range" id="sl-bias-fat" min="-12" max="12" value="0" oninput="onSliders()">
+    <span id="sv-bias-fat-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+    <span class="sval" id="sv-bias-fat" style="color:#c890f0;">0</span>
+    <button class="vbtn" onclick="biasStep('fat',-1)">−</button>
+    <button class="vbtn" onclick="biasStep('fat',1)">+</button>
+  </div>
+  <div class="srow" style="margin-top:4px">
+    <span class="slbl" style="color:#c890f0;font-size:9px;">MED</span>
+    <input type="range" id="sl-bias-med" min="-12" max="12" value="0" oninput="onSliders()">
+    <span id="sv-bias-med-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+    <span class="sval" id="sv-bias-med" style="color:#c890f0;">0</span>
+    <button class="vbtn" onclick="biasStep('med',-1)">−</button>
+    <button class="vbtn" onclick="biasStep('med',1)">+</button>
+  </div>
+  <div class="srow" style="margin-top:4px">
+    <span class="slbl" style="color:#c890f0;font-size:9px;">THIN</span>
+    <input type="range" id="sl-bias-thin" min="-12" max="12" value="0" oninput="onSliders()">
+    <span id="sv-bias-thin-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+    <span class="sval" id="sv-bias-thin" style="color:#c890f0;">0</span>
+    <button class="vbtn" onclick="biasStep('thin',-1)">−</button>
+    <button class="vbtn" onclick="biasStep('thin',1)">+</button>
+  </div>
+  </div><!-- /bias-sliders -->
+</div>
+</div><!-- /block-sliders -->
+
+<div id="table-wrap">
+<svg id="tbl" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="gFelt" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#1e6b35"/><stop offset="100%" stop-color="#134d25"/></radialGradient>
+  <radialGradient id="gPocket" cx="35%" cy="35%" r="70%"><stop offset="0%" stop-color="#1a1a1a"/><stop offset="100%" stop-color="#050a05"/></radialGradient>
+  <radialGradient id="gBall" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#f0f0e8"/><stop offset="100%" stop-color="#d8d8d0"/></radialGradient>
+  <marker id="arr0" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#f0df70"/></marker>
+  <marker id="arr1" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#7dd3fc"/></marker>
+  <marker id="arr2" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#f87171"/></marker>
+  <marker id="arr3" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#4ade80"/></marker>
+  <marker id="arr4" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#e879f9"/></marker>
+  <radialGradient id="gOB" cx="35%" cy="28%">
+    <stop offset="0%" stop-color="#ff9999"/>
+    <stop offset="50%" stop-color="#cc4444"/>
+    <stop offset="100%" stop-color="#881111"/>
+  </radialGradient>
+</defs>
+
+<g id="tbl-content">
+<rect x="0" y="0" width="460" height="260" rx="9" fill="#3d2b1f"/>
+<rect x="1.5" y="1.5" width="457" height="257" rx="8" fill="none" stroke="#5a3f2c" stroke-width="2"/>
+<!-- Cushion strips -->
+<rect x="30"  y="17"  width="400" height="13" fill="#1a6830"/>
+<rect x="30"  y="230" width="400" height="13" fill="#1a6830"/>
+<rect x="17"  y="30"  width="13"  height="200" fill="#1a6830"/>
+<rect x="430" y="30"  width="13"  height="200" fill="#1a6830"/>
+<!-- Felt -->
+<rect x="30" y="30" width="400" height="200" fill="url(#gFelt)"/>
+<rect x="30" y="30" width="400" height="200" fill="none" stroke="#0f3d1c" stroke-width="1.5"/>
+<!-- Corner pockets -->
+<circle cx="30"  cy="30"  r="17" fill="#060a06"/>
+<circle cx="430" cy="30"  r="17" fill="#060a06"/>
+<circle cx="30"  cy="230" r="17" fill="#060a06"/>
+<circle cx="430" cy="230" r="17" fill="#060a06"/>
+<!-- Side pockets — tapered jaws, rounded back -->
+<path d="M 210,30 L 215,16 A 15,9 0 0 1 245,16 L 250,30 Z" fill="#060a06"/>
+<path d="M 210,230 L 215,244 A 15,9 0 0 0 245,244 L 250,230 Z" fill="#060a06"/>
+<polygon points="80,7 84,12 80,17 76,12"     fill="#c8a84b"/>
+<polygon points="130,7 134,12 130,17 126,12"  fill="#c8a84b"/>
+<polygon points="180,7 184,12 180,17 176,12"  fill="#c8a84b"/>
+<polygon points="280,7 284,12 280,17 276,12"  fill="#c8a84b"/>
+<polygon points="330,7 334,12 330,17 326,12"  fill="#c8a84b"/>
+<polygon points="380,7 384,12 380,17 376,12"  fill="#c8a84b"/>
+<polygon points="80,243 84,248 80,253 76,248"   fill="#c8a84b"/>
+<polygon points="130,243 134,248 130,253 126,248" fill="#c8a84b"/>
+<polygon points="180,243 184,248 180,253 176,248" fill="#c8a84b"/>
+<polygon points="280,243 284,248 280,253 276,248" fill="#c8a84b"/>
+<polygon points="330,243 334,248 330,253 326,248" fill="#c8a84b"/>
+<polygon points="380,243 384,248 380,253 376,248" fill="#c8a84b"/>
+<polygon points="7,80 12,76 17,80 12,84"     fill="#c8a84b"/>
+<polygon points="7,130 12,126 17,130 12,134" fill="#c8a84b"/>
+<polygon points="7,180 12,176 17,180 12,184" fill="#c8a84b"/>
+<polygon points="443,80 448,76 453,80 448,84"   fill="#c8a84b"/>
+<polygon points="443,130 448,126 453,130 448,134" fill="#c8a84b"/>
+<polygon points="443,180 448,176 453,180 448,184" fill="#c8a84b"/>
+<text x="80"  y="5"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">1</text>
+<text x="130" y="5"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+<text x="180" y="5"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+<text x="280" y="5"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">5</text>
+<text x="330" y="5"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">6</text>
+<text x="380" y="5"   text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">7</text>
+<text x="80"  y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">1</text>
+<text x="130" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+<text x="180" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+<text x="280" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">5</text>
+<text x="330" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">6</text>
+<text x="380" y="259" text-anchor="middle" fill="#907020" font-size="7" font-family="Helvetica">7</text>
+<text x="3"   y="83"  fill="#907020" font-size="7" font-family="Helvetica">1</text>
+<text x="3"   y="133" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+<text x="3"   y="183" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+<text x="452" y="83"  fill="#907020" font-size="7" font-family="Helvetica">1</text>
+<text x="452" y="133" fill="#907020" font-size="7" font-family="Helvetica">2</text>
+<text x="452" y="183" fill="#907020" font-size="7" font-family="Helvetica">3</text>
+<text x="30"  y="23"  text-anchor="middle" fill="#604a14" font-size="6.5" font-family="Helvetica">0</text>
+<text x="430" y="23"  text-anchor="middle" fill="#604a14" font-size="6.5" font-family="Helvetica">8</text>
+<text x="230" y="23"  text-anchor="middle" fill="#604a14" font-size="6.5" font-family="Helvetica">4</text>
+<text x="6"   y="32"  fill="#604a14" font-size="6.5" font-family="Helvetica">0</text>
+<text x="6"   y="232" fill="#604a14" font-size="6.5" font-family="Helvetica">4</text>
+
+<g id="map-layer" opacity="1" style="pointer-events:none"><!-- unified grid -->
+  <text x="230" y="43" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2">TOP RAIL</text>
+  <text x="230" y="224" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2">BOTTOM RAIL</text>
+  <text x="40" y="132" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2" transform="rotate(-90,40,132)">LEFT RAIL</text>
+  <text x="420" y="132" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#7dd3fc" letter-spacing="2" transform="rotate(90,420,132)">RIGHT RAIL</text>
+  <line x1="80"  y1="30" x2="80"  y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+  <line x1="130" y1="30" x2="130" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+  <line x1="180" y1="30" x2="180" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+  <line x1="230" y1="30" x2="230" y2="230" stroke="#7dd3fc" stroke-width="1.2" opacity="0.75"/>
+  <line x1="280" y1="30" x2="280" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+  <line x1="330" y1="30" x2="330" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+  <line x1="380" y1="30" x2="380" y2="230" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+  <line x1="30" y1="80"  x2="430" y2="80"  stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+  <line x1="30" y1="130" x2="430" y2="130" stroke="#7dd3fc" stroke-width="1.2" opacity="0.75"/>
+  <line x1="30" y1="180" x2="430" y2="180" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+  <circle cx="230" cy="130" r="3" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.6"/>
+  <circle cx="230" cy="130" r="0.8" fill="#7dd3fc" opacity="0.6"/>
+</g>
+<g id="map2-layer" opacity="1" style="pointer-events:none"><!-- subdivision -->
+  <line x1="35" y1="30" x2="35" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="40" y1="30" x2="40" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="45" y1="30" x2="45" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="50" y1="30" x2="50" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="55" y1="30" x2="55" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="55" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+  <text x="55" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+  <line x1="60" y1="30" x2="60" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="65" y1="30" x2="65" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="70" y1="30" x2="70" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="75" y1="30" x2="75" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="85" y1="30" x2="85" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="90" y1="30" x2="90" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="95" y1="30" x2="95" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="100" y1="30" x2="100" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="105" y1="30" x2="105" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="105" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+  <text x="105" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+  <line x1="110" y1="30" x2="110" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="115" y1="30" x2="115" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="120" y1="30" x2="120" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="125" y1="30" x2="125" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="135" y1="30" x2="135" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="140" y1="30" x2="140" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="145" y1="30" x2="145" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="150" y1="30" x2="150" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="155" y1="30" x2="155" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="155" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+  <text x="155" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+  <line x1="160" y1="30" x2="160" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="165" y1="30" x2="165" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="170" y1="30" x2="170" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="175" y1="30" x2="175" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="185" y1="30" x2="185" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="190" y1="30" x2="190" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="195" y1="30" x2="195" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="200" y1="30" x2="200" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="205" y1="30" x2="205" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="205" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+  <text x="205" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+  <line x1="210" y1="30" x2="210" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="215" y1="30" x2="215" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="220" y1="30" x2="220" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="225" y1="30" x2="225" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="235" y1="30" x2="235" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="240" y1="30" x2="240" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="245" y1="30" x2="245" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="250" y1="30" x2="250" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="255" y1="30" x2="255" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="255" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">4.5</text>
+  <text x="255" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">4.5</text>
+  <line x1="260" y1="30" x2="260" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="265" y1="30" x2="265" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="270" y1="30" x2="270" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="275" y1="30" x2="275" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="285" y1="30" x2="285" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="290" y1="30" x2="290" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="295" y1="30" x2="295" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="300" y1="30" x2="300" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="305" y1="30" x2="305" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="305" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">5.5</text>
+  <text x="305" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">5.5</text>
+  <line x1="310" y1="30" x2="310" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="315" y1="30" x2="315" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="320" y1="30" x2="320" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="325" y1="30" x2="325" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="335" y1="30" x2="335" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="340" y1="30" x2="340" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="345" y1="30" x2="345" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="350" y1="30" x2="350" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="355" y1="30" x2="355" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="355" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">6.5</text>
+  <text x="355" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">6.5</text>
+  <line x1="360" y1="30" x2="360" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="365" y1="30" x2="365" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="370" y1="30" x2="370" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="375" y1="30" x2="375" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="385" y1="30" x2="385" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="390" y1="30" x2="390" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="395" y1="30" x2="395" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="400" y1="30" x2="400" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="405" y1="30" x2="405" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="405" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">7.5</text>
+  <text x="405" y="244" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">7.5</text>
+  <line x1="410" y1="30" x2="410" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="415" y1="30" x2="415" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="420" y1="30" x2="420" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="425" y1="30" x2="425" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="35" x2="430" y2="35" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="40" x2="430" y2="40" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="45" x2="430" y2="45" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="50" x2="430" y2="50" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="55" x2="430" y2="55" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="27" y="56.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+  <text x="433" y="56.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+  <line x1="30" y1="60" x2="430" y2="60" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="65" x2="430" y2="65" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="70" x2="430" y2="70" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="75" x2="430" y2="75" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="85" x2="430" y2="85" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="90" x2="430" y2="90" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="95" x2="430" y2="95" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="100" x2="430" y2="100" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="105" x2="430" y2="105" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="27" y="106.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+  <text x="433" y="106.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+  <line x1="30" y1="110" x2="430" y2="110" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="115" x2="430" y2="115" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="120" x2="430" y2="120" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="125" x2="430" y2="125" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="135" x2="430" y2="135" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="140" x2="430" y2="140" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="145" x2="430" y2="145" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="150" x2="430" y2="150" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="155" x2="430" y2="155" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="27" y="156.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+  <text x="433" y="156.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+  <line x1="30" y1="160" x2="430" y2="160" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="165" x2="430" y2="165" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="170" x2="430" y2="170" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="175" x2="430" y2="175" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="185" x2="430" y2="185" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="190" x2="430" y2="190" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="195" x2="430" y2="195" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="200" x2="430" y2="200" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="205" x2="430" y2="205" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
+  <text x="27" y="206.5" text-anchor="end" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+  <text x="433" y="206.5" text-anchor="start" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+  <line x1="30" y1="210" x2="430" y2="210" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="215" x2="430" y2="215" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="220" x2="430" y2="220" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <line x1="30" y1="225" x2="430" y2="225" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
+  <text x="30" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+  <text x="30" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+  <text x="80" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+  <text x="80" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+  <text x="130" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+  <text x="130" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+  <text x="180" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+  <text x="180" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+  <text x="230" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+  <text x="230" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+  <text x="280" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">5</text>
+  <text x="280" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">5</text>
+  <text x="330" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">6</text>
+  <text x="330" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">6</text>
+  <text x="380" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">7</text>
+  <text x="380" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">7</text>
+  <text x="430" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">8</text>
+  <text x="430" y="246" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">8</text>
+  <text x="26" y="32" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+  <text x="434" y="32" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+  <text x="26" y="82" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+  <text x="434" y="82" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+  <text x="26" y="132" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+  <text x="434" y="132" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+  <text x="26" y="182" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+  <text x="434" y="182" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+  <text x="26" y="232" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+  <text x="434" y="232" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+  <text x="55" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">1</text>
+  <text x="105" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">2</text>
+  <text x="155" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">3</text>
+  <text x="205" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">4</text>
+  <text x="255" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">5</text>
+  <text x="305" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">6</text>
+  <text x="355" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">7</text>
+  <text x="405" y="58" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">8</text>
+  <text x="55" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">9</text>
+  <text x="105" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">10</text>
+  <text x="155" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">11</text>
+  <text x="205" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">12</text>
+  <text x="255" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">13</text>
+  <text x="305" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">14</text>
+  <text x="355" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">15</text>
+  <text x="405" y="108" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">16</text>
+  <text x="55" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">17</text>
+  <text x="105" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">18</text>
+  <text x="155" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">19</text>
+  <text x="205" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">20</text>
+  <text x="255" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">21</text>
+  <text x="305" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">22</text>
+  <text x="355" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">23</text>
+  <text x="405" y="158" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">24</text>
+  <text x="55" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">25</text>
+  <text x="105" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">26</text>
+  <text x="155" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">27</text>
+  <text x="205" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">28</text>
+  <text x="255" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">29</text>
+  <text x="305" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">30</text>
+  <text x="355" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">31</text>
+  <text x="405" y="208" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.3)">32</text>
+</g>
+<g id="dyn">
+  <!-- 5 bounce segments: gold, blue, red, green, violet -->
+  <g id="seg0" opacity="0">
+    <line   id="s0-stub" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1" stroke-dasharray="3,3"/>
+    <line   id="s0-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="2.2" marker-end="url(#arr0)"/>
+    <circle id="s0-dot"  cx="0" cy="0" r="5.5" fill="none" stroke="#f0df70" stroke-width="1.8"/>
+    <circle id="s0-hdl"  cx="0" cy="0" r="10"  fill="#f0df70" stroke="#fff4" stroke-width="1.5" cursor="grab"/>
+  </g>
+  <g id="seg1" opacity="0">
+    <line   id="s1-line" x1="0" y1="0" x2="0" y2="0" stroke="#7dd3fc" stroke-width="1.9" stroke-dasharray="7,4" marker-end="url(#arr1)"/>
+    <circle id="s1-dot"  cx="0" cy="0" r="5"   fill="none" stroke="#7dd3fc" stroke-width="1.6"/>
+  </g>
+  <g id="seg2" opacity="0">
+    <line   id="s2-line" x1="0" y1="0" x2="0" y2="0" stroke="#f87171" stroke-width="1.7" stroke-dasharray="7,4" marker-end="url(#arr2)"/>
+    <circle id="s2-dot"  cx="0" cy="0" r="5"   fill="none" stroke="#f87171" stroke-width="1.6"/>
+  </g>
+  <g id="seg3" opacity="0">
+    <line   id="s3-line" x1="0" y1="0" x2="0" y2="0" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="7,4" marker-end="url(#arr3)"/>
+    <circle id="s3-dot"  cx="0" cy="0" r="5"   fill="none" stroke="#4ade80" stroke-width="1.5"/>
+  </g>
+  <g id="seg4" opacity="0">
+    <line   id="s4-line" x1="0" y1="0" x2="0" y2="0" stroke="#e879f9" stroke-width="1.3" stroke-dasharray="7,4" marker-end="url(#arr4)"/>
+    <circle id="s4-dot"  cx="0" cy="0" r="5"   fill="none" stroke="#e879f9" stroke-width="1.4"/>
+  </g>
+
+  <!-- Endpoint handle — white ring + dot at terminal point of last segment; draggable -->
+  <circle id="ep-ring" cx="0" cy="0" r="11" fill="rgba(255,255,255,.07)" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3,3" opacity="0" cursor="grab"/>
+  <circle id="ep-dot"  cx="0" cy="0" r="5"  fill="#ffffff" opacity="0" cursor="grab"/>
+  <text   id="ep-lbl"  x="0"  y="0" text-anchor="middle" fill="#ffffffaa" font-size="6.5" font-family="Helvetica" opacity="0">END</text>
+
+  <!-- Calibration markers -->
+  <circle id="cal-predicted" cx="0" cy="0" r="10" fill="none" stroke="#f0df70" stroke-width="2" stroke-dasharray="4,3" opacity="0"/>
+  <text id="cal-predicted-lbl" x="0" y="0" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#f0df70" opacity="0">PREDICTED</text>
+  <circle id="cal-actual" cx="0" cy="0" r="8" fill="#ff6060" stroke="#fff" stroke-width="1.5" opacity="0"/>
+  <text id="cal-actual-lbl" x="0" y="0" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="#ff8080" opacity="0">ACTUAL</text>
+  <!-- Cue ball -->
+  <circle id="cb-shadow" cx="171" cy="131" r="10" fill="#000" opacity="0.32"/>
+  <circle id="cb"        cx="170" cy="130" r="10" fill="url(#gBall)" stroke="#ccccbb" stroke-width="1" cursor="grab"/>
+  <circle id="cb-hi"     cx="166" cy="126" r="3.5" fill="#ffffff" opacity="0.55"/>
+  <circle id="cb-dot"    cx="170" cy="130" r="1.5" fill="#999" opacity="0.4"/>
+  <!-- Target OB — stationary, shown when a library shot is loaded -->
+  <circle id="kob-shadow" cx="0" cy="0" r="10" fill="#000" opacity="0.25" visibility="hidden"/>
+  <circle id="kob"        cx="0" cy="0" r="10" fill="url(#gOB)"  stroke="#cc8888" stroke-width="1" visibility="hidden"/>
+  <circle id="kob-hi"     cx="0" cy="0" r="3.5" fill="#ffffff" opacity="0.5" visibility="hidden"/>
+  <!-- Loose OB for kick shots -->
+  <circle id="kick-ob-shadow" cx="331" cy="131" r="10" fill="#000" opacity="0" />
+  <circle id="kick-ob"        cx="330" cy="130" r="10" fill="url(#gOB)" stroke="#903010" stroke-width="1" opacity="0" />
+  <circle id="kick-ob-hi"     cx="326" cy="126" r="3.5" fill="#fff" opacity="0" />
+</g>
+</g>
+</svg>
+</div>
+
+
+
+<!-- ── CALIBRATION PANEL ── -->
+<div id="cal-panel">
+  <div id="cal-instruction"></div>
+  <div id="cal-status"></div>
+  <div class="cal-actions">
+    <button class="cal-action-btn primary" id="cal-rec1-btn" onclick="calRecord1()">① RECORD PREDICTED</button>
+    <button class="cal-action-btn primary" id="cal-rec2-btn" onclick="calRecord2()" style="display:none;background:#1a5a3a;">② RECORD ACTUAL</button>
+    <button class="cal-action-btn" onclick="calUndo()">UNDO</button>
+    <button class="cal-action-btn danger" onclick="calReset()">RESET ALL</button>
+    <button class="cal-action-btn" onclick="calExport()" style="background:#2a4a2a;color:#4ade80;border-color:#4ade80;">EXPORT</button>
+  </div>
+  <div id="cal-result"></div>
+  <div id="cal-log" style="margin-top:8px;max-height:120px;overflow-y:auto;font-size:10px;color:rgba(255,255,255,0.5);"></div>
+</div>
+
+<!-- ── BUTTON ROW ── -->
+
+<div id="swap-container" style="display:flex;flex-direction:column;"> style="display:flex;flex-direction:column;">
+<div id="block-ball">
+<div id="contact-pills"></div>
+<div id="contact-wrap">
+  <svg id="contact-svg" viewBox="0 0 450 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+    <rect width="450" height="150" fill="rgba(0,0,0,0.28)"/>
+  </svg>
+</div>
+</div><!-- /block-ball -->
+
+</div><!-- /swap-container -->
+<div id="personal-bias" style="display:none;text-align:center;font-size:10px;font-weight:900;letter-spacing:1px;color:rgba(240,223,112,0.6);padding:3px 0 2px;">PERSONAL BIAS: —</div>
+  <!-- SHOT LIBRARY PANEL — floating, draggable -->
+  <div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
+    <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
+      <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SHOT LIBRARY</span>
+      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+    </div>
+    <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
+    <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
+      <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
+        style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
+      <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
+    </div>
+  </div>
+<div id="readouts"></div>
+
+</div><!-- /zoom-wrap -->
+<footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// CONSTANTS
+// ─────────────────────────────────────────────────────────────────────────────
+const TL = { left:30, right:430, top:30, bottom:230 };
+const DU = 50;
+const BALL_R  = 10;
+const HDL_D   = 72;
+const MAX_RAILS = 5;
+const SEG_COLORS = ['#f0df70','#7dd3fc','#f87171','#4ade80','#e879f9'];
+const SEG_NAMES  = ['1ST RAIL','2ND RAIL','3RD RAIL','4TH RAIL','5TH RAIL'];
+const RAIL_SHORT = { top:'TOP', bottom:'BTM', left:'LFT', right:'RGT' };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+const S = {
+  cb:        { x:170, y:130 },
+  ob:        { x:330, y:130 },
+  obVisible: false,
+  aimAngle:  -0.65,
+  numRails:  1,
+  speed:     0.5,
+  spin:      0,
+  bias:      0,
+  snooker:   false,
+  rotation:  0,
+  selectedContact: 0,
+  contactOn: true,
+  mapOn: true,
+  targetOb: null,
+  tableSize: 9,
+  metric: false,
+};
+let drag = null;
+let snapOn = true;
+let snapLabelTimer = null;
+let SNAP_POINTS = [];
+const SNAP_RADIUS = 14;
+let lockTable = false;
+let lockSliders = false;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHYSICS
+// ─────────────────────────────────────────────────────────────────────────────
+function kFactor() {
+  const base = S.snooker ? 0.97 : 0.95;
+  // Zone-based bias: FAT = shallow kicks (<30°), THIN = steep (>60°), MED = middle
+  const aimDeg = Math.abs(S.aimAngle * 180 / Math.PI) % 90;
+  const angleDeg = Math.min(aimDeg, 90 - aimDeg); // 0=parallel to rail, 45=diagonal
+  let zoneBias;
+  if (angleDeg < 20)      zoneBias = S.biasFat || 0;
+  else if (angleDeg > 50) zoneBias = S.biasThin || 0;
+  else                    zoneBias = S.biasMed || 0;
+  return Math.max(0.45, Math.min(0.99, (base - S.speed*0.22) + zoneBias + (typeof tableK !== 'undefined' ? tableK : 0)));
+}
+
+function rayHit(px, py, dx, dy, excludeRail) {
+  const rails=[
+    {name:'top',    h:true,  v:TL.top   },
+    {name:'bottom', h:true,  v:TL.bottom},
+    {name:'left',   h:false, v:TL.left  },
+    {name:'right',  h:false, v:TL.right },
+  ];
+  let best=null;
+  for(const r of rails){
+    if(r.name===excludeRail) continue;
+    let t,ix,iy;
+    if(r.h){
+      if(Math.abs(dy)<1e-9) continue;
+      t=(r.v-py)/dy; if(t<0.5) continue;
+      ix=px+t*dx; iy=r.v;
+      if(ix<TL.left-0.5||ix>TL.right+0.5) continue;
+    } else {
+      if(Math.abs(dx)<1e-9) continue;
+      t=(r.v-px)/dx; if(t<0.5) continue;
+      ix=r.v; iy=py+t*dy;
+      if(iy<TL.top-0.5||iy>TL.bottom+0.5) continue;
+    }
+    if(!best||t<best.t) best={t,x:ix,y:iy,rail:r.name};
+  }
+  return best;
+}
+
+function reboundVec(dx, dy, rail, k) {
+  let rdx,rdy;
+  // k scales the along-rail component — higher k = wider rebound = angle opens
+  if(rail==='top'||rail==='bottom'){rdx=dx*k;rdy=-dy;}
+  else{rdx=-dx;rdy=dy*k;}
+  // Running english = spin matching rebound direction along rail = opens angle
+  // Use rebound along-rail component (rdx for horiz, rdy for vert)
+  const alongSign = (rail==='top'||rail==='bottom') ? Math.sign(rdx) : Math.sign(rdy);
+  const a=Math.atan2(rdy,rdx) + S.spin*0.18*alongSign;
+  return {dx:Math.cos(a),dy:Math.sin(a)};
+}
+
+function computeSegs(aimAngle, n) {
+  const k=kFactor();
+  let px=S.cb.x,py=S.cb.y;
+  let dx=Math.cos(aimAngle),dy=Math.sin(aimAngle);
+  let lastRail=null;
+  const segs=[];
+  for(let i=0;i<n;i++){
+    const hit=rayHit(px,py,dx,dy,lastRail);
+    if(!hit) break;
+    const rb=reboundVec(dx,dy,hit.rail,k);
+    segs.push({from:{x:px,y:py},to:{x:hit.x,y:hit.y},rail:hit.rail,inDx:dx,inDy:dy,rb});
+    px=hit.x;py=hit.y;dx=rb.dx;dy=rb.dy;lastRail=hit.rail;
+  }
+  return segs;
+}
+
+function terminalPt(aimAngle) {
+  const segs=computeSegs(aimAngle,S.numRails);
+  return segs.length>0 ? segs[segs.length-1].to : null;
+}
+
+// Newton-step solver: one gradient step per drag frame toward target.
+// Computes how the terminal point moves per radian of aim change,
+// then steps the aim angle in that direction. No wide scanning = no jumps.
+function solveAngle(tx, ty) {
+  const a   = S.aimAngle;
+  const eps = 0.003;  // ~0.17° for numerical gradient
+
+  const tp  = terminalPt(a);
+  const tp2 = terminalPt(a + eps);
+  if (!tp || !tp2) return a;
+
+  // Rate of change of terminal point per radian
+  const dtx = (tp2.x - tp.x) / eps;
+  const dty = (tp2.y - tp.y) / eps;
+
+  // Error vector: how far terminal is from finger
+  const ex = tx - tp.x;
+  const ey = ty - tp.y;
+
+  // Least-squares step along gradient
+  const denom = dtx*dtx + dty*dty;
+  if (denom < 0.01) return a;
+
+  const da = (dtx*ex + dty*ey) / denom;
+
+  // Clamp step to ±8° per frame so it can't teleport
+  const MAX_STEP = 0.14;
+  return a + Math.max(-MAX_STEP, Math.min(MAX_STEP, da));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function toDiamond(x,y,rail){
+  return (rail==='top'||rail==='bottom') ? ((x-TL.left)/DU).toFixed(2) : ((y-TL.top)/DU).toFixed(2);
+}
+function fmtAngle(rad){
+  let d=(rad*180/Math.PI)%360;
+  if(d>180)d-=360;if(d<-180)d+=360;
+  return d.toFixed(1)+'°';
+}
+function angleFromRail(dx, dy, rail){
+  let deg;
+  if(rail==='top'||rail==='bottom') deg=Math.abs(Math.atan2(Math.abs(dy),Math.abs(dx))*180/Math.PI);
+  else deg=Math.abs(Math.atan2(Math.abs(dx),Math.abs(dy))*180/Math.PI);
+  return deg.toFixed(1);
+}
+function rebAngle(seg){
+  return angleFromRail(seg.inDx, seg.inDy, seg.rail)+'°';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// READOUTS
+// ─────────────────────────────────────────────────────────────────────────────
+function buildPills() {
+  const pillEl = $('contact-pills');
+  if (!pillEl) return;
+  let ph = '';
+  for (let i=0; i<S.numRails; i++) {
+    const active = i === S.selectedContact;
+    ph += `<button class="cpill${active?' active':''}" onclick="selectContact(${i})">${SEG_NAMES[i].replace(' RAIL','')}</button>`;
+  }
+  pillEl.innerHTML = ph;
+  pillEl.style.display = 'flex';
+}
+
+function buildReadouts(){
+  const el=document.getElementById('readouts');
+  const tableLabel = S.snooker
+    ? `<div style="font-size:9px;font-weight:900;letter-spacing:2px;color:#70c0f0;text-transform:uppercase;padding:4px 2px 6px;">⬡ SNOOKER TABLE — truer cushions</div>`
+    : `<div style="font-size:9px;font-weight:900;letter-spacing:2px;color:#a0d0a0;text-transform:uppercase;padding:4px 2px 6px;">⬡ POOL TABLE</div>`;
+  let html=tableLabel;
+  for(let i=0;i<S.numRails;i++){
+    const c=SEG_COLORS[i];
+    html+=`<div class="seg-block" style="border-color:${c}">
+      <div class="seg-hdr" style="color:${c}">${SEG_NAMES[i]}</div>
+      <div class="ro-row"><span class="ro-lbl">INCOMING ANGLE</span><span class="ro-val" id="rd${i}-app" style="color:${c}">—</span></div>
+      <div class="ro-row" id="rd${i}-reb-row"><span class="ro-lbl">OUTGOING ANGLE</span><span class="ro-val" id="rd${i}-reb" style="color:${c}">—</span></div>
+      <div class="ro-row"><span class="ro-lbl">CONTACT RAIL ◆ DIAMOND</span><span class="ro-val" id="rd${i}-con" style="color:${c}">—</span></div>
+      <div class="ro-row"><span class="ro-lbl">CONTINUES TO</span><span class="ro-val" id="rd${i}-nxt" style="color:${c}">—</span></div>
+    </div>`;
+  }
+  el.innerHTML=html;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SVG HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+function sL(id,x1,y1,x2,y2){const e=$(id);if(!e)return;e.setAttribute('x1',x1);e.setAttribute('y1',y1);e.setAttribute('x2',x2);e.setAttribute('y2',y2);}
+function sC(id,cx,cy){const e=$(id);if(!e)return;e.setAttribute('cx',cx);e.setAttribute('cy',cy);}
+function sV(id,v){const e=$(id);if(e)e.style.opacity=v?'1':'0';}
+function sT(id,v){const e=$(id);if(e)e.textContent=v;}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────────────────────────────────────
+function render(){
+  const{cb,aimAngle,numRails}=S;
+
+  sC('cb',        cb.x,    cb.y);
+  sC('cb-shadow', cb.x+1.5,cb.y+2);
+  // Kick target ball
+  const kob = S.ob, kobVis = S.obVisible ? '1' : '0', kobShadowVis = S.obVisible ? '0.32' : '0';
+  sC('kick-ob', kob.x, kob.y); sC('kick-ob-shadow', kob.x+1.5, kob.y+2); sC('kick-ob-hi', kob.x-3.5, kob.y-3.5);
+  document.getElementById('kick-ob')?.setAttribute('opacity', kobVis);
+  document.getElementById('kick-ob-shadow')?.setAttribute('opacity', kobShadowVis);
+  document.getElementById('kick-ob-hi')?.setAttribute('opacity', S.obVisible ? '0.45' : '0');
+  sC('cb-hi',     cb.x-3.5,cb.y-3.5);
+  sC('cb-dot',    cb.x,    cb.y);
+
+  for(let i=0;i<MAX_RAILS;i++) sV('seg'+i,false);
+  sV('ep-ring',false);sV('ep-dot',false);sV('ep-lbl',false);
+
+
+  const segs=computeSegs(aimAngle,numRails);
+
+  // Aim handle (always gold / seg0)
+  const hx=cb.x+HDL_D*Math.cos(aimAngle);
+  const hy=cb.y+HDL_D*Math.sin(aimAngle);
+  sC('s0-hdl',hx,hy);
+  sV('seg0',true);
+
+  if (segs.length > 0) { sL('s0-stub',cb.x,cb.y,hx,hy); }
+  else { sL('s0-stub',0,0,0,0); }
+
+  segs.forEach((seg,i)=>{
+    const fx=i===0?cb.x+Math.cos(aimAngle)*(BALL_R+2):seg.from.x;
+    const fy=i===0?cb.y+Math.sin(aimAngle)*(BALL_R+2):seg.from.y;
+    sL(`s${i}-line`,fx,fy,seg.to.x,seg.to.y);
+    sC(`s${i}-dot`,seg.to.x,seg.to.y);
+    sV('seg'+i,true);
+
+    sT(`rd${i}-con`, RAIL_SHORT[seg.rail]+' ◆ '+toDiamond(seg.to.x,seg.to.y,seg.rail));
+    sT(`rd${i}-nxt`, i+1<segs.length ? RAIL_SHORT[segs[i+1].rail]+' rail' : '↗ open table');
+    sT(`rd${i}-app`, angleFromRail(seg.inDx, seg.inDy, seg.rail)+'°');
+    const rebRow = $(`rd${i}-reb-row`);
+    if (i+1 < segs.length) {
+      if (rebRow) rebRow.style.display = '';
+      sT(`rd${i}-reb`, angleFromRail(seg.rb.dx, seg.rb.dy, seg.rail)+'°');
+    } else {
+      if (rebRow) rebRow.style.display = 'none';
+    }
+  });
+  for(let i=segs.length;i<numRails;i++){
+    sT(`rd${i}-aim`,'—');sT(`rd${i}-con`,'—');sT(`rd${i}-nxt`,'—');sT(`rd${i}-reb`,'—');
+  }
+
+  if(segs.length>0){
+    const last=segs[segs.length-1].to;
+    sC('ep-ring',last.x,last.y);
+    sC('ep-dot', last.x,last.y);
+    $('ep-lbl').setAttribute('x',last.x);
+    $('ep-lbl').setAttribute('y',last.y-15);
+    sV('ep-ring',true);sV('ep-dot',true);sV('ep-lbl',true);
+  }
+  if (S.selectedContact >= segs.length) S.selectedContact = Math.max(0, segs.length-1);
+  if (S.contactOn) drawContact(segs);
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BOUNCE METRICS
+// ─────────────────────────────────────────────────────────────────────────────
+function drawContact(segs) {
+  const W=280, H=150, TW=450;  // TW = total viewBox width, ball drawn right of W
+  const pillEl = $('contact-pills');
+  const svg    = $('contact-svg');
+  if (!svg) return;
+
+  if (pillEl) {
+    let ph = '';
+    for (let i=0; i<segs.length; i++) {
+      const col = SEG_COLORS[i];
+      const active = i === S.selectedContact;
+      ph += `<button class="cpill${active?' active':''}" onclick="selectContact(${i})">${SEG_NAMES[i].replace(' RAIL','')}</button>`;
+    }
+    pillEl.innerHTML = ph;
+    pillEl.style.display = 'flex';
+  }
+
+  svg.setAttribute('viewBox', `0 0 ${TW} ${H}`);
+
+  if (segs.length === 0) {
+    svg.innerHTML = `<rect width="${TW}" height="${H}" fill="rgba(0,0,0,0.28)"/>
+      <text x="${W/2}" y="${H/2+5}" text-anchor="middle" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.25)">Aim to see bounce metrics</text>`;
+    return;
+  }
+
+  const idx    = Math.min(S.selectedContact, segs.length-1);
+  const seg    = segs[idx];
+  const inCol  = SEG_COLORS[idx];
+  const outCol = idx+1 < segs.length ? SEG_COLORS[idx+1] : '#aaaaaa';
+  const isLast = idx+1 >= segs.length;
+  const rail   = seg.rail;
+  const horiz  = (rail === 'top' || rail === 'bottom');
+  const cy = H - 16;  // cushion flush to bottom
+  const cx = W / 2;
+  const RAY = 115;
+
+  let inAlong, inInto, rbAlong, rbInto;
+  if (horiz) {
+    // Top/bottom rails: along=x, into=y
+    inAlong=seg.inDx;  inInto=seg.inDy;
+    rbAlong=seg.rb.dx; rbInto=seg.rb.dy;
+  } else {
+    // Left/right rails: along=y, into=x
+    // Negate along for right rail so diagram reads consistently left=low diamond, right=high diamond
+    const sign = (rail==='right') ? 1 : -1;
+    inAlong=seg.inDy*sign;  inInto=seg.inDx;
+    rbAlong=seg.rb.dy*sign; rbInto=seg.rb.dx;
+  }
+
+  // Force inInto > 0 (ball arrives from above cushion in diagram)
+  if (inInto < 0) { inInto=-inInto; inAlong=-inAlong; }
+  // Force rebound away from cushion (rbInto < 0 = upward)
+  if (rbInto > 0) { rbInto=-rbInto; rbAlong=-rbAlong; }
+  // Left and right rails: flip horizontal direction 180°
+  if (!horiz) { inAlong=-inAlong; rbAlong=-rbAlong; }
+
+  const inLen=Math.hypot(inAlong,inInto), rbLen=Math.hypot(rbAlong,rbInto);
+  const inNx=inAlong/inLen, inNy=inInto/inLen;
+  const rbNx=rbAlong/rbLen, rbNy=rbInto/rbLen;
+
+  const ax=cx-inNx*RAY, ay=cy-inNy*RAY;
+  const rx=cx+rbNx*RAY, ry=cy+rbNy*RAY;
+
+  // Same source as chart — angleFromRail for both in and out
+  const approachDeg = angleFromRail(seg.inDx, seg.inDy, rail);
+  const rebDeg      = angleFromRail(seg.rb.dx, seg.rb.dy, rail);
+
+  const RAIL_LONG = {top:'TOP RAIL',bottom:'BTM RAIL',left:'LFT RAIL',right:'RGT RAIL'};
+  const diamond   = toDiamond(seg.to.x, seg.to.y, rail);
+
+  let out = `<rect width="${W}" height="${H}" fill="rgba(0,0,0,0.35)"/>`;
+  out += `<rect x="0" y="0" width="${W}" height="${cy}" fill="rgba(26,80,40,0.5)"/>`;
+  out += `<rect x="0" y="${cy}" width="${W}" height="${H-cy}" fill="#1a6830"/>`;
+  out += `<circle cx="${cx}" cy="${cy+8}" r="10" fill="none" stroke="#ffffff" stroke-width="2.5"/>`;
+  out += `<circle cx="${cx}" cy="${cy+8}" r="3" fill="#ffffff"/>`;
+  out += `<line x1="${ax}" y1="${ay}" x2="${cx}" y2="${cy}" stroke="${inCol}" stroke-width="3" stroke-dasharray="8,4"/>`;
+  out += `<circle cx="${ax}" cy="${ay}" r="7" fill="${inCol}"/>`;
+  const rebOp=isLast?'0.40':'0.9', rebStr=isLast?'#888888':outCol;
+  out += `<line x1="${cx}" y1="${cy}" x2="${rx}" y2="${ry}" stroke="${rebStr}" stroke-width="${isLast?2:3}" stroke-dasharray="8,4" opacity="${rebOp}"/>`;
+
+  // Smart corners: IN corner follows incoming dot side, OUT gets the other corner
+  const inOnRight = ax >= W/2;
+  const inX  = inOnRight ? W-8 : 8;
+  const outX = inOnRight ? 8   : W-8;
+  const inAnchor  = inOnRight ? 'end'   : 'start';
+  const outAnchor = inOnRight ? 'start' : 'end';
+
+  out += `<text x="${inX}" y="18" text-anchor="${inAnchor}" font-family="Lato,sans-serif" font-size="10" font-weight="900" letter-spacing="2" fill="${inCol}">IN</text>`;
+  out += `<text x="${inX}" y="40" text-anchor="${inAnchor}" font-family="Lato,sans-serif" font-size="22" font-weight="700" fill="#ffffff">${rebDeg}°</text>`;
+
+  if (!isLast) {
+    out += `<text x="${outX}" y="18" text-anchor="${outAnchor}" font-family="Lato,sans-serif" font-size="10" font-weight="900" letter-spacing="2" fill="${outCol}">OUT</text>`;
+    out += `<text x="${outX}" y="40" text-anchor="${outAnchor}" font-family="Lato,sans-serif" font-size="22" font-weight="700" fill="#ffffff">${approachDeg}°</text>`;
+  }
+
+
+
+  out += `<text x="12" y="${cy+12}" text-anchor="start" font-family="Lato,sans-serif" font-size="11" font-weight="900" fill="#ffffff">${RAIL_LONG[rail]} ◆ ${diamond}</text>`;
+  out += `<text x="${W-8}" y="${cy+12}" text-anchor="end" font-family="Lato,sans-serif" font-size="9" font-weight="700" letter-spacing="2" fill="#c8703a" font-style="italic">BOUNCE</text>`;
+
+  // Divider between diagram and ball
+  out += `<line x1="${W}" y1="0" x2="${W}" y2="${H}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;
+
+  // Spin ball — fills right panel (W to TW), clipped to that region
+  const panelW = TW - W;
+  const br = Math.floor(H / 2) - 1;  // fills height
+  const bx = W + panelW / 2;
+  const by = br + 1;  // sit ball flush to top
+  const tipX = bx + S.spin * 0.62 * br;
+  const spinRaw = Math.round(S.spin * 4);
+  const spinCol = spinRaw === 0 ? 'rgba(255,255,255,0.35)' : '#e870b0';
+  const spinLabels = {'-4':'2L','-3':'1½L','-2':'1L','-1':'½L','0':'ctr','1':'½R','2':'1R','3':'1½R','4':'2R'};
+  const spinTxt = spinLabels[String(spinRaw)] || 'CTR';
+  out += `<defs>
+    <radialGradient id="kCGB2" cx="36%" cy="28%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="48%" stop-color="#d8d2c4"/>
+      <stop offset="100%" stop-color="#908070"/>
+    </radialGradient>
+    <clipPath id="ballClip">
+      <rect x="${W}" y="0" width="${panelW}" height="${H}"/>
+    </clipPath>
+  </defs>`;
+  out += `<g clip-path="url(#ballClip)" id="spin-ball-group">`;
+  out += `<circle cx="${bx}" cy="${by}" r="${br}" fill="url(#kCGB2)" stroke="#aaaaaa" stroke-width="1.5"/>`;
+  out += `<line x1="${bx-br*0.74}" y1="${by}" x2="${bx+br*0.74}" y2="${by}" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
+  out += `<line x1="${bx}" y1="${by-br*0.74}" x2="${bx}" y2="${by+br*0.74}" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
+  out += `<circle cx="${tipX}" cy="${by}" r="${br*0.10}" fill="#000000" opacity="0.85"/>`;
+  const spinRawLbl = spinRaw === 0 ? 'ctr' : (spinRaw > 0 ? '+' : '') + spinRaw;
+  out += `<text x="${bx}" y="${by + br*0.55}" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="900" fill="rgba(0,0,0,0.75)">${spinRawLbl}</text>`;
+  // SPIN label with arrows below the dot
+  out += `<text x="${tipX}" y="${by + br*0.22}" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="900" letter-spacing="1" fill="rgba(0,0,0,0.75)">◀ SPIN ▶</text>`;
+  const spinY = by + br*0.5;  // halfway down the ball
+  // Drag handle — invisible rect captures pointer events over ball
+  out += `<rect id="spin-drag" x="${W}" y="0" width="${panelW}" height="${H}" fill="transparent" cursor="ew-resize" touch-action="none"/>`;
+  out += `</g>`;
+
+  svg.innerHTML = out;
+}
+
+
+// Spin ball drag — pointer events on contact-svg
+(function() {
+  let spinDragging = false;
+  document.addEventListener('pointerdown', e => {
+    const el = document.getElementById('spin-drag');
+    if (!el) return;
+    if (e.target !== el) return;
+    spinDragging = true;
+    el.setPointerCapture(e.pointerId);
+    handleSpinDrag(e, el);
+  });
+  document.addEventListener('pointermove', e => {
+    if (!spinDragging) return;
+    const el = document.getElementById('spin-drag');
+    if (el) handleSpinDrag(e, el);
+  });
+  document.addEventListener('pointerup',     () => { spinDragging = false; });
+  document.addEventListener('pointercancel', () => { spinDragging = false; });
+  function handleSpinDrag(e, el) {
+    const svg = document.getElementById('contact-svg');
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    // Convert clientX to SVG coords accounting for CSS zoom
+    const svgX = (e.clientX - rect.left) / rect.width * vb.width;
+    const W = 280, TW = 450;
+    const panelW = TW - W;
+    const br = Math.floor(150 / 2) - 1;
+    const bx = W + panelW / 2;
+    const raw = (svgX - bx) / (0.62 * br);
+    const clamped = Math.max(-1, Math.min(1, raw));
+    const spinVal = Math.round(clamped * 4);
+    const sl = document.getElementById('sl-spn');
+    if (sl) { sl.value = spinVal; onSliders(); }
+  }
+})();
+
+function selectContact(i) {
+  S.selectedContact = i;
+  drawContact(computeSegs(S.aimAngle, S.numRails));
+}
+
+function toggleMap() {
+  S.mapOn = !S.mapOn;
+  ['map-layer','map2-layer'].forEach(id => {
+    const l = document.getElementById(id);
+    if (l) { l.style.transition='opacity 0.2s'; l.style.opacity = S.mapOn ? '1' : '0'; }
+  });
+  const btn = document.getElementById('btn-map');
+  if (btn) {
+    btn.style.background = S.mapOn ? '#4ade80' : '#f0df70';
+    btn.style.color = S.mapOn ? '#001a00' : '#1a1400';
+    btn.innerHTML = S.mapOn ? 'GRID<br>ON' : 'GRID<br>OFF';
+  }
+}
+
+function toggleContact() {
+  S.contactOn = !S.contactOn;
+  const wrap  = $('contact-wrap');
+  const pills = $('contact-pills');
+  const btn   = $('btn-metrics');
+  if (wrap)  wrap.style.display  = S.contactOn ? 'block' : 'none';
+  if (pills) pills.style.display = S.contactOn ? 'flex'  : 'none';
+
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DRAG
+// ─────────────────────────────────────────────────────────────────────────────
+const svg=$('tbl');
+
+function svgPt(e){
+  const src=e.touches?e.touches[0]:e;
+  const svgEl=$('tbl');
+  const rect=svgEl.getBoundingClientRect();
+  const vb=svgEl.viewBox.baseVal;
+  // getBoundingClientRect accounts for CSS zoom transform on iOS
+  return {
+    x: (src.clientX - rect.left) / rect.width  * vb.width,
+    y: (src.clientY - rect.top)  / rect.height * vb.height
+  };
+}
+function clampBall(x,y){return{x:Math.max(TL.left+BALL_R,Math.min(TL.right-BALL_R,x)),y:Math.max(TL.top+BALL_R,Math.min(TL.bottom-BALL_R,y))};}
+
+svg.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  if(lockTable)return;
+  const p=svgPt(e);
+  if(S.obVisible && Math.hypot(p.x-S.ob.x,p.y-S.ob.y)<36){drag='kick-ob';svg.setPointerCapture(e.pointerId);return;}
+  const cb=S.cb;
+  if (calTapActual(p)) return;
+  if(Math.hypot(p.x-cb.x,p.y-cb.y)<22){drag='cb';svg.setPointerCapture(e.pointerId);return;}
+
+  // Check endpoint handle
+  const epCx=parseFloat($('ep-dot').getAttribute('cx'));
+  const epCy=parseFloat($('ep-dot').getAttribute('cy'));
+  const epVis=parseFloat($('ep-dot').style.opacity||'0');
+  if(epVis>0&&Math.hypot(p.x-epCx,p.y-epCy)<22){
+    drag='endpoint';svg.setPointerCapture(e.pointerId);return;
+  }
+  drag='handle';svg.setPointerCapture(e.pointerId);
+  S.aimAngle=Math.atan2(p.y-cb.y,p.x-cb.x);
+  render();
+});
+
+svg.addEventListener('pointermove',e=>{
+  if(!drag)return;e.preventDefault();
+  const p=svgPt(e);
+  if(drag==='kick-ob'){
+    const c=clampBall(p.x,p.y),sn=applySnap(c.x,c.y);
+    S.ob={x:sn.x,y:sn.y};
+    if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'ob');
+  } else if(drag==='cb'){
+    const c=clampBall(p.x,p.y),sn=applySnap(c.x,c.y);
+    S.cb={x:sn.x,y:sn.y};
+    if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'cb');
+  }
+  else if(drag==='handle')   S.aimAngle=Math.atan2(p.y-S.cb.y,p.x-S.cb.x);
+  else if(drag==='endpoint') S.aimAngle=solveAngle(p.x,p.y);
+  render();
+});
+svg.addEventListener('pointerup', () => {
+  if (drag === 'cb') {
+    const pt = SNAP_POINTS.length ? SNAP_POINTS.reduce((best,p) => {
+      const d=Math.hypot(S.cb.x-p.x,S.cb.y-p.y);
+      return d < Math.hypot(S.cb.x-best.x,S.cb.y-best.y)?p:best;
+    }) : null;
+    if (pt && Math.hypot(S.cb.x-pt.x,S.cb.y-pt.y) < SNAP_RADIUS) {
+      showSnapLabel($('tbl'),pt.x,pt.y,pt.label,'cb');
+    }
+  }
+  drag=null;
+});
+svg.addEventListener('pointercancel',()=>{drag=null;});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONTROLS
+// ─────────────────────────────────────────────────────────────────────────────
+function addRail(){if(S.numRails>=MAX_RAILS)return;S.numRails++;buildReadouts();buildPills();render();}
+function removeRail(){if(S.numRails<=1)return;S.numRails--;buildReadouts();buildPills();render();}
+
+function onSliders(){
+  S.speed=parseInt($('sl-spd').value)/100;
+  const sv=parseInt($('sl-spn').value);   // -4 to +4
+  S.spin = sv / 4;
+  // Three-zone bias for kicker
+  const _bFat  = parseInt($('sl-bias-fat')?.value  || '0') * 0.008;
+  const _bMed  = parseInt($('sl-bias-med')?.value  || '0') * 0.008;
+  const _bThin = parseInt($('sl-bias-thin')?.value || '0') * 0.008;
+  S.biasFat = _bFat; S.biasMed = _bMed; S.biasThin = _bThin;
+  S.bias = _bMed; // used as fallback
+  ['fat','med','thin'].forEach(z => {
+    const v = parseInt($('sl-bias-'+z)?.value || '0');
+    const el=$('sv-bias-'+z); if(el) el.textContent=(v===0?'0':(v>0?'+':'')+v);
+    const en=$('sv-bias-'+z+'-n'); if(en) en.textContent=Math.abs(v)===0?'0':Math.max(1,Math.round(Math.abs(v)/12*10));
+  });
+  $('sv-spd').textContent=S.speed<0.28?'slow':S.speed<0.72?'med':'fast';
+  // Intensity 1-10
+  const _sv=parseInt($('sl-spd').value),_sn=Math.abs(parseInt($('sl-spn').value));
+  if($('sv-spd-n'))$('sv-spd-n').textContent=Math.max(1,Math.round(_sv/10));
+  if($('sv-spn-n'))$('sv-spn-n').textContent=_sn===0?'0':Math.max(1,Math.round(_sn/4*10/10));
+  const spinLabels={
+    '-4':'2 tips L', '-3':'1½ tips L', '-2':'1 tip L', '-1':'½ tip L',
+    '0':'center',
+    '1':'½ tip R',   '2':'1 tip R',   '3':'1½ tips R', '4':'2 tips R'
+  };
+  $('sv-spn').textContent = spinLabels[String(sv)];
+  render();
+}
+
+function applyRotation(){
+  const svgEl=$('tbl'),grp=$('tbl-content'),r=S.rotation;
+  if(r===0){svgEl.setAttribute('viewBox','0 0 460 260');grp.setAttribute('transform','');}
+  else if(r===90){svgEl.setAttribute('viewBox','0 0 260 460');grp.setAttribute('transform','translate(260,0) rotate(90)');}
+  else if(r===180){svgEl.setAttribute('viewBox','0 0 460 260');grp.setAttribute('transform','translate(460,260) rotate(180)');}
+  else{svgEl.setAttribute('viewBox','0 0 260 460');grp.setAttribute('transform','translate(0,460) rotate(270)');}
+  render();
+}
+function rotCW(){  S.rotation=(S.rotation+90)%360;  applyRotation(); }
+function rotCCW(){ S.rotation=(S.rotation+270)%360; applyRotation(); }
+function cycleRotation(){ rotCW(); }
+
+function cycleTableSize() {
+  const poolSizes=[7,8,9], snookerSizes=[10,12];
+  const sizes = S.snooker ? snookerSizes : poolSizes;
+  const idx = sizes.indexOf(S.tableSize);
+  S.tableSize = sizes[(idx+1) % sizes.length];
+  $('size-btn').textContent = S.tableSize+'ft';
+  render();
+}
+function toggleUnits() {
+  S.metric = !S.metric;
+  $('unit-btn').textContent = S.metric ? 'M' : 'FT';
+  render();
+}
+function toggleTable(){
+  S.snooker = !S.snooker;
+  S.tableSize = S.snooker ? 12 : 9;
+  $('size-btn').textContent = S.tableSize+'ft';
+  const btn = $('table-btn');
+  btn.textContent = S.snooker ? 'SNOOKER' : 'POOL';
+  btn.style.borderColor = S.snooker ? 'rgba(112,192,240,0.5)' : 'rgba(160,208,160,0.4)';
+  btn.style.color = S.snooker ? '#70c0f0' : '#a0d0a0';
+  render();
+}
+
+function toggleInfo(){
+  $('info-overlay').classList.toggle('open');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// CALIBRATION
+// ─────────────────────────────────────────────────────────────────────────────
+let calMode  = false;
+let calPhase = 'idle';   // idle | predicted
+let calPendingShot = null;
+const CAL_MAX = 50;
+let tableK = 0.00;
+
+// ── STORAGE ──────────────────────────────────────────────────
+function loadTableProfile() {
+  try {
+    const p = JSON.parse(localStorage.getItem('lz-kicker-v2') || '{}');
+    if (typeof p.k === 'number') tableK = p.k;
+    if (Array.isArray(p.shots)) calShots = p.shots;
+  } catch(e) {}
+}
+function saveTableProfile() {
+  try {
+    localStorage.setItem('lz-kicker-v2', JSON.stringify({
+      k: tableK,
+      shots: calShots.slice(-CAL_MAX)
+    }));
+  } catch(e) {}
+}
+
+const CAL_VERSION = '2026-03-25-v1';
+(function() {
+  const stored = localStorage.getItem('lz-kicker-cal-version');
+  if (stored !== CAL_VERSION) {
+    localStorage.removeItem('lz-kicker-shots');
+    localStorage.removeItem('lz-kicker-profile');
+    localStorage.setItem('lz-kicker-cal-version', CAL_VERSION);
+  }
+})();
+
+let calShots = [];
+
+
+function calExport() {
+  if (!calShots || !calShots.length) { alert('No calibration shots saved yet.'); return; }
+  const data = calShots.map(s => ({
+    ts: s.ts,
+    rails: s.rails,
+    speed: parseFloat(s.speed.toFixed(2)),
+    spin: s.spin || 0,
+    predicted: s.predictedPos,
+    actual: s.actualPos,
+    error_px: s.actualPos ? Math.round(Math.hypot(s.actualPos.x - s.predictedPos.x, s.actualPos.y - s.predictedPos.y)) : null
+  }));
+  const json = JSON.stringify(data, null, 2);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(json).then(() => {
+      const res = $('cal-result');
+      if (res) { res.style.display='block'; res.innerHTML='<span style="color:#4ade80">✓ Copied '+data.length+' shots — paste to Claude</span>'; }
+    });
+  } else { prompt('Copy calibration data:', json); }
+}
+
+function toggleCal() {
+  calMode = !calMode;
+  if ($('cal-panel')) $('cal-panel').classList.toggle('open', calMode);
+  if (!calMode) {
+    calPhase = 'idle'; calPendingShot = null;
+    sV('cal-predicted', false); sV('cal-predicted-lbl', false);
+    sV('cal-actual',    false); sV('cal-actual-lbl',    false);
+  }
+  calUpdateUI(); render();
+}
+
+function calUpdateUI() {
+  const n = calShots.length;
+  const stat = $('cal-status');
+  const inst = $('cal-instruction');
+  const btn1 = $('cal-rec1-btn');
+  const btn2 = $('cal-rec2-btn');
+  const kPct = Math.round(tableK * 100);
+  const kStr = (kPct >= 0 ? '+' : '') + kPct + '%';
+
+  if (stat) stat.innerHTML = `${n}/${CAL_MAX} shots · <strong style="color:#f0df70">bias ${kStr}</strong>`;
+
+  if (!calMode) return;
+
+  if (calPhase === 'idle') {
+    if (inst) inst.textContent = 'Set up your kick shot. Tap ① when ready to shoot.';
+    if (btn1) btn1.style.display = '';
+    if (btn2) btn2.style.display = 'none';
+  } else {
+    if (inst) inst.textContent = 'Shoot it. Then dial the handle/sliders to match what actually worked. Tap ②.';
+    if (btn1) btn1.style.display = 'none';
+    if (btn2) btn2.style.display = '';
+  }
+
+  // Update log
+  const log = $('cal-log');
+  if (log) {
+    log.innerHTML = calShots.slice(-10).reverse().map((s,i) => {
+      const d = new Date(s.ts);
+      const t = d.getMonth()+1 + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+      const err = s.actualPos ? Math.round(Math.hypot(s.actualPos.x-s.predictedPos.x, s.actualPos.y-s.predictedPos.y)) : '—';
+      return `<div style="display:flex;justify-content:space-between;padding:1px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <span>${t} · ${s.rails}R · spd:${Math.round(s.speed*10)}</span>
+        <span style="color:${err==='—'?'#888':err<15?'#4ade80':'#f0df70'}">${err==='—'?err:err+'px off'}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Update personal bias display
+  updatePersonalBias();
+}
+
+function calRecord1() {
+  if (!calMode) return;
+  const segs = computeSegs(S.aimAngle, S.numRails);
+  if (!segs.length) { alert('Aim at a rail first.'); return; }
+  const last = segs[segs.length - 1].to;
+
+  // Show predicted marker
+  sC('cal-predicted', last.x, last.y);
+  $('cal-predicted-lbl').setAttribute('x', last.x);
+  $('cal-predicted-lbl').setAttribute('y', last.y - 14);
+  sV('cal-predicted', true); sV('cal-predicted-lbl', true);
+  sV('cal-actual', false);   sV('cal-actual-lbl', false);
+
+  calPendingShot = {
+    ts: Date.now(),
+    cb: {...S.cb},
+    aimAngle: S.aimAngle,
+    rails: S.numRails,
+    speed: S.speed,
+    spin: S.spin,
+    bias: S.bias,
+    predictedPos: {x: last.x, y: last.y},
+    actualPos: null
+  };
+  calPhase = 'predicted';
+  calUpdateUI();
+}
+
+function calRecord2() {
+  if (!calMode || !calPendingShot || calPhase !== 'predicted') return;
+
+  // Capture current state as "what actually worked"
+  const segs = computeSegs(S.aimAngle, S.numRails);
+  const last = segs.length ? segs[segs.length - 1].to : calPendingShot.predictedPos;
+
+  calPendingShot.actualAimAngle = S.aimAngle;
+  calPendingShot.actualSpeed = S.speed;
+  calPendingShot.actualSpin = S.spin;
+  calPendingShot.actualPos = {x: last.x, y: last.y};
+
+  // Show actual marker
+  sC('cal-actual', last.x, last.y);
+  $('cal-actual-lbl').setAttribute('x', last.x);
+  $('cal-actual-lbl').setAttribute('y', last.y + 16);
+  sV('cal-actual', true); sV('cal-actual-lbl', true);
+
+  // Store shot
+  calShots.push(calPendingShot);
+  if (calShots.length > CAL_MAX) calShots = calShots.slice(-CAL_MAX);
+
+  // Recompute tableK from all shots
+  recomputeK();
+  saveTableProfile();
+
+  calPendingShot = null;
+  calPhase = 'idle';
+
+  const res = $('cal-result');
+  if (res) {
+    const dx = calPendingShot ? 0 : calShots[calShots.length-1].actualPos.x - calShots[calShots.length-1].predictedPos.x;
+    const dy = calShots[calShots.length-1].actualPos.y - calShots[calShots.length-1].predictedPos.y;
+    const dir = Math.abs(dx) < 8 && Math.abs(dy) < 8 ? 'on target ✓' :
+                dy < -8 ? 'went long' : dy > 8 ? 'came up short' :
+                dx < -8 ? 'went left' : 'went right';
+    const kPct = Math.round(tableK * 100);
+    res.style.display = 'block';
+    res.innerHTML = `<strong style="color:#f0df70">Shot ${calShots.length}: ${dir}</strong> · bias now ${(kPct>=0?'+':'')+kPct}%`;
+  }
+  calUpdateUI(); render();
+}
+
+function recomputeK() {
+  if (!calShots.length) { tableK = 0; return; }
+  const valid = calShots.filter(s => s.actualPos);
+  if (!valid.length) { tableK = 0; return; }
+  const avg = valid.reduce((sum, s) => {
+    const dy = s.actualPos.y - s.predictedPos.y;
+    const dx = s.actualPos.x - s.predictedPos.x;
+    return sum + (-Math.hypot(dx,dy) * (dy > 0 ? 1 : -1) * 0.0008);
+  }, 0) / valid.length;
+  tableK = Math.max(-0.3, Math.min(0.3, avg));
+  // Apply to bias slider
+  const newBias = Math.round(tableK * 50 / 0.12);
+  const slBias = $('sl-bias');
+  if (slBias) { slBias.value = Math.max(-50, Math.min(50, newBias)); onSliders(); }
+}
+
+function updatePersonalBias() {
+  const el = $('personal-bias');
+  if (!el) return;
+  if (!calShots.length) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  const kPct = Math.round(tableK * 100);
+  const kStr = (kPct >= 0 ? '+' : '') + kPct + '%';
+  el.textContent = 'PERSONAL BIAS: ' + kStr + ' (' + calShots.length + ' shots)';
+}
+
+function calTapActual(p) {
+  // Legacy tap mode no longer used — return false
+  return false;
+}
+
+function calUndo() {
+  if (calPhase === 'predicted') {
+    calPhase = 'idle'; calPendingShot = null;
+    sV('cal-predicted', false); sV('cal-predicted-lbl', false);
+  } else if (calShots.length) {
+    calShots.pop();
+    recomputeK(); saveTableProfile();
+  }
+  calUpdateUI(); render();
+}
+
+function calReset() {
+  calShots = []; calPhase = 'idle'; calPendingShot = null;
+  tableK = 0.00; saveTableProfile();
+  const slBias = $('sl-bias'); if (slBias) { slBias.value = 0; onSliders(); }
+  sV('cal-predicted', false); sV('cal-predicted-lbl', false);
+  sV('cal-actual',    false); sV('cal-actual-lbl',    false);
+  const res = $('cal-result'); if (res) res.style.display = 'none';
+  calUpdateUI(); render();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// KEYBOARD
+// ─────────────────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const sl = $('sl-spn');
+  if (!sl) return;
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    sl.value = Math.max(-4, parseInt(sl.value) - 1);
+    onSliders();
+  } else if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    sl.value = Math.min(4, parseInt(sl.value) + 1);
+    onSliders();
+  }
+});
+
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+buildReadouts();
+buildPills();
+loadTableProfile();
+render();
+SNAP_POINTS=buildSnapPoints();
+// Ensure map layer is visible on load (mapOn defaults true)
+const _mapLayers = document.querySelectorAll('.map-layer');
+_mapLayers.forEach(l => { l.style.opacity='1'; });
+const _epB=document.getElementById('ep-bias');if(_epB){_epB.classList.add('on');_epB.textContent='ON';}
+// Show snap label for initial CB position
+(function(){
+  if (!SNAP_POINTS.length) return;
+  const pt = SNAP_POINTS.reduce((best, p) => {
+    const d = Math.hypot(S.cb.x-p.x, S.cb.y-p.y);
+    return d < Math.hypot(S.cb.x-best.x, S.cb.y-best.y) ? p : best;
+  });
+  if (Math.hypot(S.cb.x-pt.x, S.cb.y-pt.y) < SNAP_RADIUS) {
+    showSnapLabel($('tbl'), pt.x, pt.y, pt.label, 'cb');
+  }
+})();
+
+loadUserShots();
+buildShotList();
+const _epSnap=document.getElementById('ep-snap');
+if(_epSnap)_epSnap.classList.add('active');
+// ── FLIP DIAGRAM ──────────────────────────────────────────────
+function flipDiagram() {
+  const cur = S._diagDragRh !== undefined ? S._diagDragRh : false;
+  S._diagDragRh = !cur;
+  render();
+}
+
+// ── SWAP PANELS ──────────────────────────────────────────────
+let panelsSwapped = false;
+
+function toggleFloatToolbar() {
+  const panel = document.getElementById('ftb-panel');
+  const arrow = document.getElementById('ftb-toggle');
+  const tb    = document.getElementById('float-toolbar');
+  if (!panel) return;
+  const open = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  if (arrow) arrow.textContent = open ? '▼' : '▲';
+  if (open && tb) {
+    requestAnimationFrame(function() {
+      const r = tb.getBoundingClientRect();
+      if (r.right  > window.innerWidth)  tb.style.left = Math.max(0, window.innerWidth  - r.width)  + 'px';
+      if (r.bottom > window.innerHeight) tb.style.top  = Math.max(0, window.innerHeight - r.height) + 'px';
+      if (r.left < 0) tb.style.left = '0px';
+      if (r.top  < 0) tb.style.top  = '0px';
+    });
+  }
+}
+
+// Float toolbar — tap pill to toggle, drag tab to move
+(function() {
+  var tb, tab, startX, startY, origLeft, origTop, didDrag, activePtr = null;
+  window.addEventListener('load', function() {
+    tb  = document.getElementById('float-toolbar');
+    tab = document.getElementById('ftb-tab');
+    if (!tb || !tab) return;
+    var r = tb.getBoundingClientRect();
+    tb.style.right  = 'auto';
+    tb.style.bottom = 'auto';
+    tb.style.left = Math.max(0, Math.min(window.innerWidth  - tb.offsetWidth,  r.left)) + 'px';
+    tb.style.top  = Math.max(0, Math.min(window.innerHeight - tb.offsetHeight, r.top))  + 'px';
+    tab.addEventListener('pointerdown', function(e) {
+      if (e.target.id === 'ftb-toggle') return;
+      var r2 = tb.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      origLeft = r2.left; origTop = r2.top;
+      didDrag = false; activePtr = e.pointerId;
+    });
+    tab.addEventListener('pointermove', function(e) {
+      if (activePtr === null || e.pointerId !== activePtr) return;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (!didDrag && Math.hypot(dx, dy) > 8) {
+        didDrag = true;
+        try { tab.setPointerCapture(e.pointerId); } catch(ex) {}
+      }
+      if (!didDrag) return;
+      var nx = Math.max(0, Math.min(window.innerWidth  - tb.offsetWidth,  origLeft + dx));
+      var ny = Math.max(0, Math.min(window.innerHeight - tb.offsetHeight, origTop  + dy));
+      tb.style.left = nx + 'px';
+      tb.style.top  = ny + 'px';
+    });
+    tab.addEventListener('pointerup', function(e) {
+      if (e.pointerId !== activePtr) return;
+      activePtr = null;
+      if (!didDrag) toggleFloatToolbar();
+    });
+    tab.addEventListener('pointercancel', function() { activePtr = null; });
+  });
+})();
+
+function toggleBias() {
+  const el = document.getElementById('bias-sliders');
+  const btn = document.getElementById('btn-bias');
+  if (!el) return;
+  const on = el.style.display === 'none';
+  el.style.display = on ? 'block' : 'none';
+  if (btn) { btn.style.background = on ? '#4ade80' : '#f0df70'; btn.style.color = on ? '#001a00' : '#1a1400'; }
+}
+
+let panMode = false;
+function togglePan() {
+  panMode = !panMode;
+  const btn = document.getElementById('btn-pan');
+  const tbl = document.getElementById('tbl');
+  if (btn) { btn.style.background = panMode ? '#4ade80' : '#f0df70'; btn.style.color = panMode ? '#001a00' : '#1a1400'; }
+  // In pan mode, table drag moves the zoom-wrap; lock table ball movement
+  lockTable = panMode;
+  const lt = document.getElementById('ep-lt');
+  if (lt) lt.classList.toggle('locked', lockTable);
+  const tblEl = document.getElementById('tbl');
+  if (tblEl) tblEl.style.touchAction = lockTable ? 'auto' : 'none';
+}
+
+function swapPanels() {
+  panelsSwapped = !panelsSwapped;
+  const sliders   = document.getElementById('block-sliders');
+  const tableWrap = document.getElementById('table-wrap');
+  const swapCont  = document.getElementById('swap-container');
+  const lbl       = document.getElementById('swap-lbl');
+  if (panelsSwapped) {
+    swapCont.appendChild(sliders);
+    if (lbl) lbl.innerHTML = 'SLIDERS<br>DOWN';
+  } else {
+    tableWrap.parentNode.insertBefore(sliders, tableWrap);
+    if (lbl) lbl.innerHTML = 'SLIDERS<br>UP';
+  }
+}
+
+// ── GLOBAL TOUCH SAFETY RESET (iOS pointer capture bug) ──────
+document.addEventListener('touchend', () => {
+  drag = null;
+  if (typeof diagDrag !== 'undefined') diagDrag = false;
+  if (typeof overlayDrag !== 'undefined') overlayDrag = null;
+}, {passive: true});
+document.addEventListener('touchcancel', () => {
+  drag = null;
+  if (typeof diagDrag !== 'undefined') diagDrag = false;
+  if (typeof overlayDrag !== 'undefined') overlayDrag = null;
+}, {passive: true});
+
+// ── SNAP SYSTEM ──────────────────────────────────────────────
+function buildSnapPoints(){
+  const pts=[],seen=new Set(),DX=50,DY=50,OX=30,OY=30;
+  const BR=9,XMIN=OX+BR,XMAX=OX+8*DX-BR,YMIN=OY+BR,YMAX=OY+4*DY-BR;
+  function sc(x,y){return{x:Math.max(XMIN,Math.min(XMAX,x)),y:Math.max(YMIN,Math.min(YMAX,y))};}
+  function add(x,y,label){const k=x+','+y;if(seen.has(k))return;seen.add(k);pts.push({x,y,label});}
+  for(let row=0;row<4;row++){
+    for(let col=0;col<8;col++){
+      const n=row*8+col+1,x0=OX+col*DX,y0=OY+row*DY,cx=x0+DX/2,cy=y0+DY/2;
+      add(cx,cy,String(n));
+      const pa=sc(x0,y0+DY);add(pa.x,pa.y,n+'a');
+      const pb=sc(x0,cy);add(pb.x,pb.y,n+'b');
+      const pc=sc(x0,y0);add(pc.x,pc.y,n+'c');
+      const pd=sc(cx,y0);add(pd.x,pd.y,n+'d');
+      const pe=sc(x0+DX,y0);add(pe.x,pe.y,n+'e');
+      const pf=sc(x0+DX,cy);add(pf.x,pf.y,n+'f');
+      const pg=sc(x0+DX,y0+DY);add(pg.x,pg.y,n+'g');
+      const ph=sc(cx,y0+DY);add(ph.x,ph.y,n+'h');
+    }
+  }
+  return pts;
+}
+function nearestSnap(x,y){let best=null,bestD=Infinity;for(const pt of SNAP_POINTS){const d=Math.hypot(x-pt.x,y-pt.y);if(d<SNAP_RADIUS&&d<bestD){best=pt;bestD=d;}}return best;}
+function applySnap(x,y){if(!snapOn||!SNAP_POINTS.length)return{x,y,label:null};const pt=nearestSnap(x,y);return pt?{x:pt.x,y:pt.y,label:pt.label}:{x,y,label:null};}
+function showSnapLabel(svgEl,x,y,label,ballId){
+  const old=document.getElementById('snap-lbl-'+ballId);if(old)old.remove();if(!label)return;
+  const rect=svgEl.getBoundingClientRect(),vb=svgEl.viewBox.baseVal;
+  const scx=rect.left+(x/vb.width)*rect.width,scy=rect.top+(y/vb.height)*rect.height;
+  const lbl=document.createElement('div');lbl.id='snap-lbl-'+ballId;lbl.className='snap-label';
+  lbl.textContent='CB: '+label;lbl.style.left=(scx+12)+'px';lbl.style.top=(scy-10)+'px';lbl.style.opacity='1';
+  document.body.appendChild(lbl);
+  if(snapLabelTimer)clearTimeout(snapLabelTimer);
+  snapLabelTimer=setTimeout(()=>{lbl.style.opacity='0';setTimeout(()=>lbl.remove(),400);},2000);
+}
+function toggleSnap(){
+  snapOn=!snapOn;const btn=document.getElementById('ep-snap');
+  if(btn){btn.style.background=snapOn?'#f0df70':'#3a3010';btn.style.color=snapOn?'#1a1400':'#f0df70';btn.style.border=snapOn?'1px solid #f0df70':'1px solid #5a5020';btn.blur();}
+  document.activeElement&&document.activeElement.blur();
+}
+// ── LOCK SYSTEM ──────────────────────────────────────────────
+function toggleLock(which){
+  if(which==='table')   lockTable  =!lockTable;
+  if(which==='sliders') lockSliders=!lockSliders;
+  const lt=$('ep-lt'),ls=$('ep-ls');
+  if(lt){ lt.style.background=lockTable?'#ff2222':'#2a1a1a'; lt.style.color=lockTable?'#ffffff':'#ff8888'; lt.style.border=lockTable?'1px solid #ff4444':'1px solid #6a2a2a'; }
+  if(ls){ ls.style.background=lockSliders?'#ff2222':'#2a1a1a'; ls.style.color=lockSliders?'#ffffff':'#ff8888'; ls.style.border=lockSliders?'1px solid #ff4444':'1px solid #6a2a2a'; }
+  const tblEl=$('tbl');if(tblEl)tblEl.style.touchAction=lockTable?'auto':'none';
+  const sg=document.querySelector('.sgroup');if(sg)sg.style.opacity=lockSliders?'0.4':'1';
+  document.querySelectorAll('.sgroup input[type=range]').forEach(el=>{el.disabled=lockSliders;});
+  document.activeElement&&document.activeElement.blur();
+}
+// ── ZERO ──────────────────────────────────────────────────────
+
+function biasStep(zone, dir) {
+  if (lockSliders) return;
+  const sl = $('sl-bias-' + zone);
+  if (!sl) return;
+  const cur = parseInt(sl.value);
+  sl.value = Math.max(-12, Math.min(12, cur + dir));
+  onSliders();
+}
+
+function zeroSliders(){
+  if(lockSliders)return;
+  S.speed=0.5;S.spin=0;S.bias=0;S.biasFat=0;S.biasMed=0;S.biasThin=0;
+  $('sl-spd').value='50';$('sl-spn').value='0';['fat','med','thin'].forEach(z=>{const sl=$('sl-bias-'+z);if(sl)sl.value='0';});
+  onSliders();document.activeElement&&document.activeElement.blur();
+}
+// ── EDGE ZOOM ────────────────────────────────────────────────
+function edgeZoom(factor){
+  const w=document.getElementById('zoom-wrap');if(!w)return;
+  const cur=w._zscale||1,next=Math.max(0.1,Math.min(3,cur*factor));
+  w._zscale=next;w.style.transform='scale('+next+')';w.style.transformOrigin='top left';
+}
+function edgeZoomReset(){
+  const w=document.getElementById('zoom-wrap');if(!w)return;
+  w._zscale=1;w.style.transform='scale(1)';
+}
+
+</script>
+<script>
+(function(){
+  let scale=1,initDist=0,initScale=1,active=false;
+  document.addEventListener('touchstart',e=>{
+    if(e.touches.length===2){active=true;
+      initDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      initScale=scale;e.preventDefault();}
+  },{passive:false});
+  document.addEventListener('touchmove',e=>{
+    if(!active||e.touches.length!==2)return;e.preventDefault();
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    scale=Math.max(0.1,Math.min(3,initScale*d/initDist));
+    document.getElementById('zoom-wrap').style.transform='scale('+scale+')';
+  },{passive:false});
+  document.addEventListener('touchend',e=>{if(e.touches.length<2)active=false;});
+})();
+</script>
+<div id="edge-panel-wrap" style="display:none;">
+<div id="edge-panel">
+  <div class="ep-label">zoom</div>
+  <button class="ep-btn" tabindex="-1" onclick="edgeZoom(1.3)">＋</button>
+  <button class="ep-btn" tabindex="-1" onclick="edgeZoom(1/1.3)">－</button>
+  <button class="ep-btn" tabindex="-1" onclick="edgeZoomReset()">⟳</button>
+  <div class="ep-sep"></div>
+  <div class="ep-label">snap</div>
+  <button class="ep-btn active" tabindex="-1" onclick="toggleSnap()">✦</button>
+  <div class="ep-sep"></div>
+  <div class="ep-label">lock</div>
+  <button class="ep-btn" tabindex="-1" onclick="toggleLock('table')">T</button>
+  <button class="ep-btn" tabindex="-1" onclick="toggleLock('sliders')">S</button>
+  <div class="ep-sep"></div>
+  <div class="ep-label">zero</div>
+  <button class="ep-btn" tabindex="-1" onclick="zeroSliders()">0S</button>
+</div>
+</div><!-- /edge-panel-wrap -->
+
+
+
+
+<div id="float-toolbar" style="position:fixed;bottom:16px;left:16px;z-index:9999;display:flex;flex-direction:column;align-items:stretch;gap:4px;touch-action:none;min-width:220px;">
+  <!-- TOOLS pill — always yellow, always brown text; tap=toggle, drag=move -->
+  <div id="ftb-tab" style="display:flex;align-items:center;background:transparent;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;width:100%;min-height:32px;padding:4px 0;">
+    <span id="ftb-pill" style="display:inline-flex;align-items:center;background:#f0df70;border-radius:7px;padding:2px 8px 2px 6px;pointer-events:auto;">
+      <button id="ftb-toggle" onclick="toggleFloatToolbar()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 0;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button>
+      <span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;">TOOLS</span>
+    </span>
+  </div>
+  <!-- Panel -->
+  <div id="ftb-panel" style="display:none;background:transparent;border:none;padding:0;box-shadow:none;min-width:220px;">
+    <div style="padding:8px;">
+    <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:5px;">
+      <button onclick="addRail()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">＋ RAIL</button>
+      <button onclick="removeRail()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">－ RAIL</button>
+      <button id="btn-map" onclick="toggleMap()" style="background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;padding:6px 8px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;line-height:1.2;text-align:center;">GRID<br>ON</button>
+      <button id="btn-cal" onclick="toggleCal()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">CAL</button>
+      <button id="btn-metrics" onclick="toggleContact()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">ANGLE</button>
+      <button onclick="toggleShotLibrary()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">SHOTS</button>
+      <button id="btn-bias" onclick="toggleBias()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">BIAS</button>
+      <button id="btn-pan" onclick="togglePan()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">LOCK</button>
+      <button id="btn-swap" onclick="swapPanels()" style="background:#a0d0a0;color:#001a00;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;padding:6px 8px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;line-height:1.2;text-align:center;"><span id="swap-lbl">SLIDERS<br>UP</span></button>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;">
+      <button onclick="edgeZoom(1.3)" style="background:#1e3a2a;color:#a0d0a0;border:1px solid #2a5a3a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">IN +</button>
+      <button onclick="edgeZoom(1/1.3)" style="background:#1e3a2a;color:#a0d0a0;border:1px solid #2a5a3a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">OUT −</button>
+      <button onclick="edgeZoomReset()" style="background:#1e3a2a;color:#a0d0a0;border:1px solid #2a5a3a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">RESET</button>
+      <button id="ep-snap" onclick="toggleSnap()" style="background:#3a3010;color:#f0df70;border:1px solid #5a5020;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">SNAP</button>
+      <button id="ep-lt" onclick="toggleLock('table')" style="background:#2a1a1a;color:#ff8888;border:1px solid #6a2a2a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">TABLE</button>
+      <button id="ep-ls" onclick="toggleLock('sliders')" style="background:#2a1a1a;color:#ff8888;border:1px solid #6a2a2a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">SLIDERS</button>
+      <button onclick="zeroSliders()" style="background:#3a3010;color:#f0df70;border:1px solid #5a5020;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">ZERO</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var panel,header,startX,startY,origLeft,origTop,didDrag,activePtr=null,positioned=false;
+  function positionPanel(){
+    if(!panel)return;
+    var ref=document.querySelector('.svg-box.top-box')||document.getElementById('table-wrap');
+    var pw=panel.offsetWidth||380,left,top;
+    if(ref){var r=ref.getBoundingClientRect();left=r.left+(r.width-pw)/2;top=r.bottom+6;}
+    else{left=12;top=160;}
+    left=Math.max(4,Math.min(window.innerWidth-pw-4,left));
+    top=Math.max(4,Math.min(window.innerHeight-200,top));
+    panel.style.left=left+'px';panel.style.top=top+'px';positioned=true;
+  }
+  window.addEventListener('load',function(){
+    panel=document.getElementById('shot-library-panel');
+    header=document.getElementById('shot-lib-header');
+    if(!panel||!header)return;
+    header.addEventListener('pointerdown',function(e){
+      if(e.target.tagName==='BUTTON')return;
+      var r=panel.getBoundingClientRect();
+      startX=e.clientX;startY=e.clientY;origLeft=r.left;origTop=r.top;didDrag=false;activePtr=e.pointerId;
+    });
+    header.addEventListener('pointermove',function(e){
+      if(activePtr===null||e.pointerId!==activePtr)return;
+      var dx=e.clientX-startX,dy=e.clientY-startY;
+      if(!didDrag&&Math.hypot(dx,dy)>8){didDrag=true;try{header.setPointerCapture(e.pointerId);}catch(ex){}}
+      if(!didDrag)return;
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx));
+      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy));
+      panel.style.left=nx+'px';panel.style.top=ny+'px';
+    });
+    header.addEventListener('pointerup',function(e){if(e.pointerId===activePtr)activePtr=null;});
+    header.addEventListener('pointercancel',function(e){if(e.pointerId===activePtr)activePtr=null;});
+    var origToggle=window.toggleShotLibrary;
+    window.toggleShotLibrary=function(){
+      origToggle();
+      if(!positioned&&panel&&panel.style.display!=='none')requestAnimationFrame(positionPanel);
+    };
+  });
+})();
+</script>
+</body>
+</html>
