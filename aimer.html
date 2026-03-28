@@ -1274,7 +1274,12 @@ function loadShot(idx) {
   </div>
 
   <!-- SLIDERS -->
-  <div id="sliders-block"><div class="sgroup">
+  <div id="sliders-block">
+  <div id="sliders-handle" style="display:flex;justify-content:space-between;align-items:center;padding:3px 8px 3px 10px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:4px;">
+    <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(200,144,240,0.6);">≡ SLIDERS</span>
+    <button onclick="closeSlidersPanel()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+  </div>
+  <div class="sgroup">
     <div class="srow">
       <span class="slbl">speed</span>
       <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
@@ -2756,10 +2761,14 @@ function biasStep(zone, dir) {
       style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
     <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
   </div>
+  <!-- Resize grip -->
+  <div id="shot-lib-resize" style="height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;touch-action:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05);">
+    <div style="width:32px;height:3px;border-radius:2px;background:rgba(240,223,112,0.25);pointer-events:none;"></div>
+  </div>
 </div>
 
 <script>
-// Shot library panel — position under table on first open, then draggable
+// Shot library panel — position under table on first open, then draggable + resizable
 (function(){
   var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
   var positioned = false;
@@ -2802,6 +2811,29 @@ function biasStep(zone, dir) {
     });
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+
+    // ── Resize grip ──────────────────────────────────────────────────────────
+    var grip = document.getElementById('shot-lib-resize');
+    var list = document.getElementById('shot-library-list');
+    var rStartY, rStartH, rPtr=null;
+    if (grip && list) {
+      grip.addEventListener('pointerdown', function(e){
+        rStartY = e.clientY;
+        rStartH = list.offsetHeight;
+        rPtr = e.pointerId;
+        try{ grip.setPointerCapture(e.pointerId); }catch(x){}
+        e.stopPropagation();
+      });
+      grip.addEventListener('pointermove', function(e){
+        if(rPtr===null||e.pointerId!==rPtr) return;
+        var dy = e.clientY - rStartY;
+        var newH = Math.max(44, Math.min(window.innerHeight * 0.75, rStartH + dy));
+        list.style.maxHeight = newH + 'px';
+        list.style.height    = newH + 'px';
+      });
+      grip.addEventListener('pointerup',     function(e){ if(e.pointerId===rPtr) rPtr=null; });
+      grip.addEventListener('pointercancel', function(e){ if(e.pointerId===rPtr) rPtr=null; });
+    }
   });
 
   // Hook into toggleShotLibrary to position on first open
@@ -2814,6 +2846,90 @@ function biasStep(zone, dir) {
         requestAnimationFrame(positionUnderTable);
       }
     };
+  });
+})();
+</script>
+<script>
+// ── Sliders panel — floatable/draggable ──────────────────────────────────────
+(function(){
+  var el, handle, ph = null, isFloating = false;
+  var startX, startY, origLeft, origTop, activePtr = null, didDrag = false;
+
+  function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+
+  function detach(){
+    if(isFloating) return;
+    var r = el.getBoundingClientRect();
+    // placeholder preserves layout height
+    ph = document.createElement('div');
+    ph.style.cssText = 'height:'+r.height+'px;flex-shrink:0;';
+    el.parentNode.insertBefore(ph, el);
+    // float it
+    el.style.position  = 'fixed';
+    el.style.left      = r.left+'px';
+    el.style.top       = r.top+'px';
+    el.style.width     = r.width+'px';
+    el.style.zIndex    = '8887';
+    el.style.background= 'rgba(10,15,10,0.97)';
+    el.style.borderRadius='8px';
+    el.style.boxShadow ='0 6px 24px rgba(0,0,0,0.7)';
+    el.style.border    ='1px solid rgba(200,144,240,0.4)';
+    el.style.padding   ='0 0 4px';
+    isFloating = true;
+  }
+
+  function reattach(){
+    if(!isFloating) return;
+    ['position','left','top','width','zIndex','background',
+     'borderRadius','boxShadow','border','padding'].forEach(function(p){ el.style[p]=''; });
+    if(ph){ ph.parentNode && ph.parentNode.removeChild(ph); ph=null; }
+    isFloating = false;
+  }
+
+  window.closeSlidersPanel = function(){
+    reattach();
+    el.style.display = 'none';
+  };
+
+  window.addEventListener('load', function(){
+    el     = document.getElementById('sliders-block');
+    handle = document.getElementById('sliders-handle');
+    if(!el || !handle) return;
+
+    // Patch toggleLock so SLIDERS button reopens a hidden panel
+    var _orig = window.toggleLock;
+    window.toggleLock = function(which){
+      if(which==='sliders' && el.style.display==='none'){
+        el.style.display='';
+        reattach();
+        return;
+      }
+      _orig && _orig(which);
+    };
+
+    handle.addEventListener('pointerdown', function(e){
+      if(e.target.tagName==='BUTTON') return;
+      if(!isFloating) detach();
+      origLeft = parseFloat(el.style.left)||0;
+      origTop  = parseFloat(el.style.top)||0;
+      startX=e.clientX; startY=e.clientY;
+      didDrag=false; activePtr=e.pointerId;
+    });
+    handle.addEventListener('pointermove', function(e){
+      if(activePtr===null||e.pointerId!==activePtr) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if(!didDrag&&Math.hypot(dx,dy)>6){
+        didDrag=true;
+        try{ handle.setPointerCapture(e.pointerId); }catch(x){}
+      }
+      if(!didDrag) return;
+      var nx=clamp(origLeft+dx,0,Math.max(0,window.innerWidth-el.offsetWidth));
+      var ny=clamp(origTop+dy,0,Math.max(0,window.innerHeight-el.offsetHeight));
+      el.style.left=nx+'px'; el.style.top=ny+'px';
+    });
+    ['pointerup','pointercancel'].forEach(function(ev){
+      handle.addEventListener(ev,function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    });
   });
 })();
 </script>
