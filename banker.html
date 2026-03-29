@@ -89,7 +89,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 /* ── TOGGLE BUTTONS ── */
 .tog{flex:1;height:24px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:flex;align-items:center;justify-content:center;transition:filter .15s;}
 .tog.dim{filter:brightness(0.42) saturate(0.5);}
-
+#cal-btn.active{background:rgba(240,223,112,0.22);border-color:#f0df70;}
 /* ── BOUNCE RAIL PILLS ── */
 #bounce-pills{display:flex;gap:4px;padding:4px 0 2px;}
 .bpill{height:22px;padding:0 10px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:inline-flex;align-items:center;background:rgba(240,223,112,0.18);color:rgba(240,223,112,0.6);outline:none;-webkit-tap-highlight-color:transparent;}
@@ -109,7 +109,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:10px 8px 4px;letter-spacing:1.5px;text-transform:uppercase;margin-top:12px;}
 
-@media (orientation: landscape) {
+@media (orientation: landscape) and (max-height: 430px) {
   .outer-wrap { max-width: 100% !important; }
   .card { max-width: 100% !important; }
 }
@@ -151,8 +151,8 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
   flex: 1;
   height: 30px;
   border-radius: 4px;
-  border: 1px solid #404840;
-  background: #1c2d1c;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(30,45,30,0.97);
   color: #e8e8e0;
   font-family: 'Lato', sans-serif;
   font-size: 9px;
@@ -167,13 +167,13 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
   touch-action: manipulation;
   transition: background 0.1s;
 }
-.ep-btn:active { background: #4a5a4a; }
+.ep-btn:active { background: rgba(255,255,255,0.25); }
 .ep-btn.on     { background: #f0df70; color: #1a1400; border-color: #f0df70; }
 .ep-btn.locked { background: #ff6060; color: #1a0000; border-color: #ff6060; }
 .ep-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 1px 0; }
-.ep-section.zoom   { background: #384fa0; }
-.ep-section.snap   { background: #1d631d; }
-.ep-section.lock   { background: #771e1e; }
+.ep-section.zoom   { background: rgba(60,80,160,0.92); }
+.ep-section.snap   { background: rgba(30,100,30,0.92); }
+.ep-section.lock   { background: rgba(120,30,30,0.92); }
 .ep-section.zero   { background: rgba(120,70,0,0.92); }
 .ep-section.zoom   .ep-section-label { color: #a0c0ff; }
 .ep-section.snap   .ep-section-label { color: #80e880; }
@@ -190,7 +190,7 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
 
 #sl-bias-fat::-webkit-slider-thumb,#sl-bias-med::-webkit-slider-thumb,#sl-bias-thin::-webkit-slider-thumb{background:#c890f0;}
 #sl-bias-fat,#sl-bias-med,#sl-bias-thin{-webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;}
-@media(orientation:landscape) and (max-height:600px){
+@media(orientation:landscape) and (max-height:430px){
   html,body{padding:0!important;margin:0;align-items:stretch;}
   .outer-wrap{max-width:100%!important;width:100%!important;border-radius:0;margin:0;}
 }
@@ -200,6 +200,7 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
   bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
+  width: auto;
   width: 540px;
   max-width: calc(100vw - 8px);
   box-sizing: border-box;
@@ -211,8 +212,6 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
   background: transparent;
   border: none;
   box-shadow: none;
-  font-size: 13px;
-  -webkit-text-size-adjust: none;
 }
 #btb-tab {
   display: flex;
@@ -292,20 +291,19 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
 .ep-btn.g-snap { background:#1c581c; border-color:#2c742c; }
 .ep-btn.g-zero { background:#693e03;  border-color:#805008; }
 .ep-btn.g-bias { background:#4f1c71; border-color:#68388c; }
-.ep-btn.g-tog  { background:#604f03;  border-color:#78640a; }
-.ep-btn.g-swap { background:#0a6a7a; border-color:#1a9aaa; color:#e0f8ff; font-size:16px; }
-.ep-btn.g-swap.on { background:#a0e8f0; color:#001a1a; }
+.ep-btn.g-tog  { background:#604f03;  border-color:#78640a; color:#f0df70; }
 .ep-btn.g-zoom.on  { background:#f0df70; color:#1a1400; }
 .ep-btn.g-snap.on  { background:#f0df70; color:#1a1400; }
 .ep-btn.g-bias.on  { background:#f0df70; color:#1a1400; }
 .ep-btn.g-tog.on   { background:#f0df70; color:#1a1400; }
-.btb-row2 .ep-btn:not(.on):not(.locked) { opacity: 1; }
 .ep-btn.g-lock.locked { background:#ff6060; color:#1a0000; }
 .ep-btn.g-brown { background:#4a2800; border:1px solid #8a5010; color:#e8c080; }
 .ep-btn.g-brown.on { background:#f0df70; color:#1a1400; border-color:#c8b840; }
 .ep-btn.g-yel   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
 .ep-btn.g-pan   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
 .ep-btn.g-pan.dim { opacity:0.45; }
+.ep-btn.g-swap { background:#0a6a7a; border-color:#1a9aaa; color:#e0f8ff; font-size:16px; }
+.ep-btn.g-swap.on { background:#a0e8f0; color:#001a1a; }
 /* pad body so content isn't hidden under bottom bar */
 
 body { padding-bottom: 80px !important; }
@@ -520,12 +518,7 @@ function loadShot(idx) {
 </div>
 
 <!-- ── TABLE + AIMING DIAGRAM ── -->
-<div id="block-sliders">
-<div id="sliders-handle" style="display:flex;justify-content:space-between;align-items:center;padding:3px 8px 3px 10px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:4px;">
-  <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(200,144,240,0.6);">≡ SLIDERS</span>
-  <button onclick="closeSlidersPanel()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
-</div>
-<div class="sgroup">
+<div id="block-sliders"><div class="sgroup">
   <div class="srow">
     <span class="slbl">speed</span>
     <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
@@ -939,26 +932,6 @@ function loadShot(idx) {
       <!-- Ghost ball (toggleable) -->
       <line id="cb-ghost-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0"/>
       <circle id="ghost-ball" cx="0" cy="0" r="10" fill="rgba(255,255,255,.06)" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3,3" opacity="0"/>
-      <!-- CB Path rays -->
-      <marker id="arr-stun"   markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,6 3,0 6" fill="rgba(255,255,255,0.85)"/></marker>
-      <marker id="arr-follow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,6 3,0 6" fill="#f97316"/></marker>
-      <marker id="arr-draw"   markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,6 3,0 6" fill="#60a5fa"/></marker>
-      <line id="cb-stun"   x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-stun)"   opacity="0"/>
-      <line id="cb-follow" x1="0" y1="0" x2="0" y2="0" stroke="#f97316"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-follow)" opacity="0"/>
-      <line id="cb-draw"   x1="0" y1="0" x2="0" y2="0" stroke="#60a5fa"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-draw)"   opacity="0"/>
-      <circle id="cb-stun-dot"   cx="0" cy="0" r="5" opacity="0"/>
-      <circle id="cb-follow-dot" cx="0" cy="0" r="5" opacity="0"/>
-      <circle id="cb-draw-dot"   cx="0" cy="0" r="5" opacity="0"/>
-      <!-- CB Path legend -->
-      <g id="cb-path-legend" opacity="0">
-        <rect x="8" y="8" width="86" height="52" rx="4" fill="rgba(0,0,0,0.55)"/>
-        <line x1="13" y1="19" x2="30" y2="19" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="5,3"/>
-        <text x="34" y="22" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">STUN</text>
-        <line x1="13" y1="31" x2="30" y2="31" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
-        <text x="34" y="34" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">FOLLOW</text>
-        <line x1="13" y1="43" x2="30" y2="43" stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="5,3"/>
-        <text x="34" y="46" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#60a5fa">DRAW</text>
-      </g>
 
       <!-- Object ball -->
       <circle id="ob-shadow" cx="281" cy="131" r="10" fill="#000" opacity="0.32"/>
@@ -1071,10 +1044,6 @@ function loadShot(idx) {
       <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
         style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
       <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
-    </div>
-    <!-- Resize grip -->
-    <div id="shot-lib-resize" style="height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;touch-action:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05);">
-      <div style="width:32px;height:3px;border-radius:2px;background:rgba(240,223,112,0.25);pointer-events:none;"></div>
     </div>
   </div>
 
@@ -1764,8 +1733,8 @@ function drawBot(sol) {
 
 
   // Vernier aim buttons
-  out += '<g onclick="vernierAim(-1)" style="cursor:pointer;touch-action:manipulation;"><rect x="8" y="'+(H-52)+'" width="44" height="44" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><text x="30" y="'+(H-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="22" font-weight="900" fill="#e6e6e6">&#9664;</text></g>';
-  out += '<g onclick="vernierAim(1)" style="cursor:pointer;touch-action:manipulation;"><rect x="58" y="'+(H-52)+'" width="44" height="44" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><text x="80" y="'+(H-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="22" font-weight="900" fill="#e6e6e6">&#9654;</text></g>';
+  out += '<g onclick="vernierAim(-1)" style="cursor:pointer;touch-action:manipulation;"><rect x="8" y="'+(H-52)+'" width="44" height="44" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><text x="30" y="'+(H-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="22" font-weight="900" fill="rgba(255,255,255,0.9)">&#9664;</text></g>';
+  out += '<g onclick="vernierAim(1)" style="cursor:pointer;touch-action:manipulation;"><rect x="58" y="'+(H-52)+'" width="44" height="44" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><text x="80" y="'+(H-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="22" font-weight="900" fill="rgba(255,255,255,0.9)">&#9654;</text></g>';
 
   // Fraction tick labels — Aimer style: uniform 18px, weight 700, opacity 0.82
   var tkLabels = rh ? ['\u215e','\u00be','\u215d','\u00bd','\u215c','\u00bc','\u215b'] : ['\u215b','\u00bc','\u215c','\u00bd','\u215d','\u00be','\u215e'];
@@ -1928,44 +1897,6 @@ function render() {
     sV('ghost-ball', true);
   }
   // CB → Ghost gold dashed line
-
-  // ── CB PATH RAYS ─────────────────────────────────────────────
-  if (cbPathOn && sol && sol.cutDeg > 0.5) {
-    const TL2 = TL;
-    const _gx2 = gx, _gy2 = gy;
-    const _approachAngle2 = _cbToObAngle;
-    const _obDepart2 = sol.θ !== undefined ? sol.θ : _cbToObAngle;
-    const stunAngle   = _obDepart2 + Math.PI/2;
-    const followAngle = stunAngle + (_obDepart2 - stunAngle) * 0.55;
-    const drawAngle   = stunAngle - (_obDepart2 - stunAngle) * 0.55;
-    const _pockets2 = [
-      {x:TL.left,y:TL.top},{x:(TL.left+TL.right)/2,y:TL.top},{x:TL.right,y:TL.top},
-      {x:TL.left,y:TL.bottom},{x:(TL.left+TL.right)/2,y:TL.bottom},{x:TL.right,y:TL.bottom}
-    ];
-    function _rayEnd(sx,sy,ang){
-      const dx=Math.cos(ang),dy=Math.sin(ang);
-      let t=9999;
-      if(dy<0)t=Math.min(t,(TL.top-sy)/dy);
-      if(dy>0)t=Math.min(t,(TL.bottom-sy)/dy);
-      if(dx<0)t=Math.min(t,(TL.left-sx)/dx);
-      if(dx>0)t=Math.min(t,(TL.right-sx)/dx);
-      return{x:sx+dx*Math.max(10,t),y:sy+dy*Math.max(10,t)};
-    }
-    function _isScratch2(p){return _pockets2.some((pk,i)=>{const r=(i===1||i===4)?22:28;return Math.hypot(p.x-pk.x,p.y-pk.y)<r;});}
-    function _drawRay2(lid,did,ang,col,scr){
-      const end=_rayEnd(_gx2,_gy2,ang),scratch=_isScratch2(end);
-      const el=document.getElementById(lid),dot=document.getElementById(did);
-      if(el){el.setAttribute('x1',_gx2);el.setAttribute('y1',_gy2);el.setAttribute('x2',end.x);el.setAttribute('y2',end.y);el.setAttribute('stroke',scratch?scr:col);el.style.opacity='1';}
-      if(dot){dot.setAttribute('cx',end.x);dot.setAttribute('cy',end.y);dot.setAttribute('fill',scratch?'#ef4444':'#22c55e');dot.style.opacity='1';}
-    }
-    _drawRay2('cb-stun','cb-stun-dot',stunAngle,'rgba(255,255,255,0.85)','#ef4444');
-    _drawRay2('cb-follow','cb-follow-dot',followAngle,'#f97316','#ef4444');
-    _drawRay2('cb-draw','cb-draw-dot',drawAngle,'#60a5fa','#ef4444');
-  } else if (!cbPathOn) {
-    ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
-      .forEach(id=>{const el=document.getElementById(id);if(el)el.style.opacity='0';});
-  }
-
   const _cgl = $('cb-ghost-line');
   if (_cgl) {
     _cgl.setAttribute('x1', S.cb.x); _cgl.setAttribute('y1', S.cb.y);
@@ -2406,8 +2337,8 @@ function drawBankerBounce(sol) {
   // Update numbers below bounce diagram
   const numsEl = document.getElementById('bounce-nums');
   if (numsEl) {
-    const inDeg2  = angleFromRail(inDx, inDy, rail).toFixed(1);
-    const outDeg2 = angleFromRail(rbDx, rbDy, rail).toFixed(1);
+    const inDeg2  = angleFromRail(inDx, inDy, rail);
+    const outDeg2 = angleFromRail(rbDx, rbDy, rail);
     const label = useSecond ? (RAIL_SHORT[sol.contact2.rail] + ' 2ND') : (RAIL_SHORT[contact.rail] + ' 1ST');
     numsEl.textContent = 'IN  ' + inDeg2 + '°   |   ' + label + '   |   OUT  ' + outDeg2 + '°';
   }
@@ -2544,7 +2475,6 @@ let calThrowAdj  = 1.0;   // throw multiplier (1.0 = default)
 function toggleCal() {
   calMode = !calMode;
   const btn = $('cal-btn');
-  if(btn){ btn.classList.toggle('on', calMode); btn.style.background=''; }
   if ($('cal-panel')) $('cal-panel').classList.toggle('open', calMode);
   if (!calMode) {
     calPhase = 'idle'; calPendingShot = null;
@@ -2943,15 +2873,11 @@ function toggleBtb(){
       if (e.target.id === 'btb-arrow') return; // arrow button handles toggle itself
       var rect = btb.getBoundingClientRect();
       btb.style.transform = 'none';
+      btb.style.left = rect.left + 'px';
+      btb.style.top  = rect.top  + 'px';
       btb.style.bottom = 'auto';
-      var maxL = Math.max(0, window.innerWidth  - btb.offsetWidth);
-      var maxT = Math.max(0, window.innerHeight - btb.offsetHeight);
-      var cl = Math.max(0, Math.min(maxL, rect.left));
-      var ct = Math.max(0, Math.min(maxT, rect.top));
-      btb.style.left = cl + 'px';
-      btb.style.top  = ct + 'px';
       startX = e.clientX; startY = e.clientY;
-      origLeft = cl; origTop = ct;
+      origLeft = rect.left; origTop = rect.top;
       didDrag = false; activePtr = e.pointerId;
       // Do NOT capture yet — capture only once drag is confirmed
     });
@@ -3116,25 +3042,6 @@ function biasStep(zone,dir){
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
 
-    // ── Resize grip ──────────────────────────────────────────────────────────
-    var grip = document.getElementById('shot-lib-resize');
-    var list = document.getElementById('shot-library-list');
-    var rStartY, rStartH, rPtr=null;
-    if (grip && list) {
-      grip.addEventListener('pointerdown', function(e){
-        rStartY=e.clientY; rStartH=list.offsetHeight; rPtr=e.pointerId;
-        try{ grip.setPointerCapture(e.pointerId); }catch(x){}
-        e.stopPropagation();
-      });
-      grip.addEventListener('pointermove', function(e){
-        if(rPtr===null||e.pointerId!==rPtr) return;
-        var newH=Math.max(44,Math.min(window.innerHeight*0.75, rStartH+(e.clientY-rStartY)));
-        list.style.maxHeight=newH+'px'; list.style.height=newH+'px';
-      });
-      grip.addEventListener('pointerup',     function(e){ if(e.pointerId===rPtr) rPtr=null; });
-      grip.addEventListener('pointercancel', function(e){ if(e.pointerId===rPtr) rPtr=null; });
-    }
-
     // Position on first open
     var origToggle = window.toggleShotLibrary;
     window.toggleShotLibrary = function(){
@@ -3146,96 +3053,5 @@ function biasStep(zone,dir){
   });
 })();
 </script>
-<script>
-// ── Sliders panel — floatable/draggable (Banker) ─────────────────────────────
-(function(){
-  var el, handle, ph=null, isFloating=false;
-  var startX, startY, origLeft, origTop, activePtr=null, didDrag=false;
-  function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
-  function detach(){
-    if(isFloating) return;
-    var r=el.getBoundingClientRect();
-    ph=document.createElement('div');
-    ph.style.cssText='height:'+r.height+'px;flex-shrink:0;';
-    el.parentNode.insertBefore(ph,el);
-    el.style.position='fixed'; el.style.left=r.left+'px'; el.style.top=r.top+'px';
-    el.style.width=r.width+'px'; el.style.zIndex='8887';
-    el.style.background='rgba(10,15,10,0.97)'; el.style.borderRadius='8px';
-    el.style.boxShadow='0 6px 24px rgba(0,0,0,0.7)';
-    el.style.border='1px solid rgba(200,144,240,0.4)'; el.style.padding='0 0 4px';
-    isFloating=true;
-  }
-  function reattach(){
-    if(!isFloating) return;
-    ['position','left','top','width','zIndex','background',
-     'borderRadius','boxShadow','border','padding'].forEach(function(p){ el.style[p]=''; });
-    if(ph){ ph.parentNode&&ph.parentNode.removeChild(ph); ph=null; }
-    isFloating=false;
-  }
-  window.closeSlidersPanel=function(){ reattach(); el.style.display='none'; };
-  window.addEventListener('load',function(){
-    el=document.getElementById('block-sliders');
-    handle=document.getElementById('sliders-handle');
-    if(!el||!handle) return;
-    var _orig=window.toggleLock;
-    window.toggleLock=function(which){
-      if(which==='sliders'&&el.style.display==='none'){ el.style.display=''; reattach(); return; }
-      _orig&&_orig(which);
-    };
-    handle.addEventListener('pointerdown',function(e){
-      if(e.target.tagName==='BUTTON') return;
-      if(!isFloating) detach();
-      origLeft=parseFloat(el.style.left)||0; origTop=parseFloat(el.style.top)||0;
-      startX=e.clientX; startY=e.clientY; didDrag=false; activePtr=e.pointerId;
-    });
-    handle.addEventListener('pointermove',function(e){
-      if(activePtr===null||e.pointerId!==activePtr) return;
-      var dx=e.clientX-startX,dy=e.clientY-startY;
-      if(!didDrag&&Math.hypot(dx,dy)>6){ didDrag=true; try{handle.setPointerCapture(e.pointerId);}catch(x){} }
-      if(!didDrag) return;
-      var nx=clamp(origLeft+dx,0,Math.max(0,window.innerWidth-el.offsetWidth));
-      var ny=clamp(origTop+dy,0,Math.max(0,window.innerHeight-el.offsetHeight));
-      el.style.left=nx+'px'; el.style.top=ny+'px';
-    });
-    ['pointerup','pointercancel'].forEach(function(ev){
-      handle.addEventListener(ev,function(e){ if(e.pointerId===activePtr) activePtr=null; });
-    });
-  });
-})();
-</script>
-// ── Pinch zoom (two-finger) on zoom-wrap only ────────────────────────────────
-(function(){
-  let scale=1, initDist=0, initScale=1, active=false;
-  window.addEventListener('load', function(){
-    var zw = document.getElementById('zoom-wrap');
-    if (!zw) return;
-    zw.addEventListener('touchstart', function(e) {
-      if (e.touches.length === 2) {
-        active = true;
-        initDist = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-        initScale = scale;
-        e.preventDefault();
-      }
-    }, {passive: false});
-    zw.addEventListener('touchmove', function(e) {
-      if (!active || e.touches.length !== 2) return;
-      e.preventDefault();
-      const d = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      scale = Math.max(0.5, Math.min(4, initScale * d / initDist));
-      if (typeof _pz !== 'undefined') {
-        _pz.scale = scale; _pz.apply();
-      } else {
-        document.getElementById('zoom-wrap').style.transform = 'scale(' + scale + ')';
-      }
-    }, {passive: false});
-    zw.addEventListener('touchend', function(e) { if (e.touches.length < 2) active = false; });
-  });
-})();
 </body>
 </html>
