@@ -140,8 +140,8 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
   flex: 1;
   height: 30px;
   border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(30,45,30,0.97);
+  border: 1px solid #404840;
+  background: #1c2d1c;
   color: #e8e8e0;
   font-family: 'Lato', sans-serif;
   font-size: 9px;
@@ -156,13 +156,13 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
   touch-action: manipulation;
   transition: background 0.1s;
 }
-.ep-btn:active { background: rgba(255,255,255,0.25); }
+.ep-btn:active { background: #4a5a4a; }
 .ep-btn.on     { background: #f0df70; color: #1a1400; border-color: #f0df70; }
 .ep-btn.locked { background: #ff6060; color: #1a0000; border-color: #ff6060; }
 .ep-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 1px 0; }
-.ep-section.zoom   { background: rgba(60,80,160,0.92); }
-.ep-section.snap   { background: rgba(30,100,30,0.92); }
-.ep-section.lock   { background: rgba(120,30,30,0.92); }
+.ep-section.zoom   { background: #384fa0; }
+.ep-section.snap   { background: #1d631d; }
+.ep-section.lock   { background: #771e1e; }
 .ep-section.zero   { background: rgba(120,70,0,0.92); }
 .ep-section.bias   { background: rgba(90,30,130,0.92); }
 .ep-section.zoom   .ep-section-label { color: #a0c0ff; }
@@ -194,9 +194,8 @@ html,body,#zoom-wrap{touch-action:pan-x pan-y;}
   bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
-  width: auto;
-  min-width: min(480px, 96vw);
-  max-width: min(540px, 96vw);
+  width: 480px;
+  max-width: calc(100vw - 8px);
   box-sizing: border-box;
   z-index: 9999;
   display: flex;
@@ -280,18 +279,27 @@ html,body,#zoom-wrap{touch-action:pan-x pan-y;}
   font-size: 10px;
   padding: 0 2px;
   min-width: 0;
+  line-height: 1.2;
+  text-align: center;
 }
 /* group button colors */
-.ep-btn.g-zoom { background:rgba(60,80,160,0.85); border-color:rgba(100,120,220,0.6); }
-.ep-btn.g-lock { background:rgba(120,30,30,0.85); border-color:rgba(200,60,60,0.6); }
-.ep-btn.g-snap { background:rgba(30,100,30,0.85); border-color:rgba(60,180,60,0.6); }
-.ep-btn.g-zero { background:rgba(120,70,0,0.85);  border-color:rgba(200,120,0,0.6); }
-.ep-btn.g-bias { background:rgba(90,30,130,0.85); border-color:rgba(160,80,220,0.6); }
+.ep-btn.g-zoom { background:#36478b; border-color:#44508c; }
+.ep-btn.g-lock { background:#691c1c; border-color:#802c2c; color:#ffaaaa; }
+.ep-btn.g-snap { background:#1c581c; border-color:#2c742c; }
+.ep-btn.g-zero { background:#693e03;  border-color:#805008; }
+.ep-btn.g-bias { background:#4f1c71; border-color:#68388c; }
 .ep-btn.g-zoom.on  { background:#f0df70; color:#1a1400; }
 .ep-btn.g-snap.on  { background:#f0df70; color:#1a1400; }
 .ep-btn.g-bias.on  { background:#f0df70; color:#1a1400; }
 .btb-row2 .ep-btn:not(.on):not(.locked) { opacity: 1; }
 .ep-btn.g-lock.locked { background:#ff6060; color:#1a0000; }
+.ep-btn.g-brown { background:#4a2800; border:1px solid #8a5010; color:#e8c080; }
+.ep-btn.g-brown.on { background:#f0df70; color:#1a1400; border-color:#c8b840; }
+.ep-btn.g-yel   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
+.ep-btn.g-pan   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
+.ep-btn.g-pan.dim { opacity:0.45; }
+.ep-btn.g-swap { background:#0a6a7a; border-color:#1a9aaa; color:#e0f8ff; font-size:16px; }
+.ep-btn.g-swap.on { background:#a0e8f0; color:#001a1a; }
 /* pad body so content isn't hidden under bottom bar */
 body { padding-bottom: 80px !important; }
 
@@ -765,7 +773,7 @@ function loadShot(idx) {
             <polygon points="0 0,7 2.5,0 5" fill="#4ade80"/>
           </marker>
           <marker id="arr-stun"   markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
-            <polygon points="0 0,7 2.5,0 5" fill="rgba(255,255,255,0.9)"/>
+            <polygon points="0 0,7 2.5,0 5" fill="#e6e6e6"/>
           </marker>
           <marker id="arr-follow" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
             <polygon points="0 0,7 2.5,0 5" fill="#f97316"/>
@@ -1231,11 +1239,11 @@ function loadShot(idx) {
         <!-- Vernier aim buttons -->
         <g onclick="vernierAim(-1)" style="cursor:pointer;touch-action:manipulation;">
           <rect x="8" y="248" width="48" height="48" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-          <text x="32" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="rgba(255,255,255,0.9)">◀</text>
+          <text x="32" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="#e6e6e6">◀</text>
         </g>
         <g onclick="vernierAim(1)" style="cursor:pointer;touch-action:manipulation;">
           <rect x="62" y="248" width="48" height="48" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-          <text x="86" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="rgba(255,255,255,0.9)">▶</text>
+          <text x="86" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="#e6e6e6">▶</text>
         </g>
         <!-- Gold dashed ring on CB -->
         <circle id="bot-cb-gold" cx="230" cy="148" r="82" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="0"/>
@@ -1258,6 +1266,25 @@ function loadShot(idx) {
 
   </div><!-- diagram-wrap -->
 
+
+
+  <!-- ANGLE PANEL -->
+  <div id="angle-panel" style="display:none;background:rgba(0,0,0,0.28);border-radius:4px;margin-bottom:6px;padding:8px 12px;">
+    <div style="display:flex;justify-content:space-around;align-items:center;">
+      <div style="text-align:center;">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:2px;">APPROACH</div>
+        <div id="angle-approach" style="font-size:18px;font-weight:900;color:#7dd3fc;">—</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:2px;">CUT</div>
+        <div id="angle-cut" style="font-size:18px;font-weight:900;color:#f0df70;">—</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:2px;">OB DEPART</div>
+        <div id="angle-depart" style="font-size:18px;font-weight:900;color:#4ade80;">—</div>
+      </div>
+    </div>
+  </div>
 
   <!-- CALIBRATION PANEL -->
   <div id="cal-panel">
@@ -1383,6 +1410,15 @@ let biasOn = false;
 let SNAP_POINTS = [];  // built after DOM ready
 const SNAP_RADIUS = 14;
 const ghostOn = true;  // always on
+let angleOn = false;
+function toggleAngle() {
+  angleOn = !angleOn;
+  const btn = document.getElementById('btn-angle');
+  if (btn) btn.classList.toggle('on', angleOn);
+  const panel = document.getElementById('angle-panel');
+  if (panel) panel.style.display = angleOn ? 'block' : 'none';
+  render();
+}
 let cbPathOn = false;
 function toggleCbPath() {
   cbPathOn = !cbPathOn;
@@ -1626,6 +1662,20 @@ function renderTable(d) {
   // OB departure extended back through CB
   sL('ob-arrow-ext', ox - odx*40, oy - ody*40, ox - odx*(BALL_R+2), oy - ody*(BALL_R+2));
   sV('ob-arrow-ext', true);
+
+
+  // ── ANGLE PANEL ──────────────────────────────────────────────
+  if (angleOn) {
+    const _approachDeg = Math.abs(Math.atan2(Math.abs(cbdy), Math.abs(cbdx)) * DEG);
+    const _obDepartDeg = Math.abs(obDepartAngle * DEG) % 180;
+    const _cutDisplay  = (S.diagCutDeg || 0).toFixed(1);
+    const ap = document.getElementById('angle-approach');
+    const ct = document.getElementById('angle-cut');
+    const dp = document.getElementById('angle-depart');
+    if (ap) ap.textContent = _approachDeg.toFixed(1) + '°';
+    if (ct) ct.textContent = _cutDisplay + '°';
+    if (dp) dp.textContent = _obDepartDeg.toFixed(1) + '°';
+  }
 
   // ── CB PATH RAYS ─────────────────────────────────────────────
   if (cbPathOn && cutDeg > 0.5) {
@@ -2018,7 +2068,7 @@ function saveAimProfile() {
 function toggleCal() {
   calMode = !calMode;
   $('cal-panel').classList.toggle('open', calMode);
-  $('btn-cal').style.background = calMode ? 'rgba(74,222,128,0.3)' : '#4ade80';
+  const _bc = $('btn-cal'); if(_bc){ _bc.classList.toggle('on', calMode); _bc.style.background=''; }
   if (!calMode) { calPhase = 'idle'; calPendingShot = null; }
   calUpdateUI();
 }
@@ -2464,6 +2514,8 @@ function showSnapLabel(svgEl, x, y, label, ballId) {
 let panMode = true;
 function togglePan(){
   panMode = !panMode;
+  const _pan = document.getElementById('ep-pan');
+  if (_pan) _pan.classList.toggle('dim', !panMode);
   const btn = document.getElementById('ep-pan');
   if(btn) btn.classList.toggle('on', panMode);
 }
@@ -2652,25 +2704,26 @@ window.addEventListener('load', function(){ swapPanels(); });
   <div id="btb-tab"><span id="btb-pill"><button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 6px;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button><span id="btb-label" style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding-right:8px;">TOOLS</span></span></div>
   <div id="btb-panel" style="display:none;">
     <div class="btb-row2">
-      <button class="ep-btn g-tog on" id="btn-map"    onclick="toggleMap()">MAP</button>
-      <button class="ep-btn g-tog"    id="btn-cal"    onclick="toggleCal()">CAL</button>
-      <button class="ep-btn g-tog"    onclick="toggleShotLibrary()">SOTS</button>
-      <button class="ep-btn g-tog"    id="btn-cbpath" onclick="toggleCbPath()">CB PATH</button>
-      <button class="ep-btn g-snap on" id="ep-snap"   onclick="toggleSnap()">SNAP</button>
-      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">BIAS</button>
+      <button class="ep-btn g-tog on" id="btn-map"    onclick="toggleMap()">GRID</button>
+      <button class="ep-btn g-snap on" id="ep-snap"   onclick="toggleSnap()">SNAP<br>TO</button>
+      <button class="ep-btn g-brown"  id="btn-cal"    onclick="toggleCal()">CAL</button>
+      <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">SHOT<br>LIST</button>
+      <button class="ep-btn g-yel"    id="btn-cbpath" onclick="toggleCbPath()">CUE<br>PATH</button>
+      <button class="ep-btn g-brown"  id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
+      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">BIAS<br>ON</button>
       <button class="ep-btn g-swap"   id="btn-swap"   onclick="swapPanels()">⇅</button>
     </div>
     <div class="btb-row2">
-      <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">IN +</button>
-      <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">OUT −</button>
-      <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET</button>
-      <button class="ep-btn g-zoom" id="ep-pan" onclick="togglePan()">PAN</button>
+      <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">ZOOM<br>IN</button>
+      <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">ZOOM<br>OUT</button>
+      <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET<br>ZOOM</button>
+      <button class="ep-btn g-pan" id="ep-pan" onclick="togglePan()">LOCK</button>
     </div>
     <div class="btb-row2">
-      <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE</button>
-      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">BALL</button>
-      <button class="ep-btn g-lock" id="ep-ls" onclick="toggleLock('sliders')">SLIDERS</button>
-      <button class="ep-btn g-zero" onclick="zeroSliders()">ZERO</button>
+      <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE<br>LOCK</button>
+      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">BALL<br>LOCK</button>
+      <button class="ep-btn g-lock" id="ep-ls" onclick="toggleLock('sliders')">SLIDERS<br>LOCK</button>
+      <button class="ep-btn g-brown" onclick="zeroSliders()">ZERO<br>SLIDERS</button>
     </div>
   </div>
 </div>
@@ -2937,6 +2990,38 @@ function biasStep(zone, dir) {
       handle.addEventListener(ev,function(e){ if(e.pointerId===activePtr) activePtr=null; });
     });
   });
+})();
+</script>
+<script>
+// ── Pinch zoom (two-finger) ───────────────────────────────────────────────────
+(function(){
+  let scale=1, initDist=0, initScale=1, active=false;
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      active = true;
+      initDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      initScale = scale;
+      e.preventDefault();
+    }
+  }, {passive: false});
+  document.addEventListener('touchmove', e => {
+    if (!active || e.touches.length !== 2) return;
+    e.preventDefault();
+    const d = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    scale = Math.max(0.5, Math.min(4, initScale * d / initDist));
+    if (typeof _pz !== 'undefined') {
+      _pz.scale = scale; _pz.apply();
+    } else {
+      document.getElementById('zoom-wrap').style.transform = 'scale(' + scale + ')';
+    }
+  }, {passive: false});
+  document.addEventListener('touchend', e => { if (e.touches.length < 2) active = false; });
 })();
 </script>
 </body>

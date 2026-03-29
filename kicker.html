@@ -110,14 +110,48 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.18);padding:
 .vbtn:active{background:rgba(255,255,255,0.25);}
 .ep-btn {
   width: 36px; height: 36px; border-radius: 8px;
-  border: 1.5px solid rgba(0,0,0,0.15); background: rgba(255,255,255,0.9);
+  border: 1.5px solid rgba(0,0,0,0.15); background: #e6e6e6;
   color: #333; font-family: 'Lato', sans-serif; font-size: 10px; font-weight: 900;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   outline: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
-.ep-btn:active { background: rgba(220,220,210,0.9); }
+.ep-btn:active { background: #d8d8d0; }
 .ep-btn.active { background: #2a5a2a; color: #f0df70; border-color: #2a5a2a; }
 .ep-btn.locked { background: #7a1a1a; color: #ffaaaa; border-color: #7a1a1a; }
+.ep-btn.g-zoom { background:#36478b; border-color:#44508c; color:#b0c4ff; }
+.ep-btn.g-lock { background:#691c1c; border-color:#802c2c; color:#ffaaaa; }
+.ep-btn.g-lock.locked { background:#ff6060; color:#1a0000; border-color:#ff6060; }
+.ep-btn.g-brown { background:#4a2800; border:1px solid #8a5010; color:#e8c080; }
+.ep-btn.g-brown.on { background:#f0df70; color:#1a1400; border-color:#c8b840; }
+.ep-btn.g-yel   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
+.ep-btn.g-pan   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
+.ep-btn.g-pan.dim { opacity:0.45; }
+.ep-btn.g-zero { background:#693e03; border-color:#805008; color:#ffcc88; }
+.ep-btn.g-snap { background:#1c581c; border-color:#2c742c; color:#a0e8a0; }
+.ep-btn.g-bias { background:#4f1c71; border-color:#68388c; color:#d0a0ff; }
+.ep-btn.g-tog  { background:#604f03;  border-color:#78640a; color:#f0df70; }
+.ep-btn.g-tog.on { background:#f0df70; color:#1a1400; border-color:#f0df70; }
+.ep-btn.g-swap { background:#0a6a7a; border-color:#1a9aaa; color:#e0f8ff; font-size:16px; }
+.ep-btn.g-swap.on { background:#a0e8f0; color:#001a1a; }
+.ep-btn.g-zoom.on { background:#f0df70; color:#1a1400; }
+.btb-row2 {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  padding: 3px 6px;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+}
+.btb-row2 .ep-btn {
+  flex: 1;
+  height: 36px;
+  font-size: 10px;
+  padding: 0 2px;
+  min-width: 0;
+  line-height: 1.2;
+  text-align: center;
+}
 .ep-sep { width: 24px; height: 1px; background: rgba(0,0,0,0.12); margin: 2px 0; }
 .ep-label { font-family: 'Lato', sans-serif; font-size: 7px; font-weight: 900;
   letter-spacing: 1px; color: rgba(0,0,0,0.35); text-transform: uppercase; }
@@ -788,6 +822,10 @@ function loadShot(idx) {
         style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
       <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
     </div>
+    <!-- Resize grip -->
+    <div id="shot-lib-resize" style="height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;touch-action:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05);">
+      <div style="width:32px;height:3px;border-radius:2px;background:rgba(240,223,112,0.25);pointer-events:none;"></div>
+    </div>
   </div>
 <div id="readouts"></div>
 
@@ -834,8 +872,8 @@ let snapOn = true;
 let snapLabelTimer = null;
 let SNAP_POINTS = [];
 const SNAP_RADIUS = 14;
-let lockTable = false;
-let lockSliders = false;
+let lockTable = true;
+let lockSliders = true;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PHYSICS
@@ -1739,6 +1777,16 @@ function toggleFloatToolbar() {
 (function() {
   var tb, tab, startX, startY, origLeft, origTop, didDrag, activePtr = null;
   window.addEventListener('load', function() {
+    // Init lock button visual states
+    var _lt=document.getElementById('ep-lt'), _ls=document.getElementById('ep-ls');
+    if(_lt) _lt.classList.toggle('locked', lockTable);
+    if(_ls) _ls.classList.toggle('locked', lockSliders);
+    var _sg=document.querySelector('.sgroup');
+    if(_sg) _sg.style.opacity = lockSliders ? '0.4' : '1';
+    document.querySelectorAll('.sgroup input[type=range]').forEach(function(el){ el.disabled=lockSliders; });
+    var _tbl=document.getElementById('tbl');
+    if(_tbl) _tbl.style.touchAction = lockTable ? 'auto' : 'none';
+
     tb  = document.getElementById('float-toolbar');
     tab = document.getElementById('ftb-tab');
     if (!tb || !tab) return;
@@ -1873,8 +1921,8 @@ function toggleLock(which){
   if(which==='table')   lockTable  =!lockTable;
   if(which==='sliders') lockSliders=!lockSliders;
   const lt=$('ep-lt'),ls=$('ep-ls');
-  if(lt){ lt.style.background=lockTable?'#ff2222':'#2a1a1a'; lt.style.color=lockTable?'#ffffff':'#ff8888'; lt.style.border=lockTable?'1px solid #ff4444':'1px solid #6a2a2a'; }
-  if(ls){ ls.style.background=lockSliders?'#ff2222':'#2a1a1a'; ls.style.color=lockSliders?'#ffffff':'#ff8888'; ls.style.border=lockSliders?'1px solid #ff4444':'1px solid #6a2a2a'; }
+  if(lt){ lt.classList.toggle('locked',lockTable); lt.style.background=''; lt.style.color=''; lt.style.border=''; }
+  if(ls){ ls.classList.toggle('locked',lockSliders); ls.style.background=''; ls.style.color=''; ls.style.border=''; }
   const tblEl=$('tbl');if(tblEl)tblEl.style.touchAction=lockTable?'auto':'none';
   const sg=document.querySelector('.sgroup');if(sg)sg.style.opacity=lockSliders?'0.4':'1';
   document.querySelectorAll('.sgroup input[type=range]').forEach(el=>{el.disabled=lockSliders;});
@@ -1929,26 +1977,26 @@ function edgeZoomReset(){
 <div id="edge-panel-wrap" style="display:none;">
 <div id="edge-panel">
   <div class="ep-label">zoom</div>
-  <button class="ep-btn" tabindex="-1" onclick="edgeZoom(1.3)">＋</button>
-  <button class="ep-btn" tabindex="-1" onclick="edgeZoom(1/1.3)">－</button>
-  <button class="ep-btn" tabindex="-1" onclick="edgeZoomReset()">⟳</button>
+  <button class="ep-btn g-zoom" tabindex="-1" onclick="edgeZoom(1.3)">＋</button>
+  <button class="ep-btn g-zoom" tabindex="-1" onclick="edgeZoom(1/1.3)">－</button>
+  <button class="ep-btn g-zoom" tabindex="-1" onclick="edgeZoomReset()">⟳</button>
   <div class="ep-sep"></div>
   <div class="ep-label">snap</div>
   <button class="ep-btn active" tabindex="-1" onclick="toggleSnap()">✦</button>
   <div class="ep-sep"></div>
   <div class="ep-label">lock</div>
-  <button class="ep-btn" tabindex="-1" onclick="toggleLock('table')">T</button>
-  <button class="ep-btn" tabindex="-1" onclick="toggleLock('sliders')">S</button>
+  <button class="ep-btn g-lock" tabindex="-1" onclick="toggleLock('table')">T</button>
+  <button class="ep-btn g-lock" tabindex="-1" onclick="toggleLock('sliders')">S</button>
   <div class="ep-sep"></div>
   <div class="ep-label">zero</div>
-  <button class="ep-btn" tabindex="-1" onclick="zeroSliders()">0S</button>
+  <button class="ep-btn g-zero" tabindex="-1" onclick="zeroSliders()">0S</button>
 </div>
 </div><!-- /edge-panel-wrap -->
 
 
 
 
-<div id="float-toolbar" style="position:fixed;bottom:16px;left:16px;z-index:9999;display:flex;flex-direction:column;align-items:stretch;gap:4px;touch-action:none;min-width:220px;font-size:13px;-webkit-text-size-adjust:none;">
+<div id="float-toolbar" style="position:fixed;bottom:16px;left:16px;z-index:9999;display:flex;flex-direction:column;align-items:stretch;gap:4px;touch-action:none;width:480px;font-size:13px;-webkit-text-size-adjust:none;">
   <!-- TOOLS pill — always yellow, always brown text; tap=toggle, drag=move -->
   <div id="ftb-tab" style="display:flex;align-items:center;background:transparent;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;width:100%;min-height:32px;padding:4px 0;">
     <span id="ftb-pill" style="display:inline-flex;align-items:center;background:#f0df70;border-radius:7px;padding:2px 8px 2px 6px;pointer-events:auto;">
@@ -1957,30 +2005,33 @@ function edgeZoomReset(){
     </span>
   </div>
   <!-- Panel -->
-  <div id="ftb-panel" style="display:none;background:transparent;border:none;padding:0;box-shadow:none;min-width:220px;">
-    <div style="padding:8px;">
-    <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:5px;">
-      <button onclick="addRail()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">＋ RAIL</button>
-      <button onclick="removeRail()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">－ RAIL</button>
-      <button id="btn-map" onclick="toggleMap()" style="background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;padding:6px 8px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;line-height:1.2;text-align:center;">GRID<br>ON</button>
-      <button id="btn-cal" onclick="toggleCal()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">CAL</button>
-      <button id="btn-metrics" onclick="toggleContact()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">ANGLE</button>
-      <button onclick="toggleShotLibrary()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">SHOTS</button>
-      <button id="btn-bias" onclick="toggleBias()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">BIAS</button>
-      <button id="btn-pan" onclick="togglePan()" style="background:#f0df70;color:#1a1400;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;">LOCK</button>
-      <button id="btn-swap" onclick="swapPanels()" style="background:#a0d0a0;color:#001a00;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;padding:6px 8px;border-radius:8px;border:none;cursor:pointer;touch-action:manipulation;line-height:1.2;text-align:center;"><span id="swap-lbl">SLIDERS<br>UP</span></button>
+  <div id="ftb-panel" style="display:none;background:transparent;border:none;padding:0;box-shadow:none;width:100%;">
+    <!-- Row 1: Kicker-specific -->
+    <div class="btb-row2">
+      <button class="ep-btn g-tog on" id="btn-map"     onclick="toggleMap()">GRID</button>
+      <button class="ep-btn g-yel"    id="ep-snap"     onclick="toggleSnap()">SNAP<br>TO</button>
+      <button class="ep-btn g-brown"  id="btn-cal"     onclick="toggleCal()">CAL</button>
+      <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">SHOT<br>LIST</button>
+      <button class="ep-btn g-tog on" onclick="addRail()">+ RAIL</button>
+      <button class="ep-btn g-tog on" onclick="removeRail()">− RAIL</button>
+      <button class="ep-btn g-brown"  id="btn-metrics" onclick="toggleContact()">ANGLE</button>
+      <button class="ep-btn g-bias"   id="btn-bias"    onclick="toggleBias()">BIAS<br>ON</button>
+      <button class="ep-btn g-swap"   id="btn-swap"    onclick="swapPanels()">⇅</button>
     </div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;">
-      <button onclick="edgeZoom(1.3)" style="background:#1e3a2a;color:#a0d0a0;border:1px solid #2a5a3a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">IN +</button>
-      <button onclick="edgeZoom(1/1.3)" style="background:#1e3a2a;color:#a0d0a0;border:1px solid #2a5a3a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">OUT −</button>
-      <button onclick="edgeZoomReset()" style="background:#1e3a2a;color:#a0d0a0;border:1px solid #2a5a3a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">RESET</button>
-      <button id="ep-snap" onclick="toggleSnap()" style="background:#3a3010;color:#f0df70;border:1px solid #5a5020;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">SNAP</button>
-      <button id="ep-lt" onclick="toggleLock('table')" style="background:#2a1a1a;color:#ff8888;border:1px solid #6a2a2a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">TABLE</button>
-      <button id="ep-ls" onclick="toggleLock('sliders')" style="background:#2a1a1a;color:#ff8888;border:1px solid #6a2a2a;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">SLIDERS</button>
-      <button onclick="zeroSliders()" style="background:#3a3010;color:#f0df70;border:1px solid #5a5020;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;padding:8px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;">ZERO</button>
+    <!-- Row 2: Zoom — matches Aimer/Banker -->
+    <div class="btb-row2">
+      <button class="ep-btn g-zoom"    onclick="edgeZoom(1.3)">ZOOM<br>IN</button>
+      <button class="ep-btn g-zoom"    onclick="edgeZoom(1/1.3)">ZOOM<br>OUT</button>
+      <button class="ep-btn g-zoom"    onclick="edgeZoomReset()">RESET<br>ZOOM</button>
+      <button class="ep-btn g-pan"     id="btn-pan"     onclick="togglePan()">LOCK</button>
+    </div>
+    <!-- Row 3: Locks — matches Aimer/Banker -->
+    <div class="btb-row2">
+      <button class="ep-btn g-lock"    id="ep-lt"       onclick="toggleLock('table')">TABLE<br>LOCK</button>
+      <button class="ep-btn g-lock"    id="ep-ls"       onclick="toggleLock('sliders')">SLIDERS<br>LOCK</button>
+      <button class="ep-btn g-brown"                    onclick="zeroSliders()">ZERO<br>SLIDERS</button>
     </div>
   </div>
-</div>
 <script>
 (function(){
   var panel,header,startX,startY,origLeft,origTop,didDrag,activePtr=null,positioned=false;
@@ -2019,6 +2070,29 @@ function edgeZoomReset(){
       origToggle();
       if(!positioned&&panel&&panel.style.display!=='none')requestAnimationFrame(positionPanel);
     };
+  });
+})();
+</script>
+<script>
+// Shot list resize grip
+(function(){
+  window.addEventListener('load', function(){
+    var grip = document.getElementById('shot-lib-resize');
+    var list = document.getElementById('shot-library-list');
+    var rStartY, rStartH, rPtr=null;
+    if(!grip||!list) return;
+    grip.addEventListener('pointerdown',function(e){
+      rStartY=e.clientY; rStartH=list.offsetHeight; rPtr=e.pointerId;
+      try{ grip.setPointerCapture(e.pointerId); }catch(x){}
+      e.stopPropagation();
+    });
+    grip.addEventListener('pointermove',function(e){
+      if(rPtr===null||e.pointerId!==rPtr) return;
+      var newH=Math.max(44,Math.min(window.innerHeight*0.75, rStartH+(e.clientY-rStartY)));
+      list.style.maxHeight=newH+'px'; list.style.height=newH+'px';
+    });
+    grip.addEventListener('pointerup',     function(e){ if(e.pointerId===rPtr) rPtr=null; });
+    grip.addEventListener('pointercancel', function(e){ if(e.pointerId===rPtr) rPtr=null; });
   });
 })();
 </script>
