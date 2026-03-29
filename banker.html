@@ -3203,5 +3203,39 @@ function biasStep(zone,dir){
   });
 })();
 </script>
+// ── Pinch zoom (two-finger) on zoom-wrap only ────────────────────────────────
+(function(){
+  let scale=1, initDist=0, initScale=1, active=false;
+  window.addEventListener('load', function(){
+    var zw = document.getElementById('zoom-wrap');
+    if (!zw) return;
+    zw.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 2) {
+        active = true;
+        initDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initScale = scale;
+        e.preventDefault();
+      }
+    }, {passive: false});
+    zw.addEventListener('touchmove', function(e) {
+      if (!active || e.touches.length !== 2) return;
+      e.preventDefault();
+      const d = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      scale = Math.max(0.5, Math.min(4, initScale * d / initDist));
+      if (typeof _pz !== 'undefined') {
+        _pz.scale = scale; _pz.apply();
+      } else {
+        document.getElementById('zoom-wrap').style.transform = 'scale(' + scale + ')';
+      }
+    }, {passive: false});
+    zw.addEventListener('touchend', function(e) { if (e.touches.length < 2) active = false; });
+  });
+})();
 </body>
 </html>
