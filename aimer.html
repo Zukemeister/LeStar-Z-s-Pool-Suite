@@ -911,7 +911,7 @@ function buildShotList() {
       html +=
         '<div style="border-bottom:2px solid #dddddd;">' +
         // Shot header — clickable to load
-        '<div data-preset="' + i + '" class="shot-lib-item" style="padding:10px 12px 6px;cursor:pointer;display:flex;align-items:flex-start;gap:6px;">' +
+        '<div data-preset="' + i + '" class="shot-lib-item" onclick="loadShot(' + i + ')" style="padding:10px 12px 6px;cursor:pointer;display:flex;align-items:flex-start;gap:6px;">' +
           '<div style="flex:1;">' +
             '<div style="display:flex;align-items:center;gap:6px;">' +
               '<span style="font-size:'+(16*_shotListScale)+'px;font-weight:900;color:#0a4a0a;">' + s.name + '</span>' +
@@ -955,9 +955,7 @@ function buildShotList() {
   }
 
   el.innerHTML = html;
-  el.querySelectorAll('[data-preset]').forEach(item => {
-    item.addEventListener('click', () => { loadShot(parseInt(item.dataset.preset)); });
-  });
+  // click handlers added inline via onclick attributes
 }
 
 function toggleNoteBox(code) {
