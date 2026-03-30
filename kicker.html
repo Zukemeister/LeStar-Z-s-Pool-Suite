@@ -124,8 +124,9 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.18);padding:
 .ep-btn.g-brown { background:#4a2800; border:1px solid #8a5010; color:#e8c080; }
 .ep-btn.g-brown.on { background:#f0df70; color:#1a1400; border-color:#c8b840; }
 .ep-btn.g-yel   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan.dim { opacity:0.45; }
+.ep-btn.g-pan          { background:#1a3a1a; color:#a0c0a0; border-color:#2a5a2a; }
+.ep-btn.g-pan.on   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
+.ep-btn.g-pan.dim  { background:#1a3a1a; color:#506050; border-color:#1a3a1a; opacity:0.7; }
 .ep-btn.g-zero { background:#693e03; border-color:#805008; color:#ffcc88; }
 .ep-btn.g-snap { background:#1c581c; border-color:#2c742c; color:#a0e8a0; }
 .ep-btn.g-bias { background:#4f1c71; border-color:#68388c; color:#d0a0ff; }
@@ -234,17 +235,47 @@ if ('serviceWorker' in navigator) {
 //
 // POCKET NUMBERS: 1=TL, 2=TM(top side), 3=TR, 4=BL, 5=BM(bottom side), 6=BR
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ── GRID COORDINATE SYSTEM ──────────────────────────────────────
+// 32 squares numbered left-to-right, top-to-bottom (row 1=top, row 4=bottom)
+// Sub-positions a-h clockwise from lower-left:
+// a=lower-left, b=left-center, c=upper-left, d=upper-center
+// e=upper-right, f=right-center, g=lower-right, h=lower-center
+// Center of square = just the number (no letter)
+const GRID_POS = {
+  a:[0,50], b:[0,25], c:[0,0], d:[25,0],
+  e:[50,0], f:[50,25], g:[50,50], h:[25,50],
+  '':[25,25]
+};
+function xyToGrid(x, y) {
+  let best = null, bestD = 99;
+  for (let sq = 1; sq <= 32; sq++) {
+    const row = Math.floor((sq-1)/8), col = (sq-1)%8;
+    const tx = 30+col*50, ty = 30+row*50;
+    for (const [p,[dx,dy]] of Object.entries(GRID_POS)) {
+      const d = Math.hypot(x-(tx+dx), y-(ty+dy));
+      if (d < bestD) { bestD=d; best=sq+p; }
+    }
+  }
+  return best;
+}
+function gridDesc(cb, ob, pocket) {
+  const PNUM = {TL:1,TM:2,TR:3,BR:4,BM:5,BL:6};
+  const pStr = pocket ? ' → P'+(PNUM[pocket]||pocket) : '';
+  return 'CB '+xyToGrid(cb.x,cb.y)+' · OB '+xyToGrid(ob.x,ob.y)+pStr;
+}
+
 const SHOT_LIBRARY = [
   { name: '5-Rail → P1', cb:{x:230,y:205}, angle:-2.6104, rails:5,
-    ob:{x:39, y:39},  desc:'CB sq28f → left rail @ 1.15, 5 rails → P1 (TL)' },
+    ob:{x:39, y:39},  desc: 'CB '+xyToGrid(230,205)+' → left rail @ 1.15, 5 rails → P1' },
   { name: '5-Rail → P2', cb:{x:130,y:205}, angle:-2.4429, rails:5,
-    ob:{x:230,y:39},  desc:'CB sq26f → left rail @ 1.82, 5 rails → P2 (TM)' },
+    ob:{x:230,y:30},  desc: 'CB '+xyToGrid(130,205)+' → left rail @ 1.82, 5 rails → P2' },
   { name: '4-Rail → P3', cb:{x:130,y:205}, angle:-2.3064, rails:4,
-    ob:{x:421,y:39},  desc:'CB sq26f → left rail @ 1.29, 4 rails → P3 (TR)' },
+    ob:{x:430,y:30},  desc: 'CB '+xyToGrid(130,205)+' → left rail @ 1.29, 4 rails → P3' },
   { name: '3-Rail → P5', cb:{x:230,y:155}, angle:-2.4676, rails:3,
-    ob:{x:230,y:221}, desc:'CB sq20f → top rail @ 0.87, 3 rails → P5 (BM)' },
+    ob:{x:230,y:230}, desc: 'CB '+xyToGrid(230,155)+' → top rail @ 0.87, 3 rails → P5' },
   { name: '3-Rail → P4', cb:{x:230,y:180}, angle:-2.6049, rails:3,
-    ob:{x:39, y:221}, desc:'CB sq20g → left rail @ 0.62, 3 rails → P4 (BL)' },
+    ob:{x:39, y:221}, desc: 'CB '+xyToGrid(230,180)+' → left rail @ 0.62, 3 rails → P4' },
 ];
 let libraryOpen = false;
 // ── USER SHOT LIBRARY ──────────────────────────────────────────
@@ -409,28 +440,12 @@ function loadShot(idx) {
   </div>
   <div id="bias-sliders" style="display:none;">
   <div class="srow" style="margin-top:6px">
-    <span class="slbl" style="color:#c890f0;font-size:9px;">FAT</span>
-    <input type="range" id="sl-bias-fat" min="-12" max="12" value="0" oninput="onSliders()">
-    <span id="sv-bias-fat-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-    <span class="sval" id="sv-bias-fat" style="color:#c890f0;">0</span>
-    <button class="vbtn" onclick="biasStep('fat',-1)">−</button>
-    <button class="vbtn" onclick="biasStep('fat',1)">+</button>
-  </div>
-  <div class="srow" style="margin-top:4px">
-    <span class="slbl" style="color:#c890f0;font-size:9px;">MED</span>
-    <input type="range" id="sl-bias-med" min="-12" max="12" value="0" oninput="onSliders()">
-    <span id="sv-bias-med-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-    <span class="sval" id="sv-bias-med" style="color:#c890f0;">0</span>
-    <button class="vbtn" onclick="biasStep('med',-1)">−</button>
-    <button class="vbtn" onclick="biasStep('med',1)">+</button>
-  </div>
-  <div class="srow" style="margin-top:4px">
-    <span class="slbl" style="color:#c890f0;font-size:9px;">THIN</span>
-    <input type="range" id="sl-bias-thin" min="-12" max="12" value="0" oninput="onSliders()">
-    <span id="sv-bias-thin-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-    <span class="sval" id="sv-bias-thin" style="color:#c890f0;">0</span>
-    <button class="vbtn" onclick="biasStep('thin',-1)">−</button>
-    <button class="vbtn" onclick="biasStep('thin',1)">+</button>
+    <span class="slbl" style="color:#c890f0;">BIAS</span>
+    <input type="range" id="sl-bias" min="-12" max="12" value="0" oninput="onSliders()">
+    <span id="sv-bias-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+    <span class="sval" id="sv-bias" style="color:#c890f0;">0</span>
+    <button class="vbtn" onclick="biasStep(-1)">−</button>
+    <button class="vbtn" onclick="biasStep(1)">+</button>
   </div>
   </div><!-- /bias-sliders -->
 </div>
@@ -812,7 +827,8 @@ function loadShot(idx) {
 </div><!-- /swap-container -->
 <div id="personal-bias" style="display:none;text-align:center;font-size:10px;font-weight:900;letter-spacing:1px;color:rgba(240,223,112,0.6);padding:3px 0 2px;">PERSONAL BIAS: —</div>
   <!-- SHOT LIBRARY PANEL — floating, draggable -->
-  <div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
+</div><!-- /zoom-wrap -->
+<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
     <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
       <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SHOT LIBRARY</span>
       <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
@@ -829,8 +845,6 @@ function loadShot(idx) {
     </div>
   </div>
 <div id="readouts"></div>
-
-</div><!-- /zoom-wrap -->
 </div><!-- /outer-wrap -->
 <footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
 </div>
@@ -1402,17 +1416,14 @@ function onSliders(){
   S.speed=parseInt($('sl-spd').value)/100;
   const sv=parseInt($('sl-spn').value);   // -4 to +4
   S.spin = sv / 4;
-  // Three-zone bias for kicker
-  const _bFat  = parseInt($('sl-bias-fat')?.value  || '0') * 0.008;
-  const _bMed  = parseInt($('sl-bias-med')?.value  || '0') * 0.008;
-  const _bThin = parseInt($('sl-bias-thin')?.value || '0') * 0.008;
-  S.biasFat = _bFat; S.biasMed = _bMed; S.biasThin = _bThin;
-  S.bias = _bMed; // used as fallback
-  ['fat','med','thin'].forEach(z => {
-    const v = parseInt($('sl-bias-'+z)?.value || '0');
-    const el=$('sv-bias-'+z); if(el) el.textContent=(v===0?'0':(v>0?'+':'')+v);
-    const en=$('sv-bias-'+z+'-n'); if(en) en.textContent=Math.abs(v)===0?'0':Math.max(1,Math.round(Math.abs(v)/12*10));
-  });
+  // Single bias
+  const _bVal = parseInt($('sl-bias')?.value || '0');
+  S.bias = _bVal * 0.025;
+  S.biasFat = S.bias; S.biasMed = S.bias; S.biasThin = S.bias;
+  const _bn = document.getElementById('sv-bias-n');
+  const _bs = document.getElementById('sv-bias');
+  if (_bn) _bn.textContent = Math.abs(_bVal);
+  if (_bs) _bs.textContent = (_bVal > 0 ? '+' : '') + _bVal;
   $('sv-spd').textContent=S.speed<0.28?'slow':S.speed<0.72?'med':'fast';
   // Intensity 1-10
   const _sv=parseInt($('sl-spd').value),_sn=Math.abs(parseInt($('sl-spn').value));
@@ -1792,11 +1803,22 @@ function toggleFloatToolbar() {
     tb  = document.getElementById('float-toolbar');
     tab = document.getElementById('ftb-tab');
     if (!tb || !tab) return;
-    var r = tb.getBoundingClientRect();
-    tb.style.right  = 'auto';
-    tb.style.bottom = 'auto';
-    tb.style.left = Math.max(0, Math.min(window.innerWidth  - tb.offsetWidth,  r.left)) + 'px';
-    tb.style.top  = Math.max(0, Math.min(window.innerHeight - tb.offsetHeight, r.top))  + 'px';
+    // Position at middle-left of the table SVG on load
+    (function positionAtTableLeft() {
+      var tbl = document.getElementById('tbl') || document.querySelector('.svg-box');
+      if (!tbl) { requestAnimationFrame(positionAtTableLeft); return; }
+      var r = tbl.getBoundingClientRect();
+      var bw = tb.offsetWidth || 320;
+      var bh = tb.offsetHeight || 40;
+      var lx = r.left + 4;
+      lx = Math.max(4, Math.min(window.innerWidth - bw - 4, lx));
+      var ly = r.top + r.height/2 - bh/2;
+      ly = Math.max(4, Math.min(window.innerHeight - bh - 4, ly));
+      tb.style.right  = 'auto';
+      tb.style.bottom = 'auto';
+      tb.style.left = lx + 'px';
+      tb.style.top  = ly + 'px';
+    })();
     tab.addEventListener('pointerdown', function(e) {
       if (e.target.id === 'ftb-toggle') return;
       var r2 = tb.getBoundingClientRect();
@@ -1932,19 +1954,18 @@ function toggleLock(which){
 }
 // ── ZERO ──────────────────────────────────────────────────────
 
-function biasStep(zone, dir) {
+function biasStep(dir) {
   if (lockSliders) return;
-  const sl = $('sl-bias-' + zone);
+  const sl = $('sl-bias');
   if (!sl) return;
-  const cur = parseInt(sl.value);
-  sl.value = Math.max(-12, Math.min(12, cur + dir));
+  sl.value = Math.max(-12, Math.min(12, parseInt(sl.value) + dir));
   onSliders();
 }
 
 function zeroSliders(){
   if(lockSliders)return;
   S.speed=0.5;S.spin=0;S.bias=0;S.biasFat=0;S.biasMed=0;S.biasThin=0;
-  $('sl-spd').value='50';$('sl-spn').value='0';['fat','med','thin'].forEach(z=>{const sl=$('sl-bias-'+z);if(sl)sl.value='0';});
+  $('sl-spd').value='50';$('sl-spn').value='0';const _bsl=$('sl-bias');if(_bsl)_bsl.value='0';
   onSliders();document.activeElement&&document.activeElement.blur();
 }
 // ── EDGE ZOOM ────────────────────────────────────────────────
@@ -2017,7 +2038,7 @@ function edgeZoomReset(){
       <button class="ep-btn g-tog on" onclick="addRail()">+ RAIL</button>
       <button class="ep-btn g-tog on" onclick="removeRail()">− RAIL</button>
       <button class="ep-btn g-brown"  id="btn-metrics" onclick="toggleContact()">ANGLE</button>
-      <button class="ep-btn g-bias"   id="btn-bias"    onclick="toggleBias()">BIAS<br>ON</button>
+      <button class="ep-btn g-bias"   id="btn-bias"    onclick="toggleBias()">BIAS<br>OFF</button>
       <button class="ep-btn g-swap"   id="btn-swap"    onclick="swapPanels()">⇅</button>
     </div>
     <!-- Row 2: Zoom — matches Aimer/Banker -->
@@ -2033,47 +2054,6 @@ function edgeZoomReset(){
       <button class="ep-btn g-brown"                    onclick="zeroSliders()">ZERO<br>SLIDERS</button>
     </div>
   </div>
-<script>
-(function(){
-  var panel,header,startX,startY,origLeft,origTop,didDrag,activePtr=null,positioned=false;
-  function positionPanel(){
-    if(!panel)return;
-    var ref=document.querySelector('.svg-box.top-box')||document.getElementById('table-wrap');
-    var pw=panel.offsetWidth||380,left,top;
-    if(ref){var r=ref.getBoundingClientRect();left=r.left+(r.width-pw)/2;top=r.bottom+6;}
-    else{left=12;top=160;}
-    left=Math.max(4,Math.min(window.innerWidth-pw-4,left));
-    top=Math.max(4,Math.min(window.innerHeight-200,top));
-    panel.style.left=left+'px';panel.style.top=top+'px';positioned=true;
-  }
-  window.addEventListener('load',function(){
-    panel=document.getElementById('shot-library-panel');
-    header=document.getElementById('shot-lib-header');
-    if(!panel||!header)return;
-    header.addEventListener('pointerdown',function(e){
-      if(e.target.tagName==='BUTTON')return;
-      var r=panel.getBoundingClientRect();
-      startX=e.clientX;startY=e.clientY;origLeft=r.left;origTop=r.top;didDrag=false;activePtr=e.pointerId;
-    });
-    header.addEventListener('pointermove',function(e){
-      if(activePtr===null||e.pointerId!==activePtr)return;
-      var dx=e.clientX-startX,dy=e.clientY-startY;
-      if(!didDrag&&Math.hypot(dx,dy)>8){didDrag=true;try{header.setPointerCapture(e.pointerId);}catch(ex){}}
-      if(!didDrag)return;
-      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx));
-      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy));
-      panel.style.left=nx+'px';panel.style.top=ny+'px';
-    });
-    header.addEventListener('pointerup',function(e){if(e.pointerId===activePtr)activePtr=null;});
-    header.addEventListener('pointercancel',function(e){if(e.pointerId===activePtr)activePtr=null;});
-    var origToggle=window.toggleShotLibrary;
-    window.toggleShotLibrary=function(){
-      origToggle();
-      if(!positioned&&panel&&panel.style.display!=='none')requestAnimationFrame(positionPanel);
-    };
-  });
-})();
-</script>
 <script>
 // Shot list resize grip
 (function(){
@@ -2094,6 +2074,87 @@ function edgeZoomReset(){
     });
     grip.addEventListener('pointerup',     function(e){ if(e.pointerId===rPtr) rPtr=null; });
     grip.addEventListener('pointercancel', function(e){ if(e.pointerId===rPtr) rPtr=null; });
+  });
+})();
+</script>
+<script>
+(function(){
+  var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
+  var positioned = false;
+
+  function positionUnderTable() {
+    var topBox = document.querySelector('.svg-box.top-box');
+    if (!topBox || !panel) return;
+    var r = topBox.getBoundingClientRect();
+    var pw = panel.offsetWidth || 420;
+    var left = r.left + (r.width - pw) / 2;
+    left = Math.max(4, Math.min(window.innerWidth - pw - 4, left));
+    panel.style.left = left + 'px';
+    panel.style.top  = (r.bottom + 6) + 'px';
+    positioned = true;
+  }
+
+  window.addEventListener('load', function(){
+    panel  = document.getElementById('shot-library-panel');
+    header = document.getElementById('shot-lib-header');
+    if (!panel || !header) return;
+
+    header.addEventListener('pointerdown', function(e){
+      if (e.target.tagName === 'BUTTON') return;
+      var r = panel.getBoundingClientRect();
+      startX=e.clientX; startY=e.clientY;
+      origLeft=r.left; origTop=r.top;
+      didDrag=false; activePtr=e.pointerId;
+    });
+    header.addEventListener('pointermove', function(e){
+      if (activePtr===null || e.pointerId!==activePtr) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if (!didDrag && Math.hypot(dx,dy)>8){
+        didDrag=true;
+        try{ header.setPointerCapture(e.pointerId); }catch(ex){}
+      }
+      if (!didDrag) return;
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
+      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
+      panel.style.left=nx+'px'; panel.style.top=ny+'px';
+    });
+    header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+
+    // ── Resize grip ──────────────────────────────────────────────────────────
+    var grip = document.getElementById('shot-lib-resize');
+    var list = document.getElementById('shot-library-list');
+    var rStartY, rStartH, rPtr=null;
+    if (grip && list) {
+      grip.addEventListener('pointerdown', function(e){
+        rStartY = e.clientY;
+        rStartH = list.offsetHeight;
+        rPtr = e.pointerId;
+        try{ grip.setPointerCapture(e.pointerId); }catch(x){}
+        e.stopPropagation();
+      });
+      grip.addEventListener('pointermove', function(e){
+        if(rPtr===null||e.pointerId!==rPtr) return;
+        var dy = e.clientY - rStartY;
+        var newH = Math.max(44, Math.min(window.innerHeight * 0.75, rStartH + dy));
+        list.style.maxHeight = newH + 'px';
+        list.style.height    = newH + 'px';
+      });
+      grip.addEventListener('pointerup',     function(e){ if(e.pointerId===rPtr) rPtr=null; });
+      grip.addEventListener('pointercancel', function(e){ if(e.pointerId===rPtr) rPtr=null; });
+    }
+  });
+
+  // Hook into toggleShotLibrary to position on first open
+  var _orig = window.toggleShotLibrary;
+  window.addEventListener('load', function(){
+    var origToggle = window.toggleShotLibrary;
+    window.toggleShotLibrary = function(){
+      origToggle();
+      if (!positioned && panel && panel.style.display !== 'none') {
+        requestAnimationFrame(positionUnderTable);
+      }
+    };
   });
 })();
 </script>

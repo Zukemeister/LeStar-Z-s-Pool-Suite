@@ -69,10 +69,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 #sl-vert::-webkit-slider-thumb{background:#7dd3fc;}
 #sl-dist::-webkit-slider-thumb{background:#a0d0a0;}
 #sl-bias::-webkit-slider-thumb{background:#c890f0;}
-#sl-bias-fat::-webkit-slider-thumb{background:#c890f0;}
-#sl-bias-med::-webkit-slider-thumb{background:#c890f0;}
-#sl-bias-thin::-webkit-slider-thumb{background:#c890f0;}
-#sl-bias-fat, #sl-bias-med, #sl-bias-thin {
+
+#sl-bias {
   -webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;
 }
 /* Readouts */
@@ -296,8 +294,9 @@ html,body,#zoom-wrap{touch-action:pan-x pan-y;}
 .ep-btn.g-brown { background:#4a2800; border:1px solid #8a5010; color:#e8c080; }
 .ep-btn.g-brown.on { background:#f0df70; color:#1a1400; border-color:#c8b840; }
 .ep-btn.g-yel   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan.dim { opacity:0.45; }
+.ep-btn.g-pan          { background:#1a3a1a; color:#f0df70; border-color:#2a5a2a; }
+.ep-btn.g-pan.on   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
+.ep-btn.g-pan.dim  { background:#1a3a1a; color:#f0df70; border-color:#1a3a1a; opacity:0.55; }
 .ep-btn.g-swap { background:#0a6a7a; border-color:#1a9aaa; color:#e0f8ff; font-size:16px; }
 .ep-btn.g-swap.on { background:#a0e8f0; color:#001a1a; }
 /* pad body so content isn't hidden under bottom bar */
@@ -375,150 +374,457 @@ if ('serviceWorker' in navigator) {
 // cut: angle in degrees between approach and required OB departure (to nearest pocket)
 // rh: true = contact on right side of OB (shooter's perspective)
 //
+
+// ── GRID COORDINATE SYSTEM ──────────────────────────────────────
+// 32 squares numbered left-to-right, top-to-bottom (row 1=top, row 4=bottom)
+</script>
+</head>
+<body>
+<meta charset="UTF-8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LeStar Z Aimer">
+  <link rel="apple-touch-icon" href="/icon-apple.png">
+  <link rel="manifest" href="/manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aimer">
+<meta name="theme-color" content="#1a361a">
+<title>LeStar Z's Aimer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,900&family=Playfair+Display:ital,wght@1,700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+button{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;}
+svg,.diagram-wrap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
+html,body{background:#141414;font-family:'Lato',sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px 8px 32px;}@media(max-aspect-ratio:1/1){}.outer-wrap{width:100%;}
+@media(orientation:landscape) and (max-height:430px){html,body{padding:2px;}.outer-wrap{max-width:100%!important;width:100%;border-radius:0;}}
+.outer-wrap{display:flex;flex-direction:row;align-items:flex-start;width:100%;max-width:762px;background:#1a361a;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);border:2px solid #2a4e2a;overflow:hidden;}
+.card{flex:1;min-width:0;padding:14px 12px 16px 12px;}
+.toolbar-col{display:none;}
+.hdr{text-align:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);position:relative;}
+h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-bottom:2px;}
+.t-lestar{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
+.t-z{font-family:'Lato',sans-serif;font-style:italic;font-weight:900;font-size:clamp(20px,5.5vw,30px);color:#f0df70;line-height:1;display:inline-flex;align-items:center;margin:0 1px 0 2px;}
+.t-rest{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
+.sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:0.07em;}
+#help-btn{position:absolute;left:0;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;}
+#table-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);padding:4px 10px;border-radius:14px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.06em;cursor:pointer;line-height:1.2;}
+.diagram-wrap{border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.svg-box{position:relative;width:100%;overflow:hidden;background:rgba(0,0,0,0.22);}
+.svg-box.top-box{aspect-ratio:460/260;padding-bottom:0;}
+.svg-box.aim-box{aspect-ratio:460/220;padding-bottom:0;}
+.svg-box svg{position:absolute;top:0;left:0;width:100%;height:100%;}
+.sep{display:none;}
+/* rotation uses .tog class */
+/* Toggle buttons */
+.tog{flex:1;height:24px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:flex;align-items:center;justify-content:center;transition:filter .15s;}
+.tog.dim{filter:brightness(0.42) saturate(0.5);}
+/* Sliders */
+.sgroup{background:rgba(0,0,0,0.18);border-radius:7px;padding:7px 10px 6px 10px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.07);}
+.sgroup-title{font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#ddd;margin-bottom:6px;}
+.srow{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
+.srow:last-child{margin-bottom:0;}
+.slbl{font-size:11px;color:#e8e8e8;min-width:52px;font-weight:700;}
+.sval{font-size:15px;font-weight:900;width:80px;min-width:80px;max-width:80px;text-align:right;white-space:nowrap;overflow:hidden;color:#f0df70;}
+input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
+.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
+.sliders-unlocked input[type=range]{height:8px;}
+#cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
+#cal-panel.open{display:block;}
+#cal-instruction{font-size:11px;color:#fff;font-weight:700;margin-bottom:6px;line-height:1.5;}
+#cal-status{font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
+.cal-shots{display:flex;gap:8px;margin-bottom:8px;}
+.cal-shot-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);}
+.cal-shot-dot.done{background:#4ade80;border-color:#4ade80;}
+.cal-actions{display:flex;gap:6px;margin-bottom:6px;}
+.cal-action-btn{flex:1;padding:7px 4px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;letter-spacing:0.08em;cursor:pointer;text-transform:uppercase;}
+.cal-action-btn.primary{background:rgba(74,222,128,0.15);border-color:#4ade80;color:#4ade80;}
+.cal-action-btn.danger{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.4);color:#ff8080;}
+#cal-result{font-size:11px;color:#88ee88;margin-top:4px;display:none;line-height:1.6;}
+#sl-spd::-webkit-slider-thumb{background:#f0df70;}
+#sl-spn::-webkit-slider-thumb{background:#e870b0;}
+#sl-vert::-webkit-slider-thumb{background:#7dd3fc;}
+#sl-dist::-webkit-slider-thumb{background:#a0d0a0;}
+#sl-bias::-webkit-slider-thumb{background:#c890f0;}
+
+#sl-bias {
+  -webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;
+}
+/* Readouts */
+.readout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;}
+.ri{background:rgba(0,0,0,0.3);border-radius:6px;padding:10px 6px;text-align:center;border:1px solid rgba(255,255,255,0.08);height:72px;min-height:72px;max-height:72px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;contain:layout style;}.ri{background:rgba(0,0,0,0.3);border-radius:6px;padding:10px 6px;text-align:center;border:1px solid rgba(255,255,255,0.08);height:72px;min-height:72px;max-height:72px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
+.ri-lbl{font-size:10px;color:#ccc;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.ri-val{font-size:clamp(18px,5vw,28px);font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.comp-wrap{position:relative;height:22px;min-height:22px;max-height:22px;overflow:hidden;margin-bottom:6px;}
+#readouts{border-top:1px solid rgba(255,255,255,0.07);padding-top:8px;margin-top:4px;contain:layout style;}
+.ro-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);min-height:32px;}
+.ro-lbl{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);flex-shrink:0;}
+.ro-val{font-size:18px;font-weight:900;color:#fff;text-align:right;min-width:0;word-break:break-word;}
+#ro-throw{font-size:14px;min-height:1em;}
+.comp-row{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.55);white-space:nowrap;}
+.comp-val{font-weight:900;font-size:14px;}
+/* Info overlay */
+#info-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 20px 20px;overflow-y:auto;}
+#info-overlay.open{display:flex;}
+#info-inner{background:#1a361a;border:2px solid #2a4e2a;border-radius:10px;width:100%;max-width:560px;padding:20px 18px 24px;position:relative;}
+#info-close{position:absolute;top:10px;right:12px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:22px;cursor:pointer;line-height:1;font-family:'Lato',sans-serif;}
+#info-inner h2{font-family:'Playfair Display',serif;font-style:italic;color:#f0df70;font-size:1.2rem;margin-bottom:12px;}
+#info-inner p{font-size:0.78rem;color:rgba(255,255,255,0.88);line-height:1.7;margin-bottom:10px;}
+#info-inner strong{color:#f0df70;}
+footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:10px 8px 4px;letter-spacing:1.5px;text-transform:uppercase;margin-top:12px;}
+@media(orientation:landscape) and (max-height:430px){.card{flex:1;min-width:0;padding:14px 12px 16px 12px;}}
+
+/* ── EDGE CONTROL PANEL ── */
+
+
+
+
+#edge-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px 0;
+  width: 62px;
+  pointer-events: all;
+  touch-action: manipulation;
+  background: #1a2e1a;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+.ep-section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 5px 5px 4px;
+}
+.ep-section-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 3px;
+}
+.ep-btn-row {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+}
+.ep-btn {
+  flex: 1;
+  height: 30px;
+  border-radius: 4px;
+  border: 1px solid #404840;
+  background: #1c2d1c;
+  color: #e8e8e0;
+  font-family: 'Lato', sans-serif;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.1s;
+}
+.ep-btn:active { background: #4a5a4a; }
+.ep-btn.on     { background: #f0df70; color: #1a1400; border-color: #f0df70; }
+.ep-btn.locked { background: #ff6060; color: #1a0000; border-color: #ff6060; }
+.ep-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 1px 0; }
+.ep-section.zoom   { background: #384fa0; }
+.ep-section.snap   { background: #1d631d; }
+.ep-section.lock   { background: #771e1e; }
+.ep-section.zero   { background: rgba(120,70,0,0.92); }
+.ep-section.bias   { background: rgba(90,30,130,0.92); }
+.ep-section.zoom   .ep-section-label { color: #a0c0ff; }
+.ep-section.snap   .ep-section-label { color: #80e880; }
+.ep-section.lock   .ep-section-label { color: #ff9090; }
+.ep-section.zero   .ep-section-label { color: #ffc060; }
+.ep-section.bias   .ep-section-label { color: #d090ff; }
+/* Snap coordinate label on table */
+.snap-label {
+  position: absolute;
+  pointer-events: none;
+  font-family: 'Lato', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #f0df70;
+  background: rgba(0,0,0,0.7);
+  padding: 2px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: opacity 0.4s;
+  z-index: 10;
+}
+
+html,body,#zoom-wrap{touch-action:pan-x pan-y;}
+
+/* ── BOTTOM TOOLBAR ── */
+#btb {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 480px;
+  max-width: calc(100vw - 8px);
+  box-sizing: border-box;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  touch-action: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  font-size: 13px;
+  -webkit-text-size-adjust: none;
+}
+#btb-tab {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: grab;
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+/* TOOLS pill — always yellow background, always brown text */
+#btb-pill {
+  display: inline-flex;
+  align-items: center;
+  background: #f0df70;
+  border-radius: 7px;
+  padding: 0 0 0 2px;
+  border: none;
+  pointer-events: auto;
+}
+#btb-pill #btb-arrow { color: #1a1400; }
+#btb-pill #btb-label { color: #1a1400; }
+#btb-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border: none;
+  padding: 4px 0 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+#btb-panel .btb-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+#btb-panel .btb-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+}
+#btb-panel .btb-row {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+}
+.btb-row2 {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  padding: 3px 6px;
+  width: 100%;
+  max-width: 762px;
+  box-sizing: border-box;
+  background: transparent;
+}
+.btb-row2 .ep-btn {
+  flex: 1;
+  height: 36px;
+  font-size: 10px;
+  padding: 0 2px;
+  min-width: 0;
+  line-height: 1.2;
+  text-align: center;
+}
+/* group button colors */
+.ep-btn.g-zoom { background:#36478b; border-color:#44508c; }
+.ep-btn.g-lock { background:#691c1c; border-color:#802c2c; color:#ffaaaa; }
+.ep-btn.g-snap { background:#1c581c; border-color:#2c742c; }
+.ep-btn.g-zero { background:#693e03;  border-color:#805008; }
+.ep-btn.g-bias { background:#4f1c71; border-color:#68388c; }
+.ep-btn.g-zoom.on  { background:#f0df70; color:#1a1400; }
+.ep-btn.g-snap.on  { background:#f0df70; color:#1a1400; }
+.ep-btn.g-bias.on  { background:#f0df70; color:#1a1400; }
+.btb-row2 .ep-btn:not(.on):not(.locked) { opacity: 1; }
+.ep-btn.g-lock.locked { background:#ff6060; color:#1a0000; }
+.ep-btn.g-brown { background:#4a2800; border:1px solid #8a5010; color:#e8c080; }
+.ep-btn.g-brown.on { background:#f0df70; color:#1a1400; border-color:#c8b840; }
+.ep-btn.g-yel   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
+.ep-btn.g-pan          { background:#1a3a1a; color:#f0df70; border-color:#2a5a2a; }
+.ep-btn.g-pan.on   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
+.ep-btn.g-pan.dim  { background:#1a3a1a; color:#f0df70; border-color:#1a3a1a; opacity:0.55; }
+.ep-btn.g-swap { background:#0a6a7a; border-color:#1a9aaa; color:#e0f8ff; font-size:16px; }
+.ep-btn.g-swap.on { background:#a0e8f0; color:#001a1a; }
+/* pad body so content isn't hidden under bottom bar */
+body { padding-bottom: 80px !important; }
+
+.vbtn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:5px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.85);font-size:15px;font-weight:900;cursor:pointer;touch-action:manipulation;vertical-align:middle;-webkit-user-select:none;user-select:none;margin:0 2px;}
+.vbtn:active{background:rgba(255,255,255,0.25);}
+</style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const w = reg.installing;
+          w.addEventListener('statechange', () => {
+            if (w.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version available — show quiet notice
+              const n = document.createElement('div');
+              n.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#1a4a1a;color:#f0df70;font-family:Lato,sans-serif;font-size:12px;font-weight:900;padding:8px 16px;border-radius:20px;z-index:9999;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);';
+              n.textContent = '↑ Update available — tap to refresh';
+              n.onclick = () => { w.postMessage({type:'SKIP_WAITING'}); location.reload(); };
+              document.body.appendChild(n);
+            }
+          });
+        });
+      });
+    }
+  </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New version available — reload silently
+            window.location.reload();
+          }
+        });
+      });
+    });
+  });
+}
+// ── SHOT LIBRARY ─────────────────────────────────────────────
+// ── SHOT LIBRARY ─────────────────────────────────────────────────────────────
+// HOW TO ADD A SHOT:
+//
+// 1. Set up shot in app — place CB and OB, drag the aim line on the ball diagram
+//    until readouts show the cut angle and % you want
+// 2. Note: CB square+suffix, OB square+suffix, cut angle (from CUT readout),
+//    direction L or R (from readout), pocket the OB aims toward
+// 3. CB/OB coordinates from square grid:
+//      sq(n): row=(n-1)//8, col=(n-1)%8
+//      center: x=30+col*50+25, y=30+row*50+25
+//      suffix f=right-mid, g=lower-right, d=top-mid, etc. (clamped 9px inside rail)
+// 4. rh: true = right cut (OB departs to the right), false = left cut
+//
+// SHOT FORMAT:
+//   { name, cb:{x,y}, ob:{x,y}, cut (degrees), rh (bool), desc }
+//
+// HOW IT WORKS:
+//   The preset click handler in buildShotList() calls loadShot(idx).
+//   loadShot() sets S.diagCutDeg=shot.cut and S._diagDragRh=shot.rh,
+//   then calls render(). The readouts and ball diagram both read diagCutDeg
+//   directly — no geometry recomputation needed.
+//   KEY FIX (session 4): preset click handler MUST call loadShot(), not render()
+//   directly — otherwise diagCutDeg and rh are never set.
+// ─────────────────────────────────────────────────────────────────────────────
+// ── SHOT LIBRARY ─────────────────────────────────────────────
+// Positions use SVG coords: table is (30,30)→(430,230), 1 diamond = 50px
+// Near-rail shots: f≈y45 (15px from rail), g≈y55 (25px), e≈y38 (8px, clamped)
+// sq(n) grid: row=(n-1)//8, col=(n-1)%8; center=30+col*50+25, 30+row*50+25
+//   suffixes from center: f=(+25,0), g=(+25,+25), e=(+25,-25), h=(0,+37)
+// cut: angle in degrees between approach and required OB departure (to nearest pocket)
+// rh: true = contact on right side of OB (shooter's perspective)
+//
+
+// ── GRID COORDINATE SYSTEM ──────────────────────────────────────
+// 32 squares numbered left-to-right, top-to-bottom (row 1=top, row 4=bottom)
+// Sub-positions a-h clockwise from lower-left:
+// a=lower-left, b=left-center, c=upper-left, d=upper-center
+// e=upper-right, f=right-center, g=lower-right, h=lower-center
+// Center of square = just the number (no letter)
+const GRID_POS = {
+  a:[0,50], b:[0,25], c:[0,0], d:[25,0],
+  e:[50,0], f:[50,25], g:[50,50], h:[25,50],
+  '':[25,25]
+};
+function xyToGrid(x, y) {
+  let best = null, bestD = 99;
+  for (let sq = 1; sq <= 32; sq++) {
+    const row = Math.floor((sq-1)/8), col = (sq-1)%8;
+    const tx = 30+col*50, ty = 30+row*50;
+    for (const [p,[dx,dy]] of Object.entries(GRID_POS)) {
+      const d = Math.hypot(x-(tx+dx), y-(ty+dy));
+      if (d < bestD) { bestD=d; best=sq+p; }
+    }
+  }
+  return best;
+}
+function gridDesc(cb, ob, pocket) {
+  const PNUM = {TL:1,TM:2,TR:3,BR:4,BM:5,BL:6};
+  const pStr = pocket ? ' → P'+(PNUM[pocket]||pocket) : '';
+  return 'CB '+xyToGrid(cb.x,cb.y)+' · OB '+xyToGrid(ob.x,ob.y)+pStr;
+}
+
 const SHOT_LIBRARY = [
-
-  // ── CATEGORY A: Rail Band — Close ─────────────────────────────
-  // Both balls near top rail, ~3 diamonds apart. Target: TR corner.
-  { code:'A1', category:'Rail Band — Close', name:'A1 · Rail Straight',
-    cb:{x:130,y:45}, ob:{x:280,y:45}, cut:5.7, rh:false, pocket:'TR',
-    desc:'CB 2f · OB 5f → P3 — 5.7°R · ~9%',
-    teaching:'Both balls same distance from rail. Nearly full ball — the 10% contact reference. How much daylight on the right edge?',
+  { code:'S1', category:'Straight Shots', name:'S1 · Straight Corner',
+    cb:{x:330,y:130}, ob:{x:380,y:80}, cut:0.0, rh:false, pocket:'TR',
+    desc: gridDesc({x:330,y:130}, {x:380,y:80}, 'TR'),
+    teaching:'This is as easy as it gets. Nevertheless, practice it a dozen times. Shoot it with <b>topspin, middle and draw</b>, and watch what happens to the cue ball. The shot is so easy that you can afford to concentrate on your stroke here. Try to take any wobble out of it, and make it as <b>smooth and deliberate</b> as you can.',
     difficulty:1 },
 
-  { code:'A2', category:'Rail Band — Close', name:'A2 · CB Tight, OB Low',
-    cb:{x:130,y:45}, ob:{x:280,y:60}, cut:17, rh:false, pocket:'TR',
-    desc:'CB 2f · OB 5g → P3 — 17°R · ~29%',
-    teaching:'OB drops off the rail. Required cut grows — notice how the overlap shifts when OB moves away from the cushion.',
+  { code:'S2', category:'Straight Shots', name:'S2 · Diagonal Corner',
+    cb:{x:280,y:180}, ob:{x:380,y:80}, cut:0.0, rh:false, pocket:'TR',
+    desc: gridDesc({x:280,y:180}, {x:380,y:80}, 'TR'),
+    teaching:'A little harder. Although this is similar to Shot 1, it requires concentration and is missable. LeStarZ says to <b>aim it 32% Left</b>. That’s a little more than a 1/4 of the object ball showing to the right of your ghost ball in position, and that means the <b>contact point</b> between the two balls is at half of that, or <b>16%.</b><br><br>Look closely at the <b>ball diagram,</b> in which the transparent ghost ball — or cue ball — overlaps the red object ball and leaves about 32% of the red object ball showing. Aim your own cue ball in this manner and the red ball will <b>probably</b> go in the pocket. We say “probably” to acknowledge several conditions that may interfere.<br><br>One, we don’t yet know how <b>your own stroke</b> works yet, or if it is consistent. You have to work on that. We also don’t know how the felt on your table works, either. And, in cut shots like this, we have to allow for the variations of drag that occurs when one ball hits another at an angle. There is a small result called “throw” that occurs, and changes the result of the interaction of balls. More about all this as we go.<br><br>For now, just make this shot about 5 or 10 times in a row, <b>note how it feels</b>, and then move on to the next shot. <b>Feeling</b> is what you are trying to achieve here, your instincts. You should in the end <b>just know</b> what the right angle is.',
     difficulty:2 },
 
-  { code:'A3', category:'Rail Band — Close', name:'A3 · Both Off Rail',
-    cb:{x:130,y:60}, ob:{x:280,y:60}, cut:11.3, rh:false, pocket:'TR',
-    desc:'CB 2g · OB 5g → P3 — 11.3°R · ~19%',
-    teaching:'Both balls same distance off the rail. Smaller cut than A2 — same OB position but approach angle changes.',
+  { code:'S3', category:'Straight Shots', name:'S3 · Cross Corner Cut',
+    cb:{x:355,y:155}, ob:{x:380,y:80}, cut:26.6, rh:true, pocket:'TR',
+    desc: gridDesc({x:355,y:155}, {x:380,y:80}, 'TR'),
+    teaching:'The <b>pure physics</b> say that you should leave <b>43%,</b> or somewhat less than half of the object ball showing to the right of the cue ball/ghost ball. Set up the shot at those spots on your table, and shoot it, leaving about 43% of the object ball showing to the right. Did it go in? Either way, shoot it a dozen more times.<br><br>Does it <b>consistently miss to one side?</b> If so, <b>adjust</b> your aim point. If not, if you miss <b>both</b> left and right, that’s on you: your stroke is <b>erratic</b>, and you have to make your stroke smooth and repeatable.<br><br><b>Relax!: nobody’s watching!</b> Shoot the shot many times and try to get it to be a consistent shot, and try to remember what the successful shot felt and looked like — and importantly, what it <b>felt like.</b>',
     difficulty:2 },
 
-  { code:'A4', category:'Rail Band — Close', name:'A4 · Straight-In Rail',
-    cb:{x:130,y:60}, ob:{x:280,y:45}, cut:0, rh:false, pocket:'TR',
-    desc:'CB 2g · OB 5f → P3 — 0°L · ~0%',
-    teaching:'CB off the rail, OB hugs it — dead straight shot. Your eyes want to add cut. Trust the diagram.',
-    difficulty:1 },
-
-  // ── CATEGORY B: Rail Band — Long ──────────────────────────────
-  // CB at 2g, OB at diamond 7. Target: TR corner.
-  { code:'A5', category:'Rail Band — Long', name:'A5 · Long Rail, OB Level',
-    cb:{x:130,y:60}, ob:{x:380,y:60}, cut:31, rh:false, pocket:'TR',
-    desc:'CB 2g · OB 7g → P3 — 31°R · ~51%',
-    teaching:'Same rail position as A3 but 5 diamonds of travel. Required cut jumps to half-ball. Distance compresses the angle.',
+  { code:'S4', category:'Straight Shots', name:'S4 · Long Stretch Corner',
+    cb:{x:280,y:130}, ob:{x:380,y:80}, cut:18.4, rh:false, pocket:'TR',
+    desc: gridDesc({x:280,y:130}, {x:380,y:80}, 'TR'),
+    teaching:'The hard part of this shot is that you have to <b>stretch across</b> the table to shoot it. It’s not a difficult shot, but it’s missable if you don’t concentrate, especially with the awkward stretch. Stay slow and calm and <b>shoot deliberately</b>. What is that angle? How much of the object ball should I see outside of the cue ball edge? Is my stroke calm? LeStarZ says about <b>a third of the object ball</b> should be to the left of your <b>inside edge line</b>. Is that reality? Shoot and find out.',
     difficulty:2 },
 
-  { code:'A6', category:'Rail Band — Long', name:'A6 · Long Rail, OB Tight',
-    cb:{x:130,y:60}, ob:{x:380,y:45}, cut:13.3, rh:false, pocket:'TR',
-    desc:'CB 2g · OB 7f → P3 — 13.3°R · ~22%',
-    teaching:'OB tightens to rail. Cut drops as OB moves closer to the pocket line. Quarter-ball, not the thin cut instinct says.',
+  { code:'S5', category:'Straight Shots', name:'S5 · Long Straight',
+    cb:{x:280,y:180}, ob:{x:330,y:130}, cut:0.0, rh:false, pocket:'TR',
+    desc: gridDesc({x:280,y:180}, {x:330,y:130}, 'TR'),
+    teaching:'<b>Straight, but long</b>. Looks like a full ball hit, so you need a <b>calm stroke</b> to hit it well. After you get it to go in a few times, try hitting high on the cue ball, then middle, then low, and observe <b>where the cue ball ended</b> after the shot.',
     difficulty:2 },
 
-  { code:'A7', category:'Rail Band — Long', name:'A7 · OB Rail-Tight',
-    cb:{x:130,y:60}, ob:{x:380,y:38}, cut:4.1, rh:false, pocket:'TR',
-    desc:'CB 2g · OB 7e → P3 — 4.1°R · ~7%',
-    teaching:'OB nearly touching cushion, pocket almost dead ahead. Thinnest functional near-pocket cut in this series.',
-    difficulty:2 },
-
-  // ── CATEGORY C: Spot Zone ─────────────────────────────────────
-  // OB fixed at sq14g (x=330,y=130). CB varies. Target: TR corner.
-  { code:'A8', category:'Spot Zone', name:'A8 · Spot 45° (Half Ball)',
-    cb:{x:230,y:180}, ob:{x:330,y:130}, cut:18.4, rh:false, pocket:'TR',
-    desc:'CB sq20g · OB sq14g → P3 — 18.4°R · ~31%',
-    teaching:'Workhorse mid-range cut. Set up until the ghost ball feels automatic from this zone.',
-    difficulty:1 },
-
-  { code:'A9', category:'Spot Zone', name:'A9 · Spot Steep',
-    cb:{x:280,y:180}, ob:{x:330,y:130}, cut:0, rh:false, pocket:'TR',
-    desc:'CB sq21g · OB sq14g → P3 — 0°L · ~0%',
-    teaching:'Straight-in to TR from this position. Your address position is steep — own the full-ball reference here.',
-    difficulty:1 },
-
-  { code:'A10', category:'Spot Zone', name:'A10 · Spot Angled Right',
-    cb:{x:280,y:205}, ob:{x:330,y:130}, cut:11.3, rh:true, pocket:'TR',
-    desc:'CB sq29f · OB sq14g → P3 — 11.3°L · ~19%',
-    teaching:'CB deep below OB. Approach angle compresses the cut. Compare ghost ball to A8.',
-    difficulty:2 },
-
-  { code:'A11', category:'Spot Zone', name:'A11 · Spot Left Approach',
-    cb:{x:255,y:155}, ob:{x:330,y:130}, cut:26.6, rh:false, pocket:'TR',
-    desc:'CB sq21 · OB sq14g → P3 — 26.6°R · ~44%',
-    teaching:'Approach from left-center, mild cut. Nearly half-ball. The workhorse address for this OB position.',
-    difficulty:1 },
-
-  { code:'A12', category:'Spot Zone', name:'A12 · Spot Far Left',
-    cb:{x:305,y:205}, ob:{x:330,y:130}, cut:26.6, rh:true, pocket:'TR',
-    desc:'CB sq30 · OB sq14g → P3 — 26.6°L · ~44%',
-    teaching:'CB below and right of OB. Mirror of A11 in cut angle but opposite contact side. Compare the two feels.',
-    difficulty:2 },
-
-  // ── CATEGORY D: Side Pocket Line ──────────────────────────────
-  // CB at sq10h (x=105,y=142). Target: TM (top side pocket).
-  { code:'A13', category:'Side Pocket Line', name:'A13 · Side Pocket 13°',
-    cb:{x:105,y:142}, ob:{x:160,y:80}, cut:12.9, rh:true, pocket:'TM',
-    desc:'CB sq10h · OB sq3g → P2 — 12.9°L · ~22%',
-    teaching:'Steep approach, OB close to pocket. High percentage — but the steep angle demands a precise bridge.',
-    difficulty:2 },
-
-  { code:'A14', category:'Side Pocket Line', name:'A14 · Side Pocket 22°',
-    cb:{x:105,y:142}, ob:{x:185,y:92}, cut:22, rh:false, pocket:'TM',
-    desc:'CB sq10h · OB sq4h → P2 — 22°R · ~37%',
-    teaching:'Workhorse side-pocket angle. About 3/8-ball contact. Set this up until the ghost ball position is automatic.',
-    difficulty:2 },
-
-  { code:'A15', category:'Side Pocket Line', name:'A15 · Side Pocket 38°',
-    cb:{x:105,y:142}, ob:{x:210,y:80}, cut:37.6, rh:false, pocket:'TM',
-    desc:'CB sq10h · OB sq4g → P2 — 37.6°R · ~61%',
-    teaching:'OB shifts toward center, approach flattens to 38°. Just past half-ball. Compare ghost ball to A14.',
-    difficulty:2 },
-
-  { code:'A16', category:'Side Pocket Line', name:'A16 · Side Pocket Thin',
-    cb:{x:105,y:142}, ob:{x:160,y:55}, cut:38, rh:true, pocket:'TM',
-    desc:'CB sq10h · OB sq3f → P2 — 38°L · ~61%',
-    teaching:'OB tight to top rail. Similar cut to A15 but opposite approach. The margin for error is narrowest here.',
+  { code:'S6', category:'Straight Shots', name:'S6 · Cut Left',
+    cb:{x:280,y:180}, ob:{x:380,y:105}, cut:19.4, rh:false, pocket:'TR',
+    desc: gridDesc({x:280,y:180}, {x:380,y:105}, 'TR'),
+    teaching:'This is a cut to the left. It looks easier than it is, and is <b>quite missable.</b> It’s a good learning shot for you, though, and we recommend you spend some time with it, until it is automatic: you look at the shot, you absolutely <b>know where to hit it,</b> and then you shoot it smoothly. Our physics calculator tells us we should shoot with about 1/3, 33% of the object ball outside of the ghost ball (look at the ball diagram). Try that, and see what really happens. We think you’ll need to <b>make a sharper angle</b> than that.<br><br>After it goes in regularly, watch what happens to the cue ball after the shot. Then deliberately apply <b>high, middle and low to the cue ball</b> in the shot and note where the cue ball winds up. It’s really useful info, and quite predictable, if you pay attention.',
     difficulty:3 },
 
-  // ── CATEGORY E: Mid Table ─────────────────────────────────────
-  // CB at sq12g (x=230,y=130). Target: BR corner.
-  { code:'A17', category:'Mid Table', name:'A17 · Center Straight-In',
-    cb:{x:230,y:130}, ob:{x:330,y:180}, cut:0, rh:false, pocket:'BR',
-    desc:'CB sq12g · OB sq22g → P4 — 0°L · ~0%',
-    teaching:'Straight-in from center table. Establish your zero reference here before exploring the cut series.',
-    difficulty:1 },
-
-  { code:'A18', category:'Mid Table', name:'A18 · Center 23° Cut',
-    cb:{x:230,y:130}, ob:{x:330,y:205}, cut:22.8, rh:false, pocket:'BR',
-    desc:'CB sq12g · OB sq30f → P4 — 22.8°R · ~38%',
-    teaching:'Mild cut, OB angled toward bottom rail. About 3/8-ball. Bread-and-butter mid-table cut shot.',
-    difficulty:1 },
-
-  { code:'A19', category:'Mid Table', name:'A19 · Center 34° Cut',
-    cb:{x:230,y:130}, ob:{x:355,y:155}, cut:33.7, rh:true, pocket:'BR',
-    desc:'CB sq12g · OB sq23 → P4 — 33.7°L · ~55%',
-    teaching:'OB hangs right, cut crosses half-ball line. More than it looks from address — trust the diagram.',
-    difficulty:2 },
-
-  { code:'A20', category:'Mid Table', name:'A20 · Long Diagonal',
-    cb:{x:230,y:130}, ob:{x:380,y:180}, cut:26.6, rh:true, pocket:'BR',
-    desc:'CB sq12g · OB sq23g → P4 — 26.6°L · ~44%',
-    teaching:'Long diagonal cut to the far zone. Speed is critical — aim is the same across speed range, CB path is not.',
-    difficulty:2 },
-
-  { code:'A21', category:'Mid Table', name:'A21 · OB on Bottom Rail',
-    cb:{x:230,y:130}, ob:{x:330,y:221}, cut:37.2, rh:false, pocket:'BR',
-    desc:'CB sq12g · OB sq30g rail → P4 — 37.2°R · ~60%',
-    teaching:'OB frozen on bottom rail. Rail shots require extra english to control CB — that is a separate drill.',
+  { code:'S7', category:'Straight Shots', name:'S7 · Hard Right Cut',
+    cb:{x:230,y:180}, ob:{x:330,y:55}, cut:37.3, rh:true, pocket:'TR',
+    desc: gridDesc({x:230,y:180}, {x:330,y:55}, 'TR'),
+    teaching:'This is a fairly <b>common</b> shot, and fairly <b>hard</b> to make. However, you will master this through a little concentration and repetition. Look at the ball graphic in the Aimer. It says you need to see about 61% of the object ball to the right of the edge of your cue ball. The shot has a 37.9 degree angle to the pocket. Make <b>yourself aware</b> that this is about what a <b>forty degree</b> +/- angle looks like.<br><br>Now shoot it as the ball diagram in the app says. Did it go in? Most likely it missed short of the pocket. If so, set it up again and shoot thinner, say, about 75% of the ball. Set the ball diagram to show that, and look at how much of the red ball shows to the right of the inside edge line of the cue ball. See that same <b>setup on the real balls</b> and shoot. <b>Did it go?</b> If not, what’s your correction?',
     difficulty:3 },
-
-  { code:'A22', category:'Mid Table', name:'A22 · Rail, Shifted',
-    cb:{x:230,y:130}, ob:{x:380,y:221}, cut:21, rh:false, pocket:'BR',
-    desc:'CB sq12g · OB sq31g rail → P4 — 21°R · ~35%',
-    teaching:'OB on bottom rail, shifted toward corner. Confirm contact on the fraction ticks before every stroke.',
-    difficulty:3 },
-
 ];
 
 // ── USER SHOT NOTES ───────────────────────────────────────────
@@ -580,7 +886,7 @@ function deleteUserShot(idx) {
 }
 
 function starsHtml(n) {
-  return '<span style="color:#f0df70;font-size:9px;">' + '★'.repeat(n) + '<span style="color:rgba(255,255,255,0.15);">' + '★'.repeat(5-n) + '</span></span>';
+  return '<span style="color:#b8860b;font-size:12px;">' + '★'.repeat(n) + '<span style="color:#cccccc;">' + '★'.repeat(5-n) + '</span></span>';
 }
 
 function buildShotList() {
@@ -597,36 +903,36 @@ function buildShotList() {
 
   let html = '';
   cats.forEach(cat => {
-    html += '<div style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(255,223,112,0.7);text-transform:uppercase;padding:8px 10px 3px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.25);">' + cat + '</div>';
+    html += '<div style="font-size:11px;font-weight:900;letter-spacing:2px;color:#333333;text-transform:uppercase;padding:10px 12px 4px;border-top:1px solid #cccccc;background:#e8e8e8;">' + cat + '</div>';
     catMap[cat].forEach(({s, i}) => {
       const note = shotNotes[s.code] || '';
       const noteId = 'note-' + s.code;
       const noteAreaId = 'notebox-' + s.code;
       html +=
-        '<div style="border-bottom:1px solid rgba(255,255,255,0.08);">' +
+        '<div style="border-bottom:2px solid #dddddd;">' +
         // Shot header — clickable to load
-        '<div data-preset="' + i + '" class="shot-lib-item" style="padding:8px 10px 4px;cursor:pointer;display:flex;align-items:flex-start;gap:6px;">' +
+        '<div data-preset="' + i + '" class="shot-lib-item" style="padding:10px 12px 6px;cursor:pointer;display:flex;align-items:flex-start;gap:6px;">' +
           '<div style="flex:1;">' +
             '<div style="display:flex;align-items:center;gap:6px;">' +
-              '<span style="font-size:13px;font-weight:900;color:#f0df70;">' + s.name + '</span>' +
+              '<span style="font-size:'+(16*_shotListScale)+'px;font-weight:900;color:#0a4a0a;">' + s.name + '</span>' +
               starsHtml(s.difficulty) +
             '</div>' +
-            '<div style="font-size:10px;color:rgba(255,255,255,0.55);margin-top:2px;">' + s.desc + '</div>' +
-            '<div style="font-size:11px;color:rgba(160,220,160,0.85);margin-top:3px;font-style:italic;line-height:1.4;">' + s.teaching + '</div>' +
+            '<div style="font-size:'+(12*_shotListScale)+'px;color:#444444;margin-top:3px;font-weight:700;">' + s.desc + '</div>' +
+            '<div style="font-size:'+(14*_shotListScale)+'px;color:#111111;margin-top:8px;line-height:1.7;">' + s.teaching + '</div>' +
           '</div>' +
         '</div>' +
         // Notes section
-        '<div style="padding:2px 6px 5px;">' +
+        '<div style="padding:4px 12px 8px;background:#f8f8f8;">' +
           '<div style="display:flex;align-items:center;gap:4px;">' +
-            '<span style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;">NOTES</span>' +
-            '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:7px;padding:1px 5px;border-radius:3px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);cursor:pointer;">' + (note ? 'edit' : '+') + '</button>' +
+            '<span style="font-size:'+(11*_shotListScale)+'px;color:#555555;letter-spacing:1px;font-weight:900;">MY NOTES</span>' +
+            '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:9px;padding:2px 8px;border-radius:4px;border:1px solid #999999;background:#ffffff;color:#333333;cursor:pointer;font-weight:700;">' + (note ? 'edit' : '+') + '</button>' +
           '</div>' +
-          (note ? '<div id="' + noteId + '" style="font-size:8px;color:rgba(180,220,255,0.7);margin-top:2px;padding:3px 5px;background:rgba(0,0,0,0.2);border-radius:3px;">' + note.replace(/</g,'&lt;') + '</div>' : '<div id="' + noteId + '"></div>') +
-          '<div id="' + noteAreaId + '" style="display:none;margin-top:3px;">' +
-            '<textarea rows="2" style="width:100%;box-sizing:border-box;font-size:9px;background:rgba(0,0,0,0.3);color:#c8e8c8;border:1px solid rgba(255,255,255,0.15);border-radius:3px;padding:3px;resize:vertical;font-family:Lato,sans-serif;" placeholder="Your notes on this shot...">' + note.replace(/</g,'&lt;') + '</textarea>' +
-            '<div style="display:flex;gap:4px;margin-top:2px;">' +
-              '<button onclick="saveNote(\'' + s.code + '\')" style="font-size:8px;padding:2px 8px;border-radius:3px;border:none;background:#4ade80;color:#001a00;cursor:pointer;font-weight:900;">SAVE</button>' +
-              '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:8px;padding:2px 8px;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;">CANCEL</button>' +
+          (note ? '<div id="' + noteId + '" style="font-size:12px;color:#222222;margin-top:4px;padding:6px 8px;background:#ffffff;border:1px solid #cccccc;border-radius:4px;">' + note.replace(/</g,'&lt;') + '</div>' : '<div id="' + noteId + '"></div>') +
+          '<div id="' + noteAreaId + '" style="display:none;margin-top:6px;">' +
+            '<textarea rows="2" style="width:100%;box-sizing:border-box;font-size:13px;background:#ffffff;color:#111111;border:1px solid #999999;border-radius:4px;padding:6px;resize:vertical;font-family:Lato,sans-serif;" placeholder="Your notes on this shot...">' + note.replace(/</g,'&lt;') + '</textarea>' +
+            '<div style="display:flex;gap:6px;margin-top:6px;">' +
+              '<button onclick="saveNote(\'' + s.code + '\')" style="font-size:12px;padding:4px 14px;border-radius:4px;border:none;background:#1a5a1a;color:#ffffff;cursor:pointer;font-weight:900;">SAVE</button>' +
+              '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:12px;padding:4px 14px;border-radius:4px;border:1px solid #999999;background:#ffffff;color:#333333;cursor:pointer;">CANCEL</button>' +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -642,7 +948,7 @@ function buildShotList() {
       return '<div style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">' +
         '<div onclick="loadUserShot('+i+')" style="flex:1;cursor:pointer;">' +
         '<div style="font-size:10px;font-weight:900;color:#7dd3fc;">' + s.name + '</div>' +
-        '<div style="font-size:8px;color:rgba(255,255,255,0.4);">' + dt + ' · ' + s.desc + '</div></div>' +
+        '<div style="font-size:9px;color:rgba(255,255,255,0.75);">' + dt + ' · ' + s.desc + '</div></div>' +
         '<button onclick="deleteUserShot('+i+')" style="font-size:9px;padding:1px 4px;border-radius:3px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;cursor:pointer;margin-left:4px;">✕</button>' +
         '</div>';
     }).join('');
@@ -669,6 +975,26 @@ function saveNote(code) {
   buildShotList();
 }
 
+
+let _shotListScale = 1.0;
+function shotListFontSize(dir) {
+  _shotListScale = Math.max(0.7, Math.min(2.0, _shotListScale + dir * 0.1));
+  const list = document.getElementById('shot-library-list');
+  if (list) list.style.fontSize = (_shotListScale * 14) + 'px';
+  // Rebuild with new scale so em-based sizes work
+  _rebuildShotList();
+}
+function _rebuildShotList() {
+  buildShotList();
+  // Apply scale to all text elements
+  const list = document.getElementById('shot-library-list');
+  if (!list) return;
+  const base = _shotListScale;
+  list.querySelectorAll('[data-textscale]').forEach(el => {
+    const orig = parseFloat(el.dataset.textscale);
+    el.style.fontSize = (orig * base) + 'px';
+  });
+}
 function toggleShotLibrary() {
   libraryOpen = !libraryOpen;
   const panel = document.getElementById('shot-library-panel');
@@ -1096,13 +1422,13 @@ function loadShot(idx) {
           <circle id="ghost-ball" cx="0" cy="0" r="8" fill="rgba(255,255,255,0.10)" stroke="#f0df70" stroke-width="1.8" stroke-dasharray="4,3" opacity="0"/>
           <!-- CB Path legend (shown when cbPathOn) -->
           <g id="cb-path-legend" opacity="0">
-            <rect x="8" y="8" width="80" height="46" rx="4" fill="rgba(0,0,0,0.55)"/>
-            <line x1="13" y1="19" x2="30" y2="19" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="5,3"/>
-            <text x="34" y="22" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">STUN</text>
-            <line x1="13" y1="31" x2="30" y2="31" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
-            <text x="34" y="34" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">FOLLOW</text>
-            <line x1="13" y1="43" x2="30" y2="43" stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="5,3"/>
-            <text x="34" y="46" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#60a5fa">DRAW</text>
+            <rect x="348" y="178" width="80" height="46" rx="4" fill="rgba(0,0,0,0.55)"/>
+            <line x1="353" y1="189" x2="370" y2="189" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="5,3"/>
+            <text x="374" y="192" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">STUN</text>
+            <line x1="353" y1="201" x2="370" y2="201" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
+            <text x="374" y="204" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">FOLLOW</text>
+            <line x1="353" y1="213" x2="370" y2="213" stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="5,3"/>
+            <text x="374" y="216" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#60a5fa">DRAW</text>
           </g>
           <!-- Object ball -->
           <circle id="ob-shadow" cx="231" cy="151" r="8" fill="#000" opacity="0.32"/>
@@ -1329,22 +1655,10 @@ function loadShot(idx) {
     </div>
     <div id="bias-sliders">
     <div class="srow" style="margin-top:6px">
-      <span class="slbl" style="color:#c890f0;font-size:9px;">FAT</span>
-      <input type="range" id="sl-bias-fat" min="-12" max="12" value="0" oninput="onSliders()">
-      <span id="sv-bias-fat-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('fat',-1)">−</button><span id="sv-bias-fat" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('fat',1)">+</button></span>
-    </div>
-    <div class="srow" style="margin-top:4px">
-      <span class="slbl" style="color:#c890f0;font-size:9px;">MED</span>
-      <input type="range" id="sl-bias-med" min="-12" max="12" value="0" oninput="onSliders()">
-      <span id="sv-bias-med-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('med',-1)">−</button><span id="sv-bias-med" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('med',1)">+</button></span>
-    </div>
-    <div class="srow" style="margin-top:4px">
-      <span class="slbl" style="color:#c890f0;font-size:9px;">THIN</span>
-      <input type="range" id="sl-bias-thin" min="-12" max="12" value="0" oninput="onSliders()">
-      <span id="sv-bias-thin-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('thin',-1)">−</button><span id="sv-bias-thin" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('thin',1)">+</button></span>
+      <span class="slbl" style="color:#c890f0;">BIAS</span>
+      <input type="range" id="sl-bias" min="-12" max="12" value="0" oninput="onSliders()">
+      <span id="sv-bias-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep(-1)">−</button><span id="sv-bias" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="biasStep(1)">+</button></span>
     </div>
     </div><!-- /bias-sliders -->
   </div>
@@ -1403,6 +1717,12 @@ let diagDrag = false;
 let mapOn = true;
 let snapOn = true;
 let snapLabelTimer = null;
+let panMode = true;
+function togglePan(){
+  panMode = !panMode;
+  const _pan = document.getElementById('ep-pan');
+  if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'LOCK<br>ON' : 'LOCK<br>OFF'; }
+}
 let lockTable = true;
 let lockBalls = true;
 let lockSliders = true;
@@ -1597,6 +1917,69 @@ function tableToSvg(tx, ty) {
 }
 
 
+function render() {
+  const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+  const d = compute(cutDeg);
+  renderTable(d);
+  drawBot(d);
+
+  // Readouts show diagFraction (what you set up) — spin correction shown in adjustment row
+  const Zdeg = cutDeg < 0.5 ? 0 : Math.round(cutDeg * 10)/10;
+  const aimP = Math.round(Math.abs(d.diagFraction) * 100);
+  const _dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
+  const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%' + _dir;
+  const _rfrc = $('r-frc'); if (_rfrc) _rfrc.textContent = fracStr(d.diagFraction);
+  const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
+  const _cpEl = $('r-cp');
+  if (_cpEl) { const _cpPct = cutDeg < 0.5 ? 0 : Math.round(Math.abs(d.diagFraction) * 50); _cpEl.textContent = _cpPct + '%' + _dir; }
+
+  // Distance readout
+  const distEl = $('r-dist');
+  if (distEl) {
+    const ft = d.distFt;
+    if (S.metric) {
+      const m = ft * 0.3048;
+      distEl.textContent = m < 0.3 ? (m*100).toFixed(0)+'cm' : m.toFixed(2)+'m';
+    } else {
+      distEl.textContent = ft < 1 ? Math.round(ft*12)+'"' : ft.toFixed(1)+"'";
+    }
+  }
+
+  const throwEl = $('r-throw');
+  const td = d.throwDiff, sq = Math.round(d.squirtFraction * 100);
+  if (throwEl && Math.abs(td) < 1 && Math.abs(sq) < 1) {
+    throwEl.textContent = 'none'; throwEl.style.color = '#fff';
+  } else {
+    const parts = [];
+    if (Math.abs(td) >= 1) parts.push('throw: ' + (td > 0 ? 'aim thinner +' : 'aim fuller ') + Math.abs(td) + '%');
+    if (Math.abs(sq) >= 1) parts.push('squirt: ' + (sq > 0 ? 'aim fuller' : 'aim thinner') + ' ' + Math.abs(sq) + '%');
+    if (throwEl) { throwEl.textContent = parts.join('  ·  '); throwEl.style.color = '#e8a050'; }
+  }
+
+  // Shot attributes panel
+  const rocut  = $('ro-cut');  if (rocut)  rocut.textContent  = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
+  const rofrac = $('ro-frac'); if (rofrac) rofrac.textContent = fracStr(d.diagFraction);
+  const roaim  = $('ro-aim');  if (roaim)  roaim.textContent  = aimP + '%' + _dir;
+  const rodist = $('ro-dist'); if (rodist) {
+    const ft = d.distFt;
+    rodist.textContent = S.metric
+      ? (ft*0.3048 < 0.3 ? Math.round(ft*0.3048*100)+'cm' : (ft*0.3048).toFixed(2)+'m')
+      : (ft < 1 ? Math.round(ft*12)+'"' : ft.toFixed(1)+"'");
+  }
+  const rothrow = $('ro-throw');
+  if (rothrow) {
+    if (Math.abs(td) < 1 && Math.abs(sq) < 1) {
+      rothrow.textContent = 'none'; rothrow.style.color = 'rgba(255,255,255,0.4)';
+    } else {
+      const rparts = [];
+      if (Math.abs(td) >= 1) rparts.push((td > 0 ? 'aim thinner +' : 'aim fuller ') + Math.abs(td) + '%');
+      if (Math.abs(sq) >= 1) rparts.push('squirt ' + (sq > 0 ? 'fuller' : 'thinner') + ' ' + Math.abs(sq) + '%');
+      rothrow.textContent = rparts.join(' · ');
+      rothrow.style.color = '#e870b0';
+    }
+  }
+}
+
 function renderTable(d) {
   const ob = S.ob, cb = S.cb;
 
@@ -1642,6 +2025,9 @@ function renderTable(d) {
   sL('ob-arrow', ox + odx*(BALL_R+2), oy + ody*(BALL_R+2),
                  ox + odx*arrT,       oy + ody*arrT);
   sV('ob-arrow', true);
+  // Tint arrow purple when bias is applied
+  const _obarr = document.getElementById('ob-arrow');
+  if (_obarr) _obarr.setAttribute('stroke', (biasOn && S.bias !== 0) ? '#c890f0' : '#7dd3fc');
 
   // Ghost ball — show when GHOST is on
   const _approachAngle = cbToObAngle + side * Math.min(cutDeg, 90) * RAD;
@@ -1896,295 +2282,20 @@ function onSliders() {
   S.spin   = parseInt($('sl-spn').value) / 25;  // -4..4 continuously
   S.vert   = parseInt($('sl-vert').value) / 25;  // -4..4 from -100..100
   S.distFt = 0;  // auto-calculated in compute()
-  // Three-zone bias
+  // Single bias
   if (biasOn) {
-    const cutDeg = S.diagCutDeg || 0;
-    const bFat  = parseInt($('sl-bias-fat').value)  * 0.60 * RAD;
-    const bMed  = parseInt($('sl-bias-med').value)  * 0.60 * RAD;
-    const bThin = parseInt($('sl-bias-thin').value) * 0.60 * RAD;
-    // Blend by zone: fat=0-30°, med=30-60°, thin=60-90°
-    if (cutDeg < 30)      S.bias = bFat + (bMed - bFat) * (cutDeg / 30);
-    else if (cutDeg < 60) S.bias = bMed + (bThin - bMed) * ((cutDeg - 30) / 30);
-    else                  S.bias = bThin;
+    const bVal = parseInt($('sl-bias')?.value || '0');
+    S.bias = bVal * 1.20 * RAD;
     // Update number displays
-    ['fat','med','thin'].forEach(z => {
-      const v = parseInt($('sl-bias-'+z).value);
-      const el = $('sv-bias-'+z); if(el) el.textContent = v === 0 ? '0' : (v>0?'+':'')+v;
-      const en = $('sv-bias-'+z+'-n'); if(en) en.textContent = Math.abs(v) === 0 ? '0' : Math.max(1,Math.round(Math.abs(v)/12*10));
-    });
+    const _bv = parseInt($('sl-bias')?.value || '0');
+    const _bn = document.getElementById('sv-bias-n');
+    const _bs = document.getElementById('sv-bias');
+    if (_bn) _bn.textContent = _bv;
+    if (_bs) _bs.textContent = (_bv > 0 ? '+' : '') + _bv;
   } else {
     S.bias = 0;
   }
-
-  // Speed
-  $('sv-spd').textContent = S.speed < 0.28 ? 'slow' : S.speed < 0.72 ? 'med' : 'fast';
-  const spinPct = parseInt($('sl-spn').value);
-  $('sv-spn').textContent = spinPct === 0 ? '0%' : (spinPct > 0 ? '+' : '') + spinPct + '%';
-  $('sv-vert').textContent = vertLabels[String(S.vert)];
-
-  // Smooth vert label
-  const _v = S.vert;
-  $('sv-vert').textContent = _v <= -3.5 ? 'max draw' : _v <= -2 ? 'draw' : _v <= -0.5 ? 'low' : _v < 0.5 ? 'center' : _v < 2 ? 'high' : _v < 3.5 ? 'follow' : 'max follow';
-  // Intensity 1-10
-  const _sv = parseInt($('sl-spd').value), _sn = parseInt($('sl-spn').value), _vn = parseInt($('sl-vert').value);
-  if($('sv-spd-n')) $('sv-spd-n').textContent = Math.max(1,Math.round(_sv/10));
-  if($('sv-spn-n')) $('sv-spn-n').textContent = Math.abs(_sn)===0?'0':Math.max(1,Math.round(Math.abs(_sn)/10));
-  if($('sv-vert-n'))$('sv-vert-n').textContent= Math.abs(_vn)===0?'0':Math.max(1,Math.round(Math.abs(_vn)/10));
-
-
-  try { localStorage.setItem('lz-aimer-bias', JSON.stringify({
-    fat: parseInt(document.getElementById('sl-bias-fat')?.value||'0'),
-    med: parseInt(document.getElementById('sl-bias-med')?.value||'0'),
-    thin: parseInt(document.getElementById('sl-bias-thin')?.value||'0')
-  })); } catch(e) {}
   render();
-}
-
-// ── MAIN RENDER ───────────────────────────────────────────────
-function render() {
-  const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
-  const d = compute(cutDeg);
-  renderTable(d);
-  drawBot(d);
-
-  // Readouts show diagFraction (what you set up) — spin correction shown in adjustment row
-  const Zdeg = cutDeg < 0.5 ? 0 : Math.round(cutDeg * 10)/10;
-  const aimP = Math.round(Math.abs(d.diagFraction) * 100);
-  const _dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
-  const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%' + _dir;
-  const _rfrc = $('r-frc'); if (_rfrc) _rfrc.textContent = fracStr(d.diagFraction);
-  const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
-  const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = cutDeg < 0.5 ? 0 : Math.round(Math.abs(d.diagFraction) * 50); _cpEl.textContent = _cpPct + '%' + _dir; }
-
-  // Distance readout
-  const distEl = $('r-dist');
-  if (distEl) {
-    const ft = d.distFt;
-    if (S.metric) {
-      const m = ft * 0.3048;
-      distEl.textContent = m < 0.3 ? (m*100).toFixed(0)+'cm' : m.toFixed(2)+'m';
-    } else {
-      distEl.textContent = ft < 1 ? Math.round(ft*12)+'"' : ft.toFixed(1)+"'";
-    }
-  }
-
-  const throwEl = $('r-throw');
-  const td = d.throwDiff, sq = Math.round(d.squirtFraction * 100);
-  if (throwEl && Math.abs(td) < 1 && Math.abs(sq) < 1) {
-    throwEl.textContent = 'none'; throwEl.style.color = '#fff';
-  } else {
-    const parts = [];
-    if (Math.abs(td) >= 1) parts.push('throw: ' + (td > 0 ? 'aim thinner +' : 'aim fuller ') + Math.abs(td) + '%');
-    if (Math.abs(sq) >= 1) parts.push('squirt: ' + (sq > 0 ? 'aim fuller' : 'aim thinner') + ' ' + Math.abs(sq) + '%');
-    if (throwEl) { throwEl.textContent = parts.join('  ·  '); throwEl.style.color = '#e8a050'; }
-  }
-
-  // Shot attributes panel
-  const rocut  = $('ro-cut');  if (rocut)  rocut.textContent  = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
-  const rofrac = $('ro-frac'); if (rofrac) rofrac.textContent = fracStr(d.diagFraction);
-  const roaim  = $('ro-aim');  if (roaim)  roaim.textContent  = aimP + '%' + _dir;
-  const rodist = $('ro-dist'); if (rodist) {
-    const ft = d.distFt;
-    rodist.textContent = S.metric
-      ? (ft*0.3048 < 0.3 ? Math.round(ft*0.3048*100)+'cm' : (ft*0.3048).toFixed(2)+'m')
-      : (ft < 1 ? Math.round(ft*12)+'"' : ft.toFixed(1)+"'");
-  }
-  const rothrow = $('ro-throw');
-  if (rothrow) {
-    if (Math.abs(td) < 1 && Math.abs(sq) < 1) {
-      rothrow.textContent = 'none'; rothrow.style.color = 'rgba(255,255,255,0.4)';
-    } else {
-      const rparts = [];
-      if (Math.abs(td) >= 1) rparts.push((td > 0 ? 'aim thinner +' : 'aim fuller ') + Math.abs(td) + '%');
-      if (Math.abs(sq) >= 1) rparts.push('squirt ' + (sq > 0 ? 'fuller' : 'thinner') + ' ' + Math.abs(sq) + '%');
-      rothrow.textContent = rparts.join(' · ');
-      rothrow.style.color = '#e870b0';
-    }
-  }
-}
-
-function resetShot() {
-  sV('ob-arrow', false);
-  obPocketed = false;
-  justShot = false;
-  $('ob').setAttribute('fill','url(#gOB)');
-  $('ob').setAttribute('r', String(BALL_R));
-  $('ob').setAttribute('opacity','1');
-  $('ob-shadow').setAttribute('r', String(BALL_R));
-  $('ob-shadow').setAttribute('opacity','0.32');
-  $('ob-hi').setAttribute('opacity','0.45');
-  if (window._snapCb) {
-    S.cb = {...window._snapCb}; S.ob = {...window._snapOb};
-    S.diagCutDeg = window._snapCutDeg; S._diagDragRh = window._snapRh;
-  }
-  render();
-}
-
-// ── CALIBRATION ────────────────────────────────────────────────
-// Calibrates personal BIAS by comparing predicted vs actual OB position
-let calMode  = false;
-let calPhase = 'idle';  // idle | predicted
-let calPendingShot = null;
-
-// ── CALIBRATION VERSION ────────────────────────────────────────
-// Bump this string whenever correction coefficients are updated.
-// Causes local shot database to auto-clear on first load.
-const CAL_VERSION = '2026-03-25-v1';
-(function() {
-  const stored = localStorage.getItem('lz-aimer-cal-version');
-  if (stored !== CAL_VERSION) {
-    localStorage.removeItem('lz-aimer-shots');
-    localStorage.removeItem('lz-aimer-cal');
-    localStorage.setItem('lz-aimer-cal-version', CAL_VERSION);
-    console.log('CAL: version updated to ' + CAL_VERSION + ', shot database cleared.');
-  }
-})();
-
-let calShots = [];
-const CAL_MAX = 50;
-let calLibraryOpen = false;
-
-function loadAimProfile() {
-  try {
-    const p = JSON.parse(localStorage.getItem('lz-aimer-profile') || '{}');
-    if (typeof p.biasFat  === 'number' && $('sl-bias-fat'))  $('sl-bias-fat').value  = p.biasFat;
-    if (typeof p.biasMed  === 'number' && $('sl-bias-med'))  $('sl-bias-med').value  = p.biasMed;
-    if (typeof p.biasThin === 'number' && $('sl-bias-thin')) $('sl-bias-thin').value = p.biasThin;
-    if (Array.isArray(p.shots)) calShots = p.shots;
-  } catch(e) {}
-}
-function saveAimProfile() {
-  try {
-    localStorage.setItem('lz-aimer-profile', JSON.stringify({
-      biasFat:  parseInt($('sl-bias-fat')?.value  || '0'),
-      biasMed:  parseInt($('sl-bias-med')?.value  || '0'),
-      biasThin: parseInt($('sl-bias-thin')?.value || '0'),
-      shots: calShots.slice(-50)
-    }));
-  } catch(e) {}
-}
-
-function toggleCal() {
-  calMode = !calMode;
-  $('cal-panel').classList.toggle('open', calMode);
-  const _bc = $('btn-cal'); if(_bc){ _bc.classList.toggle('on', calMode); _bc.style.background=''; }
-  if (!calMode) { calPhase = 'idle'; calPendingShot = null; }
-  calUpdateUI();
-}
-
-function calUpdateUI() {
-  const n = calShots.length;
-  const inst = $('cal-instruction');
-  const stat = $('cal-status');
-  const b1   = $('cal-rec1-btn');
-  const b2   = $('cal-rec2-btn');
-  if (stat) stat.textContent = n + '/' + CAL_MAX + ' shots stored';
-  if (!calMode) return;
-  if (calPhase === 'idle') {
-    if (inst) inst.textContent = 'Set up your shot. Tap ① to record what the app predicts.';
-    if (b1) b1.style.display = '';
-    if (b2) b2.style.display = 'none';
-  } else {
-    if (inst) inst.textContent = 'Shoot until it goes in. Then dial the ball graphic and sliders to match what worked. Tap ②.';
-    if (b1) b1.style.display = 'none';
-    if (b2) b2.style.display = '';
-  }
-  updateCalLibrary();
-}
-
-
-function calExport() {
-  if (!calShots.length) {
-    alert('No calibration shots saved yet.');
-    return;
-  }
-  // Format for curve fitting — extract what matters
-  const data = calShots
-    .filter(s => s.actualCut !== null && s.predictedCut !== null)
-    .map(s => ({
-      cut_deg:    parseFloat(s.predictedCut.toFixed(1)),
-      predicted:  parseFloat((Math.sin(s.predictedCut * Math.PI/180)).toFixed(4)),
-      actual:     parseFloat((Math.sin(s.actualCut   * Math.PI/180)).toFixed(4)),
-      speed:      parseFloat(s.speed.toFixed(2)),
-      spin:       s.spin || 0
-    }));
-  const json = JSON.stringify(data, null, 2);
-  // Copy to clipboard
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(json).then(() => {
-      const res = $('cal-result');
-      if (res) { res.style.display='block'; res.innerHTML='<span style="color:#4ade80">✓ Copied ' + data.length + ' shots to clipboard — paste to Claude</span>'; }
-    });
-  } else {
-    // Fallback — show in a text area
-    prompt('Copy this calibration data:', json);
-  }
-}
-
-function calRecord1() {
-  if (!calMode) return;
-  // Capture current predicted state
-  calPendingShot = {
-    ts: Date.now(),
-    cb: {...S.cb}, ob: {...S.ob},
-    cutDeg: S.diagCutDeg || 0,
-    rh: S._diagDragRh || false,
-    speed: S.speed, spin: S.spin, vert: S.vert,
-    biasFat:  parseInt($('sl-bias-fat')?.value  || '0'),
-    biasMed:  parseInt($('sl-bias-med')?.value  || '0'),
-    biasThin: parseInt($('sl-bias-thin')?.value || '0'),
-    predictedCut: S.diagCutDeg || 0,
-    actualCut: null
-  };
-  calPhase = 'predicted';
-  calUpdateUI();
-}
-
-function calRecord2() {
-  if (!calMode || !calPendingShot || calPhase !== 'predicted') return;
-  // Capture what the user dialed in as reality
-  calPendingShot.actualCut   = S.diagCutDeg || 0;
-  calPendingShot.actualSpeed = S.speed;
-  calPendingShot.actualSpin  = S.spin;
-  const err = calPendingShot.actualCut - calPendingShot.predictedCut;
-  calPendingShot.error = err;
-
-  calShots.push(calPendingShot);
-  if (calShots.length > CAL_MAX) calShots = calShots.slice(-CAL_MAX);
-  saveAimProfile();
-
-  // Update zone biases from calibration data
-  applyCalibrationToBias();
-
-  const res = $('cal-result');
-  if (res) {
-    const sign = err >= 0 ? '+' : '';
-    res.style.display = 'block';
-    res.innerHTML = '<strong style="color:#f0df70">Shot ' + calShots.length + ' saved</strong> · error: <span style="color:#c890f0">' + sign + err.toFixed(1) + '°</span>';
-  }
-  calPendingShot = null;
-  calPhase = 'idle';
-  calUpdateUI();
-  render();
-}
-
-function applyCalibrationToBias() {
-  if (!biasOn || !calShots.length) return;
-  const zones = {fat: [], med: [], thin: []};
-  calShots.forEach(s => {
-    if (s.error == null) return;
-    const z = s.predictedCut < 30 ? 'fat' : s.predictedCut < 60 ? 'med' : 'thin';
-    zones[z].push(s.error);
-  });
-  ['fat','med','thin'].forEach(z => {
-    if (!zones[z].length) return;
-    const avg = zones[z].reduce((a,b)=>a+b,0) / zones[z].length;
-    const sliderVal = Math.max(-12, Math.min(12, Math.round(avg / 0.15)));
-    const sl = $('sl-bias-' + z);
-    if (sl) sl.value = sliderVal;
-  });
-  onSliders();
 }
 
 function toggleCalLibrary() {
@@ -2235,7 +2346,7 @@ function calUndo() {
 function calReset() {
   calShots = []; calPhase = 'idle'; calPendingShot = null;
   saveAimProfile();
-  ['fat','med','thin'].forEach(z => { const sl=$('sl-bias-'+z); if(sl) sl.value='0'; });
+  const _bsl = $('sl-bias'); if(_bsl) _bsl.value='0';
   onSliders();
   const res = $('cal-result'); if (res) res.style.display = 'none';
   calUpdateUI(); render();
@@ -2336,6 +2447,39 @@ function applyRotation() {
 }
 function cycleRotation() { rotateRight(); }
 
+function loadAimProfile() {
+  try {
+    const p = JSON.parse(localStorage.getItem('lz-aimer-profile') || '{}');
+    if (typeof p.bias === 'number' && $('sl-bias')) $('sl-bias').value = p.bias;
+    if (Array.isArray(p.shots)) calShots = p.shots;
+  } catch(e) {}
+}
+function saveAimProfile() {
+  try {
+    localStorage.setItem('lz-aimer-profile', JSON.stringify({
+      bias: parseInt($('sl-bias')?.value || '0'),
+      shots: calShots.slice(-50)
+    }));
+  } catch(e) {}
+}
+
+function resetShot() {
+  sV('ob-arrow', false);
+  obPocketed = false;
+  justShot = false;
+  $('ob').setAttribute('fill','url(#gOB)');
+  $('ob').setAttribute('r', String(BALL_R));
+  $('ob').setAttribute('opacity','1');
+  $('ob-shadow').setAttribute('r', String(BALL_R));
+  $('ob-shadow').setAttribute('opacity','0.32');
+  $('ob-hi').setAttribute('opacity','0.45');
+  if (window._snapCb) {
+    S.cb = {...window._snapCb}; S.ob = {...window._snapOb};
+    S.diagCutDeg = window._snapCutDeg; S._diagDragRh = window._snapRh;
+  }
+  render();
+}
+
 // ── INIT ──────────────────────────────────────────────────────
 loadAimProfile();
 addFeltSpots();
@@ -2395,7 +2539,7 @@ function zeroSliders() {
   $('sl-spd').value  = '50';
   $('sl-spn').value  = '0';
   $('sl-vert').value = '0';
-  ['fat','med','thin'].forEach(z => { const sl=$('sl-bias-'+z); if(sl) sl.value='0'; });
+  const _bsl = $('sl-bias'); if(_bsl) _bsl.value='0';
   onSliders();
   document.activeElement && document.activeElement.blur();
 }
@@ -2403,8 +2547,11 @@ function zeroSliders() {
 function toggleBias() {
   biasOn = !biasOn;
   const btn = document.getElementById('ep-bias');
-  if (btn) { btn.classList.toggle('on', biasOn);  btn.blur(); }
-  // Sliders always visible, toggle just enables/disables their effect
+  if (btn) {
+    btn.classList.toggle('on', biasOn);
+    btn.innerHTML = biasOn ? 'BIAS<br>ON' : 'BIAS<br>OFF';
+    btn.blur();
+  }
   const bd = document.getElementById('bias-sliders');
   if (bd) bd.style.opacity = biasOn ? '1' : '0.35';
   document.activeElement && document.activeElement.blur();
@@ -2511,14 +2658,7 @@ function showSnapLabel(svgEl, x, y, label, ballId) {
 }
 
 // ── EDGE ZOOM ────────────────────────────────────────────────
-let panMode = true;
-function togglePan(){
-  panMode = !panMode;
-  const _pan = document.getElementById('ep-pan');
-  if (_pan) _pan.classList.toggle('dim', !panMode);
-  const btn = document.getElementById('ep-pan');
-  if(btn) btn.classList.toggle('on', panMode);
-}
+// togglePan defined above
 function edgeZoom(factor) {
   const wrap = document.getElementById('zoom-wrap');
   if (!wrap) return;
@@ -2710,14 +2850,14 @@ window.addEventListener('load', function(){ swapPanels(); });
       <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">SHOT<br>LIST</button>
       <button class="ep-btn g-yel"    id="btn-cbpath" onclick="toggleCbPath()">CUE<br>PATH</button>
       <button class="ep-btn g-brown"  id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
-      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">BIAS<br>ON</button>
+      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">BIAS<br>OFF</button>
       <button class="ep-btn g-swap"   id="btn-swap"   onclick="swapPanels()">⇅</button>
     </div>
     <div class="btb-row2">
       <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">ZOOM<br>IN</button>
       <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">ZOOM<br>OUT</button>
       <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET<br>ZOOM</button>
-      <button class="ep-btn g-pan" id="ep-pan" onclick="togglePan()">LOCK</button>
+      <button class="ep-btn g-pan on" id="ep-pan" onclick="togglePan()">LOCK<br>ON</button>
     </div>
     <div class="btb-row2">
       <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE<br>LOCK</button>
@@ -2744,28 +2884,40 @@ function toggleBtb(){
     btb = document.getElementById('btb');
     tab = document.getElementById('btb-tab');
     if (!btb || !tab) return;
+    // Position at middle-left of the table SVG on load
+    (function positionAtTableLeft() {
+      var tbl = document.getElementById('tbl') || document.querySelector('.svg-box');
+      if (!tbl) { requestAnimationFrame(positionAtTableLeft); return; }
+      var r = tbl.getBoundingClientRect();
+      var bw = btb.offsetWidth || 320;
+      var bh = btb.offsetHeight || 40;
+      var lx = r.left - bw/2 + 20;
+      lx = Math.max(4, Math.min(window.innerWidth - bw - 4, lx));
+      var ly = r.top + r.height/2 - bh/2;
+      ly = Math.max(4, Math.min(window.innerHeight - bh - 4, ly));
+      btb.style.bottom = 'auto';
+      btb.style.transform = 'none';
+      btb.style.left = lx + 'px';
+      btb.style.top  = ly + 'px';
+    })();
     var activePtr = null;
     tab.addEventListener('pointerdown', function(e){
-      if (e.target.id === 'btb-arrow') return; // arrow button handles toggle itself
+      if (e.target.id === 'btb-arrow') return;
       var rect = btb.getBoundingClientRect();
-      btb.style.transform = 'none';
-      btb.style.bottom = 'auto';
-      var maxL = Math.max(0, window.innerWidth  - btb.offsetWidth);
-      var maxT = Math.max(0, window.innerHeight - btb.offsetHeight);
-      var cl = Math.max(0, Math.min(maxL, rect.left));
-      var ct = Math.max(0, Math.min(maxT, rect.top));
-      btb.style.left = cl + 'px';
-      btb.style.top  = ct + 'px';
       startX = e.clientX; startY = e.clientY;
-      origLeft = cl; origTop = ct;
+      origLeft = rect.left; origTop = rect.top;
       didDrag = false; activePtr = e.pointerId;
-      // Do NOT capture yet — only capture once drag is confirmed
     });
     tab.addEventListener('pointermove', function(e){
       if (activePtr === null || e.pointerId !== activePtr) return;
       var dx = e.clientX - startX, dy = e.clientY - startY;
       if (!didDrag && Math.hypot(dx,dy) > 8) {
         didDrag = true;
+        // Only NOW commit to pixel positioning (no jump — drag already started)
+        btb.style.transform = 'none';
+        btb.style.bottom = 'auto';
+        btb.style.left = origLeft + 'px';
+        btb.style.top  = origTop  + 'px';
         try { tab.setPointerCapture(e.pointerId); } catch(ex){}
       }
       if (!didDrag) return;
@@ -2800,25 +2952,29 @@ function vernierAim(dir) {
   S.diagCutDeg  = Math.abs(signed);
   render();
 }
-function biasStep(zone, dir) {
-  const el = document.getElementById('sl-bias-' + zone);
+function biasStep(dir) {
+  const el = document.getElementById('sl-bias');
   if (!el) return;
   el.value = Math.max(-12, Math.min(12, parseInt(el.value) + dir));
   onSliders(); render();
 }
 </script>
 <!-- SHOT LIBRARY — floating, draggable -->
-<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(420px,96vw);background:rgba(10,24,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
+<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(500px,98vw);background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;touch-action:none;">
   <!-- Drag header -->
-  <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
-    <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SOT LIBRARY</span>
-    <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+  <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:2px solid #cccccc;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:#f0f0f0;">
+    <span style="font-size:13px;font-weight:900;letter-spacing:1.5px;color:#111111;">≡ SHOT LIBRARY</span>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <button onclick="shotListFontSize(-1)" style="width:28px;height:28px;border-radius:50%;border:1px solid #999;background:#fff;color:#111;font-size:18px;line-height:1;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;">−</button>
+      <button onclick="shotListFontSize(1)"  style="width:28px;height:28px;border-radius:50%;border:1px solid #999;background:#fff;color:#111;font-size:18px;line-height:1;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;">+</button>
+      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:#333333;font-size:22px;line-height:1;cursor:pointer;padding:0 4px;touch-action:manipulation;">✕</button>
+    </div>
   </div>
-  <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
-  <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
+  <div id="shot-library-list" style="max-height:min(70vh,600px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;"></div>
+  <div style="display:flex;gap:6px;padding:8px 12px;border-top:2px solid #cccccc;background:#f0f0f0;">
     <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
-      style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
-    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
+      style="flex:1;min-width:0;background:#ffffff;border:1px solid #999999;border-radius:4px;padding:6px 10px;color:#111111;font-size:14px;outline:none;-webkit-appearance:none;">
+    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:6px 14px;border-radius:4px;border:none;background:#1a5a1a;color:#ffffff;font-family:'Lato',sans-serif;font-size:13px;font-weight:900;cursor:pointer;">SAVE</button>
   </div>
   <!-- Resize grip -->
   <div id="shot-lib-resize" style="height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;touch-action:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05);">
@@ -2896,11 +3052,10 @@ function biasStep(zone, dir) {
   });
 
   // Hook into toggleShotLibrary to position on first open
-  var _orig = window.toggleShotLibrary;
   window.addEventListener('load', function(){
     var origToggle = window.toggleShotLibrary;
     window.toggleShotLibrary = function(){
-      origToggle();
+      if (typeof origToggle === 'function') origToggle();
       if (!positioned && panel && panel.style.display !== 'none') {
         requestAnimationFrame(positionUnderTable);
       }

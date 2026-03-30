@@ -107,7 +107,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .cal-action-btn.danger{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.4);color:#ff8080;}
 #cal-result{font-size:11px;color:#88ee88;margin-top:6px;display:none;line-height:1.65;}
 
-footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:10px 8px 4px;letter-spacing:1.5px;text-transform:uppercase;margin-top:12px;}
+footer{display:none;}
 
 @media (orientation: landscape) and (max-height: 430px) {
   .outer-wrap { max-width: 100% !important; }
@@ -300,8 +300,9 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
 .ep-btn.g-brown { background:#4a2800; border:1px solid #8a5010; color:#e8c080; }
 .ep-btn.g-brown.on { background:#f0df70; color:#1a1400; border-color:#c8b840; }
 .ep-btn.g-yel   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan.dim { opacity:0.45; }
+.ep-btn.g-pan          { background:#1a3a1a; color:#f0df70; border-color:#2a5a2a; }
+.ep-btn.g-pan.on   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
+.ep-btn.g-pan.dim  { background:#1a3a1a; color:#f0df70; border-color:#1a3a1a; opacity:0.55; }
 .ep-btn.g-swap { background:#0a6a7a; border-color:#1a9aaa; color:#e0f8ff; font-size:16px; }
 .ep-btn.g-swap.on { background:#a0e8f0; color:#001a1a; }
 /* pad body so content isn't hidden under bottom bar */
@@ -347,12 +348,51 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+// ── GRID COORDINATE SYSTEM ──────────────────────────────────────
+// 32 squares, numbered left-to-right top-to-bottom (row 1=top, row 4=bottom)
+// Sub-positions a-h clockwise from lower-left:
+// a=lower-left, b=left-center, c=upper-left, d=upper-center
+// e=upper-right, f=right-center, g=lower-right, h=lower-center
+const GRID_POS = {
+  a:[0,50], b:[0,25], c:[0,0], d:[25,0],
+  e:[50,0], f:[50,25], g:[50,50], h:[25,50],
+  '': [25,25]  // center — no letter suffix
+};
+function xyToGrid(x, y) {
+  // Find which square edge/corner the point is on
+  // Check all sub-positions of candidate squares
+  let best = null, bestD = 99;
+  for (let sq = 1; sq <= 32; sq++) {
+    const row = Math.floor((sq-1)/8), col = (sq-1)%8;
+    const tx = 30+col*50, ty = 30+row*50;
+    for (const [p,[dx,dy]] of Object.entries(GRID_POS)) {
+      const d = Math.hypot(x-(tx+dx), y-(ty+dy));
+      if (d < bestD) { bestD=d; best=sq+''+p; }
+    }
+  }
+  return best;
+}
+function gridDesc(cb, ob, pocket) {
+  const PNUM = {TL:1,TM:2,TR:3,BR:4,BM:5,BL:6};
+  return 'CB ' + xyToGrid(cb.x,cb.y) + ' · OB ' + xyToGrid(ob.x,ob.y) + ' · P' + (PNUM[pocket]||pocket);
+}
+
 const SHOT_LIBRARY = [
-  { name: 'Cross Side 1',  cb:{x:130,y:205}, ob:{x:130,y:80},  pocket:'BM', sol:1, cut:27,  rh:true,  desc:'CB sq26f, OB sq2g — 27°R · P5' },
-  { name: 'Cross Side 2',  cb:{x:180,y:205}, ob:{x:180,y:80},  pocket:'BM', sol:1, cut:14,  rh:true,  desc:'CB sq27f, OB sq3g — 14°R · P5' },
-  { name: 'Cross Side 3',  cb:{x:80, y:180}, ob:{x:130,y:80},  pocket:'BM', sol:1, cut:2,   rh:false, desc:'CB sq17g, OB sq2g — 2°L · P5' },
-  { name: 'End Rail 1',    cb:{x:230,y:155}, ob:{x:130,y:130}, pocket:'TR', sol:0, cut:2,   rh:false, desc:'CB sq20f, OB sq10g — 2°L · P3' },
-  { name: 'End Rail 2',    cb:{x:230,y:180}, ob:{x:80, y:130}, pocket:'TR', sol:0, cut:4,   rh:false, desc:'CB sq20g, OB sq9g — 4°L · P3' },
+  {
+    name: 'Easy Cross Side',
+    cb:{x:105,y:205}, ob:{x:155,y:80}, pocket:'BM', sol:0,
+    desc: gridDesc({x:130,y:205}, {x:155,y:80}, 'BM'),
+        lesson:'This is perhaps the second easiest bank to see and execute in our list of set shots. Try it with zero spin and zero follow or draw and a moderate speed. If it is short of the pocket, move the ghost ball to the left until you get it to go in. If it is wide of the pocket, move the ghost ball to the right until you find the perfect spot. Then shoot that shot until you can get five in a row to go in. If the shot that actually went in differs from what shows on the app, take the trouble to calibrate it. This teaches your LeStar Z\u2019s Banker how YOU shoot and eventually makes the app customized to your eye, and thusly gives you more accurate info.',
+    cue:'Find the spot that works for you, then own it.'
+  },
+  {
+    name: 'Easy Corner Bank',
+    cb:{x:180,y:180}, ob:{x:130,y:80}, pocket:'BL', sol:0,
+    desc: gridDesc({x:180,y:180}, {x:130,y:80}, 'BL'),
+    lesson:'This is perhaps the easiest bank in the list. It has the advantage of the forgiving nature of the corner pockets, compared to the side pockets. That is so because the corner rails can deflect a slight miss (or a deliberate one) into the pocket, but the side rails don\u2019t offer that pleasure. Shoot this shot head on, with no spin and shoot it with moderate speed. As always, if it misses wide, move the Ghost Ball \u2014 the Cue Ball \u2014 to the left. And of course if it misses short, move the Ghost to the right. When you get it to go in five times in a row, open Calibrate and record the original recommendation that LeStar Z made, and then record the settings that actually made it go in. This makes your app ever more accurate for your table and your eye and stroke.',
+    cue:'Corner pockets forgive. Use them.'
+  },
 ];
 let libraryOpen = false;
 // ── USER SHOT LIBRARY ──────────────────────────────────────────
@@ -399,44 +439,96 @@ function deleteUserShot(idx) {
   buildShotList();
 }
 
+let expandedPreset = -1;
+
 function buildShotList() {
   const el = document.getElementById('shot-library-list');
   if (!el) return;
-  // Preset shots first
-  let html = '<div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px;margin-bottom:3px;">PRESETS</div>';
-  html += SHOT_LIBRARY.map((s,i) =>
-    '<div data-preset="' + i + '" class="shot-lib-item" style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
-    '<div><div style="font-size:10px;font-weight:900;color:#f0df70">' + s.name + '</div>' +
-    '<div style="font-size:8px;color:rgba(255,255,255,0.4)">' + s.desc + '</div></div>' +
-    '</div>'
-  ).join('');
+  let html = '<div style="font-size:8px;color:rgba(255,255,255,0.65);letter-spacing:1px;margin-bottom:3px;">SHOT LIST</div>';
+  html += SHOT_LIBRARY.map((s,i) => {
+    const isExpanded = expandedPreset === i;
+    const hasLesson = s.lesson;
+    const num = i + 1;
+    let item = '<div data-preset="' + i + '" class="shot-lib-item" style="border-bottom:1px solid rgba(255,255,255,0.08);">';
+    // Header row — number + name clickable, arrow separate
+    item += '<div style="padding:7px 8px;display:flex;justify-content:space-between;align-items:center;">';
+    item += '<div style="flex:1;">';
+    item += '<div style="font-size:9px;font-weight:900;color:rgba(255,255,255,0.6);letter-spacing:1px;margin-bottom:1px;">SHOT #' + num + '</div>';
+    item += '<div onclick="presetClick(' + i + ')" style="font-size:11px;font-weight:900;color:#f0df70;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">' + s.name + '</div>';
+    item += '<div style="font-size:9px;color:rgba(255,255,255,0.85);margin-top:2px;">' + s.desc + '</div>';
+    item += '</div>';
+    if (hasLesson) {
+      item += '<div onclick="toggleLesson(' + i + ')" style="font-size:13px;color:rgba(240,223,112,0.6);padding-left:10px;cursor:pointer;line-height:1;">' + (isExpanded ? '▲' : '▼') + '</div>';
+    }
+    item += '</div>';
+    // Lesson panel (expanded)
+    if (isExpanded && hasLesson) {
+      item += '<div style="padding:8px 12px 12px;background:rgba(0,0,0,0.3);border-top:1px solid rgba(255,255,255,0.06);">';
+      if (s.cue) item += '<div style="font-size:10px;font-weight:900;color:#7dd3fc;margin-bottom:8px;font-style:italic;">"' + s.cue + '"</div>';
+      item += '<div style="font-size:11px;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:12px;">' + s.lesson + '</div>';
+      item += '<div style="font-size:8px;font-weight:900;color:rgba(255,255,255,0.65);letter-spacing:1px;margin-bottom:4px;">MY NOTES</div>';
+      const savedNote = localStorage.getItem("banker-note-" + i) || "";
+      item += '<textarea id="note-' + i + '" placeholder="Add your notes here…" oninput="saveNote(' + i + ')" style="width:100%;box-sizing:border-box;min-height:60px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:4px;color:#f0df70;font-family:Lato,sans-serif;font-size:11px;padding:6px 8px;outline:none;resize:vertical;-webkit-appearance:none;">' + savedNote + '</textarea>';
+      item += '</div>';
+    }
+    item += '</div>';
+    return item;
+  }).join('');
   // User shots
   if (userShots.length) {
-    html += '<div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px;margin:5px 0 3px;">MY SHOTS</div>';
+    html += '<div style="font-size:8px;color:rgba(255,255,255,0.65);letter-spacing:1px;margin:5px 0 3px;">MY SHOTS</div>';
     html += userShots.map((s,i) => {
       const d = new Date(s.ts);
       const dt = (d.getMonth()+1)+'/'+d.getDate();
       return '<div style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">' +
         '<div onclick="loadUserShot('+i+')" style="flex:1;cursor:pointer;">' +
         '<div style="font-size:10px;font-weight:900;color:#7dd3fc">' + s.name + '</div>' +
-        '<div style="font-size:8px;color:rgba(255,255,255,0.4)">' + dt + ' · ' + s.pocket + '</div></div>' +
+        '<div style="font-size:9px;color:rgba(255,255,255,0.75)">' + dt + ' · ' + s.pocket + '</div></div>' +
         '<button onclick="deleteUserShot('+i+')" style="font-size:9px;padding:1px 4px;border-radius:3px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;cursor:pointer;margin-left:4px;">✕</button>' +
         '</div>';
     }).join('');
   }
   el.innerHTML = html;
-  // Preset click handler
+  // Preset click handler — no longer needed (onclick inline)
   el.querySelectorAll('[data-preset]').forEach(item => {
-    item.addEventListener('click', () => {
-      loadShot(parseInt(item.dataset.preset));
-    });
+    item.addEventListener('click', () => {});
   });
+}
+
+function toggleLesson(i) {
+  const wasExpanded = expandedPreset === i;
+  expandedPreset = wasExpanded ? -1 : i;
+  buildShotList();
+  if (!wasExpanded) {
+    const saved = localStorage.getItem("banker-note-" + i) || "";
+    const ta = document.getElementById("note-" + i);
+    if (ta) ta.value = saved;
+  }
+}
+
+function presetClick(i) {
+  loadShot(i);
+  const wasExpanded = expandedPreset === i;
+  expandedPreset = wasExpanded ? -1 : i;
+  buildShotList();
+  // Restore note if just expanded
+  if (!wasExpanded) {
+    const saved = localStorage.getItem("banker-note-" + i) || "";
+    const ta = document.getElementById("note-" + i);
+    if (ta) ta.value = saved;
+  }
+}
+
+function saveNote(i) {
+  const ta = document.getElementById("note-" + i);
+  if (ta) localStorage.setItem("banker-note-" + i, ta.value);
 }
 
 function toggleShotLibrary() {
   libraryOpen = !libraryOpen;
   const panel = document.getElementById('shot-library-panel');
   if (panel) panel.style.display = libraryOpen ? 'block' : 'none';
+  if (libraryOpen) { loadUserShots(); buildShotList(); }
 }
 function loadShot(idx) {
   const shot = SHOT_LIBRARY[idx];
@@ -538,22 +630,10 @@ function loadShot(idx) {
     <span class="sval" id="sv-vert" style="color:#7dd3fc">center</span>
   </div>
   <div class="srow" style="margin-top:6px">
-    <span class="slbl" style="color:#c890f0;font-size:9px;">FAT</span>
-    <input type="range" id="sl-bias-fat" min="-12" max="12" value="0" oninput="onSliders()">
-    <span id="sv-bias-fat-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('fat',-1)">−</button><span id="sv-bias-fat" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('fat',1)">+</button></span>
-  </div>
-  <div class="srow" style="margin-top:4px">
-    <span class="slbl" style="color:#c890f0;font-size:9px;">MED</span>
-    <input type="range" id="sl-bias-med" min="-12" max="12" value="0" oninput="onSliders()">
-    <span id="sv-bias-med-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('med',-1)">−</button><span id="sv-bias-med" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('med',1)">+</button></span>
-  </div>
-  <div class="srow" style="margin-top:4px">
-    <span class="slbl" style="color:#c890f0;font-size:9px;">THIN</span>
-    <input type="range" id="sl-bias-thin" min="-12" max="12" value="0" oninput="onSliders()">
-    <span id="sv-bias-thin-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('thin',-1)">−</button><span id="sv-bias-thin" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;" style="color:#c890f0;min-width:22px;text-align:center;">0</span><button class="vbtn" onclick="biasStep('thin',1)">+</button></span>
+    <span class="slbl" style="color:#c890f0;">BIAS</span>
+    <input type="range" id="sl-bias" min="-12" max="12" value="0" oninput="onSliders()">
+    <span id="sv-bias-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
+    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep(-1)">−</button><span id="sv-bias" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="biasStep(1)">+</button></span>
   </div>
 </div>
 </div><!-- /block-sliders -->
@@ -929,14 +1009,31 @@ function loadShot(idx) {
       <circle id="contact-dot2" cx="0" cy="0" r="5" fill="none" stroke="#a78bfa" stroke-width="1.6" opacity="0"/>
       <!-- Invisible hit zone for contact dot — always receives pointer events -->
 
-      <!-- Ghost ball (toggleable) -->
-      <line id="cb-ghost-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0"/>
-      <circle id="ghost-ball" cx="0" cy="0" r="10" fill="rgba(255,255,255,.06)" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3,3" opacity="0"/>
-
       <!-- Object ball -->
       <circle id="ob-shadow" cx="281" cy="131" r="10" fill="#000" opacity="0.32"/>
       <circle id="ob"        cx="280" cy="130" r="10" fill="url(#gOB)" stroke="#903010" stroke-width="1"/>
       <circle id="ob-hi"     cx="276" cy="126" r="3.5" fill="#fff" opacity="0.45"/>
+
+      <!-- CB path rays: stun/follow/draw -->
+      <line id="cb-stun"   x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-stun)"  opacity="0"/>
+      <line id="cb-follow" x1="0" y1="0" x2="0" y2="0" stroke="#f97316"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-follow)" opacity="0"/>
+      <line id="cb-draw"   x1="0" y1="0" x2="0" y2="0" stroke="#60a5fa"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-draw)"   opacity="0"/>
+      <circle id="cb-stun-dot"   cx="0" cy="0" r="5" opacity="0"/>
+      <circle id="cb-follow-dot" cx="0" cy="0" r="5" opacity="0"/>
+      <circle id="cb-draw-dot"   cx="0" cy="0" r="5" opacity="0"/>
+      <!-- CB Path legend -->
+      <g id="cb-path-legend" opacity="0">
+        <rect x="348" y="178" width="80" height="46" rx="4" fill="rgba(0,0,0,0.55)"/>
+        <line x1="353" y1="189" x2="370" y2="189" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text x="374" y="192" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">STUN</text>
+        <line x1="353" y1="201" x2="370" y2="201" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text x="374" y="204" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">FOLLOW</text>
+        <line x1="353" y1="213" x2="370" y2="213" stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text x="374" y="216" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#60a5fa">DRAW</text>
+      </g>
+      <!-- Ghost ball — rendered above OB -->
+      <line id="cb-ghost-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0"/>
+      <circle id="ghost-ball" cx="0" cy="0" r="10" fill="rgba(240,223,112,0.12)" stroke="#f0df70" stroke-width="2" stroke-dasharray="4,3" opacity="0"/>
 
       <!-- Cue ball -->
       <circle id="cb-shadow" cx="151" cy="131" r="10" fill="#000" opacity="0.32"/>
@@ -1033,19 +1130,7 @@ function loadShot(idx) {
 
 </div><!-- /swap-container -->
 
-  <!-- SHOT LIBRARY PANEL — floating, draggable -->
-  <div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
-    <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
-      <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SHOT LIBRARY</span>
-      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
-    </div>
-    <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
-    <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
-      <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
-        style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
-      <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
-    </div>
-  </div>
+
 
 <!-- ── READOUTS ── -->
 <div id="readouts">
@@ -1088,6 +1173,7 @@ function loadShot(idx) {
 
 
 <script>
+let panMode = true;
 const DEG = 180/Math.PI, RAD = Math.PI/180;
 const Rb  = 82;   // OB radius in botsvg viewBox units
 const BOT_OCX = 148;
@@ -1240,14 +1326,19 @@ function reboundDir(dx, dy, rail, k) {
 // snapToPocket — small threshold, only catches exact corner geometry hits
 // (heavy lifting is done inside rayHit's CORNER_SNAP logic)
 function snapToPocket(pt, threshold) {
-  threshold = threshold || 14;
-  const corners = [{x:TL.left,y:TL.top},{x:TL.right,y:TL.top},{x:TL.left,y:TL.bottom},{x:TL.right,y:TL.bottom}];
+  threshold = threshold || 22;
+  const allPockets = Object.values(POCKETS).map(p => ({x:p.x, y:p.y}));
   let best = null, bestD = threshold;
-  for (const c of corners) {
-    const d = Math.hypot(pt.x-c.x, pt.y-c.y);
-    if (d < bestD) { bestD=d; best=c; }
+  for (const p of allPockets) {
+    const d = Math.hypot(pt.x - p.x, pt.y - p.y);
+    if (d < bestD) { bestD = d; best = p; }
   }
-  return best ? {x:best.x, y:best.y} : pt;
+  // If no pocket is close, snap to the selected target pocket only if VERY close
+  if (!best && S.target) {
+    const dTarget = Math.hypot(pt.x - S.target.x, pt.y - S.target.y);
+    if (dTarget < 18) return {x: S.target.x, y: S.target.y};
+  }
+  return best ? {x: best.x, y: best.y} : pt;
 }
 
 // Compute display shot from table geometry.
@@ -1668,6 +1759,10 @@ function drawBot(sol) {
   ticks += '<text x="'+(ocx-r)+'" y="'+(ocy-r-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">'+(rh?'100%':'0%')+'</text>';
   ticks += '<text x="'+ocx+'" y="'+(ocy-r-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>';
   ticks += '<text x="'+(ocx+r)+'" y="'+(ocy-r-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">'+(rh?'0%':'100%')+'</text>';
+  // Dynamic contact/inside-edge readout above ball
+  var _ieP = Math.round(aimF*100), _cpP = Math.round(aimF*50);
+  var _dir2 = cutDeg < 0.5 ? '' : (rh ? ' L' : ' R');
+  ticks += '<text x="'+ocx+'" y="'+(ocy-r-50)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="900" fill="#f0df70">Contact: '+_cpP+'%'+_dir2+'  ·  Inside Edge: '+_ieP+'%'+_dir2+'</text>';
   // Fraction ticks + labels on centerline
   tickData.forEach(function(fd) {
     var tx = (ocx-r) + fd.f*2*r;
@@ -1795,8 +1890,35 @@ function render() {
   sC('ob2-hi',     S.ob2.x-3.5, S.ob2.y-3.5);
 
   // Hide all dynamic lines
-  ['ob-path','bk-path','bk-path2','contact-dot','contact-dot2','ghost-ball'].forEach(id=>sV(id,false));
+  ['ob-path','bk-path','bk-path2','contact-dot','contact-dot2'].forEach(id=>sV(id,false));
   ['aim-cut-val','aim-cut-lbl','aim-frac-val','aim-frac-lbl'].forEach(id=>sV(id,false));
+
+  // Ghost ball — always shown regardless of solution state
+  {
+    const _cbToObAngle0 = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x);
+    // Ghost: tracks cut angle like Aimer
+    const _cutDeg0 = (S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? S.diagCutDeg : 0;
+    const _rh0 = S._diagDragRh !== undefined ? S._diagDragRh : false;
+    const _ghostAngle0 = _cbToObAngle0 + (_rh0 ? 1 : -1) * Math.min(_cutDeg0, 90) * RAD;
+    const gx0 = S.ob.x - 2 * BALL_R * Math.cos(_ghostAngle0);
+    const gy0 = S.ob.y - 2 * BALL_R * Math.sin(_ghostAngle0);
+    const _gb0 = $('ghost-ball');
+    if (_gb0) {
+      _gb0.setAttribute('fill', 'rgba(240,223,112,0.15)');
+      _gb0.setAttribute('stroke', '#f0df70');
+      _gb0.setAttribute('stroke-width', '1.8');
+      _gb0.setAttribute('stroke-dasharray', '4,3');
+      _gb0.setAttribute('r', String(BALL_R));
+      sC('ghost-ball', gx0, gy0);
+      sV('ghost-ball', true);
+    }
+    const _cgl0 = $('cb-ghost-line');
+    if (_cgl0) {
+      _cgl0.setAttribute('x1', S.cb.x); _cgl0.setAttribute('y1', S.cb.y);
+      _cgl0.setAttribute('x2', gx0);    _cgl0.setAttribute('y2', gy0);
+      _cgl0.setAttribute('opacity', '1');
+    }
+  }
 
   const sols = allSolutions();
   if (sols.length === 0) {
@@ -1881,21 +2003,56 @@ function render() {
   // ── TABLE GRAPHICS ──
 
   // Ghost ball — always shown, starts congruent with OB at 0°
+  // Ghost: tracks cut angle like Aimer
   const _cbToObAngle = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x);
-  const _ghostAngle = _cbToObAngle + ((S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? (S._diagDragRh ? 1 : -1) * (sol.θ - _cbToObAngle) : 0);
-  const _ghostOffset = (S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? 2 * BALL_R : 0;
-  const gx = S.ob.x - _ghostOffset * Math.cos(_ghostAngle);
-  const gy = S.ob.y - _ghostOffset * Math.sin(_ghostAngle);
+  const _cutDegG = (S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? S.diagCutDeg : 0;
+  const _rhG = S._diagDragRh !== undefined ? S._diagDragRh : false;
+  const _ghostAngleG = _cbToObAngle + (_rhG ? 1 : -1) * Math.min(_cutDegG, 90) * RAD;
+  const gx = S.ob.x - 2 * BALL_R * Math.cos(_ghostAngleG);
+  const gy = S.ob.y - 2 * BALL_R * Math.sin(_ghostAngleG);
   const _gb = $('ghost-ball');
   if (_gb) {
     _gb.setAttribute('fill', 'rgba(240,223,112,0.15)');
     _gb.setAttribute('stroke', '#f0df70');
-    _gb.setAttribute('stroke-width', '2');
+    _gb.setAttribute('stroke-width', '1.8');
     _gb.setAttribute('stroke-dasharray', '4,3');
     _gb.setAttribute('r', String(BALL_R));
     sC('ghost-ball', gx, gy);
     sV('ghost-ball', true);
   }
+
+  // CB Path (stun/follow/draw lines from ghost ball position)
+  if (cbPathOn && _cutDegG > 0.5) {
+    const _obDeptAngle = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x) + (_rhG ? 1 : -1) * _cutDegG * RAD;
+    const stunAngle   = _obDeptAngle + Math.PI/2 * (_rhG ? -1 : 1);
+    const followAngle = stunAngle + (_obDeptAngle - stunAngle) * 0.55;
+    const drawAngle   = stunAngle - (_obDeptAngle - stunAngle) * 0.55;
+    function _rayToRail(sx, sy, angle) {
+      const dx = Math.cos(angle), dy = Math.sin(angle);
+      let t = 9999;
+      if (dy < 0) t = Math.min(t, (TL.top    - sy) / dy);
+      if (dy > 0) t = Math.min(t, (TL.bottom - sy) / dy);
+      if (dx < 0) t = Math.min(t, (TL.left   - sx) / dx);
+      if (dx > 0) t = Math.min(t, (TL.right  - sx) / dx);
+      return { x: sx + dx*Math.max(10,t), y: sy + dy*Math.max(10,t) };
+    }
+    const _pks = [{x:TL.left,y:TL.top},{x:230,y:TL.top},{x:TL.right,y:TL.top},{x:TL.left,y:TL.bottom},{x:230,y:TL.bottom},{x:TL.right,y:TL.bottom}];
+    function _isScratch(ep) { return _pks.some((p,i)=>Math.hypot(ep.x-p.x,ep.y-p.y)<(i===1||i===4?22:28)); }
+    function _drawRay(lid, did, angle, col, scol) {
+      const end = _rayToRail(gx, gy, angle);
+      const scr = _isScratch(end);
+      const el = document.getElementById(lid); const dot = document.getElementById(did);
+      if (el) { sL(lid, gx, gy, end.x, end.y); el.style.opacity='1'; el.setAttribute('stroke', scr?scol:col); }
+      if (dot) { dot.setAttribute('cx',end.x); dot.setAttribute('cy',end.y); dot.setAttribute('fill',scr?'#ef4444':'#22c55e'); dot.style.opacity='1'; }
+    }
+    _drawRay('cb-stun',  'cb-stun-dot',   stunAngle,   'rgba(255,255,255,0.85)', '#ef4444');
+    _drawRay('cb-follow','cb-follow-dot', followAngle, '#f97316',                '#ef4444');
+    _drawRay('cb-draw',  'cb-draw-dot',   drawAngle,   '#60a5fa',                '#ef4444');
+  } else {
+    ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
+      .forEach(id=>{const el=document.getElementById(id);if(el)el.style.opacity='0';});
+  }
+
   // CB → Ghost gold dashed line
   const _cgl = $('cb-ghost-line');
   if (_cgl) {
@@ -1936,7 +2093,7 @@ function render() {
     }
   }
 
-  // Bank path: contact → rebound end (physics-computed) or pocket fallback
+  // Bank path: physics rebound end, snapped to pocket if close
   const bkTarget = sol._reboundEnd || pocket;
   if (sol.contact2) {
     sL('bk-path',  sol.contact.x, sol.contact.y, sol.contact2.x, sol.contact2.y);
@@ -2102,7 +2259,7 @@ svg.addEventListener('pointerdown', e => {
     const d = Math.hypot(p.x - pocket.x, p.y - pocket.y);
     if (d < bestD) { bestD = d; bestKey = k; }
   }
-  if (bestKey && bestD < 60) {
+  if (bestKey && bestD < 60 && !drag) {
     selectPocket(bestKey);
     sV('phl-' + bestKey, true);
     setTimeout(() => sV('phl-' + bestKey, false), 400);
@@ -2179,7 +2336,7 @@ let biasOn = false;
 function toggleBias(){
   biasOn = !biasOn;
   const btn = document.getElementById('ep-bias');
-  if(btn){ btn.classList.toggle('on', biasOn); }
+  if(btn){ btn.classList.toggle('on', biasOn); btn.innerHTML = biasOn ? 'BIAS<br>ON' : 'BIAS<br>OFF'; }
   const bd = document.getElementById('bias-sliders');
   if(bd) bd.style.opacity = biasOn ? '1' : '0.35';
   onSliders();
@@ -2379,23 +2536,18 @@ function onSliders() {
   S.spin  = parseInt($('sl-spn').value);
   S.vert  = parseInt($('sl-vert').value);
 
-  // Three-zone bias — use current cut angle without calling computeDiagShot (avoids side effects)
-  const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+  // Single bias
   if (typeof biasOn !== 'undefined' && biasOn) {
-    const bFat  = parseInt($('sl-bias-fat')?.value  || '0');
-    const bMed  = parseInt($('sl-bias-med')?.value  || '0');
-    const bThin = parseInt($('sl-bias-thin')?.value || '0');
-    if (cutDeg < 30)      S.bias = bFat + (bMed  - bFat)  * (cutDeg / 30);
-    else if (cutDeg < 60) S.bias = bMed + (bThin - bMed)  * ((cutDeg-30) / 30);
-    else                  S.bias = bThin;
+    const bVal = parseInt($('sl-bias')?.value || '0');
+    S.bias = bVal;
   } else {
     S.bias = 0;
   }
-  ['fat','med','thin'].forEach(z => {
-    const v = parseInt($('sl-bias-'+z)?.value || '0');
-    const el=$('sv-bias-'+z); if(el) el.textContent=(v===0?'0':(v>0?'+':'')+v);
-    const en=$('sv-bias-'+z+'-n'); if(en) en.textContent=Math.abs(v)===0?'0':Math.max(1,Math.round(Math.abs(v)/12*10));
-  });
+  const _bv = parseInt($('sl-bias')?.value || '0');
+  const _bn = document.getElementById('sv-bias-n');
+  const _bs = document.getElementById('sv-bias');
+  if (_bn) _bn.textContent = Math.abs(_bv);
+  if (_bs) _bs.textContent = (_bv > 0 ? '+' : '') + _bv;
 
   $('sv-spd').textContent = S.speed < 0.28 ? 'slow' : S.speed < 0.72 ? 'med' : 'fast';
   const _sv=parseInt($('sl-spd').value), _sn=Math.abs(parseInt($('sl-spn').value));
@@ -2699,11 +2851,10 @@ function showSnapLabel(svgEl,x,y,label,ballId){
   if(snapLabelTimer)clearTimeout(snapLabelTimer);
   snapLabelTimer=setTimeout(()=>{lbl.style.opacity='0';setTimeout(()=>lbl.remove(),400);},2000);
 }
-let panMode = true;
 function togglePan(){
   panMode = !panMode;
   const btn = document.getElementById('ep-pan');
-  if(btn) btn.classList.toggle('on', panMode);
+  if(btn){ btn.classList.toggle('on', panMode); btn.classList.toggle('dim', !panMode); btn.innerHTML = panMode ? 'LOCK<br>ON' : 'LOCK<br>OFF'; }
 }
 function toggleSnap(){
   snapOn=!snapOn;
@@ -2792,6 +2943,21 @@ const _pz = {
 <!-- ── EDGE CONTROL PANEL ── -->
 
 </div><!-- /outer-wrap -->
+<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
+  <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
+    <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SHOT LIBRARY</span>
+    <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+  </div>
+  <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
+  <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
+    <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
+      style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
+    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
+  </div>
+  <div id="shot-lib-resize" style="height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;touch-action:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05);">
+    <div style="width:32px;height:3px;border-radius:2px;background:rgba(240,223,112,0.25);pointer-events:none;"></div>
+  </div>
+</div>
 <footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
 <div id="info-overlay">
   <div id="info-inner">
@@ -2834,14 +3000,14 @@ const _pz = {
       <button class="ep-btn g-yel"    id="btn-cbpath"  onclick="toggleCbPath()">CUE<br>PATH</button>
       <button class="ep-btn g-yel"    id="btn-cushion" onclick="toggleCushions()">1 CUSHION</button>
       <button class="ep-btn g-brown"  id="btn-angle"   onclick="toggleBounce()">ANGLE</button>
-      <button class="ep-btn g-bias"   id="ep-bias"     onclick="toggleBias()">BIAS<br>ON</button>
+      <button class="ep-btn g-bias"   id="ep-bias"     onclick="toggleBias()">BIAS<br>OFF</button>
       <button class="ep-btn g-swap"   id="btn-swap"    onclick="swapPanels()" title="Swap panels">⇅</button>
     </div>
     <div class="btb-row2">
       <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">ZOOM<br>IN</button>
       <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">ZOOM<br>OUT</button>
       <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET<br>ZOOM</button>
-      <button class="ep-btn g-pan"  id="ep-pan" onclick="togglePan()">LOCK</button>
+      <button class="ep-btn g-pan on" id="ep-pan" onclick="togglePan()">LOCK<br>ON</button>
     </div>
     <div class="btb-row2">
       <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE<br>LOCK</button>
@@ -2868,6 +3034,22 @@ function toggleBtb(){
     btb = document.getElementById('btb');
     tab = document.getElementById('btb-tab');
     if (!btb || !tab) return;
+    // Position at middle-left of the table SVG on load
+    (function positionAtTableLeft() {
+      var tbl = document.getElementById('tbl') || document.querySelector('.svg-box');
+      if (!tbl) { requestAnimationFrame(positionAtTableLeft); return; }
+      var r = tbl.getBoundingClientRect();
+      var bw = btb.offsetWidth || 320;
+      var bh = btb.offsetHeight || 40;
+      var lx = r.left + 4;
+      lx = Math.max(4, Math.min(window.innerWidth - bw - 4, lx));
+      var ly = r.top + r.height/2 - bh/2;
+      ly = Math.max(4, Math.min(window.innerHeight - bh - 4, ly));
+      btb.style.bottom = 'auto';
+      btb.style.transform = 'none';
+      btb.style.left = lx + 'px';
+      btb.style.top  = ly + 'px';
+    })();
     var activePtr = null;
     tab.addEventListener('pointerdown', function(e){
       if (e.target.id === 'btb-arrow') return; // arrow button handles toggle itself
@@ -2944,9 +3126,7 @@ function toggleBtb(){
   // Load bias settings
   try {
     const b = JSON.parse(localStorage.getItem('lz-banker-bias') || '{}');
-    if (b.fat !== undefined) { const el = document.getElementById('sl-bias-fat'); if(el) el.value = b.fat; }
-    if (b.med !== undefined) { const el = document.getElementById('sl-bias-med'); if(el) el.value = b.med; }
-    if (b.thin !== undefined) { const el = document.getElementById('sl-bias-thin'); if(el) el.value = b.thin; }
+    if (b.bias !== undefined) { const el = document.getElementById('sl-bias'); if(el) el.value = b.bias; }
   } catch(e) {}
 
     var w = getWrap();
@@ -2983,8 +3163,8 @@ function vernierAim(dir){
   if(Math.abs(signed)<0.001)signed=dir*oneDeg;
   S._diagDragRh=signed<0;S.diagCutDeg=Math.abs(signed);render();
 }
-function biasStep(zone,dir){
-  const el=document.getElementById('sl-bias-'+zone);
+function biasStep(dir){
+  const el=document.getElementById('sl-bias');
   if(!el)return;
   el.value=Math.max(-12,Math.min(12,parseInt(el.value)+dir));
   onSliders();render();
@@ -3023,6 +3203,56 @@ function biasStep(zone,dir){
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName === 'BUTTON') return;
       var r = panel.getBoundingClientRect();
+      grabOffX = e.clientX - r.left;
+      grabOffY = e.clientY - r.top;
+      activePtr = e.pointerId;
+      try{ header.setPointerCapture(e.pointerId); }catch(ex){}
+    });
+    header.addEventListener('pointermove', function(e){
+      if (activePtr===null || e.pointerId!==activePtr) return;
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,  e.clientX-grabOffX));
+      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, e.clientY-grabOffY));
+      panel.style.left=nx+'px'; panel.style.top=ny+'px';
+    });
+    header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+
+    // Position on first open
+    var origToggle = window.toggleShotLibrary;
+    window.toggleShotLibrary = function(){
+      origToggle();
+      if (!positioned && panel && panel.style.display !== 'none'){
+        requestAnimationFrame(positionPanel);
+      }
+    };
+  });
+})();
+</script>
+<script>
+(function(){
+  var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
+  var positioned = false;
+
+  function positionUnderTable() {
+    var topBox = document.querySelector('.svg-box.top-box');
+    if (!topBox || !panel) return;
+    var r = topBox.getBoundingClientRect();
+    var pw = panel.offsetWidth || 420;
+    var left = r.left + (r.width - pw) / 2;
+    left = Math.max(4, Math.min(window.innerWidth - pw - 4, left));
+    panel.style.left = left + 'px';
+    panel.style.top  = (r.bottom + 6) + 'px';
+    positioned = true;
+  }
+
+  window.addEventListener('load', function(){
+    panel  = document.getElementById('shot-library-panel');
+    header = document.getElementById('shot-lib-header');
+    if (!panel || !header) return;
+
+    header.addEventListener('pointerdown', function(e){
+      if (e.target.tagName === 'BUTTON') return;
+      var r = panel.getBoundingClientRect();
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
       didDrag=false; activePtr=e.pointerId;
@@ -3035,19 +3265,45 @@ function biasStep(zone,dir){
         try{ header.setPointerCapture(e.pointerId); }catch(ex){}
       }
       if (!didDrag) return;
-      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,  origLeft+dx));
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
       var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
     });
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
 
-    // Position on first open
+    // ── Resize grip ──────────────────────────────────────────────────────────
+    var grip = document.getElementById('shot-lib-resize');
+    var list = document.getElementById('shot-library-list');
+    var rStartY, rStartH, rPtr=null;
+    if (grip && list) {
+      grip.addEventListener('pointerdown', function(e){
+        rStartY = e.clientY;
+        rStartH = list.offsetHeight;
+        rPtr = e.pointerId;
+        try{ grip.setPointerCapture(e.pointerId); }catch(x){}
+        e.stopPropagation();
+      });
+      grip.addEventListener('pointermove', function(e){
+        if(rPtr===null||e.pointerId!==rPtr) return;
+        var dy = e.clientY - rStartY;
+        var newH = Math.max(44, Math.min(window.innerHeight * 0.75, rStartH + dy));
+        list.style.maxHeight = newH + 'px';
+        list.style.height    = newH + 'px';
+      });
+      grip.addEventListener('pointerup',     function(e){ if(e.pointerId===rPtr) rPtr=null; });
+      grip.addEventListener('pointercancel', function(e){ if(e.pointerId===rPtr) rPtr=null; });
+    }
+  });
+
+  // Hook into toggleShotLibrary to position on first open
+  var _orig = window.toggleShotLibrary;
+  window.addEventListener('load', function(){
     var origToggle = window.toggleShotLibrary;
     window.toggleShotLibrary = function(){
       origToggle();
-      if (!positioned && panel && panel.style.display !== 'none'){
-        requestAnimationFrame(positionPanel);
+      if (!positioned && panel && panel.style.display !== 'none') {
+        requestAnimationFrame(positionUnderTable);
       }
     };
   });
