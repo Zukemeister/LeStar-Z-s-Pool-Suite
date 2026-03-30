@@ -2891,7 +2891,7 @@ function toggleBtb(){
       var r = tbl.getBoundingClientRect();
       var bw = btb.offsetWidth || 320;
       var bh = btb.offsetHeight || 40;
-      var lx = r.left - bw/2 + 20;
+      var lx = r.left + 4;
       lx = Math.max(4, Math.min(window.innerWidth - bw - 4, lx));
       var ly = r.top + r.height/2 - bh/2;
       ly = Math.max(4, Math.min(window.innerHeight - bh - 4, ly));
