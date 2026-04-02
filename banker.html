@@ -65,6 +65,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 #sl-spn::-webkit-slider-thumb{background:#e870b0;}
 #sl-vert::-webkit-slider-thumb{background:#7dd3fc;}
 #sl-bias::-webkit-slider-thumb{background:#c890f0;}
+#sl-throw-lo::-webkit-slider-thumb,#sl-throw-mi::-webkit-slider-thumb,#sl-throw-hi::-webkit-slider-thumb{background:#e87030;}
 
 /* ── READOUTS ── */
 #readouts{margin-top:2px;padding:0 12px 4px 12px;}
@@ -635,6 +636,24 @@ function loadShot(idx) {
     <span id="sv-bias-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
     <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep(-1)">−</button><span id="sv-bias" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="biasStep(1)">+</button></span>
   </div>
+  <div class="srow" style="margin-top:8px">
+    <span class="slbl" style="color:#e87030;font-size:9px;">T-LOW</span>
+    <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
+    <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
+  </div>
+  <div class="srow" style="margin-top:4px">
+    <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
+    <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
+    <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
+  </div>
+  <div class="srow" style="margin-top:4px">
+    <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
+    <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
+    <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
+  </div>
 </div>
 </div><!-- /block-sliders -->
 <div class="diagram-wrap">
@@ -1190,8 +1209,8 @@ const FRACTIONS = [
 ];
 
 const S = {
-  ob:         {x:230, y:150},   // OB just above center
-  cb:         {x:130, y:200},   // CB bottom-left — clear angled approach
+  ob:         {x:180, y:80},    // OB upper area — 3g
+  cb:         {x:280, y:180},   // CB lower center — 21g, cross corner bank
   ob2:        {x:370, y:190},   // reference ball
   target:     {x:430, y:30},    // TR pocket — default until user taps a pocket
   diagCutDeg: null,
@@ -1872,7 +1891,24 @@ function applySpinToRebound(rdx, rdy, rail, cutDeg, side) {
   if (len < 1e-9) return {dx: rdx, dy: rdy};  // safety: return original if degenerate
   return {dx: nx/len, dy: ny/len};
 }
+function getThrowComp(cutDeg) {
+  if (cutDeg <= 0) return 0;
+  if (cutDeg <= 20) return throwLo * (cutDeg / 20);
+  if (cutDeg <= 50) { const t=(cutDeg-20)/30; return throwLo+(throwMi-throwLo)*t; }
+  const t=(cutDeg-50)/40; return throwMi+(throwHi-throwMi)*t;
+}
+
 function render() {
+  if (typeof snapOn !== 'undefined' && snapOn) {
+    if (!window._snapPos) window._snapPos = {};
+    if(typeof S !== 'undefined' && typeof xyToGrid !== 'undefined'){
+      window._snapPos.cb = {x:S.cb.x, y:S.cb.y, label:xyToGrid(S.cb.x,S.cb.y)};
+      window._snapPos.ob = {x:S.ob.x, y:S.ob.y, label:xyToGrid(S.ob.x,S.ob.y)};
+      updateSnapLabels(document.getElementById('tbl'));
+    }
+  } else {
+    ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
+  }
   const {ob, cb} = S;
 
   // Move balls
@@ -1900,8 +1936,13 @@ function render() {
     const _cutDeg0 = (S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? S.diagCutDeg : 0;
     const _rh0 = S._diagDragRh !== undefined ? S._diagDragRh : false;
     const _ghostAngle0 = _cbToObAngle0 + (_rh0 ? 1 : -1) * Math.min(_cutDeg0, 90) * RAD;
-    const gx0 = S.ob.x - 2 * BALL_R * Math.cos(_ghostAngle0);
-    const gy0 = S.ob.y - 2 * BALL_R * Math.sin(_ghostAngle0);
+    // Throw compensation — shift ghost ball toward fuller contact
+    const _tc0 = getThrowComp(Math.abs(_cutDeg0));
+    const _td0 = _tc0 * BALL_R;
+    const _perpX0 = -Math.sin(_cbToObAngle0) * _td0 * (_rh0 ? -1 : 1);
+    const _perpY0 =  Math.cos(_cbToObAngle0) * _td0 * (_rh0 ? -1 : 1);
+    const gx0 = Math.max(TL.left+BALL_R, Math.min(TL.right-BALL_R,  S.ob.x - 2*BALL_R*Math.cos(_ghostAngle0) + _perpX0));
+    const gy0 = Math.max(TL.top+BALL_R,  Math.min(TL.bottom-BALL_R, S.ob.y - 2*BALL_R*Math.sin(_ghostAngle0) + _perpY0));
     const _gb0 = $('ghost-ball');
     if (_gb0) {
       _gb0.setAttribute('fill', 'rgba(240,223,112,0.15)');
@@ -2008,8 +2049,16 @@ function render() {
   const _cutDegG = (S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? S.diagCutDeg : 0;
   const _rhG = S._diagDragRh !== undefined ? S._diagDragRh : false;
   const _ghostAngleG = _cbToObAngle + (_rhG ? 1 : -1) * Math.min(_cutDegG, 90) * RAD;
-  const gx = S.ob.x - 2 * BALL_R * Math.cos(_ghostAngleG);
-  const gy = S.ob.y - 2 * BALL_R * Math.sin(_ghostAngleG);
+  // Throw compensation — use baseSol geometric cut angle
+  const _bankCutDeg = (typeof baseSol !== 'undefined') ? (baseSol.cutDeg || (baseSol.Z_des ? baseSol.Z_des * 180/Math.PI : 30)) : 30;
+  const _tcG = getThrowComp(_bankCutDeg);
+  // Shift ghost ball perpendicular to CB→OB — scale by 3 for visibility
+  const _tdG = _tcG * BALL_R * 3;
+  const _rhG2 = S._diagDragRh !== undefined ? S._diagDragRh : (S.ob.x < S.cb.x);
+  const _perpXG = -Math.sin(_cbToObAngle) * _tdG * (_rhG2 ? 1 : -1);
+  const _perpYG =  Math.cos(_cbToObAngle) * _tdG * (_rhG2 ? 1 : -1);
+  const gx = Math.max(TL.left+BALL_R, Math.min(TL.right-BALL_R, S.ob.x - 2*BALL_R*Math.cos(_ghostAngleG) + _perpXG));
+  const gy = Math.max(TL.top+BALL_R,  Math.min(TL.bottom-BALL_R, S.ob.y - 2*BALL_R*Math.sin(_ghostAngleG) + _perpYG));
   const _gb = $('ghost-ball');
   if (_gb) {
     _gb.setAttribute('fill', 'rgba(240,223,112,0.15)');
@@ -2271,11 +2320,11 @@ svg.addEventListener('pointermove', e => {
   e.stopPropagation();
   const p = svgPt(e);
   if (drag==='ob') {
-    const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
+    const sn=applySnap(p.x,p.y), c=clampBall(sn.x,sn.y);
     S.ob={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
     if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'ob');
   } else if (drag==='cb') {
-    const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
+    const sn2=applySnap(p.x,p.y), c=clampBall(sn2.x,sn2.y);
     S.cb={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
     if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'cb');
   } else if (drag==='ob2') { S.ob2=clampBall(p.x,p.y); }
@@ -2333,6 +2382,16 @@ let lockTable = true;
 let lockBalls = true;
 let lockSliders = true;
 let biasOn = false;
+let throwLo = 0, throwMi = 0, throwHi = 0;
+
+// getThrowComp moved before render
+
+function throwStep(seg, dir) {
+  const el = document.getElementById('sl-throw-'+seg);
+  if (!el) return;
+  el.value = Math.max(-50, Math.min(50, parseInt(el.value) + dir));
+  onSliders();
+}
 function toggleBias(){
   biasOn = !biasOn;
   const btn = document.getElementById('ep-bias');
@@ -2557,6 +2616,17 @@ function onSliders() {
   if($('sv-vert-n'))$('sv-vert-n').textContent=_vn===0?'0':Math.max(1,Math.round(_vn/4*10/10));
   $('sv-spn').textContent  = spinLabels[String(S.spin)];
   $('sv-vert').textContent = vertLabels[String(S.vert)];
+  // Throw compensation sliders
+  throwLo = parseInt(document.getElementById('sl-throw-lo')?.value || '0') / 50;
+  throwMi = parseInt(document.getElementById('sl-throw-mi')?.value || '0') / 50;
+  throwHi = parseInt(document.getElementById('sl-throw-hi')?.value || '0') / 50;
+  ['lo','mi','hi'].forEach(seg => {
+    const v = parseInt(document.getElementById('sl-throw-'+seg)?.value || '0');
+    const n = document.getElementById('sv-throw-'+seg+'-n');
+    const s = document.getElementById('sv-throw-'+seg);
+    if(n) n.textContent = v;
+    if(s) s.textContent = v === 0 ? '0' : (v > 0 ? '+' : '') + v + '%';
+  });
   render();
 }
 
@@ -2807,7 +2877,7 @@ document.addEventListener('touchcancel', () => {
 function buildSnapPoints() {
   const pts = [], seen = new Set();
   const DX=50, DY=50, OX=30, OY=30;
-  const BR=9, XMIN=OX+BR, XMAX=OX+8*DX-BR, YMIN=OY+BR, YMAX=OY+4*DY-BR;
+  const BR=BALL_R, XMIN=OX+BR, XMAX=OX+8*DX-BR, YMIN=OY+BR, YMAX=OY+4*DY-BR;
   function sc(x,y){return{x:Math.max(XMIN,Math.min(XMAX,x)),y:Math.max(YMIN,Math.min(YMAX,y))};}
   function add(x,y,label){
     const k=x+','+y; if(seen.has(k))return; seen.add(k); pts.push({x,y,label});
@@ -2838,19 +2908,50 @@ function applySnap(x,y){
   const pt=nearestSnap(x,y);
   return pt?{x:pt.x,y:pt.y,label:pt.label}:{x,y,label:null};
 }
-function showSnapLabel(svgEl,x,y,label,ballId){
-  const old=document.getElementById('snap-lbl-'+ballId);
-  if(old)old.remove(); if(!label)return;
-  const rect=svgEl.getBoundingClientRect(),vb=svgEl.viewBox.baseVal;
-  const scx=rect.left+(x/vb.width)*rect.width, scy=rect.top+(y/vb.height)*rect.height;
-  const lbl=document.createElement('div');
-  lbl.id='snap-lbl-'+ballId; lbl.className='snap-label';
-  lbl.textContent=(ballId==='cb'?'CB: ':'OB: ')+label;
-  lbl.style.left=(scx+12)+'px'; lbl.style.top=(scy-10)+'px'; lbl.style.opacity='1';
-  document.body.appendChild(lbl);
-  if(snapLabelTimer)clearTimeout(snapLabelTimer);
-  snapLabelTimer=setTimeout(()=>{lbl.style.opacity='0';setTimeout(()=>lbl.remove(),400);},2000);
+function showSnapLabel(svgEl, x, y, label, ballId) {
+  if (!snapOn) return;
+  if (!window._snapPos) window._snapPos = {};
+  window._snapPos[ballId] = {x, y, label};
+  updateSnapLabels(svgEl);
 }
+
+function updateSnapLabels(svgEl) {
+  if (!svgEl) svgEl = document.getElementById('tbl');
+  if (!svgEl || !snapOn) {
+    ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
+    return;
+  }
+  const rect = svgEl.getBoundingClientRect();
+  const vb = svgEl.viewBox.baseVal;
+  const railTop = rect.top + (TL.top / vb.height) * rect.height;
+  const LBL_Y = railTop - 41;
+  const pos = window._snapPos || {};
+  ['cb','ob'].forEach(id => {
+    const p = pos[id];
+    let lbl = document.getElementById('snap-lbl-' + id);
+    if (!p || !p.label) { if(lbl) lbl.remove(); return; }
+    if (!lbl) {
+      lbl = document.createElement('div');
+      lbl.id = 'snap-lbl-' + id;
+      lbl.className = 'snap-label';
+      document.body.appendChild(lbl);
+    }
+    lbl.textContent = (id === 'cb' ? 'CB: ' : 'OB: ') + p.label;
+    const scx = rect.left + (p.x / vb.width) * rect.width;
+    let lx = scx - lbl.offsetWidth/2;
+    const other = pos[id === 'cb' ? 'ob' : 'cb'];
+    if (other && other.label) {
+      const osc = rect.left + (other.x / vb.width) * rect.width;
+      if (Math.abs(scx - osc) < 30) {
+        lx = id === 'ob' ? scx + 6 : scx - (lbl.offsetWidth || 80) - 6;
+      }
+    }
+    lbl.style.left = Math.max(4, lx) + 'px';
+    lbl.style.top  = LBL_Y + 'px';
+    lbl.style.opacity = '1';
+  });
+}
+
 function togglePan(){
   panMode = !panMode;
   const btn = document.getElementById('ep-pan');
@@ -2890,6 +2991,8 @@ function zeroBall(){
   document.activeElement&&document.activeElement.blur();
 }
 function zeroSliders(){
+  ['lo','mi','hi'].forEach(seg=>{ const el=document.getElementById('sl-throw-'+seg); if(el) el.value='0'; });
+  throwLo=0; throwMi=0; throwHi=0;
   if(lockSliders)return;
   S.speed=0.5; S.spin=0; S.vert=0; S.bias=0;
   $('sl-spd').value='50'; $('sl-spn').value='0';
@@ -3001,6 +3104,7 @@ const _pz = {
       <button class="ep-btn g-yel"    id="btn-cushion" onclick="toggleCushions()">1 CUSHION</button>
       <button class="ep-btn g-brown"  id="btn-angle"   onclick="toggleBounce()">ANGLE</button>
       <button class="ep-btn g-bias"   id="ep-bias"     onclick="toggleBias()">BIAS<br>OFF</button>
+      <button class="ep-btn g-brown"  id="btn-throw"   onclick="toggleThrowPanel()">THROW<br>DATA</button>
       <button class="ep-btn g-swap"   id="btn-swap"    onclick="swapPanels()" title="Swap panels">⇅</button>
     </div>
     <div class="btb-row2">
@@ -3306,6 +3410,128 @@ function biasStep(dir){
         requestAnimationFrame(positionUnderTable);
       }
     };
+  });
+})();
+</script>
+
+<!-- ── THROW COMP DATA PANEL ─────────────────────────────────── -->
+<div id="throw-panel" style="display:none;position:fixed;z-index:8888;width:min(420px,96vw);
+     background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;
+     box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
+  <div id="throw-panel-header" style="display:flex;justify-content:space-between;align-items:center;
+       padding:10px 12px;background:#f0f0f0;border-bottom:2px solid #cccccc;
+       cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+    <span style="font-size:13px;font-weight:900;letter-spacing:1px;color:#111111;">THROW COMP DATA</span>
+    <button onclick="toggleThrowPanel()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;">✕</button>
+  </div>
+  <div style="padding:10px 12px;border-bottom:2px solid #dddddd;background:#ffffff;">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+      <div style="flex:1;font-size:13px;color:#111111;font-weight:700;">
+        <span style="color:#333333;">Cut:</span> <span id="td-cut" style="color:#000;">—</span>
+        &nbsp;&nbsp;<span style="color:#333333;">Geo%:</span> <span id="td-geo" style="color:#000;">—</span>
+        &nbsp;&nbsp;<span style="color:#333333;">Comp%:</span> <span id="td-comp" style="color:#000;font-weight:900;">—</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#111111;cursor:pointer;font-weight:700;">
+        <input type="checkbox" id="td-rail" style="width:16px;height:16px;"> Rail shot
+      </label>
+      <input id="td-note" type="text" placeholder="Note (optional)…" autocomplete="off"
+        style="flex:1;min-width:80px;background:#ffffff;border:1px solid #999999;
+               border-radius:4px;padding:5px 8px;color:#111111;font-size:13px;outline:none;">
+      <button onclick="recordThrowShot()" style="padding:6px 16px;border-radius:4px;border:none;
+              background:#1a4a1a;color:#ffffff;font-family:'Lato',sans-serif;font-size:13px;
+              font-weight:900;cursor:pointer;white-space:nowrap;">RECORD</button>
+    </div>
+  </div>
+  <div id="throw-data-list" style="max-height:min(45vh,340px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;"></div>
+  <div style="display:flex;gap:6px;padding:8px 12px;border-top:2px solid #cccccc;background:#f0f0f0;">
+    <button onclick="exportThrowData()" style="flex:1;padding:7px;border-radius:4px;border:1px solid #888888;
+            background:#ffffff;color:#111111;font-size:12px;font-weight:900;cursor:pointer;">EXPORT CSV</button>
+    <button onclick="clearThrowData()" style="padding:7px 14px;border-radius:4px;border:1px solid #cc3333;
+            background:#ffffff;color:#cc3333;font-size:12px;font-weight:900;cursor:pointer;">CLEAR</button>
+  </div>
+</div>
+
+<script>
+let throwPanelOpen = false;
+let throwData = [];
+function loadThrowData(){ try{ throwData=JSON.parse(localStorage.getItem('lz-banker-throw')||'[]'); }catch(e){ throwData=[]; } }
+function saveThrowData(){ try{ localStorage.setItem('lz-banker-throw', JSON.stringify(throwData)); }catch(e){} }
+function toggleThrowPanel(){
+  throwPanelOpen=!throwPanelOpen;
+  const panel=document.getElementById('throw-panel');
+  if(!panel) return;
+  panel.style.display=throwPanelOpen?'block':'none';
+  if(throwPanelOpen){ loadThrowData(); buildThrowList(); }
+}
+function recordThrowShot(){
+  const cutDeg = S.diagCutDeg||0;
+  if(cutDeg<0.5){ alert('Set a cut angle first.'); return; }
+  const geoPct = Math.round(Math.abs(S.diagFraction||0)*100);
+  const compPct = Math.round(Math.min(1, Math.abs(S.diagFraction||0)+getThrowComp(cutDeg))*100);
+  const dir = S._diagDragRh ? 'L' : 'R';
+  const rail = document.getElementById('td-rail')?.checked||false;
+  const note = document.getElementById('td-note')?.value.trim()||'';
+  throwData.push({ ts:Date.now(), cutDeg:Math.round(cutDeg*10)/10, dir,
+    geoPct, compPct, tLo:Math.round(throwLo*50), tMi:Math.round(throwMi*50), tHi:Math.round(throwHi*50), rail, note });
+  saveThrowData();
+  if(document.getElementById('td-note')) document.getElementById('td-note').value='';
+  buildThrowList();
+}
+function buildThrowList(){
+  const el=document.getElementById('throw-data-list');
+  if(!el) return;
+  if(!throwData.length){ el.innerHTML='<div style="padding:16px 12px;font-size:13px;color:#888;text-align:center;">No data yet. Set sliders, shoot, tap RECORD.</div>'; return; }
+  el.innerHTML=throwData.slice().reverse().map((r,ri)=>{
+    const i=throwData.length-1-ri;
+    const d=new Date(r.ts);
+    const dt=(d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+    return '<div style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #ddd;font-size:12px;background:#fff;">'+
+      '<div style="flex:1;"><span style="font-weight:900;">'+r.cutDeg+'°'+r.dir+'</span> · geo '+r.geoPct+'% → <span style="color:#1a4a1a;font-weight:900;">'+r.compPct+'%</span>'+
+      (r.rail?'<span style="color:#666;margin-left:6px;">rail</span>':'')+
+      (r.note?'<div style="color:#555;font-style:italic;">'+r.note+'</div>':'')+
+      '<div style="color:#999;font-size:10px;">T-LO:'+r.tLo+'% T-MI:'+r.tMi+'% T-HI:'+r.tHi+'% · '+dt+'</div></div>'+
+      '<button onclick="deleteThrowRecord('+i+')" style="padding:3px 8px;border:1px solid #c33;background:#fff;color:#c33;border-radius:3px;cursor:pointer;font-weight:900;">✕</button></div>';
+  }).join('');
+}
+function deleteThrowRecord(i){ throwData.splice(i,1); saveThrowData(); buildThrowList(); }
+function exportThrowData(){
+  if(!throwData.length){ alert('No data yet.'); return; }
+  const header='Date,Cut°,Dir,Geo%,Comp%,T-LO,T-MID,T-HI,Rail,Note';
+  const rows=throwData.map(r=>{ const d=new Date(r.ts); return [d.toLocaleDateString()+' '+d.toLocaleTimeString(),r.cutDeg,r.dir,r.geoPct,r.compPct,r.tLo,r.tMi,r.tHi,r.rail?'yes':'no','"'+(r.note||'')+'"'].join(','); });
+  const csv=header+'\n'+rows.join('\n');
+  let box=document.getElementById('throw-export-box');
+  if(!box){
+    box=document.createElement('div'); box.id='throw-export-box';
+    box.style.cssText='position:fixed;z-index:9999;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #888;border-radius:8px;padding:16px;width:min(500px,95vw);box-shadow:0 8px 32px rgba(0,0,0,0.4);';
+    const hdr=document.createElement('div'); hdr.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;';
+    hdr.innerHTML='<span style="font-weight:900;font-size:13px;color:#111;">Copy this data</span>';
+    const cb=document.createElement('button'); cb.textContent='✕'; cb.style.cssText='border:none;background:none;font-size:20px;cursor:pointer;color:#333;'; cb.onclick=function(){ box.remove(); };
+    hdr.appendChild(cb); box.appendChild(hdr);
+    const ta=document.createElement('textarea'); ta.id='throw-csv-text'; ta.readOnly=true;
+    ta.style.cssText='width:100%;height:160px;font-family:monospace;font-size:11px;border:1px solid #ccc;border-radius:4px;padding:8px;box-sizing:border-box;color:#111;background:#f9f9f9;resize:vertical;';
+    box.appendChild(ta);
+    const cpBtn=document.createElement('button'); cpBtn.textContent='SELECT ALL & COPY';
+    cpBtn.style.cssText='width:100%;margin-top:10px;padding:8px;background:#1a4a1a;color:#fff;border:none;border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;';
+    cpBtn.onclick=function(){ const t=document.getElementById('throw-csv-text'); t.select(); document.execCommand('copy'); cpBtn.textContent='Copied!'; setTimeout(function(){ cpBtn.textContent='SELECT ALL & COPY'; },1500); };
+    box.appendChild(cpBtn); document.body.appendChild(box);
+  }
+  document.getElementById('throw-csv-text').value=csv;
+}
+function clearThrowData(){ if(!confirm('Clear all throw comp data?')) return; throwData=[]; saveThrowData(); buildThrowList(); }
+// Draggable panel
+(function(){
+  var panel,header,startX,startY,origLeft,origTop,didDrag,activePtr=null;
+  window.addEventListener('load',function(){
+    panel=document.getElementById('throw-panel');
+    header=document.getElementById('throw-panel-header');
+    if(!panel||!header) return;
+    panel.style.top='80px'; panel.style.left=Math.max(4,window.innerWidth-440)+'px';
+    header.addEventListener('pointerdown',function(e){ if(e.target.tagName==='BUTTON') return; var r=panel.getBoundingClientRect(); startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top; didDrag=false; activePtr=e.pointerId; });
+    header.addEventListener('pointermove',function(e){ if(activePtr===null||e.pointerId!==activePtr) return; var dx=e.clientX-startX,dy=e.clientY-startY; if(!didDrag&&Math.hypot(dx,dy)>8){didDrag=true;try{header.setPointerCapture(e.pointerId);}catch(ex){}} if(!didDrag) return; panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px'; panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px'; });
+    header.addEventListener('pointerup',function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    loadThrowData();
   });
 })();
 </script>
