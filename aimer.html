@@ -1056,6 +1056,7 @@ function loadUserShot(idx) {
   S.ob = {...shot.ob}; S.cb = {...shot.cb};
   S.diagCutDeg = shot.cut;
   S.pocket = shot.pocket || null;
+  S._userAdjustedDiag = false;
   S._diagDragRh = shot.rh;
   render();
 }
@@ -1204,6 +1205,7 @@ function loadShot(idx) {
   S.cb = {x: _clampX(shot.cb.x), y: _clampY(shot.cb.y)};
   S.diagCutDeg = shot.cut;
   S.pocket = shot.pocket || null;
+  S._userAdjustedDiag = false;
   S._diagDragRh = shot.rh !== undefined ? shot.rh : (shot.ob.x > shot.cb.x);
   justShot = false;
   render();
@@ -1944,7 +1946,7 @@ let lockTable = true;
 let lockBalls = true;
 let lockSliders = true;
 let biasOn = false;
-let contactDotOn = true; // show contact point dot
+let contactDotOn = false; // contact point dot off by default
 let throwLo = 0, throwMi = 0, throwHi = 0; // 0-100 each, segments 0-20°, 20-50°, 50-90°
 let SNAP_POINTS = [];  // built after DOM ready
 const SNAP_RADIUS = 14;
@@ -2056,8 +2058,8 @@ function compute(cutDeg) {
   const squirtFraction = Math.max(-0.15, Math.min(0.15, squirtFrac * squirtFade));
 
   const atExtreme    = cutRaw > 0.97;
-  const geoFrac      = Math.min(1.0, cutRaw * 1.5); // 50% baseline throw correction
-  const diagFraction = atExtreme ? cutRaw : Math.max(-0.5, Math.min(1, geoFrac));
+  const geoFrac      = cutRaw; // pure geometry
+  const diagFraction = atExtreme ? geoFrac : Math.max(-0.5, Math.min(1, geoFrac)); // pure geometry
   const aimFraction  = atExtreme ? geoFrac
                      : Math.max(-0.5, Math.min(1, Math.sin(Z_aim_final) - squirtFraction));
 
@@ -2179,7 +2181,7 @@ function render() {
   const _dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
   // Throw compensation applied to fraction
   const _throwDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
-  const _compFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) + _throwDelta));
+  const _compFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _throwDelta)); // 1.5x perceptual correction
   const aimP = Math.round(_compFrac * 100);
   const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%' + _dir;
   const _rfrc = $('r-frc'); if (_rfrc) _rfrc.textContent = fracStr(_compFrac * (S._diagDragRh ? -1 : 1));
@@ -2267,20 +2269,20 @@ function renderTable(d) {
   const biasAngle    = S.bias;  // already in radians
   let obDepartAngle = cbToObAngle + side * Math.min(cutDeg, 90) * RAD + obSpinThrow + biasAngle;
 
-  // Rail shot override: if OB is frozen on a rail, departure must be parallel to that rail
-  const _onTopRail    = ob.y <= TL.top    + BALL_R + 4;
-  const _onBottomRail = ob.y >= TL.bottom - BALL_R - 4;
-  const _onLeftRail   = ob.x <= TL.left   + BALL_R + 4;
-  const _onRightRail  = ob.x >= TL.right  - BALL_R - 4;
-  if (_onTopRail || _onBottomRail) {
-    // Horizontal rail — depart parallel to rail (angle = 0 or π)
-    // Direction determined by which pocket the shot is aimed at
-    const _pocketX = S.pocket ? ({TL:30,TM:230,TR:430,BR:430,BM:230,BL:30}[S.pocket]||230) : 230;
-    obDepartAngle = ob.x < _pocketX ? 0 : Math.PI;
-  } else if (_onLeftRail || _onRightRail) {
-    // Vertical rail — depart parallel to rail (angle = π/2 or -π/2)
-    const _pocketY = S.pocket ? ({TL:30,TM:30,TR:30,BR:230,BM:230,BL:230}[S.pocket]||130) : 130;
-    obDepartAngle = ob.y < _pocketY ? Math.PI/2 : -Math.PI/2;
+  // Rail shot override: only when no diagram adjustment has been made
+  // Once user drags the diagram, use their angle instead
+  if (!S._userAdjustedDiag) {
+    const _onTopRail    = ob.y <= TL.top    + BALL_R + 4;
+    const _onBottomRail = ob.y >= TL.bottom - BALL_R - 4;
+    const _onLeftRail   = ob.x <= TL.left   + BALL_R + 4;
+    const _onRightRail  = ob.x >= TL.right  - BALL_R - 4;
+    if (_onTopRail || _onBottomRail) {
+      const _pocketX = S.pocket ? ({TL:30,TM:230,TR:430,BR:430,BM:230,BL:30}[S.pocket]||230) : 230;
+      obDepartAngle = ob.x < _pocketX ? 0 : Math.PI;
+    } else if (_onLeftRail || _onRightRail) {
+      const _pocketY = S.pocket ? ({TL:30,TM:30,TR:30,BR:230,BM:230,BL:230}[S.pocket]||130) : 130;
+      obDepartAngle = ob.y < _pocketY ? Math.PI/2 : -Math.PI/2;
+    }
   }
 
   const odx = Math.cos(obDepartAngle), ody = Math.sin(obDepartAngle);
@@ -2303,19 +2305,22 @@ function renderTable(d) {
   // Ghost ball — show when GHOST is on
   // Throw compensation: shift ghost ball toward fuller contact
   // delta = throwComp * sin(cutAngle) * max_shift — zero at 0°, grows with angle
-  const _throwDelta = getThrowComp(cutDeg) * BALL_R;
-  // Shift ghost ball along the OB equator toward fuller contact
-  // "Fuller" = CB center moves toward the OB center line = reduce the offset
-  // Perpendicular to CB→OB, in the direction that reduces cut angle
-  const _perpX = -Math.sin(cbToObAngle) * _throwDelta * (rh ? -1 : 1);
-  const _perpY =  Math.cos(cbToObAngle) * _throwDelta * (rh ? -1 : 1);
-  const _approachAngle = cbToObAngle + side * Math.min(cutDeg, 90) * RAD;
-  const _SVG_R = 9; // ghost ball display radius
+  // Ghost ball position is pure geometry — no throw correction
+  const _perpX = 0;
+  const _perpY = 0;
+  // For rail shots: approach from direction opposite to departure
+  // For regular shots: approach = CB→OB line adjusted for cut
+  const _approachAngle = !S._userAdjustedDiag && (
+    S.ob.y <= TL.top + BALL_R + 4 || S.ob.y >= TL.bottom - BALL_R - 4 ||
+    S.ob.x <= TL.left + BALL_R + 4 || S.ob.x >= TL.right - BALL_R - 4
+  ) ? obDepartAngle
+    : cbToObAngle + side * Math.min(cutDeg, 90) * RAD;
+  const _SVG_R = BALL_R; // ghost ball display radius
   const _gx = Math.max(TL.left + _SVG_R, Math.min(TL.right  - _SVG_R, S.ob.x - Math.cos(_approachAngle) * 2 * BALL_R + _perpX));
   const _gy = Math.max(TL.top  + _SVG_R, Math.min(TL.bottom - _SVG_R, S.ob.y - Math.sin(_approachAngle) * 2 * BALL_R + _perpY));
   if (ghostOn) {
     sC('ghost-ball', _gx, _gy);
-    $('ghost-ball').setAttribute('r', '9');
+    $('ghost-ball').setAttribute('r', String(BALL_R));
     $('ghost-ball').setAttribute('fill', 'rgba(240,223,112,0.12)');
     $('ghost-ball').setAttribute('stroke', '#f0df70');
     sV('ghost-ball', true);
@@ -2325,7 +2330,11 @@ function renderTable(d) {
   // Contact point dot — on OB surface at contact point
   const _cpDot = $('cp-dot-table');
   if (_cpDot) {
-    if (contactDotOn && cutDeg > 0.5) {
+    const _isRailShot = !S._userAdjustedDiag && (
+      S.ob.y <= TL.top + BALL_R + 4 || S.ob.y >= TL.bottom - BALL_R - 4 ||
+      S.ob.x <= TL.left + BALL_R + 4 || S.ob.x >= TL.right - BALL_R - 4
+    );
+    if (contactDotOn && cutDeg > 0.5 && !_isRailShot) {
       // Contact point = midpoint between ghost ball center and OB center
       // (where CB surface meets OB surface)
       const _cpx = (_gx + S.ob.x) / 2;
@@ -2435,12 +2444,12 @@ function drawBot(d) {
   const cutDeg = d.cutDeg || 0;
   // Apply throw compensation to diagram contact point
   const _diagThrowDelta = getThrowComp(cutDeg);
-  const aimF  = Math.max(0, Math.min(1, Math.abs(d.diagFraction) + _diagThrowDelta));
+  const aimF  = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _diagThrowDelta));
   const ccx   = Math.max(4, Math.min(W-4, rh ? ocx - aimF*2*r : ocx + aimF*2*r));
   const edgeX = Math.max(4, Math.min(W-4, rh ? ccx+r : ccx-r));
   const clipX = rh ? edgeX : (ocx-r);
   const revealW = Math.max(0, rh ? (ocx+r)-edgeX : edgeX-(ocx-r));
-  const aimP  = Math.round(Math.abs(d.diagFraction) * 100);
+  const aimP  = Math.round(Math.abs(d.diagFraction) * 1.5 * 100);
 
   $('revClipRect').setAttribute('x', clipX);
   $('revClipRect').setAttribute('y', ocy-r);
@@ -2493,7 +2502,7 @@ function drawBot(d) {
   $('bot-aim-pct').setAttribute('opacity', op);
   // Use compensated fraction for diagram percentage label
   const _botThrowDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
-  const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) + _botThrowDelta) * 100);
+  const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) * 1.5 + _botThrowDelta) * 100);
   $('bot-aim-pct').textContent = Math.abs(_botAimP) + '%';
   $('bot-hint').setAttribute('opacity', showMarker ? '0' : '1');
   $('bot-hint').setAttribute('x', rh ? ocx-r-70 : ocx+r+24);
@@ -2546,13 +2555,13 @@ botsvg.addEventListener('pointerdown', e => {
   const p2 = botSvgPt(e);
   // Dead zone: only respond within the ball's vertical extent (center 148 ± radius 82)
   if (p2.y < 66 || p2.y > 230) return;
-  e.preventDefault(); diagDrag = true; justShot = false;
+  e.preventDefault(); diagDrag = true; justShot = false; S._userAdjustedDiag = true;
   botsvg.setPointerCapture(e.pointerId);
   updateDiagCut(p2.x);
   render();
 });
 botsvg.addEventListener('pointermove', e => {
-  if (!diagDrag) return; e.preventDefault();
+  if (!diagDrag) return; e.preventDefault(); S._userAdjustedDiag = true;
   updateDiagCut(botSvgPt(e).x);
   render();
 });
@@ -2979,7 +2988,7 @@ function updateSnapLabels(svgEl) {
 
   // Top rail screen Y — place labels just above it
   const railTop = rect.top + (TL.top / vb.height) * rect.height;
-  const LBL_Y = railTop - 41; // above table
+  const LBL_Y = railTop - 39; // 35px higher
 
   const pos = window._snapPos || {};
   ['cb','ob'].forEach(id => {
@@ -3207,7 +3216,7 @@ window.addEventListener('load', function(){ swapPanels(); });
       <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">SHOT<br>LIST</button>
       <button class="ep-btn g-yel"    id="btn-cbpath" onclick="toggleCbPath()">CUE<br>PATH</button>
       <button class="ep-btn g-brown"  id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
-      <button class="ep-btn g-brown on" id="btn-cp"     onclick="toggleContactDot()">C·PT</button>
+      <button class="ep-btn g-brown" id="btn-cp"     onclick="toggleContactDot()">C·PT</button>
       <button class="ep-btn g-brown"  id="btn-throw"  onclick="toggleThrowPanel()">THROW<br>DATA</button>
       <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">BIAS<br>OFF</button>
       <button class="ep-btn g-swap"   id="btn-swap"   onclick="swapPanels()">⇅</button>
