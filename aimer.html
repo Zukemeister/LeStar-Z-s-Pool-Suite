@@ -383,385 +383,6 @@ if ('serviceWorker' in navigator) {
 
 // ── GRID COORDINATE SYSTEM ──────────────────────────────────────
 // 32 squares numbered left-to-right, top-to-bottom (row 1=top, row 4=bottom)
-</script>
-</head>
-<body>
-<meta charset="UTF-8">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="LeStar Z Aimer">
-  <link rel="apple-touch-icon" href="/icon-apple.png">
-  <link rel="manifest" href="/manifest.json">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Aimer">
-<meta name="theme-color" content="#1a361a">
-<title>LeStar Z's Aimer</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,900&family=Playfair+Display:ital,wght@1,700&display=swap');
-*{box-sizing:border-box;margin:0;padding:0;}
-button{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;}
-svg,.diagram-wrap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
-html,body{background:#141414;font-family:'Lato',sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px 8px 32px;}@media(max-aspect-ratio:1/1){}.outer-wrap{width:100%;}
-@media(orientation:landscape) and (max-height:430px){html,body{padding:2px;}.outer-wrap{max-width:100%!important;width:100%;border-radius:0;}}
-.outer-wrap{display:flex;flex-direction:row;align-items:flex-start;width:100%;max-width:762px;background:#1a361a;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);border:2px solid #2a4e2a;overflow:hidden;}
-.card{flex:1;min-width:0;padding:14px 12px 16px 12px;}
-.toolbar-col{display:none;}
-.hdr{text-align:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);position:relative;}
-h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-bottom:2px;}
-.t-lestar{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
-.t-z{font-family:'Lato',sans-serif;font-style:italic;font-weight:900;font-size:clamp(20px,5.5vw,30px);color:#f0df70;line-height:1;display:inline-flex;align-items:center;margin:0 1px 0 2px;}
-.t-rest{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(11px,3vw,16px);color:#f0df70;}
-.sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:0.07em;}
-#help-btn{position:absolute;left:0;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;}
-#table-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);padding:4px 10px;border-radius:14px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.06em;cursor:pointer;line-height:1.2;}
-.diagram-wrap{border-radius:4px;overflow:hidden;margin-bottom:10px;}
-.svg-box{position:relative;width:100%;overflow:hidden;background:rgba(0,0,0,0.22);}
-.svg-box.top-box{aspect-ratio:460/260;padding-bottom:0;}
-.svg-box.aim-box{aspect-ratio:460/220;padding-bottom:0;}
-.svg-box svg{position:absolute;top:0;left:0;width:100%;height:100%;}
-.sep{display:none;}
-/* rotation uses .tog class */
-/* Toggle buttons */
-.tog{flex:1;height:24px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:flex;align-items:center;justify-content:center;transition:filter .15s;}
-.tog.dim{filter:brightness(0.42) saturate(0.5);}
-/* Sliders */
-.sgroup{background:rgba(0,0,0,0.18);border-radius:7px;padding:7px 10px 6px 10px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.07);}
-.sgroup-title{font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#ddd;margin-bottom:6px;}
-.srow{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
-.srow:last-child{margin-bottom:0;}
-.slbl{font-size:11px;color:#e8e8e8;min-width:52px;font-weight:700;}
-.sval{font-size:15px;font-weight:900;width:80px;min-width:80px;max-width:80px;text-align:right;white-space:nowrap;overflow:hidden;color:#f0df70;}
-input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
-.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
-.sliders-unlocked input[type=range]{height:8px;}
-#cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
-#cal-panel.open{display:block;}
-#cal-instruction{font-size:11px;color:#fff;font-weight:700;margin-bottom:6px;line-height:1.5;}
-#cal-status{font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
-.cal-shots{display:flex;gap:8px;margin-bottom:8px;}
-.cal-shot-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);}
-.cal-shot-dot.done{background:#4ade80;border-color:#4ade80;}
-.cal-actions{display:flex;gap:6px;margin-bottom:6px;}
-.cal-action-btn{flex:1;padding:7px 4px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;letter-spacing:0.08em;cursor:pointer;text-transform:uppercase;}
-.cal-action-btn.primary{background:rgba(74,222,128,0.15);border-color:#4ade80;color:#4ade80;}
-.cal-action-btn.danger{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.4);color:#ff8080;}
-#cal-result{font-size:11px;color:#88ee88;margin-top:4px;display:none;line-height:1.6;}
-#sl-spd::-webkit-slider-thumb{background:#f0df70;}
-#sl-spn::-webkit-slider-thumb{background:#e870b0;}
-#sl-vert::-webkit-slider-thumb{background:#7dd3fc;}
-#sl-dist::-webkit-slider-thumb{background:#a0d0a0;}
-#sl-bias::-webkit-slider-thumb{background:#c890f0;}
-
-#sl-bias {
-  -webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;
-}
-/* Readouts */
-.readout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;}
-.ri{background:rgba(0,0,0,0.3);border-radius:6px;padding:10px 6px;text-align:center;border:1px solid rgba(255,255,255,0.08);height:72px;min-height:72px;max-height:72px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;contain:layout style;}.ri{background:rgba(0,0,0,0.3);border-radius:6px;padding:10px 6px;text-align:center;border:1px solid rgba(255,255,255,0.08);height:72px;min-height:72px;max-height:72px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
-.ri-lbl{font-size:10px;color:#ccc;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
-.ri-val{font-size:clamp(18px,5vw,28px);font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.comp-wrap{position:relative;height:22px;min-height:22px;max-height:22px;overflow:hidden;margin-bottom:6px;}
-#readouts{border-top:1px solid rgba(255,255,255,0.07);padding-top:8px;margin-top:4px;contain:layout style;}
-.ro-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);min-height:32px;}
-.ro-lbl{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);flex-shrink:0;}
-.ro-val{font-size:18px;font-weight:900;color:#fff;text-align:right;min-width:0;word-break:break-word;}
-#ro-throw{font-size:14px;min-height:1em;}
-.comp-row{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.55);white-space:nowrap;}
-.comp-val{font-weight:900;font-size:14px;}
-/* Info overlay */
-#info-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 20px 20px;overflow-y:auto;}
-#info-overlay.open{display:flex;}
-#info-inner{background:#1a361a;border:2px solid #2a4e2a;border-radius:10px;width:100%;max-width:560px;padding:20px 18px 24px;position:relative;}
-#info-close{position:absolute;top:10px;right:12px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:22px;cursor:pointer;line-height:1;font-family:'Lato',sans-serif;}
-#info-inner h2{font-family:'Playfair Display',serif;font-style:italic;color:#f0df70;font-size:1.2rem;margin-bottom:12px;}
-#info-inner p{font-size:0.78rem;color:rgba(255,255,255,0.88);line-height:1.7;margin-bottom:10px;}
-#info-inner strong{color:#f0df70;}
-footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:10px 8px 4px;letter-spacing:1.5px;text-transform:uppercase;margin-top:12px;}
-@media(orientation:landscape) and (max-height:430px){.card{flex:1;min-width:0;padding:14px 12px 16px 12px;}}
-
-/* ── EDGE CONTROL PANEL ── */
-
-
-
-
-#edge-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding: 4px 0;
-  width: 62px;
-  pointer-events: all;
-  touch-action: manipulation;
-  background: #1a2e1a;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.6);
-}
-.ep-section {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding: 5px 5px 4px;
-}
-.ep-section-label {
-  font-family: 'Lato', sans-serif;
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  text-align: center;
-  margin-bottom: 3px;
-}
-.ep-btn-row {
-  display: flex;
-  gap: 2px;
-  justify-content: center;
-}
-.ep-btn {
-  flex: 1;
-  height: 30px;
-  border-radius: 4px;
-  border: 1px solid #404840;
-  background: #1c2d1c;
-  color: #e8e8e0;
-  font-family: 'Lato', sans-serif;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  transition: background 0.1s;
-}
-.ep-btn:active { background: #4a5a4a; }
-.ep-btn.on     { background: #f0df70; color: #1a1400; border-color: #f0df70; }
-.ep-btn.locked { background: #ff6060; color: #1a0000; border-color: #ff6060; }
-.ep-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 1px 0; }
-.ep-section.zoom   { background: #384fa0; }
-.ep-section.snap   { background: #1d631d; }
-.ep-section.lock   { background: #771e1e; }
-.ep-section.zero   { background: rgba(120,70,0,0.92); }
-.ep-section.bias   { background: rgba(90,30,130,0.92); }
-.ep-section.zoom   .ep-section-label { color: #a0c0ff; }
-.ep-section.snap   .ep-section-label { color: #80e880; }
-.ep-section.lock   .ep-section-label { color: #ff9090; }
-.ep-section.zero   .ep-section-label { color: #ffc060; }
-.ep-section.bias   .ep-section-label { color: #d090ff; }
-/* Snap coordinate label on table */
-.snap-label {
-  position: absolute;
-  pointer-events: none;
-  font-family: 'Lato', sans-serif;
-  font-size: 11px;
-  font-weight: 900;
-  color: #f0df70;
-  background: rgba(0,0,0,0.7);
-  padding: 2px 5px;
-  border-radius: 4px;
-  white-space: nowrap;
-  transition: opacity 0.4s;
-  z-index: 10;
-}
-
-html,body,#zoom-wrap{touch-action:pan-x pan-y;}
-
-/* ── BOTTOM TOOLBAR ── */
-#btb {
-  position: fixed;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 480px;
-  max-width: calc(100vw - 8px);
-  box-sizing: border-box;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  touch-action: none;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  font-size: 13px;
-  -webkit-text-size-adjust: none;
-}
-#btb-tab {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  height: 24px;
-  background: transparent;
-  border: none;
-  cursor: grab;
-  color: rgba(255,255,255,0.5);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: none;
-}
-/* TOOLS pill — always yellow background, always brown text */
-#btb-pill {
-  display: inline-flex;
-  align-items: center;
-  background: #f0df70;
-  border-radius: 7px;
-  padding: 0 0 0 2px;
-  border: none;
-  pointer-events: auto;
-}
-#btb-pill #btb-arrow { color: #1a1400; }
-#btb-pill #btb-label { color: #1a1400; }
-#btb-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: transparent;
-  border: none;
-  padding: 4px 0 8px;
-  width: 100%;
-  box-sizing: border-box;
-}
-#btb-panel .btb-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-}
-#btb-panel .btb-label {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.4);
-  text-transform: uppercase;
-}
-#btb-panel .btb-row {
-  display: flex;
-  flex-direction: row;
-  gap: 3px;
-}
-.btb-row2 {
-  display: flex;
-  flex-direction: row;
-  gap: 4px;
-  padding: 3px 6px;
-  width: 100%;
-  max-width: 762px;
-  box-sizing: border-box;
-  background: transparent;
-}
-.btb-row2 .ep-btn {
-  flex: 1;
-  height: 36px;
-  font-size: 10px;
-  padding: 0 2px;
-  min-width: 0;
-  line-height: 1.2;
-  text-align: center;
-}
-/* group button colors */
-.ep-btn.g-zoom { background:#36478b; border-color:#44508c; }
-.ep-btn.g-lock { background:#691c1c; border-color:#802c2c; color:#ffaaaa; }
-.ep-btn.g-snap { background:#1c581c; border-color:#2c742c; }
-.ep-btn.g-zero { background:#693e03;  border-color:#805008; }
-.ep-btn.g-bias { background:#4f1c71; border-color:#68388c; }
-.ep-btn.g-zoom.on  { background:#f0df70; color:#1a1400; }
-.ep-btn.g-snap.on  { background:#f0df70; color:#1a1400; }
-.ep-btn.g-bias.on  { background:#f0df70; color:#1a1400; }
-.btb-row2 .ep-btn:not(.on):not(.locked) { opacity: 1; }
-.ep-btn.g-lock.locked { background:#ff6060; color:#1a0000; }
-.ep-btn.g-brown { background:#4a2800; border:1px solid #8a5010; color:#e8c080; }
-.ep-btn.g-brown.on { background:#f0df70; color:#1a1400; border-color:#c8b840; }
-.ep-btn.g-yel   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan          { background:#1a3a1a; color:#f0df70; border-color:#2a5a2a; }
-.ep-btn.g-pan.on   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan.dim  { background:#1a3a1a; color:#f0df70; border-color:#1a3a1a; opacity:0.55; }
-.ep-btn.g-swap { background:#0a6a7a; border-color:#1a9aaa; color:#e0f8ff; font-size:16px; }
-.ep-btn.g-swap.on { background:#a0e8f0; color:#001a1a; }
-/* pad body so content isn't hidden under bottom bar */
-body { padding-bottom: 80px !important; }
-
-.vbtn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:5px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.85);font-size:15px;font-weight:900;cursor:pointer;touch-action:manipulation;vertical-align:middle;-webkit-user-select:none;user-select:none;margin:0 2px;}
-.vbtn:active{background:rgba(255,255,255,0.25);}
-</style>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then(reg => {
-        reg.addEventListener('updatefound', () => {
-          const w = reg.installing;
-          w.addEventListener('statechange', () => {
-            if (w.state === 'installed' && navigator.serviceWorker.controller) {
-              // New version available — show quiet notice
-              const n = document.createElement('div');
-              n.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#1a4a1a;color:#f0df70;font-family:Lato,sans-serif;font-size:12px;font-weight:900;padding:8px 16px;border-radius:20px;z-index:9999;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);';
-              n.textContent = '↑ Update available — tap to refresh';
-              n.onclick = () => { w.postMessage({type:'SKIP_WAITING'}); location.reload(); };
-              document.body.appendChild(n);
-            }
-          });
-        });
-      });
-    }
-  </script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // New version available — reload silently
-            window.location.reload();
-          }
-        });
-      });
-    });
-  });
-}
-// ── SHOT LIBRARY ─────────────────────────────────────────────
-// ── SHOT LIBRARY ─────────────────────────────────────────────────────────────
-// HOW TO ADD A SHOT:
-//
-// 1. Set up shot in app — place CB and OB, drag the aim line on the ball diagram
-//    until readouts show the cut angle and % you want
-// 2. Note: CB square+suffix, OB square+suffix, cut angle (from CUT readout),
-//    direction L or R (from readout), pocket the OB aims toward
-// 3. CB/OB coordinates from square grid:
-//      sq(n): row=(n-1)//8, col=(n-1)%8
-//      center: x=30+col*50+25, y=30+row*50+25
-//      suffix f=right-mid, g=lower-right, d=top-mid, etc. (clamped 9px inside rail)
-// 4. rh: true = right cut (OB departs to the right), false = left cut
-//
-// SHOT FORMAT:
-//   { name, cb:{x,y}, ob:{x,y}, cut (degrees), rh (bool), desc }
-//
-// HOW IT WORKS:
-//   The preset click handler in buildShotList() calls loadShot(idx).
-//   loadShot() sets S.diagCutDeg=shot.cut and S._diagDragRh=shot.rh,
-//   then calls render(). The readouts and ball diagram both read diagCutDeg
-//   directly — no geometry recomputation needed.
-//   KEY FIX (session 4): preset click handler MUST call loadShot(), not render()
-//   directly — otherwise diagCutDeg and rh are never set.
-// ─────────────────────────────────────────────────────────────────────────────
-// ── SHOT LIBRARY ─────────────────────────────────────────────
-// Positions use SVG coords: table is (30,30)→(430,230), 1 diamond = 50px
-// Near-rail shots: f≈y45 (15px from rail), g≈y55 (25px), e≈y38 (8px, clamped)
-// sq(n) grid: row=(n-1)//8, col=(n-1)%8; center=30+col*50+25, 30+row*50+25
-//   suffixes from center: f=(+25,0), g=(+25,+25), e=(+25,-25), h=(0,+37)
-// cut: angle in degrees between approach and required OB departure (to nearest pocket)
-// rh: true = contact on right side of OB (shooter's perspective)
-//
-
-// ── GRID COORDINATE SYSTEM ──────────────────────────────────────
-// 32 squares numbered left-to-right, top-to-bottom (row 1=top, row 4=bottom)
 // Sub-positions a-h clockwise from lower-left:
 // a=lower-left, b=left-center, c=upper-left, d=upper-center
 // e=upper-right, f=right-center, g=lower-right, h=lower-center
@@ -791,49 +412,49 @@ function gridDesc(cb, ob, pocket) {
 
 const SHOT_LIBRARY = [
   { code:'RS1', category:'Rail Sequence One', name:'RS1 · 5f/7e Rail',
-    cb:{x:280,y:55}, ob:{x:380,y:38}, cut:2.9, rh:true, pocket:'TR',
+    cb:{x:280,y:55}, ob:{x:380,y:38}, cut:9.6, rh:true, pocket:'TR',
     desc: gridDesc({x:280,y:55}, {x:380,y:38}, 'TR'),
     cue:'Rail ball, shallow angle — aim fuller than geometry says.',
     teaching:'', difficulty:2 },
 
   { code:'RS2', category:'Rail Sequence One', name:'RS2 · 4f/7e Rail',
-    cb:{x:230,y:55}, ob:{x:380,y:38}, cut:4.9, rh:false, pocket:'TR',
+    cb:{x:230,y:55}, ob:{x:380,y:38}, cut:6.5, rh:true, pocket:'TR',
     desc: gridDesc({x:230,y:55}, {x:380,y:38}, 'TR'),
     cue:'Slightly shallower — longer CB to OB distance.',
     teaching:'', difficulty:2 },
 
   { code:'RS3', category:'Rail Sequence One', name:'RS3 · 4f/6e Rail',
-    cb:{x:230,y:55}, ob:{x:330,y:38}, cut:7.4, rh:true, pocket:'TR',
+    cb:{x:230,y:55}, ob:{x:330,y:38}, cut:9.6, rh:true, pocket:'TR',
     desc: gridDesc({x:230,y:55}, {x:330,y:38}, 'TR'),
     cue:'Same angle as RS1, one diamond closer to corner.',
     teaching:'', difficulty:2 },
 
   { code:'RS4', category:'Rail Sequence One', name:'RS4 · 3f/5e Rail',
-    cb:{x:180,y:55}, ob:{x:280,y:38}, cut:8.9, rh:true, pocket:'TR',
+    cb:{x:180,y:55}, ob:{x:280,y:38}, cut:9.6, rh:true, pocket:'TR',
     desc: gridDesc({x:180,y:55}, {x:280,y:38}, 'TR'),
     cue:'Same shot, moved two diamonds left — identical geometry.',
     teaching:'', difficulty:2 },
 
   { code:'RS5', category:'Rail Sequence One', name:'RS5 · 1f/3e Rail',
-    cb:{x:80,y:55}, ob:{x:180,y:38}, cut:10.1, rh:true, pocket:'TR',
+    cb:{x:80,y:55}, ob:{x:180,y:38}, cut:9.6, rh:true, pocket:'TR',
     desc: gridDesc({x:80,y:55}, {x:180,y:38}, 'TR'),
     cue:'Long rail version — same angle, four diamonds of travel.',
     teaching:'', difficulty:2 },
 
 
   { code:'RS7', category:'Rail Sequence One', name:'RS7 · 24/8g Rail',
-    cb:{x:405,y:155}, ob:{x:422,y:80}, cut:6.0, rh:false, pocket:'TR',
+    cb:{x:405,y:155}, ob:{x:422,y:80}, cut:12.8, rh:false, pocket:'TR',
     desc: gridDesc({x:405,y:155}, {x:422,y:80}, 'TR'),
     cue:'Right rail, steeper cut — same compensation principle as top rail.',
     teaching:'', difficulty:3 },
 
   { code:'RS8', category:'Rail Sequence One', name:'RS8 · 32/16g Rail',
-    cb:{x:405,y:205}, ob:{x:422,y:130}, cut:10.5, rh:false, pocket:'TR',
+    cb:{x:405,y:205}, ob:{x:422,y:130}, cut:12.8, rh:false, pocket:'TR',
     desc: gridDesc({x:405,y:205}, {x:422,y:130}, 'TR'),
     cue:'Longer right rail version — identical angle to RS7.',
     teaching:'', difficulty:3 },
   { code:'RS6', category:'Rail Sequence One', name:'RS6 · 24/8g Rail',
-    cb:{x:405,y:155}, ob:{x:422,y:80}, cut:6.0, rh:false, pocket:'TR',
+    cb:{x:405,y:155}, ob:{x:422,y:80}, cut:12.8, rh:false, pocket:'TR',
     desc: gridDesc({x:405,y:155}, {x:422,y:80}, 'TR'),
     cue:'Right rail, steeper angle — same compensation principle.',
     teaching:'', difficulty:3 },
@@ -887,35 +508,35 @@ const SHOT_LIBRARY = [
     teaching:'This is a fairly <b>common</b> shot, and fairly <b>hard</b> to make. However, you will master this through a little concentration and repetition. Look at the ball graphic in the Aimer. It says you need to see about 61% of the object ball to the right of the edge of your cue ball. The shot has a 37.9 degree angle to the pocket. Make <b>yourself aware</b> that this is about what a <b>forty degree</b> +/- angle looks like.<br><br>Now shoot it as the ball diagram in the app says. Did it go in? Most likely it missed short of the pocket. If so, set it up again and shoot thinner, say, about 75% of the ball. Set the ball diagram to show that, and look at how much of the red ball shows to the right of the inside edge line of the cue ball. See that same <b>setup on the real balls</b> and shoot. <b>Did it go?</b> If not, what’s your correction?',
     difficulty:3 },
   { code:'S8', category:'Rail Shots', name:'S8 · Rail cut — flat on the rail.',
-    cb:{x:205,y:105}, ob:{x:330,y:38}, cut:25.9, rh:true, pocket:'TR',
+    cb:{x:205,y:105}, ob:{x:330,y:38}, cut:28.2, rh:true, pocket:'TR',
     desc: gridDesc({x:205,y:105}, {x:330,y:38}, 'TR'),
     cue:'Rail balls play short — aim thin and let the rail do the work.',
     teaching:'Rail cut — flat on the rail.',
     difficulty:2 },
 
   { code:'S9', category:'Rail Shots', name:'S9 · Rail Shots',
-    cb:{x:280,y:105}, ob:{x:330,y:38}, cut:51.0, rh:true, pocket:'TR',
+    cb:{x:280,y:105}, ob:{x:330,y:38}, cut:53.3, rh:true, pocket:'TR',
     desc: gridDesc({x:280,y:105}, {x:330,y:38}, 'TR'),
     cue:'Steeper angle than it looks; trust the ghost ball position.',
     teaching:'',
     difficulty:2 },
 
   { code:'S10', category:'Rail Shots', name:'S10 · Close angle rail.',
-    cb:{x:230,y:55}, ob:{x:330,y:38}, cut:7.4, rh:true, pocket:'TR',
+    cb:{x:230,y:55}, ob:{x:330,y:38}, cut:9.6, rh:true, pocket:'TR',
     desc: gridDesc({x:230,y:55}, {x:330,y:38}, 'TR'),
     cue:'Close and forgiving — a good place to feel what rail contact does.',
     teaching:'Close angle rail.',
     difficulty:2 },
 
   { code:'S11', category:'Rail Shots', name:'S11 · Steeper rail shot.',
-    cb:{x:230,y:105}, ob:{x:330,y:38}, cut:31.5, rh:true, pocket:'TR',
+    cb:{x:230,y:105}, ob:{x:330,y:38}, cut:33.8, rh:true, pocket:'TR',
     desc: gridDesc({x:230,y:105}, {x:330,y:38}, 'TR'),
     cue:'Steeper than S8; the rail is your guide, not the pocket.',
     teaching:'Steeper rail shot.',
     difficulty:2 },
 
   { code:'S12', category:'Rail Shots', name:'S12 · 5’ long rail shot.',
-    cb:{x:130,y:130}, ob:{x:330,y:38}, cut:22.4, rh:true, pocket:'TR',
+    cb:{x:130,y:130}, ob:{x:330,y:38}, cut:24.7, rh:true, pocket:'TR',
     desc: gridDesc({x:130,y:130}, {x:330,y:38}, 'TR'),
     cue:'Five feet of travel — stay slow and let the geometry do the work.',
     teaching:'5’ long rail shot.',
@@ -1004,7 +625,226 @@ const SHOT_LIBRARY = [
     cue:'OB off the rail, cut right — watch the angle open up.',
     teaching:'',
     difficulty:2 },
+,
 
+  // ── INSTINCT BUILDER ──────────────────────────────────────
+  {
+    cb:{x:280,y:55}, ob:{x:380,y:38},
+    cut:9.6, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-f',
+    name:'CB 5f / OB 7e', code:'ib-5f-7e',
+    desc:'CB 5f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
+  },
+  {
+    cb:{x:230,y:55}, ob:{x:380,y:38},
+    cut:6.5, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-f',
+    name:'CB 4f / OB 7e', code:'ib-4f-7e',
+    desc:'CB 4f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
+  },
+  {
+    cb:{x:180,y:55}, ob:{x:380,y:38},
+    cut:4.9, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-f',
+    name:'CB 3f / OB 7e', code:'ib-3f-7e',
+    desc:'CB 3f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
+  },
+  {
+    cb:{x:130,y:55}, ob:{x:380,y:38},
+    cut:3.9, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-f',
+    name:'CB 2f / OB 7e', code:'ib-2f-7e',
+    desc:'CB 2f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
+  },
+  {
+    cb:{x:80,y:55}, ob:{x:380,y:38},
+    cut:3.2, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-f',
+    name:'CB 1f / OB 7e', code:'ib-1f-7e',
+    desc:'CB 1f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
+  },
+  {
+    cb:{x:280,y:80}, ob:{x:380,y:38},
+    cut:22.8, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-g',
+    name:'CB 5g / OB 7e', code:'ib-5g-7e',
+    desc:'CB 5g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
+  },
+  {
+    cb:{x:230,y:80}, ob:{x:380,y:38},
+    cut:15.6, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-g',
+    name:'CB 4g / OB 7e', code:'ib-4g-7e',
+    desc:'CB 4g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
+  },
+  {
+    cb:{x:180,y:80}, ob:{x:380,y:38},
+    cut:11.9, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-g',
+    name:'CB 3g / OB 7e', code:'ib-3g-7e',
+    desc:'CB 3g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
+  },
+  {
+    cb:{x:130,y:80}, ob:{x:380,y:38},
+    cut:9.5, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-g',
+    name:'CB 2g / OB 7e', code:'ib-2g-7e',
+    desc:'CB 2g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
+  },
+  {
+    cb:{x:80,y:80}, ob:{x:380,y:38},
+    cut:8.0, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-g',
+    name:'CB 1g / OB 7e', code:'ib-1g-7e',
+    desc:'CB 1g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
+  },
+  {
+    cb:{x:280,y:105}, ob:{x:380,y:38},
+    cut:33.8, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-long',
+    name:'CB 13f / OB 7e', code:'ib-13f-7e',
+    desc:'CB 13f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
+  },
+  {
+    cb:{x:230,y:105}, ob:{x:380,y:38},
+    cut:24.1, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-long',
+    name:'CB 12f / OB 7e', code:'ib-12f-7e',
+    desc:'CB 12f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
+  },
+  {
+    cb:{x:180,y:105}, ob:{x:380,y:38},
+    cut:18.5, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-long',
+    name:'CB 11f / OB 7e', code:'ib-11f-7e',
+    desc:'CB 11f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
+  },
+  {
+    cb:{x:130,y:105}, ob:{x:380,y:38},
+    cut:15.0, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-long',
+    name:'CB 10f / OB 7e', code:'ib-10f-7e',
+    desc:'CB 10f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
+  },
+  {
+    cb:{x:80,y:105}, ob:{x:380,y:38},
+    cut:12.6, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-7e-long',
+    name:'CB 9f / OB 7e', code:'ib-9f-7e',
+    desc:'CB 9f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
+  },
+  {
+    cb:{x:230,y:55}, ob:{x:330,y:38},
+    cut:9.6, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-f',
+    name:'CB 4f / OB 6e', code:'ib-4f-6e',
+    desc:'CB 4f · OB 6e · P3', cue:'Closer pocket, same feel.', difficulty:1
+  },
+  {
+    cb:{x:180,y:55}, ob:{x:330,y:38},
+    cut:6.5, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-f',
+    name:'CB 3f / OB 6e', code:'ib-3f-6e',
+    desc:'CB 3f · OB 6e · P3', cue:'Closer pocket, same feel.', difficulty:1
+  },
+  {
+    cb:{x:130,y:55}, ob:{x:330,y:38},
+    cut:4.9, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-f',
+    name:'CB 2f / OB 6e', code:'ib-2f-6e',
+    desc:'CB 2f · OB 6e · P3', cue:'Closer pocket, same feel.', difficulty:1
+  },
+  {
+    cb:{x:80,y:55}, ob:{x:330,y:38},
+    cut:3.9, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-f',
+    name:'CB 1f / OB 6e', code:'ib-1f-6e',
+    desc:'CB 1f · OB 6e · P3', cue:'Closer pocket, same feel.', difficulty:1
+  },
+  {
+    cb:{x:230,y:80}, ob:{x:330,y:38},
+    cut:22.8, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-g',
+    name:'CB 4g / OB 6e', code:'ib-4g-6e',
+    desc:'CB 4g · OB 6e · P3', cue:'Fuller line — OB 6e.', difficulty:1
+  },
+  {
+    cb:{x:180,y:80}, ob:{x:330,y:38},
+    cut:15.6, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-g',
+    name:'CB 3g / OB 6e', code:'ib-3g-6e',
+    desc:'CB 3g · OB 6e · P3', cue:'Fuller line — OB 6e.', difficulty:1
+  },
+  {
+    cb:{x:130,y:80}, ob:{x:330,y:38},
+    cut:11.9, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-g',
+    name:'CB 2g / OB 6e', code:'ib-2g-6e',
+    desc:'CB 2g · OB 6e · P3', cue:'Fuller line — OB 6e.', difficulty:1
+  },
+  {
+    cb:{x:80,y:80}, ob:{x:330,y:38},
+    cut:9.5, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-g',
+    name:'CB 1g / OB 6e', code:'ib-1g-6e',
+    desc:'CB 1g · OB 6e · P3', cue:'Fuller line — OB 6e.', difficulty:1
+  },
+  {
+    cb:{x:230,y:105}, ob:{x:330,y:38},
+    cut:33.8, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-long',
+    name:'CB 12f / OB 6e', code:'ib-12f-6e',
+    desc:'CB 12f · OB 6e · P3', cue:'Long shots — OB 6e.', difficulty:1
+  },
+  {
+    cb:{x:180,y:105}, ob:{x:330,y:38},
+    cut:24.1, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-long',
+    name:'CB 11f / OB 6e', code:'ib-11f-6e',
+    desc:'CB 11f · OB 6e · P3', cue:'Long shots — OB 6e.', difficulty:1
+  },
+  {
+    cb:{x:130,y:105}, ob:{x:330,y:38},
+    cut:18.5, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-long',
+    name:'CB 10f / OB 6e', code:'ib-10f-6e',
+    desc:'CB 10f · OB 6e · P3', cue:'Long shots — OB 6e.', difficulty:1
+  },
+  {
+    cb:{x:80,y:105}, ob:{x:330,y:38},
+    cut:15.0, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'rail-6e-long',
+    name:'CB 9f / OB 6e', code:'ib-9f-6e',
+    desc:'CB 9f · OB 6e · P3', cue:'Long shots — OB 6e.', difficulty:1
+  },
+  {
+    cb:{x:255,y:55}, ob:{x:330,y:38},
+    cut:12.8, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'diagonal',
+    name:'CB 5 / OB 6e', code:'ib-5-6e',
+    desc:'CB 5 · OB 6e · P3', cue:'Same shot — different address.', difficulty:1
+  },
+  {
+    cb:{x:205,y:55}, ob:{x:280,y:38},
+    cut:12.8, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'diagonal',
+    name:'CB 4 / OB 5e', code:'ib-4-5e',
+    desc:'CB 4 · OB 5e · P3', cue:'Same shot — different address.', difficulty:1
+  },
+  {
+    cb:{x:130,y:55}, ob:{x:205,y:38},
+    cut:12.8, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'diagonal',
+    name:'CB 2f / OB 4d', code:'ib-2f-4d',
+    desc:'CB 2f · OB 4d · P3', cue:'Same shot — different address.', difficulty:1
+  },
+  {
+    cb:{x:80,y:55}, ob:{x:155,y:38},
+    cut:12.8, rh:true, pocket:'TR',
+    category:'INSTINCT BUILDER', group:'diagonal',
+    name:'CB 1f / OB 3d', code:'ib-1f-3d',
+    desc:'CB 1f · OB 3d · P3', cue:'Same shot — different address.', difficulty:1
+  }
 ];
 
 // ── USER SHOT NOTES ───────────────────────────────────────────
@@ -1071,64 +911,107 @@ function starsHtml(n) {
   return '<span style="color:#b8860b;font-size:12px;">' + '★'.repeat(n) + '<span style="color:#cccccc;">' + '★'.repeat(5-n) + '</span></span>';
 }
 
+let _openCats = {}, _openGrps = {};
+function toggleCat(id) {
+  _openCats[id] = !_openCats[id];
+  const el = document.getElementById(id);
+  const ar = document.getElementById(id+'-arrow');
+  if (el) el.style.display = _openCats[id] ? 'block' : 'none';
+  if (ar) ar.textContent = _openCats[id] ? '▴' : '▾';
+}
+function toggleGrp(id) {
+  _openGrps[id] = !_openGrps[id];
+  const el = document.getElementById(id);
+  const ar = document.getElementById(id+'-arrow');
+  if (el) el.style.display = _openGrps[id] ? 'block' : 'none';
+  if (ar) ar.textContent = _openGrps[id] ? '▴' : '▾';
+}
+
 function buildShotList() {
   const el = document.getElementById('shot-library-list');
   if (!el) return;
 
-  // Group presets by category
-  const cats = [];
-  const catMap = {};
-  SHOT_LIBRARY.forEach((s, i) => {
-    if (!catMap[s.category]) { catMap[s.category] = []; cats.push(s.category); }
-    catMap[s.category].push({s, i});
+  const GROUP_NAMES = {
+    'rail-7e-f':   'OB 7e — along the rail',
+    'rail-7e-g':   'OB 7e — one step out',
+    'rail-7e-long':'OB 7e — from deeper',
+    'rail-6e-f':   'OB 6e — along the rail',
+    'rail-6e-g':   'OB 6e — one step out',
+    'rail-6e-long':'OB 6e — from deeper',
+    'diagonal':    'The Same Shot — Moving'
+  };
+  function grpName(id) { return GROUP_NAMES[id] || id; }
+
+  const chapters = {};
+  SHOT_LIBRARY.forEach(function(s, i) {
+    const cat = s.category || 'Classic Shots';
+    const grp = s.group || cat;
+    if (!chapters[cat]) chapters[cat] = { groups:{}, order:[] };
+    if (!chapters[cat].groups[grp]) { chapters[cat].groups[grp]=[]; chapters[cat].order.push(grp); }
+    chapters[cat].groups[grp].push({s,i});
   });
 
-  let html = '';
-  cats.forEach(cat => {
-    html += '<div style="font-size:11px;font-weight:900;letter-spacing:2px;color:#333333;text-transform:uppercase;padding:10px 12px 4px;border-top:1px solid #cccccc;background:#e8e8e8;">' + cat + '</div>';
-    catMap[cat].forEach(({s, i}) => {
-      const note = shotNotes[s.code] || '';
-      const noteId = 'note-' + s.code;
-      const noteAreaId = 'notebox-' + s.code;
-      html +=
-        '<div style="border-bottom:2px solid #dddddd;">' +
-        // Shot header — clickable to load
-        '<div style="display:flex;align-items:stretch;">' +
-          '<div data-preset="' + i + '" class="shot-lib-item" onclick="loadShot(' + i + ')" style="flex:1;padding:10px 12px 6px;cursor:pointer;">' +
-            '<div style="display:flex;align-items:center;gap:6px;">' +
-              '<span style="font-size:'+(16*_shotListScale)+'px;font-weight:900;color:#0a4a0a;">' + s.name + '</span>' +
-              starsHtml(s.difficulty) +
-            '</div>' +
-            '<div style="font-size:'+(12*_shotListScale)+'px;color:#555555;margin-top:3px;font-weight:700;">' + s.desc + '</div>' +
-            (s.cue ? '<div style="font-size:'+(13*_shotListScale)+'px;color:#1a5a1a;margin-top:6px;font-style:italic;line-height:1.5;">“' + s.cue + '”</div>' : '') +
-          '</div>' +
-          (s.teaching ? '<button onclick="event.stopPropagation();toggleTeaching(\'' + s.code + '\')" id="teach-btn-' + s.code + '" style="flex-shrink:0;width:40px;background:#dff0df;border:none;border-left:2px solid #cccccc;cursor:pointer;font-size:20px;color:#1a5a1a;display:flex;align-items:flex-start;justify-content:center;padding-top:14px;">&#x25BE;</button>' : '<div style="width:40px;"></div>') +
-        '</div>' +
-        (s.teaching ? '<div id="teach-' + s.code + '" style="display:none;padding:12px 14px 14px;background:#f0f8f0;border-top:1px solid #bbddbb;">' +
-          '<div style="font-size:'+(14*_shotListScale)+'px;color:#111111;line-height:1.75;">' + s.teaching + '</div>' +
-        '</div>' : '') +
-        // Notes section
-        '<div style="padding:4px 12px 8px;background:#f8f8f8;">' +
-          '<div style="display:flex;align-items:center;gap:4px;">' +
-            '<span style="font-size:'+(11*_shotListScale)+'px;color:#555555;letter-spacing:1px;font-weight:900;">MY NOTES</span>' +
-            '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:9px;padding:2px 8px;border-radius:4px;border:1px solid #999999;background:#ffffff;color:#333333;cursor:pointer;font-weight:700;">' + (note ? 'edit' : '+') + '</button>' +
-          '</div>' +
-          (note ? '<div id="' + noteId + '" style="font-size:12px;color:#222222;margin-top:4px;padding:6px 8px;background:#ffffff;border:1px solid #cccccc;border-radius:4px;">' + note.replace(/</g,'&lt;') + '</div>' : '<div id="' + noteId + '"></div>') +
-          '<div id="' + noteAreaId + '" style="display:none;margin-top:6px;">' +
-            '<textarea rows="2" style="width:100%;box-sizing:border-box;font-size:13px;background:#ffffff;color:#111111;border:1px solid #999999;border-radius:4px;padding:6px;resize:vertical;font-family:Lato,sans-serif;" placeholder="Your notes on this shot...">' + note.replace(/</g,'&lt;') + '</textarea>' +
-            '<div style="display:flex;gap:6px;margin-top:6px;">' +
-              '<button onclick="saveNote(\'' + s.code + '\')" style="font-size:12px;padding:4px 14px;border-radius:4px;border:none;background:#1a5a1a;color:#ffffff;cursor:pointer;font-weight:900;">SAVE</button>' +
-              '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:12px;padding:4px 14px;border-radius:4px;border:1px solid #999999;background:#ffffff;color:#333333;cursor:pointer;">CANCEL</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-        '</div>';
+  let h = '';
+  Object.entries(chapters).forEach(function([cat, data]) {
+    const catId = 'cat-' + cat.replace(/[^a-z0-9]/gi,'_');
+    const catOpen = !!_openCats[catId];
+    h += '<div style="background:#1a3a1a;border-bottom:2px solid #0a2a0a;">';
+    h += '<div onclick="toggleCat(\'' + catId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;user-select:none;">';
+    h += '<span style="font-size:12px;font-weight:900;letter-spacing:1px;color:#4ade80;">' + cat + '</span>';
+    h += '<span id="' + catId + '-arrow" style="color:#4ade80;font-size:12px;">' + (catOpen?'▴':'▾') + '</span>';
+    h += '</div>';
+    h += '<div id="' + catId + '" style="display:' + (catOpen?'block':'none') + ';">';
+    data.order.forEach(function(grp) {
+      const shots = data.groups[grp];
+      const grpId = 'grp-' + grp.replace(/[^a-z0-9]/gi,'_');
+      const grpOpen = !!_openGrps[grpId];
+      h += '<div style="border-bottom:1px solid #cccccc;">';
+      h += '<div onclick="toggleGrp(\'' + grpId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px;cursor:pointer;background:#e0e8e0;">';
+      h += '<span style="font-size:11px;font-weight:900;color:#1a5a1a;">' + grpName(grp) + '</span>';
+      h += '<span id="' + grpId + '-arrow" style="color:#1a5a1a;font-size:11px;">' + (grpOpen?'▴':'▾') + '</span>';
+      h += '</div>';
+      h += '<div id="' + grpId + '" style="display:' + (grpOpen?'block':'none') + ';">';
+      shots.forEach(function(obj) {
+        const s=obj.s, i=obj.i;
+        const note = shotNotes[s.code] || '';
+        h += '<div style="border-bottom:1px solid #dddddd;background:#ffffff;">';
+        // Shot header row
+        h += '<div style="display:flex;align-items:stretch;">';
+        h += '<div onclick="loadShot(' + i + ')" style="flex:1;padding:8px 12px 6px 20px;cursor:pointer;">';
+        h += '<div style="display:flex;align-items:center;gap:6px;">';
+        h += '<span style="font-size:' + (14*_shotListScale) + 'px;font-weight:900;color:#0a4a0a;">' + (s.name||s.desc) + '</span>';
+        if (s.difficulty) { let stars=''; for(let x=0;x<s.difficulty;x++) stars+='<span style="color:#e8c040;font-size:10px;">★</span>'; h += stars; }
+        h += '</div>';
+        h += '<div style="font-size:' + (11*_shotListScale) + 'px;color:#555555;margin-top:2px;">' + s.desc + '</div>';
+        if (s.cue) h += '<div style="font-size:' + (12*_shotListScale) + 'px;color:#1a5a1a;font-style:italic;margin-top:4px;line-height:1.4;">"' + s.cue + '"</div>';
+        h += '</div>';
+        if (s.teaching) h += '<button onclick="event.stopPropagation();toggleTeaching(\'' + s.code + '\')" id="teach-btn-' + s.code + '" style="flex-shrink:0;width:36px;background:#dff0df;border:none;border-left:2px solid #cccccc;cursor:pointer;font-size:18px;color:#1a5a1a;display:flex;align-items:flex-start;justify-content:center;padding-top:12px;">&#x25BE;</button>';
+        h += '</div>';
+        // Teaching text
+        if (s.teaching) h += '<div id="teach-' + s.code + '" style="display:none;padding:10px 14px 12px;background:#f0f8f0;border-top:1px solid #bbddbb;font-size:' + (13*_shotListScale) + 'px;color:#111;line-height:1.75;">' + s.teaching + '</div>';
+        // Notes
+        h += '<div style="padding:3px 12px 6px 20px;background:#f8f8f8;">';
+        h += '<div style="display:flex;align-items:center;gap:4px;">';
+        h += '<span style="font-size:' + (10*_shotListScale) + 'px;color:#555;letter-spacing:1px;font-weight:900;">MY NOTES</span>';
+        h += '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid #999;background:#fff;color:#333;cursor:pointer;">' + (note?'edit':'+') + '</button>';
+        h += '</div>';
+        if (note) h += '<div id="note-' + s.code + '" style="font-size:11px;color:#222;margin-top:3px;padding:4px 6px;background:#fff;border:1px solid #ccc;border-radius:3px;">' + note.replace(/</g,'&lt;') + '</div>';
+        else h += '<div id="note-' + s.code + '"></div>';
+        h += '<div id="notebox-' + s.code + '" style="display:none;margin-top:4px;">';
+        h += '<textarea rows="2" style="width:100%;box-sizing:border-box;font-size:12px;background:#fff;color:#111;border:1px solid #999;border-radius:3px;padding:4px;resize:vertical;font-family:Lato,sans-serif;" placeholder="Your notes...">' + note.replace(/</g,'&lt;') + '</textarea>';
+        h += '<div style="display:flex;gap:4px;margin-top:4px;">';
+        h += '<button onclick="saveNote(\'' + s.code + '\')" style="font-size:11px;padding:3px 10px;border-radius:3px;border:none;background:#1a5a1a;color:#fff;cursor:pointer;font-weight:900;">SAVE</button>';
+        h += '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:11px;padding:3px 10px;border-radius:3px;border:1px solid #999;background:#fff;color:#333;cursor:pointer;">CANCEL</button>';
+        h += '</div></div></div>';
+        h += '</div>';
+      });
+      h += '</div></div>';
     });
+    h += '</div></div>';
   });
-
   if (userShots.length) {
-    html += '<div style="font-size:7px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;padding:6px 6px 2px;border-top:1px solid rgba(255,255,255,0.06);">My Shots</div>';
-    html += userShots.map((s,i) => {
+    h += '<div style="font-size:7px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;padding:6px 6px 2px;border-top:1px solid rgba(255,255,255,0.06);">My Shots</div>';
+    h += userShots.map((s,i) => {
       const d = new Date(s.ts);
       const dt = (d.getMonth()+1)+'/'+d.getDate();
       return '<div style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">' +
@@ -1140,7 +1023,7 @@ function buildShotList() {
     }).join('');
   }
 
-  el.innerHTML = html;
+  el.innerHTML = h;
   // click handlers added inline via onclick attributes
 }
 
@@ -1213,12 +1096,59 @@ function loadShot(idx) {
 }
 
 </script>
-  <link rel="manifest" href="manifest-aimer.json">
-  <link rel="apple-touch-icon" href="icon-aimer-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="LZ Aimer">
-  <meta name="theme-color" content="#1a361a">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New version available — reload silently
+            window.location.reload();
+          }
+        });
+      });
+    });
+  });
+}
+// ── SHOT LIBRARY ─────────────────────────────────────────────
+// ── SHOT LIBRARY ─────────────────────────────────────────────────────────────
+// HOW TO ADD A SHOT:
+//
+// 1. Set up shot in app — place CB and OB, drag the aim line on the ball diagram
+//    until readouts show the cut angle and % you want
+// 2. Note: CB square+suffix, OB square+suffix, cut angle (from CUT readout),
+//    direction L or R (from readout), pocket the OB aims toward
+// 3. CB/OB coordinates from square grid:
+//      sq(n): row=(n-1)//8, col=(n-1)%8
+//      center: x=30+col*50+25, y=30+row*50+25
+//      suffix f=right-mid, g=lower-right, d=top-mid, etc. (clamped 9px inside rail)
+// 4. rh: true = right cut (OB departs to the right), false = left cut
+//
+// SHOT FORMAT:
+//   { name, cb:{x,y}, ob:{x,y}, cut (degrees), rh (bool), desc }
+//
+// HOW IT WORKS:
+//   The preset click handler in buildShotList() calls loadShot(idx).
+//   loadShot() sets S.diagCutDeg=shot.cut and S._diagDragRh=shot.rh,
+//   then calls render(). The readouts and ball diagram both read diagCutDeg
+//   directly — no geometry recomputation needed.
+//   KEY FIX (session 4): preset click handler MUST call loadShot(), not render()
+//   directly — otherwise diagCutDeg and rh are never set.
+// ─────────────────────────────────────────────────────────────────────────────
+// ── SHOT LIBRARY ─────────────────────────────────────────────
+// Positions use SVG coords: table is (30,30)→(430,230), 1 diamond = 50px
+// Near-rail shots: f≈y45 (15px from rail), g≈y55 (25px), e≈y38 (8px, clamped)
+// sq(n) grid: row=(n-1)//8, col=(n-1)%8; center=30+col*50+25, 30+row*50+25
+//   suffixes from center: f=(+25,0), g=(+25,+25), e=(+25,-25), h=(0,+37)
+// cut: angle in degrees between approach and required OB departure (to nearest pocket)
+// rh: true = contact on right side of OB (shooter's perspective)
+//
+
+// ── GRID COORDINATE SYSTEM ──────────────────────────────────────
+// 32 squares numbered left-to-right, top-to-bottom (row 1=top, row 4=bottom)
+</script>
 </head>
 <body>
 
@@ -1641,6 +1571,7 @@ function loadShot(idx) {
           <circle id="cb-dot"    cx="130" cy="200" r="1.2" fill="#999" opacity="0.4"/>
         </g>
         </g><!-- tbl-content -->
+        <g id="snap-labels-overlay"></g>
       </svg>
     </div>
 
@@ -2121,11 +2052,17 @@ svg.addEventListener('pointermove', e => {
     S.ob = {x: clamped.x, y: clamped.y};
     justShot = false;
     if (snapped.label) showSnapLabel($('topsvg'), clamped.x, clamped.y, snapped.label, 'ob');
+    // Recompute cut from positions
+    { const _c = computeCutFromPositions(S.cb, S.ob, S.pocket || 'TR');
+      S.diagCutDeg = _c.cutDeg; S._diagDragRh = _c.rh; S._userAdjustedDiag = false; }
   } else if (drag==='cb') {
     const snapped = applySnap(p.x, p.y);
     const clamped = clampBall(snapped.x, snapped.y);
     S.cb = {x: snapped.x, y: snapped.y};
-    S.diagCutDeg = 0; S._diagDragRh = undefined; justShot = false;
+    // Recompute cut from positions
+    { const _c = computeCutFromPositions(S.cb, S.ob, S.pocket || 'TR');
+      S.diagCutDeg = _c.cutDeg; S._diagDragRh = _c.rh; S._userAdjustedDiag = false; }
+    justShot = false;
     if (snapped.label) showSnapLabel($('topsvg'), snapped.x, snapped.y, snapped.label, 'cb');
   }
   render();
@@ -2157,6 +2094,33 @@ function getThrowComp(cutDeg) {
     const t = (cutDeg - 50) / 40;
     return throwMi + (throwHi - throwMi) * t;
   }
+}
+
+// Compute cut angle from CB/OB positions — consistent formula
+// Rail shots use rail direction as departure; open shots use OB→pocket
+function computeCutFromPositions(cb, ob, pocketName) {
+  const POCKETS = {
+    TL:{x:30,y:30}, TM:{x:230,y:30}, TR:{x:430,y:30},
+    BR:{x:430,y:230}, BM:{x:230,y:230}, BL:{x:30,y:230}
+  };
+  const p = POCKETS[pocketName] || POCKETS.TR;
+  const cbToOb = Math.atan2(ob.y-cb.y, ob.x-cb.x);
+  const onTop    = ob.y <= TL.top    + BALL_R + 4;
+  const onBottom = ob.y >= TL.bottom - BALL_R - 4;
+  const onLeft   = ob.x <= TL.left   + BALL_R + 4;
+  const onRight  = ob.x >= TL.right  - BALL_R - 4;
+  let departure;
+  if (onTop || onBottom) {
+    departure = p.x > ob.x ? 0 : Math.PI;
+  } else if (onLeft || onRight) {
+    departure = p.y > ob.y ? Math.PI/2 : -Math.PI/2;
+  } else {
+    departure = Math.atan2(p.y - ob.y, p.x - ob.x);
+  }
+  let diff = departure - cbToOb;
+  while (diff >  Math.PI) diff -= 2*Math.PI;
+  while (diff < -Math.PI) diff += 2*Math.PI;
+  return { cutDeg: Math.abs(diff * DEG), rh: diff > 0 };
 }
 
 function render() {
@@ -2991,35 +2955,50 @@ function updateSnapLabels(svgEl) {
   const LBL_Y = railTop - 39; // 35px higher
 
   const pos = window._snapPos || {};
+  // Clean up old DOM divs
+  ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
+
+  const overlay = document.getElementById('snap-labels-overlay') || svgEl;
+
   ['cb','ob'].forEach(id => {
     const p = pos[id];
-    let lbl = document.getElementById('snap-lbl-' + id);
-    if (!p || !p.label) { if(lbl) lbl.remove(); return; }
-    if (!lbl) {
-      lbl = document.createElement('div');
-      lbl.id = 'snap-lbl-' + id;
-      lbl.className = 'snap-label';
-      document.body.appendChild(lbl);
-    }
-    lbl.textContent = (id === 'cb' ? 'CB: ' : 'OB: ') + p.label;
+    // Remove old SVG label
+    const oldGrp = document.getElementById('snap-svg-lbl-' + id);
+    if (oldGrp) oldGrp.remove();
+    if (!p || !p.label) return;
 
-    // X: centered on ball, but check for collision between CB and OB labels
-    const sc = toScreen(p.x, p.y);
-    let lx = sc.x - lbl.offsetWidth/2;
+    const label_text = (id === 'cb' ? 'CB: ' : 'OB: ') + p.label;
+    const svgX = p.x;
+    const svgY = 8; // near top of viewBox, fully visible
 
-    // If both labels exist and would overlap, offset them
-    const other = pos[id === 'cb' ? 'ob' : 'cb'];
-    if (other && other.label) {
-      const osc = toScreen(other.x, other.y);
-      const sameLine = Math.abs(p.x - other.x) < 30; // stacked vertically
-      if (sameLine) {
-        lx = id === 'ob' ? sc.x + 6 : sc.x - (lbl.offsetWidth || 80) - 6;
-      }
-    }
+    const charW = 5.5;
+    const bgW = label_text.length * charW + 6;
+    const bgH = 12;
 
-    lbl.style.left = Math.max(4, lx) + 'px';
-    lbl.style.top  = LBL_Y + 'px';
-    lbl.style.opacity = '1';
+    const grp = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    grp.id = 'snap-svg-lbl-' + id;
+
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('x', svgX - bgW/2);
+    bg.setAttribute('y', svgY - 9);
+    bg.setAttribute('width', bgW);
+    bg.setAttribute('height', bgH);
+    bg.setAttribute('rx', '2');
+    bg.setAttribute('fill', 'rgba(0,0,0,0.85)');
+
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('font-family', 'Lato,sans-serif');
+    txt.setAttribute('font-size', '9');
+    txt.setAttribute('font-weight', '900');
+    txt.setAttribute('fill', '#80e880');
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('x', svgX);
+    txt.setAttribute('y', svgY);
+    txt.textContent = label_text;
+
+    grp.appendChild(bg);
+    grp.appendChild(txt);
+    overlay.appendChild(grp);
   });
 }
 
@@ -3111,6 +3090,8 @@ window.addEventListener('load', function(){
   if(biasBtn){ biasBtn.classList.toggle('on', biasOn); }
 });
 window.addEventListener('resize', positionToolbar, {passive:true});
+window.addEventListener('resize', function(){ updateSnapLabels(document.getElementById('topsvg')); }, {passive:true});
+window.addEventListener('scroll', function(){ updateSnapLabels(document.getElementById('topsvg')); }, {passive:true});
 setTimeout(positionToolbar, 100); // fallback
 
 
@@ -3741,5 +3722,6 @@ window.render = function() {
   });
 })();
 </script>
+
 </body>
 </html>
