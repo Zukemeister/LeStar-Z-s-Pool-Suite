@@ -95,7 +95,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 #bounce-pills{display:flex;gap:4px;padding:4px 0 2px;}
 .bpill{height:22px;padding:0 10px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:inline-flex;align-items:center;background:rgba(240,223,112,0.18);color:rgba(240,223,112,0.6);outline:none;-webkit-tap-highlight-color:transparent;}
 .bpill.active{background:#f0df70;color:#1a1a1a;}
-#cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
+#cal-panel{display:none;background:#f0f0f0;border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
 #cal-panel.open{display:block;}
 #cal-instruction{font-size:12px;color:#ffffff;font-weight:700;margin-bottom:8px;line-height:1.55;}
 #cal-status{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.05em;margin-bottom:8px;text-transform:uppercase;}
@@ -394,6 +394,64 @@ const SHOT_LIBRARY = [
     lesson:'This is perhaps the easiest bank in the list. It has the advantage of the forgiving nature of the corner pockets, compared to the side pockets. That is so because the corner rails can deflect a slight miss (or a deliberate one) into the pocket, but the side rails don\u2019t offer that pleasure. Shoot this shot head on, with no spin and shoot it with moderate speed. As always, if it misses wide, move the Ghost Ball \u2014 the Cue Ball \u2014 to the left. And of course if it misses short, move the Ghost to the right. When you get it to go in five times in a row, open Calibrate and record the original recommendation that LeStar Z made, and then record the settings that actually made it go in. This makes your app ever more accurate for your table and your eye and stroke.',
     cue:'Corner pockets forgive. Use them.'
   },
+,
+
+  {
+    name: 'B3 · Steep Cross Corner',
+    cb:{x:330,y:180}, ob:{x:280,y:80}, pocket:'BL', sol:0,
+    desc: gridDesc({x:330,y:180}, {x:280,y:80}, 'BL'),
+    lesson:'Steep angle — the most forgiving bank on the table. The mirror pocket (BL reflected across the top rail) falls near the top-left corner. At medium speed with a center-ball hit, aim the OB straight at that mirror point. If it goes wide, you are too fast. If it falls short, you are too slow. Own this shot before moving on.',
+    cue:'Steep angle. Mirror point near top-left corner. Medium speed, center ball.'
+  },
+  {
+    name: 'B4 · Steep Cross Side',
+    cb:{x:130,y:180}, ob:{x:230,y:80}, pocket:'BM', sol:0,
+    desc: gridDesc({x:130,y:180}, {x:230,y:80}, 'BM'),
+    lesson:'The OB is almost directly below the far side pocket. The mirror pocket is directly below the near side pocket — an easy line to visualize. This is a steep cross-side, one of the most reliable banks in the game. Medium speed, no spin, center hit. If it misses wide, slow down. If it falls short, speed up.',
+    cue:'OB below far side pocket. Mirror is straight across. Dead medium speed.'
+  },
+  {
+    name: 'B5 · Corner to Corner',
+    cb:{x:230,y:180}, ob:{x:180,y:80}, pocket:'BR', sol:0,
+    desc: gridDesc({x:230,y:180}, {x:180,y:80}, 'BR'),
+    lesson:'The purest bank — equal triangles on either side of the rail. The mirror of BR reflected across the top rail is directly above BR at the same distance. Aim the OB at that point. The diamond system is exact here: if the OB is 2 diamonds from the left rail, the mirror point is 2 diamonds from the right rail. This is your baseline shot for learning how speed affects the angle.',
+    cue:'Equal triangles. Mirror is the opposite corner. Learn how speed moves it.'
+  },
+  {
+    name: 'B6 · Left Rail to Corner',
+    cb:{x:280,y:130}, ob:{x:38,y:80}, pocket:'TR', sol:0,
+    desc: gridDesc({x:280,y:130}, {x:38,y:80}, 'TR'),
+    lesson:'The OB banks off the left rail into the top-right corner. Mirror the TR pocket across the left rail — the mirror falls to the left of the table at the same height as TR. Aim the OB there. This is a moderate angle. Notice how a little running english (right spin on the CB, which transfers left spin to the OB going into the left rail) opens the angle slightly and helps it reach the pocket.',
+    cue:'Left rail bank. Running english opens the angle if you fall short.'
+  },
+  {
+    name: 'B7 · Wide Cross Side',
+    cb:{x:80,y:180}, ob:{x:330,y:130}, pocket:'BM', sol:0,
+    desc: gridDesc({x:80,y:180}, {x:330,y:130}, 'BM'),
+    lesson:'The OB travels to the right rail and comes back to the bottom side pocket. Wider angle than the previous shots — speed matters more here. The mirror of BM across the right rail falls to the right at the same height. At medium speed this should work clean. Too fast and it goes wide past the pocket. Experiment: try a touch of left spin on the CB to see how it affects the OB off the right rail.',
+    cue:'Right rail to side pocket. Speed is critical — medium or slightly below.'
+  },
+  {
+    name: 'B8 · Short Rail Bank',
+    cb:{x:330,y:130}, ob:{x:330,y:38}, pocket:'BM', sol:0,
+    desc: gridDesc({x:330,y:130}, {x:330,y:38}, 'BM'),
+    lesson:'The OB is nearly against the top rail, almost straight between CB and side pocket. After it hits the rail it has almost no distance to travel. This shot is extremely speed-sensitive — even a small change in pace dramatically moves the landing point. Use a very controlled medium stroke. No spin. This teaches you what happens when the travel after the rail is short.',
+    cue:'Short travel after the rail. Any speed variation and you will miss. Commit.'
+  },
+  {
+    name: 'B9 · Shallow Cross Corner',
+    cb:{x:80,y:130}, ob:{x:330,y:80}, pocket:'BL', sol:0,
+    desc: gridDesc({x:80,y:130}, {x:330,y:80}, 'BL'),
+    lesson:'Now the angle gets shallow — the hardest category of bank. The mirror pocket is well past the far corner. Small errors in speed or aim move the landing point enormously. Medium speed, precise aim. This is where players start using a touch of top spin to help the OB hold its line after the rail. If it consistently falls short, try the slightest bit of follow on the OB — hit it a touch fuller.',
+    cue:'Shallow angle — small errors hurt. Medium speed. Consider slight follow.'
+  },
+  {
+    name: 'B10 · Running English Bank',
+    cb:{x:230,y:155}, ob:{x:155,y:130}, pocket:'BR', sol:0,
+    desc: gridDesc({x:230,y:155}, {x:155,y:130}, 'BR'),
+    lesson:'This shot introduces the power of running english on a bank. The OB goes into the left rail — running english (right spin on CB, left on OB into that rail) opens the rebound angle. Set up the shot first with no spin and note where it lands. Then add one tip of right english and observe the shift. This is how you compensate when pure geometry leaves you short of the pocket. One tip of spin moves the OB approximately one diamond.',
+    cue:'Learn running english here. One tip of spin = about one diamond of shift.'
+  }
 ];
 let libraryOpen = false;
 // ── USER SHOT LIBRARY ──────────────────────────────────────────
@@ -442,58 +500,145 @@ function deleteUserShot(idx) {
 
 let expandedPreset = -1;
 
+let _openCats = {}, _openGrps = {};
+function toggleCat(id){_openCats[id]=!_openCats[id];const el=document.getElementById(id);const ar=document.getElementById(id+'-arrow');if(el)el.style.display=_openCats[id]?'block':'none';if(ar)ar.textContent=_openCats[id]?'▴':'▾';}
+function toggleGrp(id){_openGrps[id]=!_openGrps[id];const el=document.getElementById(id);const ar=document.getElementById(id+'-arrow');if(el)el.style.display=_openGrps[id]?'block':'none';if(ar)ar.textContent=_openGrps[id]?'▴':'▾';}
+
+let shotNotes = {};
+let _shotListScale = 1;
+
+function loadShotNotes() {
+  try { shotNotes = JSON.parse(localStorage.getItem('lz-banker-notes') || '{}'); } catch(e) { shotNotes = {}; }
+}
+
+function toggleTeaching(code) {
+  const el = document.getElementById('teach-' + code);
+  const btn = document.getElementById('teach-btn-' + code);
+  if (!el) return;
+  const showing = el.style.display !== 'none';
+  el.style.display = showing ? 'none' : 'block';
+  if (btn) btn.innerHTML = showing ? '&#x25BE;' : '&#x25B4;';
+}
+
+function toggleNoteBox(code) {
+  const box = document.getElementById('notebox-' + code);
+  if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveNote(code) {
+  const box = document.getElementById('notebox-' + code);
+  if (!box) return;
+  const ta = box.querySelector('textarea');
+  if (ta) {
+    shotNotes[code] = ta.value;
+    try { localStorage.setItem('lz-banker-notes', JSON.stringify(shotNotes)); } catch(e) {}
+  }
+  buildShotList();
+}
+
+function shotListFontSize(dir) {
+  _shotListScale = Math.max(0.7, Math.min(1.4, _shotListScale + dir * 0.1));
+  buildShotList();
+}
+
 function buildShotList() {
   const el = document.getElementById('shot-library-list');
   if (!el) return;
-  let html = '<div style="font-size:8px;color:rgba(255,255,255,0.65);letter-spacing:1px;margin-bottom:3px;">SHOT LIST</div>';
-  html += SHOT_LIBRARY.map((s,i) => {
-    const isExpanded = expandedPreset === i;
-    const hasLesson = s.lesson;
-    const num = i + 1;
-    let item = '<div data-preset="' + i + '" class="shot-lib-item" style="border-bottom:1px solid rgba(255,255,255,0.08);">';
-    // Header row — number + name clickable, arrow separate
-    item += '<div style="padding:7px 8px;display:flex;justify-content:space-between;align-items:center;">';
-    item += '<div style="flex:1;">';
-    item += '<div style="font-size:9px;font-weight:900;color:rgba(255,255,255,0.6);letter-spacing:1px;margin-bottom:1px;">SHOT #' + num + '</div>';
-    item += '<div onclick="presetClick(' + i + ')" style="font-size:11px;font-weight:900;color:#f0df70;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">' + s.name + '</div>';
-    item += '<div style="font-size:9px;color:rgba(255,255,255,0.85);margin-top:2px;">' + s.desc + '</div>';
-    item += '</div>';
-    if (hasLesson) {
-      item += '<div onclick="toggleLesson(' + i + ')" style="font-size:13px;color:rgba(240,223,112,0.6);padding-left:10px;cursor:pointer;line-height:1;">' + (isExpanded ? '▲' : '▼') + '</div>';
-    }
-    item += '</div>';
-    // Lesson panel (expanded)
-    if (isExpanded && hasLesson) {
-      item += '<div style="padding:8px 12px 12px;background:rgba(0,0,0,0.3);border-top:1px solid rgba(255,255,255,0.06);">';
-      if (s.cue) item += '<div style="font-size:10px;font-weight:900;color:#7dd3fc;margin-bottom:8px;font-style:italic;">"' + s.cue + '"</div>';
-      item += '<div style="font-size:11px;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:12px;">' + s.lesson + '</div>';
-      item += '<div style="font-size:8px;font-weight:900;color:rgba(255,255,255,0.65);letter-spacing:1px;margin-bottom:4px;">MY NOTES</div>';
-      const savedNote = localStorage.getItem("banker-note-" + i) || "";
-      item += '<textarea id="note-' + i + '" placeholder="Add your notes here…" oninput="saveNote(' + i + ')" style="width:100%;box-sizing:border-box;min-height:60px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:4px;color:#f0df70;font-family:Lato,sans-serif;font-size:11px;padding:6px 8px;outline:none;resize:vertical;-webkit-appearance:none;">' + savedNote + '</textarea>';
-      item += '</div>';
-    }
-    item += '</div>';
-    return item;
-  }).join('');
-  // User shots
+
+  const GROUP_NAMES = {
+    'rail-7e-f':   'OB 7e — along the rail',
+    'rail-7e-g':   'OB 7e — one step out',
+    'rail-7e-long':'OB 7e — from deeper',
+    'rail-6e-f':   'OB 6e — along the rail',
+    'rail-6e-g':   'OB 6e — one step out',
+    'rail-6e-long':'OB 6e — from deeper',
+    'diagonal':    'The Same Shot — Moving'
+  };
+  function grpName(id) { return GROUP_NAMES[id] || id; }
+
+  const chapters = {};
+  SHOT_LIBRARY.forEach(function(s, i) {
+    const cat = s.category || 'Bank Shots';
+    const grp = s.group || cat;
+    if (!chapters[cat]) chapters[cat] = { groups:{}, order:[] };
+    if (!chapters[cat].groups[grp]) { chapters[cat].groups[grp]=[]; chapters[cat].order.push(grp); }
+    chapters[cat].groups[grp].push({s,i});
+  });
+
+  let h = '';
+  Object.entries(chapters).forEach(function([cat, data]) {
+    const catId = 'cat-' + cat.replace(/[^a-z0-9]/gi,'_');
+    const catOpen = !!_openCats[catId];
+    h += '<div style="background:#1a3a1a;border-bottom:2px solid #0a2a0a;">';
+    h += '<div onclick="toggleCat(\'' + catId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;user-select:none;">';
+    h += '<span style="font-size:12px;font-weight:900;letter-spacing:1px;color:#4ade80;">' + cat + '</span>';
+    h += '<span id="' + catId + '-arrow" style="color:#4ade80;font-size:12px;">' + (catOpen?'▴':'▾') + '</span>';
+    h += '</div>';
+    h += '<div id="' + catId + '" style="display:' + (catOpen?'block':'none') + ';">';
+    data.order.forEach(function(grp) {
+      const shots = data.groups[grp];
+      const grpId = 'grp-' + grp.replace(/[^a-z0-9]/gi,'_');
+      const grpOpen = !!_openGrps[grpId];
+      h += '<div style="border-bottom:1px solid #cccccc;">';
+      h += '<div onclick="toggleGrp(\'' + grpId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px;cursor:pointer;background:#e0e8e0;">';
+      h += '<span style="font-size:11px;font-weight:900;color:#1a5a1a;">' + grpName(grp) + '</span>';
+      h += '<span id="' + grpId + '-arrow" style="color:#1a5a1a;font-size:11px;">' + (grpOpen?'▴':'▾') + '</span>';
+      h += '</div>';
+      h += '<div id="' + grpId + '" style="display:' + (grpOpen?'block':'none') + ';">';
+      shots.forEach(function(obj) {
+        const s=obj.s, i=obj.i;
+        const note = shotNotes[(s.code||(i+''))] || '';
+        h += '<div style="border-bottom:1px solid #dddddd;background:#ffffff;">';
+        // Shot header row
+        h += '<div style="display:flex;align-items:stretch;">';
+        h += '<div onclick="loadShot(' + i + ')" style="flex:1;padding:8px 12px 6px 20px;cursor:pointer;">';
+        h += '<div style="display:flex;align-items:center;gap:6px;">';
+        h += '<span style="font-size:' + (14*_shotListScale) + 'px;font-weight:900;color:#0a4a0a;">' + (s.name||s.desc) + '</span>';
+        if (s.difficulty) { let stars=''; for(let x=0;x<s.difficulty;x++) stars+='<span style="color:#e8c040;font-size:10px;">★</span>'; h += stars; }
+        h += '</div>';
+        h += '<div style="font-size:' + (11*_shotListScale) + 'px;color:#555555;margin-top:2px;">' + s.desc + '</div>';
+        if (s.cue) h += '<div style="font-size:' + (12*_shotListScale) + 'px;color:#1a5a1a;font-style:italic;margin-top:4px;line-height:1.4;">"' + s.cue + '"</div>';
+        h += '</div>';
+        if (s.lesson || s.teaching) h += '<button onclick="event.stopPropagation();toggleTeaching(\'' + ((s.code||(i+''))||i) + '\')" id="teach-btn-' + (s.code||(i+'')) + '" style="flex-shrink:0;width:36px;background:#dff0df;border:none;border-left:2px solid #cccccc;cursor:pointer;font-size:18px;color:#1a5a1a;display:flex;align-items:flex-start;justify-content:center;padding-top:12px;">&#x25BE;</button>';
+        h += '</div>';
+        // Teaching text
+        if (s.lesson || s.teaching) h += '<div id="teach-' + ((s.code||(i+''))||i) + '" style="display:none;padding:10px 14px 12px;background:#f0f8f0;border-top:1px solid #bbddbb;font-size:' + (13*_shotListScale) + 'px;color:#111;line-height:1.75;">' + (s.lesson || s.teaching || '') + '</div>';
+        // Notes
+        h += '<div style="padding:3px 12px 6px 20px;background:#f8f8f8;">';
+        h += '<div style="display:flex;align-items:center;gap:4px;">';
+        h += '<span style="font-size:' + (10*_shotListScale) + 'px;color:#555;letter-spacing:1px;font-weight:900;">MY NOTES</span>';
+        h += '<button onclick="toggleNoteBox(\'' + (s.code||(i+'')) + '\')" style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid #999;background:#fff;color:#333;cursor:pointer;">' + (note?'edit':'+') + '</button>';
+        h += '</div>';
+        if (note) h += '<div id="note-' + (s.code||(i+'')) + '" style="font-size:11px;color:#222;margin-top:3px;padding:4px 6px;background:#fff;border:1px solid #ccc;border-radius:3px;">' + note.replace(/</g,'&lt;') + '</div>';
+        else h += '<div id="note-' + (s.code||(i+'')) + '"></div>';
+        h += '<div id="notebox-' + (s.code||(i+'')) + '" style="display:none;margin-top:4px;">';
+        h += '<textarea rows="2" style="width:100%;box-sizing:border-box;font-size:12px;background:#fff;color:#111;border:1px solid #999;border-radius:3px;padding:4px;resize:vertical;font-family:Lato,sans-serif;" placeholder="Your notes...">' + note.replace(/</g,'&lt;') + '</textarea>';
+        h += '<div style="display:flex;gap:4px;margin-top:4px;">';
+        h += '<button onclick="saveNote(\'' + (s.code||(i+'')) + '\')" style="font-size:11px;padding:3px 10px;border-radius:3px;border:none;background:#1a5a1a;color:#fff;cursor:pointer;font-weight:900;">SAVE</button>';
+        h += '<button onclick="toggleNoteBox(\'' + (s.code||(i+'')) + '\')" style="font-size:11px;padding:3px 10px;border-radius:3px;border:1px solid #999;background:#fff;color:#333;cursor:pointer;">CANCEL</button>';
+        h += '</div></div></div>';
+        h += '</div>';
+      });
+      h += '</div></div>';
+    });
+    h += '</div></div>';
+  });
   if (userShots.length) {
-    html += '<div style="font-size:8px;color:rgba(255,255,255,0.65);letter-spacing:1px;margin:5px 0 3px;">MY SHOTS</div>';
-    html += userShots.map((s,i) => {
+    h += '<div style="font-size:7px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;padding:6px 6px 2px;border-top:1px solid rgba(255,255,255,0.06);">My Shots</div>';
+    h += userShots.map((s,i) => {
       const d = new Date(s.ts);
       const dt = (d.getMonth()+1)+'/'+d.getDate();
       return '<div style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">' +
         '<div onclick="loadUserShot('+i+')" style="flex:1;cursor:pointer;">' +
-        '<div style="font-size:10px;font-weight:900;color:#7dd3fc">' + s.name + '</div>' +
-        '<div style="font-size:9px;color:rgba(255,255,255,0.75)">' + dt + ' · ' + s.pocket + '</div></div>' +
+        '<div style="font-size:10px;font-weight:900;color:#7dd3fc;">' + s.name + '</div>' +
+        '<div style="font-size:9px;color:rgba(255,255,255,0.75);">' + dt + ' · ' + s.desc + '</div></div>' +
         '<button onclick="deleteUserShot('+i+')" style="font-size:9px;padding:1px 4px;border-radius:3px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;cursor:pointer;margin-left:4px;">✕</button>' +
         '</div>';
     }).join('');
   }
-  el.innerHTML = html;
-  // Preset click handler — no longer needed (onclick inline)
-  el.querySelectorAll('[data-preset]').forEach(item => {
-    item.addEventListener('click', () => {});
-  });
+
+  el.innerHTML = h;
+  // click handlers added inline via onclick attributes
 }
 
 function toggleLesson(i) {
@@ -540,6 +685,7 @@ function loadShot(idx) {
   }
   S.activeSol  = shot.sol !== undefined ? shot.sol : 0;
   S.diagCutDeg = shot.cut !== undefined ? shot.cut : null;
+  S._userAdjustedDiag = false;
   S._diagDragRh = shot.rh !== undefined ? shot.rh : undefined;
   shotLocked = (shot.cut !== undefined);
   render();
@@ -1069,7 +1215,8 @@ function loadShot(idx) {
       <!-- Pocket tap zones (invisible, on top) -->
     </g><!-- dyn -->
     </g><!-- tbl-content -->
-    </svg>
+    <g id="snap-labels-overlay"></g>
+</svg>
   </div><!-- top-box -->
 
   <div class="sep"></div>
@@ -1209,10 +1356,11 @@ const FRACTIONS = [
 ];
 
 const S = {
-  ob:         {x:180, y:80},    // OB upper area — 3g
-  cb:         {x:280, y:180},   // CB lower center — 21g, cross corner bank
+  ob:         {x:155, y:80},    // OB — Easy Cross Side (shot 1)
+  cb:         {x:105, y:205},   // CB — Easy Cross Side (shot 1)
   ob2:        {x:370, y:190},   // reference ball
-  target:     {x:430, y:30},    // TR pocket — default until user taps a pocket
+  target:     {x:230, y:230},   // BM pocket — shot 1 default
+  pocket:     'BM',
   diagCutDeg: null,
   _diagDragRh: undefined,
   activeSol:  0,
@@ -1898,6 +2046,33 @@ function getThrowComp(cutDeg) {
   const t=(cutDeg-50)/40; return throwMi+(throwHi-throwMi)*t;
 }
 
+// Compute cut angle from CB/OB positions — consistent formula
+// Rail shots use rail direction as departure; open shots use OB→pocket
+function computeCutFromPositions(cb, ob, pocketName) {
+  var _POCK = {
+    TL:{x:30,y:30}, TM:{x:230,y:30}, TR:{x:430,y:30},
+    BR:{x:430,y:230}, BM:{x:230,y:230}, BL:{x:30,y:230}
+  };
+  var p = _POCK[pocketName] || _POCK.TR;
+  var cbToOb = Math.atan2(ob.y-cb.y, ob.x-cb.x);
+  var onTop    = ob.y <= TL.top    + BALL_R + 4;
+  var onBottom = ob.y >= TL.bottom - BALL_R - 4;
+  var onLeft   = ob.x <= TL.left   + BALL_R + 4;
+  var onRight  = ob.x >= TL.right  - BALL_R - 4;
+  var departure;
+  if (onTop || onBottom) {
+    departure = p.x > ob.x ? 0 : Math.PI;
+  } else if (onLeft || onRight) {
+    departure = p.y > ob.y ? Math.PI/2 : -Math.PI/2;
+  } else {
+    departure = Math.atan2(p.y - ob.y, p.x - ob.x);
+  }
+  var diff = departure - cbToOb;
+  while (diff >  Math.PI) diff -= 2*Math.PI;
+  while (diff < -Math.PI) diff += 2*Math.PI;
+  return { cutDeg: Math.abs(diff * DEG), rh: diff > 0 };
+}
+
 function render() {
   if (typeof snapOn !== 'undefined' && snapOn) {
     if (!window._snapPos) window._snapPos = {};
@@ -1987,16 +2162,18 @@ function render() {
     if (ddx < 0) { const t=(TL.left  -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='left';} }
     if (ddx > 0) { const t=(TL.right -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='right';} }
     if (hitRail && tMin < 9999) {
-      sol.contact = { x: S.ob.x + ddx*tMin, y: S.ob.y + ddy*tMin, rail: hitRail };
+      // Only set θ for ball diagram — keep physics sol.contact for bank path
       sol.θ = deptAngle;
-      // Compute actual rebound from first contact
-      const k1 = kFactor(1, Math.abs(hitRail==='top'||hitRail==='bottom' ? S.ob.y-(hitRail==='top'?TL.top:TL.bottom) : S.ob.x-(hitRail==='left'?TL.left:TL.right)));
-      const rb = reboundDir(ddx, ddy, hitRail, k1);
-      if (S.cushions === 2) {
-        // First rebound hits second rail
-        const rebHit = rayHit(sol.contact.x, sol.contact.y, rb.dx, rb.dy, hitRail);
-        if (rebHit) {
-          sol.contact2 = {x: rebHit.x, y: rebHit.y, rail: rebHit.rail};
+      if (S._userAdjustedDiag) {
+        // User dragged diagram — override bank path with their angle
+        sol.contact = { x: S.ob.x + ddx*tMin, y: S.ob.y + ddy*tMin, rail: hitRail };
+        const k1 = kFactor(1, Math.abs(hitRail==='top'||hitRail==='bottom' ? S.ob.y-(hitRail==='top'?TL.top:TL.bottom) : S.ob.x-(hitRail==='left'?TL.left:TL.right)));
+        const rb = reboundDir(ddx, ddy, hitRail, k1);
+        if (S.cushions === 2) {
+          // First rebound hits second rail
+          const rebHit = rayHit(sol.contact.x, sol.contact.y, rb.dx, rb.dy, hitRail);
+          if (rebHit) {
+            sol.contact2 = {x: rebHit.x, y: rebHit.y, rail: rebHit.rail};
           const k2 = kFactor(2, Math.hypot(sol.contact2.x - sol.contact.x, sol.contact2.y - sol.contact.y));
           const rb2 = reboundDir(rb.dx, rb.dy, rebHit.rail, k2);
           const rebHit2 = rayHit(sol.contact2.x, sol.contact2.y, rb2.dx, rb2.dy, rebHit.rail);
@@ -2230,6 +2407,8 @@ function render() {
 // DIAGRAM DRAG (botsvg CB)
 // ─────────────────────────────────────────────────────────────────────────────
 const botsvg = document.getElementById('botsvg');
+} // end render
+
 
 function botSvgPt(e) {
   const pt = botsvg.createSVGPoint();
@@ -2243,7 +2422,7 @@ botsvg.addEventListener('pointerdown', e => {
   const _p = botSvgPt(e);
   if (_p.y < 66 || _p.y > 230) return;  // dead zone above/below ball
   e.preventDefault();
-  diagDrag = true;
+  diagDrag = true; S._userAdjustedDiag = true;;
   botsvg.setPointerCapture(e.pointerId);
   updateDiagCut(_p.x);
   render();
@@ -2321,11 +2500,13 @@ svg.addEventListener('pointermove', e => {
   const p = svgPt(e);
   if (drag==='ob') {
     const sn=applySnap(p.x,p.y), c=clampBall(sn.x,sn.y);
-    S.ob={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
+    S.ob={x:sn.x,y:sn.y}; shotLocked=false;
+    { const _c=computeCutFromPositions(S.cb,S.ob,S.pocket||'TR'); S.diagCutDeg=_c.cutDeg; S._diagDragRh=_c.rh; S._userAdjustedDiag=false; }
     if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'ob');
   } else if (drag==='cb') {
     const sn2=applySnap(p.x,p.y), c=clampBall(sn2.x,sn2.y);
-    S.cb={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
+    S.cb={x:sn.x,y:sn.y}; shotLocked=false;
+    { const _c=computeCutFromPositions(S.cb,S.ob,S.pocket||'TR'); S.diagCutDeg=_c.cutDeg; S._diagDragRh=_c.rh; S._userAdjustedDiag=false; }
     if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'cb');
   } else if (drag==='ob2') { S.ob2=clampBall(p.x,p.y); }
   render();
@@ -2831,6 +3012,7 @@ if (_ml) { _ml.style.opacity = '1'; }
 SNAP_POINTS = buildSnapPoints();
 const _epB=document.getElementById('ep-bias');if(_epB){_epB.classList.add('on');_epB.textContent='ON';}
 
+loadShot(0);
 loadUserShots();
 buildShotList();
 const _ml2 = $('map2-layer');
@@ -2917,38 +3099,46 @@ function showSnapLabel(svgEl, x, y, label, ballId) {
 
 function updateSnapLabels(svgEl) {
   if (!svgEl) svgEl = document.getElementById('tbl');
+  // Clean up old DOM divs
+  ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
   if (!svgEl || !snapOn) {
-    ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
+    ['cb','ob'].forEach(id => { const e = document.getElementById('snap-svg-lbl-'+id); if(e) e.remove(); });
     return;
   }
-  const rect = svgEl.getBoundingClientRect();
-  const vb = svgEl.viewBox.baseVal;
-  const railTop = rect.top + (TL.top / vb.height) * rect.height;
-  const LBL_Y = railTop - 41;
+  const overlay = document.getElementById('snap-labels-overlay') || svgEl;
   const pos = window._snapPos || {};
   ['cb','ob'].forEach(id => {
+    const oldGrp = document.getElementById('snap-svg-lbl-' + id);
+    if (oldGrp) oldGrp.remove();
     const p = pos[id];
-    let lbl = document.getElementById('snap-lbl-' + id);
-    if (!p || !p.label) { if(lbl) lbl.remove(); return; }
-    if (!lbl) {
-      lbl = document.createElement('div');
-      lbl.id = 'snap-lbl-' + id;
-      lbl.className = 'snap-label';
-      document.body.appendChild(lbl);
-    }
-    lbl.textContent = (id === 'cb' ? 'CB: ' : 'OB: ') + p.label;
-    const scx = rect.left + (p.x / vb.width) * rect.width;
-    let lx = scx - lbl.offsetWidth/2;
-    const other = pos[id === 'cb' ? 'ob' : 'cb'];
-    if (other && other.label) {
-      const osc = rect.left + (other.x / vb.width) * rect.width;
-      if (Math.abs(scx - osc) < 30) {
-        lx = id === 'ob' ? scx + 6 : scx - (lbl.offsetWidth || 80) - 6;
-      }
-    }
-    lbl.style.left = Math.max(4, lx) + 'px';
-    lbl.style.top  = LBL_Y + 'px';
-    lbl.style.opacity = '1';
+    if (!p || !p.label) return;
+    const label_text = (id === 'cb' ? 'CB: ' : 'OB: ') + p.label;
+    const svgX = p.x;
+    const svgY = 8;
+    const charW = 5.5;
+    const bgW = label_text.length * charW + 6;
+    const bgH = 12;
+    const grp = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    grp.id = 'snap-svg-lbl-' + id;
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('x', svgX - bgW/2);
+    bg.setAttribute('y', svgY - 9);
+    bg.setAttribute('width', bgW);
+    bg.setAttribute('height', bgH);
+    bg.setAttribute('rx', '2');
+    bg.setAttribute('fill', 'rgba(0,0,0,0.85)');
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('font-family', 'Lato,sans-serif');
+    txt.setAttribute('font-size', '9');
+    txt.setAttribute('font-weight', '900');
+    txt.setAttribute('fill', '#80e880');
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('x', svgX);
+    txt.setAttribute('y', svgY);
+    txt.textContent = label_text;
+    grp.appendChild(bg);
+    grp.appendChild(txt);
+    overlay.appendChild(grp);
   });
 }
 
@@ -3046,16 +3236,16 @@ const _pz = {
 <!-- ── EDGE CONTROL PANEL ── -->
 
 </div><!-- /outer-wrap -->
-<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
-  <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
-    <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SHOT LIBRARY</span>
+<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;touch-action:none;">
+  <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:#f0f0f0;">
+    <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#111111;">≡ SHOT LIBRARY</span>
     <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
   </div>
-  <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
-  <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
+  <div id="shot-library-list" style="max-height:min(70vh,600px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;"></div>
+  <div style="display:flex;gap:6px;padding:7px 10px;border-top:2px solid #cccccc;background:#f0f0f0;">
     <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
-      style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
-    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
+      style="flex:1;min-width:0;background:#ffffff;border:1px solid #999999;border-radius:4px;padding:5px 8px;color:#111111;font-size:13px;outline:none;-webkit-appearance:none;">
+    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#1a5a1a;color:#ffffff;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
   </div>
   <div id="shot-lib-resize" style="height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;touch-action:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05);">
     <div style="width:32px;height:3px;border-radius:2px;background:rgba(240,223,112,0.25);pointer-events:none;"></div>
@@ -3191,6 +3381,8 @@ function toggleBtb(){
     });
   });
 })();
+
+
 </script>
 <script>
 // ── PAN VIA POINTER EVENTS ON ZOOM-WRAP ──────────────────────
@@ -3469,7 +3661,7 @@ function recordThrowShot(){
   const cutDeg = S.diagCutDeg||0;
   if(cutDeg<0.5){ alert('Set a cut angle first.'); return; }
   const geoPct = Math.round(Math.abs(S.diagFraction||0)*100);
-  const compPct = Math.round(Math.min(1, Math.abs(S.diagFraction||0)+getThrowComp(cutDeg))*100);
+  const compPct = Math.round(Math.min(1, Math.abs(S.diagFraction||0)*1.5+getThrowComp(cutDeg))*100);
   const dir = S._diagDragRh ? 'L' : 'R';
   const rail = document.getElementById('td-rail')?.checked||false;
   const note = document.getElementById('td-note')?.value.trim()||'';
