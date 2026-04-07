@@ -50,8 +50,10 @@ h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-b
 .sval{font-size:15px;font-weight:900;width:80px;min-width:80px;max-width:80px;text-align:right;white-space:nowrap;overflow:hidden;color:#f0df70;}
 input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
-.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
-.sliders-unlocked input[type=range]{height:8px;}
+.sliders-unlocked input[type=range]::-webkit-slider-thumb,
+#sliders-block.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
+.sliders-unlocked input[type=range],
+#sliders-block.sliders-unlocked input[type=range]{height:8px;}
 #cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
 #cal-panel.open{display:block;}
 #cal-instruction{font-size:11px;color:#fff;font-weight:700;margin-bottom:6px;line-height:1.5;}
@@ -64,7 +66,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .cal-action-btn.primary{background:rgba(74,222,128,0.15);border-color:#4ade80;color:#4ade80;}
 .cal-action-btn.danger{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.4);color:#ff8080;}
 #cal-result{font-size:11px;color:#88ee88;margin-top:4px;display:none;line-height:1.6;}
-#sl-spd::-webkit-slider-thumb{background:#f0df70;}
+#sl-spd::-webkit-slider-thumb{background:#b090f0;}
 #sl-spn::-webkit-slider-thumb{background:#e870b0;}
 #sl-vert::-webkit-slider-thumb{background:#7dd3fc;}
 #sl-dist::-webkit-slider-thumb{background:#a0d0a0;}
@@ -196,15 +198,14 @@ html,body,#zoom-wrap{touch-action:pan-x pan-y;}
 #btb {
   position: fixed;
   bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 480px;
+  left: 8px;
+  width: auto;
   max-width: calc(100vw - 8px);
   box-sizing: border-box;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: flex-start;
   touch-action: none;
   background: transparent;
   border: none;
@@ -214,21 +215,19 @@ html,body,#zoom-wrap{touch-action:pan-x pan-y;}
 }
 #btb-tab {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  height: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
   background: transparent;
   border: none;
+  padding: 0;
   cursor: grab;
-  color: rgba(255,255,255,0.5);
-  font-size: 12px;
-  letter-spacing: 0.1em;
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
 }
 /* TOOLS pill — always yellow background, always brown text */
-#btb-pill {
+#btb-pill, .btb-pill-clone {
   display: inline-flex;
   align-items: center;
   background: #f0df70;
@@ -273,18 +272,21 @@ html,body,#zoom-wrap{touch-action:pan-x pan-y;}
   gap: 4px;
   padding: 3px 6px;
   width: 100%;
-  max-width: 762px;
   box-sizing: border-box;
   background: transparent;
 }
 .btb-row2 .ep-btn {
-  flex: 1;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
   height: 36px;
   font-size: 10px;
-  padding: 0 2px;
-  min-width: 0;
+  padding: 0 6px;
+  min-width: 36px;
   line-height: 1.2;
   text-align: center;
+  white-space: nowrap;
 }
 /* group button colors */
 .ep-btn.g-zoom { background:#36478b; border-color:#44508c; }
@@ -310,6 +312,17 @@ body { padding-bottom: 80px !important; }
 
 .vbtn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:5px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.85);font-size:15px;font-weight:900;cursor:pointer;touch-action:manipulation;vertical-align:middle;-webkit-user-select:none;user-select:none;margin:0 2px;}
 .vbtn:active{background:rgba(255,255,255,0.25);}
+
+.btb-pill-clone {
+  display: inline-flex;
+  align-items: center;
+  background: #f0df70;
+  border-radius: 7px;
+  padding: 0 0 0 2px;
+  border: none;
+  pointer-events: auto;
+  margin-right: 2px;
+}
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -1576,34 +1589,51 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div class="sep"></div>
-    <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;gap:6px;margin:4px 0;height:52px;contain:layout style;width:100%;box-sizing:border-box;">
+    <div style="text-align:center;letter-spacing:0.18em;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);padding:3px 0 2px;text-transform:uppercase;">The Doors of Perception</div>
+    <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr;gap:4px;margin:4px 0;height:36px;contain:layout style;width:100%;box-sizing:border-box;">
+      <!-- CONTACT — fixed left anchor -->
       <div style="display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:#4ade80;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Contact</div>
+        <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#4ade80;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Contact</div>
         <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
-          <div id="r-cp" style="color:#4ade80;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+          <div id="r-cp" style="color:#4ade80;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Inside Edge</div>
-        <div style="display:flex;gap:4px;flex:1;width:100%;">
-          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
-            <div id="r-aim" style="color:#e87030;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+      <!-- FLIPPABLE THREE: Inside Edge · Outside Edge · Twixt -->
+      <div id="diag-flip-row" style="display:flex;flex-direction:row;gap:4px;grid-column:span 3;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:2;">
+          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#e87030;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Inside Edge</div>
+          <div style="display:flex;gap:3px;flex:1;width:100%;">
+            <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+              <div id="r-aim" style="color:#e87030;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+            </div>
+
           </div>
-          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1.5;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
-            <div id="r-frc" style="color:#88ee88;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#7dd3fc;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Outside</div>
+          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+            <div id="r-oe" style="color:#7dd3fc;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#f0df70;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Twixt</div>
+          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+            <div id="r-twixt" style="color:#f0df70;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
           </div>
         </div>
       </div>
+      <!-- CUT — fixed -->
       <div style="display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Cut</div>
+        <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Cut</div>
         <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
-          <div id="r-ang" style="color:#f0df70;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+          <div id="r-ang" style="color:#f0df70;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
         </div>
       </div>
+      <!-- CB-OB — fixed -->
       <div style="display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">CB-OB</div>
+        <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">CB-OB</div>
         <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
-          <div id="r-dist" style="color:#a0d0a0;font-size:16px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+          <div id="r-dist" style="color:#a0d0a0;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
         </div>
       </div>
     </div>
@@ -1646,11 +1676,14 @@ if ('serviceWorker' in navigator) {
         <!-- pct labels — two sets, toggled by rh -->
         <g id="bot-pct-lh">
           <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0%</text>
+          <text x="189" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">25%</text>
           <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>
+          <text x="271" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">75%</text>
           <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">100%</text>
         </g>
         <g id="bot-pct-rh" opacity="0">
           <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">100%</text>
+          <text x="189" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">75%</text>
           <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>
           <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0%</text>
         </g>
@@ -1676,23 +1709,27 @@ if ('serviceWorker' in navigator) {
         <circle id="bot-ob-dark" cx="230" cy="148" r="82" fill="url(#OGdB)" stroke="#2a0606" stroke-width="1.5"/>
         <circle id="bot-ob-lit" cx="230" cy="148" r="82" fill="url(#OGB)" stroke="none" clip-path="url(#revClip)"/>
         <circle id="bot-ob-rim" cx="230" cy="148" r="82" fill="none" stroke="#8a1818" stroke-width="1.5" clip-path="url(#revClip)"/>
-        <!-- Line A -->
-        <line x1="8" y1="148" x2="452" y2="148" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round"/>
         <g id="frac-ticks"></g>
-        <text x="6" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="15" font-weight="900" fill="#b0e8ff">A</text>
+        <text x="10" y="20" font-family="Lato,sans-serif" font-size="11" font-weight="900" fill="rgba(255,255,255,0.7)" letter-spacing="8">G H O S T</text>
         <!-- CB -->
         <circle id="bot-cb"   cx="230" cy="148" r="82" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5"/>
-        <line   id="bot-cb-h" x1="148" y1="148" x2="312" y2="148" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>
-        <line   id="bot-cb-v" x1="230" y1="66"  x2="230" y2="230" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>
+      
+        <!-- bot-cb-v removed: center line gone -->
         <circle id="bot-tip"  cx="230" cy="148" r="8.2" fill="#000" opacity="0.85"/>
         <!-- edge marker -->
-        <line   id="bot-edge-line" x1="230" y1="72" x2="230" y2="224" stroke="#e87030" stroke-width="4" stroke-linecap="round" stroke-dasharray="6,4" opacity="0"/>
+        <!-- Outside edge of CB ghost ball -->
+        <line id="bot-cb-outer" x1="230" y1="54" x2="230" y2="242" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
+        <!-- Outside edges of OB — both sides, always visible -->
+        <line id="bot-ob-outer-l" x1="148" y1="54" x2="148" y2="242" stroke="#e87030" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
+        <line id="bot-ob-outer-r" x1="312" y1="54" x2="312" y2="242" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
+        <line   id="bot-edge-line" x1="230" y1="54" x2="230" y2="242" stroke="#e87030" stroke-width="2" stroke-linecap="round" stroke-dasharray="6,4" opacity="0"/>
         <text   id="bot-edge-lbl"  x="230" y="50" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080" opacity="0">inside edge</text>
+        <text   id="bot-cb-outer-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#7dd3fc" opacity="0">Outside Edge</text>
         <!-- aim % badge -->
         <rect   id="bot-aim-bg"  x="190" y="240" width="80" height="30" rx="7" fill="#e87030" opacity="0"/>
         <text   id="bot-aim-pct" x="230" y="260" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="900" fill="white" opacity="0">0%</text>
         <!-- hint text -->
-        <text   id="bot-hint" x="322" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)">Drag ▶ to begin</text>
+        <text   id="bot-hint" x="322" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)" opacity="0">Drag ▶ to begin</text>
         <!-- Vernier aim buttons -->
         <g onclick="vernierAim(-1)" style="cursor:pointer;touch-action:manipulation;">
           <rect x="8" y="248" width="48" height="48" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
@@ -1707,18 +1744,18 @@ if ('serviceWorker' in navigator) {
         <!-- Contact Point label -->
         <text id="bot-contact-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#4ade80" opacity="0">Contact Point</text>
         <!-- Contact point line — always on top -->
-        <line id="bot-contact-line" x1="230" y1="66" x2="230" y2="230" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0"/>
+        <line id="bot-contact-line" x1="230" y1="54" x2="230" y2="242" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0"/>
         <!-- Contact point dot on ball diagram -->
         <circle id="cp-dot-diag" cx="230" cy="148" r="7" fill="#ffffff" stroke="#ff6600" stroke-width="2" opacity="0"/>
-        <!-- Opacity +/- buttons top-right -->
+        <!-- Opacity +/- buttons bottom-right -->
         <g onclick="ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
-          <rect x="368" y="6" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
-          <text x="386" y="23" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">−</text>
+          <rect x="340" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+          <text x="358" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">−</text>
         </g>
-        <text x="410" y="23" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>
+        <text x="395" y="279" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>
         <g onclick="ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
-          <rect x="424" y="6" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
-          <text x="442" y="23" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">+</text>
+          <rect x="418" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+          <text x="436" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">+</text>
         </g>
       </svg>
     </div>
@@ -1761,58 +1798,58 @@ if ('serviceWorker' in navigator) {
     <div id="cal-library" style="display:none;margin-top:6px;max-height:140px;overflow-y:auto;font-size:10px;color:rgba(255,255,255,0.6);border-top:1px solid rgba(255,255,255,0.1);padding-top:4px;"></div>
   </div>
 
-  <!-- SLIDERS -->
-  <div id="sliders-block">
-  <div id="sliders-handle" style="display:flex;justify-content:space-between;align-items:center;padding:3px 8px 3px 10px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:4px;">
-    <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(200,144,240,0.6);">≡ SLIDERS</span>
-    <button onclick="closeSlidersPanel()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+  <!-- SLIDERS FLOATING PANEL -->
+  <div id="sliders-block" style="display:none;position:fixed;z-index:8000;width:min(360px,96vw);min-width:200px;min-height:100px;background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:auto;resize:both;touch-action:none;">
+  <div id="sliders-handle" style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 3px 10px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+  <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(200,144,240,0.6);">≡ SLIDERS</span>
+  <div style="display:flex;gap:4px;align-items:center;">
+    <button id="sliders-active-btn" onclick="toggleSlidersActive()" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:5px;color:#80e080;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ACTIVE</button>
+    <button onclick="zeroSliders()" style="background:rgba(240,223,112,0.15);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ZERO</button>
+    <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
   </div>
-  <div class="sgroup">
-    <div class="srow">
-      <span class="slbl">speed</span>
+</div>
+<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Shot Compensation</div>
+<div class="sgroup">
+<div class="srow">
+      <span class="slbl" style="color:#b090f0;">speed</span>
       <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
       <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
       <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
     </div>
-    <div class="srow" style="margin-top:6px">
+<div class="srow" style="margin-top:6px">
       <span class="slbl">spin</span>
       <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
       <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
       <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
     </div>
-    <div class="srow" style="margin-top:6px">
+<div class="srow" style="margin-top:6px">
       <span class="slbl">vert</span>
       <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
       <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
       <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
     </div>
-    <div id="bias-sliders">
-    <div class="srow" style="margin-top:6px">
-      <span class="slbl" style="color:#c890f0;">BIAS</span>
-      <input type="range" id="sl-bias" min="-12" max="12" value="0" oninput="onSliders()">
-      <span id="sv-bias-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep(-1)">−</button><span id="sv-bias" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="biasStep(1)">+</button></span>
-    </div>
-    </div><!-- /bias-sliders -->
-    <div class="srow" style="margin-top:8px">
+</div>
+<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Table Compensation</div>
+<div class="sgroup">
+<div class="srow" style="margin-top:8px">
       <span class="slbl" style="color:#e87030;font-size:9px;" title="Fine-tune around 50% baseline">T-LOW</span>
       <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
       <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
       <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
     </div>
-    <div class="srow" style="margin-top:4px">
+<div class="srow" style="margin-top:4px">
       <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
       <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
       <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
       <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
     </div>
-    <div class="srow" style="margin-top:4px">
+<div class="srow" style="margin-top:4px">
       <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
       <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
       <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
       <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
     </div>
-  </div>
+</div>
   </div><!-- /sliders-block -->
 
   <!-- SHOT ATTRIBUTES -->
@@ -1868,10 +1905,28 @@ let diagDrag = false;
 let mapOn = true;
 let snapOn = true;
 let panMode = true;
+
+function isZoomed() {
+  var w = document.getElementById('zoom-wrap');
+  var tf = w ? w.style.transform : '';
+  var m = tf.match(/scale\(([^)]+)\)/);
+  return m ? parseFloat(m[1]) > 1.05 : false;
+}
+function updatePanBtn() {
+  const _pan = document.getElementById('ep-pan');
+  if (!_pan) return;
+  const wrap = document.getElementById('zoom-wrap');
+  const tf = wrap ? wrap.style.transform : '';
+  const scaleMatch = tf.match(/scale\(([^)]+)\)/);
+  const sc = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
+  const zoomed = sc > 1.05;
+  _pan.style.opacity = zoomed ? '1' : '0.35';
+  _pan.style.pointerEvents = zoomed ? 'auto' : 'none';
+}
 function togglePan(){
   panMode = !panMode;
   const _pan = document.getElementById('ep-pan');
-  if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'LOCK<br>ON' : 'LOCK<br>OFF'; }
+  if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'PAN<br>LOCK OFF' : 'PAN<br>LOCK ON'; }
 }
 let lockTable = true;
 let lockBalls = true;
@@ -2039,7 +2094,7 @@ const svg = $('topsvg');
 svg.addEventListener('pointerdown', e => {
   const p = svgPt(e);
   if (calTapActual(p)) return;
-  if (lockTable) return;  // TABLE locked — no ball moves on table view
+  if (lockTable || (panMode && isZoomed())) return;  // TABLE locked or panning while zoomed
   if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
   if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
 });
@@ -2142,16 +2197,17 @@ function render() {
 
   // Readouts: contact/IE/fraction follow ghost ball (throw compensated); angle and distance stay pure
   const Zdeg = cutDeg < 0.5 ? 0 : Math.round(cutDeg * 10)/10;
-  const _dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
+  const _dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' R' : ' L');
   // Throw compensation applied to fraction
   const _throwDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
   const _compFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _throwDelta)); // 1.5x perceptual correction
   const aimP = Math.round(_compFrac * 100);
-  const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%' + _dir;
-  const _rfrc = $('r-frc'); if (_rfrc) _rfrc.textContent = fracStr(_compFrac * (S._diagDragRh ? -1 : 1));
+  const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%';
   const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = cutDeg < 0.5 ? 0 : Math.round(_compFrac * 50); _cpEl.textContent = _cpPct + '%' + _dir; }
+  if (_cpEl) { const _cpPct = cutDeg < 0.5 ? 0 : Math.round(_compFrac * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R')); }
+  const _roe = $('r-oe'); if (_roe) _roe.textContent = cutDeg < 0.5 ? '0%' : aimP + '%';
+  const _rtw = $('r-twixt'); if (_rtw) _rtw.textContent = cutDeg < 0.5 ? '100%' : Math.max(0, 100 - aimP) + '%';
 
   // Distance readout
   const distEl = $('r-dist');
@@ -2422,10 +2478,8 @@ function drawBot(d) {
 
   sC('bot-cb', ccx, ocy);
   const _botCb = $('bot-cb'); if (_botCb) _botCb.setAttribute('opacity', Math.max(0.15, ghostOpacity));
-  $('bot-cb-h').setAttribute('x1', ccx-r*0.74); $('bot-cb-h').setAttribute('x2', ccx+r*0.74);
-  $('bot-cb-h').setAttribute('y1', ocy);         $('bot-cb-h').setAttribute('y2', ocy);
-  $('bot-cb-v').setAttribute('x1', ccx); $('bot-cb-v').setAttribute('x2', ccx);
-  $('bot-cb-v').setAttribute('y1', ocy-r*0.74); $('bot-cb-v').setAttribute('y2', ocy+r*0.74);
+
+
   sC('bot-tip', Math.max(ccx-r*0.7, Math.min(ccx+r*0.7, ccx+(S.spin/4)*0.62*r)),
                 Math.max(ocy-r*0.7, Math.min(ocy+r*0.7, ocy-(S.vert/4)*0.62*r)));
   $('bot-pct-lh').setAttribute('opacity',   rh ? '0' : '1');
@@ -2444,7 +2498,7 @@ function drawBot(d) {
   // projected onto horizontal: ocx + r*cos(π - cutDeg) = ocx - r*cos(cutDeg) ... adjusted for side
   const _cutR = Math.min(cutDeg, 90) * Math.PI / 180;
   const _contactX = (ocx + ccx) / 2;
-  if (_cLine) { _cLine.setAttribute('x1',_contactX); _cLine.setAttribute('x2',_contactX); _cLine.setAttribute('y1',ocy-r+4); _cLine.setAttribute('y2',ocy+r-4); _cLine.setAttribute('opacity','1'); }
+  if (_cLine) { _cLine.setAttribute('x1',_contactX); _cLine.setAttribute('x2',_contactX); _cLine.setAttribute('y1',ocy-r-12); _cLine.setAttribute('y2',ocy+r+12); _cLine.setAttribute('opacity','1'); }
   const _cpDiag = $('cp-dot-diag');
   if (_cpDiag) { _cpDiag.setAttribute('cx', _contactX); _cpDiag.setAttribute('cy', ocy); _cpDiag.setAttribute('opacity', contactDotOn && showContact ? '1' : '0'); }
   const _cLbl = $('bot-contact-lbl');
@@ -2453,6 +2507,33 @@ function drawBot(d) {
   if (_gbg) { _gbg.setAttribute('cx',ccx); _gbg.setAttribute('cy',ocy); _gbg.setAttribute('r',r); _gbg.setAttribute('opacity','1'); }
   $('bot-edge-line').setAttribute('x1', edgeX); $('bot-edge-line').setAttribute('x2', edgeX);
   $('bot-edge-line').setAttribute('opacity', op);
+
+  // New outer edge lines
+  const _cbOuterX = rh ? ccx - r : ccx + r;
+  const _obOuterX = rh ? ocx + r : ocx - r;
+  const _cbOuter = $('bot-cb-outer');
+  if (_cbOuter) { _cbOuter.setAttribute('x1',_cbOuterX); _cbOuter.setAttribute('x2',_cbOuterX);
+    _cbOuter.setAttribute('y1', ocy-r-12); _cbOuter.setAttribute('y2', ocy+r+12);
+    _cbOuter.setAttribute('opacity', op); }
+  const _cbOutLbl = $('bot-cb-outer-lbl');
+  if (_cbOutLbl) { _cbOutLbl.setAttribute('x', Math.max(50, Math.min(_cbOuterX, W-50)));
+    _cbOutLbl.setAttribute('opacity', op); }
+  const _obOutL = $('bot-ob-outer-l');
+  if (_obOutL) { _obOutL.setAttribute('x1', ocx-r); _obOutL.setAttribute('x2', ocx-r);
+    _obOutL.setAttribute('y1', ocy-r-12); _obOutL.setAttribute('y2', ocy+r+12);
+    _obOutL.setAttribute('stroke', rh ? '#7dd3fc' : '#e87030');
+    _obOutL.setAttribute('opacity', '1'); }
+  const _obOutR = $('bot-ob-outer-r');
+  if (_obOutR) { _obOutR.setAttribute('x1', ocx+r); _obOutR.setAttribute('x2', ocx+r);
+    _obOutR.setAttribute('y1', ocy-r-12); _obOutR.setAttribute('y2', ocy+r+12);
+    _obOutR.setAttribute('stroke', rh ? '#e87030' : '#7dd3fc');
+    _obOutR.setAttribute('opacity', '1'); }
+
+  // Update flippable readout boxes
+  const _flipRow = $('diag-flip-row');
+  // boxes no longer flip
+  const _roe = $('r-oe');   if (_roe)   _roe.textContent   = showMarker ? aimP + '%' : '0%';
+  const _rtwixt = $('r-twixt'); if (_rtwixt) _rtwixt.textContent = showMarker ? Math.max(0, 100 - aimP) + '%' : '100%';
   // "inside edge" label sits just above the pct labels row
   $('bot-edge-lbl').setAttribute('x', Math.max(60, Math.min(edgeX, W-60)));
   $('bot-edge-lbl').setAttribute('y', '22');
@@ -2468,7 +2549,7 @@ function drawBot(d) {
   const _botThrowDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
   const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) * 1.5 + _botThrowDelta) * 100);
   $('bot-aim-pct').textContent = Math.abs(_botAimP) + '%';
-  $('bot-hint').setAttribute('opacity', showMarker ? '0' : '1');
+  $('bot-hint').setAttribute('opacity', '0');
   $('bot-hint').setAttribute('x', rh ? ocx-r-70 : ocx+r+24);
   $('bot-hint').setAttribute('text-anchor', rh ? 'end' : 'start');
   $('bot-hint').textContent = rh ? '◄ Drag to begin' : 'Drag ▶ to begin';
@@ -2491,6 +2572,7 @@ function drawBot(d) {
       tx.setAttribute('font-size',fd.s);tx.setAttribute('font-weight',fd.s>=13?'700':'400');
       tx.setAttribute('fill','#ffffff');tx.setAttribute('opacity',half?'1':'0.65');
       tx.textContent=lbl;_tg.appendChild(tx);
+
     });
   }
 }
@@ -2515,7 +2597,7 @@ function updateDiagCut(svgX) {
 }
 
 botsvg.addEventListener('pointerdown', e => {
-  if (lockBalls) return;  // locked — let touch pass through for scroll/pinch
+  if (lockBalls || (panMode && isZoomed())) return;  // locked or panning while zoomed
   const p2 = botSvgPt(e);
   // Dead zone: only respond within the ball's vertical extent (center 148 ± radius 82)
   if (p2.y < 66 || p2.y > 230) return;
@@ -2558,9 +2640,7 @@ function onSliders() {
   S.distFt = 0;  // auto-calculated in compute()
   // Single bias
   if (biasOn) {
-    const bVal = parseInt($('sl-bias')?.value || '0');
-    S.bias = bVal * 1.20 * RAD;
-    // Update number displays
+        // Update number displays
     const _bv = parseInt($('sl-bias')?.value || '0');
     const _bn = document.getElementById('sv-bias-n');
     const _bs = document.getElementById('sv-bias');
@@ -2569,10 +2649,10 @@ function onSliders() {
   } else {
     S.bias = 0;
   }
-  // Three-segment throw compensation: -50 to +50 maps to -50% to +50% IE delta
-  throwLo = parseInt($('sl-throw-lo')?.value || '0') / 50;
-  throwMi = parseInt($('sl-throw-mi')?.value || '0') / 50;
-  throwHi = parseInt($('sl-throw-hi')?.value || '0') / 50;
+  // Three-segment throw compensation — only active when TABLE COMP is ON
+  throwLo = biasOn ? parseInt($('sl-throw-lo')?.value || '0') / 50 : 0;
+  throwMi = biasOn ? parseInt($('sl-throw-mi')?.value || '0') / 50 : 0;
+  throwHi = biasOn ? parseInt($('sl-throw-hi')?.value || '0') / 50 : 0;
   ['lo','mi','hi'].forEach(seg => {
     const v = parseInt($('sl-throw-'+seg)?.value || '0');
     const n = document.getElementById('sv-throw-'+seg+'-n');
@@ -2641,8 +2721,7 @@ function calUndo() {
 function calReset() {
   calShots = []; calPhase = 'idle'; calPendingShot = null;
   saveAimProfile();
-  const _bsl = $('sl-bias'); if(_bsl) _bsl.value='0';
-  onSliders();
+    onSliders();
   const res = $('cal-result'); if (res) res.style.display = 'none';
   calUpdateUI(); render();
 }
@@ -2807,24 +2886,36 @@ document.addEventListener('touchcancel', () => {
 function toggleLock(which) {
   if (which === 'table')   lockTable   = !lockTable;
   if (which === 'balls')   lockBalls   = !lockBalls;
-  if (which === 'sliders') lockSliders = !lockSliders;
-
-  const _lt = document.getElementById('ep-lt'); if(_lt){ _lt.classList.toggle('locked', lockTable); _lt.classList.toggle('on', !lockTable); }
-  const _ls = document.getElementById('ep-ls'); if(_ls){ _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
+    if (which === 'sliders') {
+    lockSliders = !lockSliders;
+    var panel = document.getElementById('sliders-block');
+    var _ls = document.getElementById('ep-ls');
+    if (_ls) { _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
+    if (panel) {
+      panel.classList.toggle('sliders-unlocked', !lockSliders);
+      panel.querySelectorAll('.sgroup').forEach(function(sg) {
+        sg.style.opacity = lockSliders ? '0.35' : '1';
+      });
+      panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el) {
+        el.disabled = lockSliders;
+      });
+      // Update active button state
+      var activeBtn = document.getElementById('sliders-active-btn');
+      if (activeBtn) {
+        var isNowActive = !lockSliders;
+        activeBtn.textContent = isNowActive ? 'ACTIVE' : 'INACTIVE';
+        activeBtn.style.background = isNowActive ? 'rgba(80,200,80,0.2)' : 'rgba(200,80,80,0.15)';
+        activeBtn.style.borderColor = isNowActive ? 'rgba(80,200,80,0.4)' : 'rgba(200,80,80,0.3)';
+        activeBtn.style.color = isNowActive ? '#80e080' : '#e08080';
+      }
+    }
+  }
   const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
 
   // Toggle touch-action on topsvg and botsvg so pinch/scroll pass through when locked
   // touch-action managed per-drag on topsvg/botsvg
 
   // Apply slider lock visually
-  const sg = document.querySelector('.sgroup');
-  if (sg) sg.style.opacity = lockSliders ? '0.4' : '1';
-  document.querySelectorAll('.sgroup input[type=range]').forEach(el => {
-    el.disabled = lockSliders;
-  });
-  // Big thumbs when unlocked
-  const card = document.querySelector('.card');
-  if (card) card.classList.toggle('sliders-unlocked', !lockSliders);
 
   document.activeElement && document.activeElement.blur();
 }
@@ -2834,8 +2925,7 @@ function zeroSliders() {
   $('sl-spd').value  = '50';
   $('sl-spn').value  = '0';
   $('sl-vert').value = '0';
-  const _bsl = $('sl-bias'); if(_bsl) _bsl.value='0';
-  ['lo','mi','hi'].forEach(seg => {
+    ['lo','mi','hi'].forEach(seg => {
     const el = document.getElementById('sl-throw-'+seg);
     if(el) el.value = '0';
   });
@@ -2846,15 +2936,22 @@ function zeroSliders() {
 
 function toggleBias() {
   biasOn = !biasOn;
-  const btn = document.getElementById('ep-bias');
+  var btn = document.getElementById('ep-bias');
   if (btn) {
-    btn.classList.toggle('on', biasOn);
-    btn.innerHTML = biasOn ? 'BIAS<br>ON' : 'BIAS<br>OFF';
-    btn.blur();
+    btn.innerHTML = biasOn ? 'TABLE<br>COMP ON' : 'TABLE<br>COMP OFF';
+    btn.style.background = biasOn ? 'rgba(240,140,20,0.85)' : 'rgba(74,40,0,0.85)';
+    btn.style.borderColor = biasOn ? 'rgba(255,180,50,0.8)' : 'rgba(138,80,16,0.6)';
+    btn.style.color = biasOn ? '#fff' : '#e8c080';
   }
-  const bd = document.getElementById('bias-sliders');
-  if (bd) bd.style.opacity = biasOn ? '1' : '0.35';
-  document.activeElement && document.activeElement.blur();
+  // Dim/undim the table comp section in the sliders panel
+  var panel = document.getElementById('sliders-block');
+  if (panel) {
+    var sgroups = panel.querySelectorAll('.sgroup');
+    if (sgroups.length > 1) {
+      sgroups[1].style.opacity = biasOn ? '1' : '0.35';
+      sgroups[1].querySelectorAll('input[type=range]').forEach(function(el) { el.disabled = !biasOn; });
+    }
+  }
   onSliders();
 }
 
@@ -2990,7 +3087,7 @@ function updateSnapLabels(svgEl) {
     txt.setAttribute('font-family', 'Lato,sans-serif');
     txt.setAttribute('font-size', '9');
     txt.setAttribute('font-weight', '900');
-    txt.setAttribute('fill', '#80e880');
+    txt.setAttribute('fill', '#f0df70');
     txt.setAttribute('text-anchor', 'middle');
     txt.setAttribute('x', svgX);
     txt.setAttribute('y', svgY);
@@ -3007,6 +3104,7 @@ function updateSnapLabels(svgEl) {
 function edgeZoom(factor) {
   const wrap = document.getElementById('zoom-wrap');
   if (!wrap) return;
+  setTimeout(updatePanBtn, 50);
   // Use pinch system's scale/tx/ty if available
   if (typeof _pz !== 'undefined') {
     _pz.scale = Math.max(0.6, Math.min(4, _pz.scale * factor));
@@ -3020,6 +3118,7 @@ function edgeZoom(factor) {
   }
 }
 function edgeZoomReset() {
+  setTimeout(updatePanBtn, 50);
   const wrap = document.getElementById('zoom-wrap');
   if (!wrap) return;
   if (typeof _pz !== 'undefined') {
@@ -3186,20 +3285,53 @@ window.addEventListener('load', function(){ swapPanels(); });
 })();
 </script>
 
+<script>
+function updateLockBtn() {
+  const allLocked = lockTable && lockBalls && lockSliders;
+  const _ql = document.getElementById('quick-lock');
+  if (_ql) {
+    const lbl = _ql.querySelector('span');
+    if (lbl) lbl.textContent = allLocked ? 'LOCKED' : 'UNLOCKED';
+  }
+}
+function toggleAllLocks() {
+  const allLocked = lockTable && lockBalls && lockSliders;
+  lockTable = lockBalls = lockSliders = !allLocked;
+  const _lt = document.getElementById('ep-lt'); if(_lt){ _lt.classList.toggle('locked', lockTable); _lt.classList.toggle('on', !lockTable); }
+  const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
+  const _ls = document.getElementById('ep-ls'); if(_ls){ _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
+  updateLockBtn();
+  render();
+  // Update floating sliders panel if open
+  var _sp = document.getElementById('sliders-block');
+  if (_sp && _slidersPanelOpen) {
+    _sp.classList.toggle('sliders-unlocked', !lockSliders);
+    var _sg2 = _sp.querySelector('.sgroup');
+    if (_sg2) _sg2.style.opacity = lockSliders ? '0.4' : '1';
+    _sp.querySelectorAll('.sgroup input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
+  }
+}
+</script>
 
 <div id="btb">
-  <div id="btb-tab"><span id="btb-pill"><button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 6px;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button><span id="btb-label" style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding-right:8px;">TOOLS</span></span></div>
-  <div id="btb-panel" style="display:none;">
+  <div id="btb-tab">
+    <span class="btb-pill-clone" onclick="toggleAllLocks()" id="quick-lock" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">LOCK</span></span>
+    <span class="btb-pill-clone" onclick="toggleShotLibrary()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">LEARN</span></span>
+    <span class="btb-pill-clone" onclick="toggleThrowPanel()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">DATA</span></span>
+    <span class="btb-pill-clone" onclick="toggleSlidersPanel()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">SLIDERS</span></span>
+    <span id="btb-pill"><button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 6px;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button><span id="btb-label" style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding-right:8px;">TOOLS</span></span>
+  </div>
+  <div id="btb-panel" style="display:none;min-width:min(540px,96vw);">
     <div class="btb-row2">
       <button class="ep-btn g-tog on" id="btn-map"    onclick="toggleMap()">GRID</button>
       <button class="ep-btn g-snap on" id="ep-snap"   onclick="toggleSnap()">SNAP<br>TO</button>
       <button class="ep-btn g-brown"  id="btn-cal"    onclick="toggleCal()">CAL</button>
-      <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">SHOT<br>LIST</button>
+      <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">LEARN</button>
       <button class="ep-btn g-yel"    id="btn-cbpath" onclick="toggleCbPath()">CUE<br>PATH</button>
       <button class="ep-btn g-brown"  id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
       <button class="ep-btn g-brown" id="btn-cp"     onclick="toggleContactDot()">C·PT</button>
-      <button class="ep-btn g-brown"  id="btn-throw"  onclick="toggleThrowPanel()">THROW<br>DATA</button>
-      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">BIAS<br>OFF</button>
+      <button class="ep-btn g-brown"  id="btn-throw"  onclick="toggleThrowPanel()">DATA</button>
+      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">TABLE<br>COMP OFF</button>
       <button class="ep-btn g-swap"   id="btn-swap"   onclick="swapPanels()">⇅</button>
     </div>
     <div class="btb-row2">
@@ -3210,11 +3342,14 @@ window.addEventListener('load', function(){ swapPanels(); });
     </div>
     <div class="btb-row2">
       <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE<br>LOCK</button>
-      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">BALL<br>LOCK</button>
+      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">GHOST<br>LOCK</button>
       <button class="ep-btn g-lock" id="ep-ls" onclick="toggleLock('sliders')">SLIDERS<br>LOCK</button>
       <button class="ep-btn g-brown" onclick="zeroSliders()">ZERO<br>SLIDERS</button>
     </div>
+    <div id="btb-drag-bottom" style="height:10px;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;"></div>
+
   </div>
+  <div id="btb-drag-bottom" style="height:10px;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;display:none;"></div>
 </div>
 
 <script>
@@ -3250,6 +3385,34 @@ function toggleBtb(){
       btb.style.top  = ly + 'px';
     })();
     var activePtr = null;
+    var btbPanel = document.getElementById('btb-panel');
+    if (btbPanel) {
+      btbPanel.addEventListener('pointerdown', function(e){
+        if (e.target.closest('.ep-btn') || e.target.closest('button') || e.target.closest('input')) return;
+        var rect = btb.getBoundingClientRect();
+        startX = e.clientX; startY = e.clientY;
+        origLeft = rect.left; origTop = rect.top;
+        didDrag = false; activePtr = e.pointerId;
+        btbPanel.setPointerCapture(e.pointerId);
+      });
+      btbPanel.addEventListener('pointermove', function(e){
+        if (activePtr === null || e.pointerId !== activePtr) return;
+        var dx = e.clientX - startX, dy = e.clientY - startY;
+        if (!didDrag && Math.hypot(dx,dy) > 8) {
+          didDrag = true;
+          btb.style.bottom = 'auto'; btb.style.transform = 'none';
+          btb.style.left = origLeft + 'px'; btb.style.top = origTop + 'px';
+        }
+        if (didDrag) {
+          var lx = origLeft+dx, ly = origTop+dy;
+          lx = Math.max(0,Math.min(window.innerWidth-btb.offsetWidth-4,lx));
+          ly = Math.max(0,Math.min(window.innerHeight-btb.offsetHeight-4,ly));
+          btb.style.left = lx+'px'; btb.style.top = ly+'px';
+        }
+      });
+      btbPanel.addEventListener('pointerup', function(e){ activePtr=null; });
+      btbPanel.addEventListener('pointercancel', function(e){ activePtr=null; });
+    }
     tab.addEventListener('pointerdown', function(e){
       if (e.target.id === 'btb-arrow') return;
       var rect = btb.getBoundingClientRect();
@@ -3279,7 +3442,7 @@ function toggleBtb(){
     tab.addEventListener('pointerup', function(e){
       if (e.pointerId !== activePtr) return;
       activePtr = null;
-      if (!didDrag) toggleBtb();
+      if (!didDrag && !e.target.closest('.btb-pill-clone') && !e.target.closest('#btb-panel')) toggleBtb();
     });
     tab.addEventListener('pointercancel', function(e){
       activePtr = null;
@@ -3719,6 +3882,79 @@ window.render = function() {
     header.addEventListener('pointerup', function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
     loadThrowData();
+  });
+})();
+</script>
+
+<script>
+var _slidersPanelOpen = false;
+var _slidersPositioned = false;
+
+
+function toggleSlidersActive() {
+  var panel = document.getElementById('sliders-block');
+  if (!panel) return;
+  var isActive = !panel.classList.contains('sliders-active');
+  panel.classList.toggle('sliders-active', isActive);
+  panel.classList.toggle('sliders-unlocked', isActive);
+  var btn = document.getElementById('sliders-active-btn');
+  if (btn) {
+    btn.textContent = isActive ? 'ACTIVE' : 'INACTIVE';
+    btn.style.background = isActive ? 'rgba(80,200,80,0.2)' : 'rgba(200,80,80,0.15)';
+    btn.style.borderColor = isActive ? 'rgba(80,200,80,0.4)' : 'rgba(200,80,80,0.3)';
+    btn.style.color = isActive ? '#80e080' : '#e08080';
+  }
+  panel.querySelectorAll('.sgroup').forEach(function(sg) {
+    sg.style.opacity = isActive ? '1' : '0.35';
+  });
+  panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el) {
+    el.disabled = !isActive;
+  });
+}
+
+function toggleSlidersPanel() {
+  _slidersPanelOpen = !_slidersPanelOpen;
+  var panel = document.getElementById('sliders-block');
+  if (!panel) return;
+  // Apply current slider lock state to the panel
+  if (panel) panel.classList.toggle('sliders-unlocked', !lockSliders);
+  const _sg = panel.querySelector('.sgroup');
+  if (_sg) _sg.style.opacity = lockSliders ? '0.4' : '1';
+  panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
+  panel.style.display = _slidersPanelOpen ? 'block' : 'none';
+  if (_slidersPanelOpen && !_slidersPositioned) {
+    var btb = document.getElementById('btb');
+    var r = btb ? btb.getBoundingClientRect() : {top:200, left:10};
+    var ph = panel.offsetHeight || 200;
+    panel.style.top  = Math.max(10, r.top - ph - 8) + 'px';
+    panel.style.left = r.left + 'px';
+    _slidersPositioned = true;
+  }
+}
+
+(function(){
+  var panel, header, startX, startY, origLeft, origTop, didDrag=false, activePtr=null;
+  window.addEventListener('load', function(){
+    updateLockBtn();
+    panel  = document.getElementById('sliders-block');
+    header = document.getElementById('sliders-handle');
+    if (!panel || !header) return;
+    header.addEventListener('pointerdown', function(e){
+      if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+      var r=panel.getBoundingClientRect();
+      startX=e.clientX; startY=e.clientY;
+      origLeft=r.left; origTop=r.top;
+      didDrag=false; activePtr=e.pointerId;
+      header.setPointerCapture(e.pointerId);
+    });
+    header.addEventListener('pointermove', function(e){
+      if (activePtr===null||e.pointerId!==activePtr) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; panel.style.transition='none'; }
+      if (didDrag){ panel.style.left=(origLeft+dx)+'px'; panel.style.top=(origTop+dy)+'px'; }
+    });
+    header.addEventListener('pointerup', function(e){ activePtr=null; });
+    header.addEventListener('pointercancel', function(e){ activePtr=null; });
   });
 })();
 </script>

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeStar Z's Banker — Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Playfair+Display:ital,wght@0,700;1,700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --felt:    #1a4a28;
+  --felt-lt: #1e6b35;
+  --rail:    #3d2b1f;
+  --gold:    #f0df70;
+  --white:   #f5f5f0;
+  --ink:     #111111;
+  --ink-mid: #444444;
+  --ink-lt:  #777777;
+  --cb-blue: #7dd3fc;
+  --ob-red:  #e04010;
+  --bank-green: #4ade80;
+  --rule:    #cccccc;
+  --bg:      #f7f5f0;
+  --paper:   #ffffff;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  font-family: 'Lato', sans-serif;
+  color: var(--ink);
+  line-height: 1.7;
+  padding: 0;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: var(--rail);
+  border-bottom: 4px solid var(--gold);
+  padding: 20px 24px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.site-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(16px, 4vw, 24px);
+  color: var(--gold);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.site-header .subtitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(240,223,112,0.5);
+}
+.back-link {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid rgba(240,223,112,0.4);
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.back-link:hover { background: rgba(240,223,112,0.12); }
+
+/* ── TOC ── */
+.toc {
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  padding: 16px 24px;
+}
+.toc-label {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-lt);
+  margin-bottom: 8px;
+}
+.toc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  list-style: none;
+}
+.toc-links a {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--felt);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 1px;
+  transition: border-color 0.15s;
+}
+.toc-links a:hover { border-color: var(--felt); }
+
+/* ── MAIN LAYOUT ── */
+.page-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+/* ── SECTIONS ── */
+.section {
+  padding: 48px 0 0;
+}
+.section + .section {
+  border-top: 2px solid var(--rule);
+  margin-top: 48px;
+}
+
+.section-eyebrow {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink-lt);
+  margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+.section-title em {
+  font-style: italic;
+  color: var(--felt);
+}
+
+p {
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 16px;
+  line-height: 1.75;
+}
+p:last-child { margin-bottom: 0; }
+
+.lead {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.pullquote {
+  border-left: 4px solid var(--gold);
+  margin: 28px 0;
+  padding: 12px 20px;
+  background: rgba(240,223,112,0.07);
+}
+.pullquote p {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 17px;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ── SHOT CARD ── */
+.shot-card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 28px 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+.shot-card-header {
+  background: var(--rail);
+  padding: 12px 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.shot-card-name {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.shot-card-type {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(240,223,112,0.55);
+}
+.shot-card-setup {
+  padding: 12px 16px;
+  background: #f9f9f7;
+  border-bottom: 1px solid var(--rule);
+  font-family: 'Courier Prime', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.setup-item span {
+  color: var(--ink-lt);
+  font-weight: 400;
+}
+.shot-card-body {
+  padding: 16px;
+}
+.shot-card-body p {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* ── DIAGRAM ── */
+.diagram-wrap {
+  margin: 28px 0;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+.diagram-caption {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-mid);
+  background: #f4f4f0;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+/* ── LESSON STEPS ── */
+.lesson-steps {
+  list-style: none;
+  margin: 20px 0;
+  counter-reset: step;
+}
+.lesson-steps li {
+  counter-increment: step;
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+  align-items: flex-start;
+}
+.lesson-steps li::before {
+  content: counter(step);
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--felt);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.lesson-steps li p {
+  margin: 0;
+  font-size: 14px;
+}
+.lesson-steps li strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--felt);
+  margin-bottom: 2px;
+}
+
+/* ── METHOD BOX ── */
+.method-box {
+  border: 2px solid var(--felt);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 24px 0;
+  background: rgba(26,74,40,0.04);
+}
+.method-box-title {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--felt);
+  margin-bottom: 10px;
+}
+.method-box p {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-lt);
+  border-top: 1px solid var(--rule);
+  margin-top: 60px;
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <h1>LeStar Z's Banker — Manual</h1>
+    <div class="subtitle">The Art &amp; Science of the Bank Shot</div>
+  </div>
+  <a class="back-link" href="banker.html">← Back to App</a>
+</header>
+
+<nav class="toc">
+  <div class="toc-label">Contents</div>
+  <ul class="toc-links">
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#the-arrow">What the Arrow Means</a></li>
+    <li><a href="#repeatability">Repeatability</a></li>
+    <li><a href="#b1">B1 — Cross-side</a></li>
+    <li><a href="#b2">B2 — Cross-corner</a></li>
+  </ul>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- ── PHILOSOPHY ── -->
+  <section class="section" id="philosophy">
+    <div class="section-eyebrow">The Foundation</div>
+    <h2 class="section-title">Banking is <em>perception,</em> not formula.</h2>
+
+    <p class="lead">There are dozens of banking systems out in the world — mirror systems, diamond systems, parallel line methods, fractional ball methods. Some are elegant. Some are too specific to be practical. Most break down the moment the table is dead, the cushions are worn, or the speed changes.</p>
+
+    <p>This app is not built around any one system. It is built around a single idea: that the player who banks well is the player who has <strong>shot enough banks to know, without calculating, approximately where the ball is going to go.</strong> And then makes the small correction that this particular table, this particular speed, this particular moment requires.</p>
+
+    <p>That knowledge is not in a formula. It lives in your hands, your eyes, your memory. The only way to build it is repetition — but not blind repetition. <em>Informed</em> repetition. Shoot the shot. Observe what happened. Understand why. Adjust. Shoot it again.</p>
+
+    <div class="pullquote">
+      <p>"The goal is not to pocket the ball by following a rule. The goal is to develop a feel so accurate that the rule becomes unnecessary."</p>
+    </div>
+
+    <p>Banker is a repetition engine. Each shot in the library is a lesson. Work through them in order. Take your time on each one. The shots get harder, but the perception you build on the early shots carries forward into every shot that follows.</p>
+  </section>
+
+  <!-- ── THE ARROW ── -->
+  <section class="section" id="the-arrow">
+    <div class="section-eyebrow">Understanding the App</div>
+    <h2 class="section-title">What the <em>arrow</em> means.</h2>
+
+    <p class="lead">Every shot in Banker shows an arrow — a line from the object ball to the rail, and then from the rail toward the pocket. That arrow is a starting point. It is not a promise.</p>
+
+    <p>The arrow is computed from geometry and a simplified physics model. It accounts for the basic angle of reflection, a cushion compression factor, and your speed and spin slider settings. It is reasonably accurate on a well-maintained table at medium speed with no English.</p>
+
+    <p>But a bank shot is not a billiards problem. It is a real shot on a real table with real cloth, real rubber, and a real stroke. Every one of those things introduces variation that no model fully captures:</p>
+
+    <ul style="margin: 0 0 16px 20px; font-size:15px; line-height:1.8; color: var(--ink);">
+      <li><strong>Speed</strong> — fast shots rebound shorter; slow shots play longer.</li>
+      <li><strong>Spin</strong> — running English opens the rebound angle; reverse closes it.</li>
+      <li><strong>Ball roll</strong> — a ball that arrives at the rail fully rolling behaves differently than one still sliding.</li>
+      <li><strong>Cushion condition</strong> — worn or cold rubber plays shorter than fresh, warm rubber.</li>
+      <li><strong>Cloth speed</strong> — slower cloth means more roll, which means longer rebounds.</li>
+    </ul>
+
+    <p>Use the arrow to know where to <em>look.</em> Then shoot the shot. Observe the gap between what the arrow predicted and where the ball actually went. <strong>That gap is the lesson.</strong> Close the gap with your stroke. When you can close it consistently, you own that shot.</p>
+  </section>
+
+  <!-- ── REPEATABILITY ── -->
+  <section class="section" id="repeatability">
+    <div class="section-eyebrow">The Standard</div>
+    <h2 class="section-title"><em>Repeatability</em> is the only standard that matters.</h2>
+
+    <p class="lead">A banking method does not have to be theoretically perfect. It has to be consistent enough that your correction is learnable.</p>
+
+    <p>If "half the distance" always sends the ball two inches short on your table, that is useful information. You always aim two inches long. The method works — not because it's accurate, but because its error is predictable.</p>
+
+    <p>This is why Banker asks you to shoot each shot three ways — at medium speed, fast, and slow. Not to find the "right" speed. To discover how your correction changes with speed. Once you know that, you have something you can actually use at the table.</p>
+
+    <div class="pullquote">
+      <p>"Find the correction. Make the correction repeatable. That is the whole game."</p>
+    </div>
+  </section>
+
+  <!-- ── B1 ── -->
+  <section class="section" id="b1">
+    <div class="section-eyebrow">Shot Library</div>
+    <h2 class="section-title">B1 — <em>Cross-side</em></h2>
+
+    <div class="shot-card">
+      <div class="shot-card-header">
+        <span class="shot-card-name">B1</span>
+        <span class="shot-card-type">Cross-side Bank</span>
+      </div>
+      <div class="shot-card-setup">
+        <div class="setup-item"><span>Cue Ball</span> 18f</div>
+        <div class="setup-item"><span>Object Ball</span> 3h</div>
+        <div class="setup-item"><span>Pocket</span> 5 (Bottom Side)</div>
+      </div>
+    </div>
+
+    <!-- B1 Diagram -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <defs>
+          <radialGradient id="gFelt" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#1e6b35"/><stop offset="100%" stop-color="#134d25"/>
+          </radialGradient>
+          <radialGradient id="gBall" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#fff"/><stop offset="60%" stop-color="#f0f0e8"/><stop offset="100%" stop-color="#d8d8d0"/>
+          </radialGradient>
+          <radialGradient id="gOB" cx="34%" cy="26%" r="70%">
+            <stop offset="0%" stop-color="#ff9060"/><stop offset="40%" stop-color="#e04010"/><stop offset="100%" stop-color="#601808"/>
+          </radialGradient>
+          <marker id="arr-ob" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
+            <polygon points="0 0,7 2.5,0 5" fill="#7dd3fc"/>
+          </marker>
+          <marker id="arr-bk" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
+            <polygon points="0 0,7 2.5,0 5" fill="#4ade80"/>
+          </marker>
+        </defs>
+        <!-- Wood rail -->
+        <rect x="0" y="0" width="460" height="260" rx="9" fill="#3d2b1f"/>
+        <!-- Felt -->
+        <rect x="30" y="30" width="400" height="200" fill="url(#gFelt)"/>
+        <!-- Cushion strips -->
+        <rect x="30" y="17" width="400" height="13" fill="#1a6830"/>
+        <rect x="30" y="230" width="400" height="13" fill="#1a6830"/>
+        <rect x="17" y="30" width="13" height="200" fill="#1a6830"/>
+        <rect x="430" y="30" width="13" height="200" fill="#1a6830"/>
+        <!-- Corner pockets -->
+        <circle cx="30"  cy="30"  r="17" fill="#060a06"/>
+        <circle cx="430" cy="30"  r="17" fill="#060a06"/>
+        <circle cx="30"  cy="230" r="17" fill="#060a06"/>
+        <circle cx="430" cy="230" r="17" fill="#060a06"/>
+        <!-- Side pockets -->
+        <path d="M 210,30 L 215,16 A 15,9 0 0 1 245,16 L 250,30 Z" fill="#060a06"/>
+        <path d="M 210,230 L 215,244 A 15,9 0 0 0 245,244 L 250,230 Z" fill="#060a06"/>
+        <!-- Pocket highlight — P5 -->
+        <path d="M 210,230 L 215,244 A 15,9 0 0 0 245,244 L 250,230 Z" fill="none" stroke="#4ade80" stroke-width="2" opacity="0.8"/>
+        <!-- Diamonds top -->
+        <polygon points="80,10 84,15 80,20 76,15"   fill="#c8a84b"/>
+        <polygon points="130,10 134,15 130,20 126,15" fill="#c8a84b"/>
+        <polygon points="180,10 184,15 180,20 176,15" fill="#c8a84b"/>
+        <polygon points="230,10 234,15 230,20 226,15" fill="#c8a84b"/>
+        <polygon points="280,10 284,15 280,20 276,15" fill="#c8a84b"/>
+        <polygon points="330,10 334,15 330,20 326,15" fill="#c8a84b"/>
+        <polygon points="380,10 384,15 380,20 376,15" fill="#c8a84b"/>
+        <!-- Diamonds bottom -->
+        <polygon points="80,240 84,245 80,250 76,245"   fill="#c8a84b"/>
+        <polygon points="130,240 134,245 130,250 126,245" fill="#c8a84b"/>
+        <polygon points="180,240 184,245 180,250 176,245" fill="#c8a84b"/>
+        <polygon points="230,240 234,245 230,250 226,245" fill="#c8a84b"/>
+        <polygon points="280,240 284,245 280,250 276,245" fill="#c8a84b"/>
+        <polygon points="330,240 334,245 330,250 326,245" fill="#c8a84b"/>
+        <polygon points="380,240 384,245 380,250 376,245" fill="#c8a84b"/>
+
+        <!-- ── SHOT GEOMETRY ── -->
+        <!-- CB at 18f: sq18 row=2 col=1 → tx=80 ty=130, f=[50,25] → (130,155) -->
+        <!-- OB at 3h:  sq3  row=0 col=2 → tx=130 ty=30,  h=[25,50] → (155,80) -->
+        <!-- Contact on top rail: half-distance method -->
+        <!-- OB x=155, Pocket 5 x=230 → contact = (155+230)/2 = 192.5 ≈ 193 -->
+
+        <!-- CB → OB line (gold dashed) -->
+        <line x1="130" y1="155" x2="155" y2="80"
+              stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.7"/>
+
+        <!-- OB → rail contact (blue) -->
+        <line x1="155" y1="80" x2="193" y2="30"
+              stroke="#7dd3fc" stroke-width="2" marker-end="url(#arr-ob)" opacity="0.9"/>
+
+        <!-- Rail contact → Pocket 5 (green dashed) -->
+        <line x1="193" y1="30" x2="230" y2="230"
+              stroke="#4ade80" stroke-width="2" stroke-dasharray="7,4" marker-end="url(#arr-bk)" opacity="0.9"/>
+
+        <!-- Contact dot on top rail -->
+        <circle cx="193" cy="30" r="6" fill="#fff" stroke="#7dd3fc" stroke-width="2" opacity="0.95"/>
+
+        <!-- Half-distance annotation -->
+        <!-- OB x=155 to Contact x=193 = 38px; Contact x=193 to Pocket x=230 = 37px -->
+        <line x1="155" y1="22" x2="230" y2="22" stroke="#f0df70" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <line x1="155" y1="19" x2="155" y2="25" stroke="#f0df70" stroke-width="1" opacity="0.5"/>
+        <line x1="230" y1="19" x2="230" y2="25" stroke="#f0df70" stroke-width="1" opacity="0.5"/>
+        <line x1="193" y1="19" x2="193" y2="25" stroke="#f0df70" stroke-width="1.5" opacity="0.8"/>
+        <text x="174" y="18" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" fill="#f0df70" opacity="0.8">½</text>
+        <text x="211" y="18" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" fill="#f0df70" opacity="0.8">½</text>
+
+        <!-- OB ball -->
+        <circle cx="156" cy="81" r="10" fill="#000" opacity="0.28"/>
+        <circle cx="155" cy="80" r="10" fill="url(#gOB)" stroke="#903010" stroke-width="1"/>
+        <circle cx="151" cy="76" r="3.5" fill="#fff" opacity="0.45"/>
+
+        <!-- CB ball -->
+        <circle cx="131" cy="156" r="10" fill="#000" opacity="0.28"/>
+        <circle cx="130" cy="155" r="10" fill="url(#gBall)" stroke="#ccccbb" stroke-width="1"/>
+        <circle cx="126" cy="151" r="3.5" fill="#fff" opacity="0.55"/>
+
+        <!-- Labels -->
+        <text x="143" y="172" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#f0f0e8">CB 18f</text>
+        <text x="175" y="70"  text-anchor="middle" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#f0f0e8">OB 3h</text>
+        <text x="243" y="224" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#4ade80">P5</text>
+        <text x="205" y="43"  text-anchor="middle" font-family="Lato,sans-serif" font-size="8" fill="rgba(255,255,255,0.55)">contact</text>
+      </svg>
+      <div class="diagram-caption">B1 — Cross-side bank. Blue line: object ball to rail. Green dashed: rebound to Pocket 5. The tick marks show the half-distance contact point on the top rail.</div>
+    </div>
+
+    <p class="lead">B1 is the first shot in the curriculum because it is, in theory, the simplest bank: no cut, no induced spin, a relatively gentle angle. In theory.</p>
+
+    <p>In practice, you will find that this shot requires a correction to go — and that correction will tell you something important about your table and your stroke. That discovery is the entire point of B1.</p>
+
+    <div class="method-box">
+      <div class="method-box-title">The Half-Distance Method</div>
+      <p>The arrow in the app is computed using a method called <strong>half the distance</strong>. The contact point on the rail is placed halfway between the object ball's position (projected onto the rail) and the target pocket. In this shot, the OB is at approximately the 2.5-diamond mark and the pocket is at the 4-diamond mark — so the contact point lands near the 3.25-diamond mark on the top rail.</p>
+      <p>Half-distance is not perfect. It is a consistent starting point. The gap between where the arrow aims and where you need to actually aim to pocket the ball — that gap is your table's signature. Learn it.</p>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:900;letter-spacing:0.05em;text-transform:uppercase;color:var(--felt);margin:28px 0 14px;">The Lesson</h3>
+
+    <ol class="lesson-steps">
+      <li>
+        <p><strong>Set it up and shoot neutral</strong>
+        Place the balls at CB 18f, OB 3h. Aim where the arrow says. Medium speed, center ball, no English. Watch where the ball lands.</p>
+      </li>
+      <li>
+        <p><strong>Find the correction</strong>
+        The ball probably missed. Which direction? How far? Adjust your contact point on the rail — not your aim at the object ball — until the shot goes. Set that correction on the sliders.</p>
+      </li>
+      <li>
+        <p><strong>Find the real angle</strong>
+        Now you know where the contact point actually needs to be on your table. Remember it. How many diamonds off was the arrow? That number is yours to keep.</p>
+      </li>
+      <li>
+        <p><strong>Shoot it hard</strong>
+        Same setup, same aim, but hit it with authority. Where did it go? Did it come up short? How much? What do you have to do differently to make it?</p>
+      </li>
+      <li>
+        <p><strong>Shoot it easy</strong>
+        Now stroke it softly. Did it go long? By how much? What is the adjustment? Can you feel the difference in the contact?</p>
+      </li>
+      <li>
+        <p><strong>Add left spin</strong>
+        Go back to your correct, medium-speed shot. Now add left English — one tip. Where did the ball go? Did it open or close the angle? What aim correction brought it back?</p>
+      </li>
+      <li>
+        <p><strong>Add right spin</strong>
+        Same shot, right English. What happened? Is the correction the mirror image of the left spin correction, or is it different?</p>
+      </li>
+    </ol>
+
+    <div class="pullquote">
+      <p>When you have worked through all seven steps, you know more about banking than most players who have shot for years. You have felt it. You own it.</p>
+    </div>
+
+    <p>Move to B2 when you can make B1 go — not every time, but consistently. Consistency is the gate.</p>
+
+  </section>
+
+  <!-- ── B2 ── -->
+  <section class="section" id="b2">
+    <div class="section-eyebrow">Shot Library</div>
+    <h2 class="section-title">B2 — <em>Cross-corner</em></h2>
+
+    <div class="shot-card">
+      <div class="shot-card-header">
+        <span class="shot-card-name">B2</span>
+        <span class="shot-card-type">Cross-corner Bank</span>
+      </div>
+      <div class="shot-card-setup">
+        <div class="setup-item"><span>Cue Ball</span> 20f</div>
+        <div class="setup-item"><span>Object Ball</span> 5g</div>
+        <div class="setup-item"><span>Pocket</span> 4 (Bottom Right Corner)</div>
+      </div>
+    </div>
+
+    <!-- B2 Diagram -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <defs>
+          <radialGradient id="gFelt2" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#1e6b35"/><stop offset="100%" stop-color="#134d25"/>
+          </radialGradient>
+          <radialGradient id="gBall2" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#fff"/><stop offset="60%" stop-color="#f0f0e8"/><stop offset="100%" stop-color="#d8d8d0"/>
+          </radialGradient>
+          <radialGradient id="gOB2" cx="34%" cy="26%" r="70%">
+            <stop offset="0%" stop-color="#ff9060"/><stop offset="40%" stop-color="#e04010"/><stop offset="100%" stop-color="#601808"/>
+          </radialGradient>
+          <marker id="arr-ob2" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
+            <polygon points="0 0,7 2.5,0 5" fill="#7dd3fc"/>
+          </marker>
+          <marker id="arr-bk2" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth">
+            <polygon points="0 0,7 2.5,0 5" fill="#4ade80"/>
+          </marker>
+        </defs>
+        <!-- Rail & felt -->
+        <rect x="0" y="0" width="460" height="260" rx="9" fill="#3d2b1f"/>
+        <rect x="30" y="30" width="400" height="200" fill="url(#gFelt2)"/>
+        <rect x="30" y="17" width="400" height="13" fill="#1a6830"/>
+        <rect x="30" y="230" width="400" height="13" fill="#1a6830"/>
+        <rect x="17" y="30" width="13" height="200" fill="#1a6830"/>
+        <rect x="430" y="30" width="13" height="200" fill="#1a6830"/>
+        <!-- Pockets -->
+        <circle cx="30"  cy="30"  r="17" fill="#060a06"/>
+        <circle cx="430" cy="30"  r="17" fill="#060a06"/>
+        <circle cx="30"  cy="230" r="17" fill="#060a06"/>
+        <circle cx="430" cy="230" r="17" fill="#060a06"/>
+        <path d="M 210,30 L 215,16 A 15,9 0 0 1 245,16 L 250,30 Z" fill="#060a06"/>
+        <path d="M 210,230 L 215,244 A 15,9 0 0 0 245,244 L 250,230 Z" fill="#060a06"/>
+        <!-- Pocket 4 highlight -->
+        <circle cx="430" cy="230" r="17" fill="none" stroke="#4ade80" stroke-width="2" opacity="0.8"/>
+        <!-- Diamonds top -->
+        <polygon points="80,10 84,15 80,20 76,15"   fill="#c8a84b"/>
+        <polygon points="130,10 134,15 130,20 126,15" fill="#c8a84b"/>
+        <polygon points="180,10 184,15 180,20 176,15" fill="#c8a84b"/>
+        <polygon points="230,10 234,15 230,20 226,15" fill="#c8a84b"/>
+        <polygon points="280,10 284,15 280,20 276,15" fill="#c8a84b"/>
+        <polygon points="330,10 334,15 330,20 326,15" fill="#c8a84b"/>
+        <polygon points="380,10 384,15 380,20 376,15" fill="#c8a84b"/>
+        <!-- Diamonds bottom -->
+        <polygon points="80,240 84,245 80,250 76,245"   fill="#c8a84b"/>
+        <polygon points="130,240 134,245 130,250 126,245" fill="#c8a84b"/>
+        <polygon points="180,240 184,245 180,250 176,245" fill="#c8a84b"/>
+        <polygon points="230,240 234,245 230,250 226,245" fill="#c8a84b"/>
+        <polygon points="280,240 284,245 280,250 276,245" fill="#c8a84b"/>
+        <polygon points="330,240 334,245 330,250 326,245" fill="#c8a84b"/>
+        <polygon points="380,240 384,245 380,250 376,245" fill="#c8a84b"/>
+
+        <!-- ── SHOT GEOMETRY ── -->
+        <!-- CB at 20f: (230, 155)  OB at 5g: (280, 80)  Pocket 4: (430, 230) -->
+        <!-- Half-distance contact: OB projected to top rail at x=280. Pocket at x=430. -->
+        <!-- Contact = (280+430)/2 = 355 on top rail -->
+
+        <!-- CB → OB (gold dashed) -->
+        <line x1="230" y1="155" x2="280" y2="80"
+              stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.7"/>
+
+        <!-- OB → rail contact (blue) -->
+        <line x1="280" y1="80" x2="355" y2="30"
+              stroke="#7dd3fc" stroke-width="2" marker-end="url(#arr-ob2)" opacity="0.9"/>
+
+        <!-- Contact → Pocket 4 (green dashed) -->
+        <line x1="355" y1="30" x2="430" y2="230"
+              stroke="#4ade80" stroke-width="2" stroke-dasharray="7,4" marker-end="url(#arr-bk2)" opacity="0.9"/>
+
+        <!-- Contact dot -->
+        <circle cx="355" cy="30" r="6" fill="#fff" stroke="#7dd3fc" stroke-width="2" opacity="0.95"/>
+
+        <!-- Half-distance annotation -->
+        <line x1="280" y1="22" x2="430" y2="22" stroke="#f0df70" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <line x1="280" y1="19" x2="280" y2="25" stroke="#f0df70" stroke-width="1" opacity="0.5"/>
+        <line x1="430" y1="19" x2="430" y2="25" stroke="#f0df70" stroke-width="1" opacity="0.5"/>
+        <line x1="355" y1="19" x2="355" y2="25" stroke="#f0df70" stroke-width="1.5" opacity="0.8"/>
+        <text x="317" y="18" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" fill="#f0df70" opacity="0.8">½</text>
+        <text x="393" y="18" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" fill="#f0df70" opacity="0.8">½</text>
+
+        <!-- OB ball -->
+        <circle cx="281" cy="81" r="10" fill="#000" opacity="0.28"/>
+        <circle cx="280" cy="80" r="10" fill="url(#gOB2)" stroke="#903010" stroke-width="1"/>
+        <circle cx="276" cy="76" r="3.5" fill="#fff" opacity="0.45"/>
+
+        <!-- CB ball -->
+        <circle cx="231" cy="156" r="10" fill="#000" opacity="0.28"/>
+        <circle cx="230" cy="155" r="10" fill="url(#gBall2)" stroke="#ccccbb" stroke-width="1"/>
+        <circle cx="226" cy="151" r="3.5" fill="#fff" opacity="0.55"/>
+
+        <!-- Labels -->
+        <text x="215" y="172" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#f0f0e8">CB 20f</text>
+        <text x="295" y="70"  text-anchor="middle" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#f0f0e8">OB 5g</text>
+        <text x="415" y="222" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#4ade80">P4</text>
+        <text x="368" y="43"  text-anchor="middle" font-family="Lato,sans-serif" font-size="8" fill="rgba(255,255,255,0.55)">contact</text>
+      </svg>
+      <div class="diagram-caption">B2 — Cross-corner bank. The OB fires up to the top rail; the rebound travels to Pocket 4, bottom-right corner. Half-distance places the contact at the midpoint between OB and pocket along the rail.</div>
+    </div>
+
+    <p class="lead">B2 moves the shot to the corner. The angle is steeper than B1, the travel distance after the rail is longer, and the margin for error at the pocket is smaller. Everything you learned on B1 applies here — and gets harder.</p>
+
+    <div class="method-box">
+      <div class="method-box-title">Half-Distance, Revisited</div>
+      <p>The method is the same as B1. Project the object ball straight to the rail — in this case, straight up to the top rail at approximately the 5-diamond mark. Project the target pocket to the same rail — Pocket 4 is at the 8-diamond mark (the corner). The contact point is halfway between: roughly the 6.5-diamond mark.</p>
+      <p>The arrow in the app shows this contact point. As with B1, treat it as a starting point. The corner bank is more sensitive to speed than the side-pocket bank — a fast shot will come up noticeably short of the corner, a slow shot will drift past it. Your speed control matters more here.</p>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:900;letter-spacing:0.05em;text-transform:uppercase;color:var(--felt);margin:28px 0 14px;">What B2 Teaches That B1 Didn't</h3>
+
+    <p>The corner pocket is less forgiving than the side. The opening is smaller, the angle of approach is more critical, and the rebound path is longer — which means any error in angle compounds over more distance. You will feel this immediately.</p>
+
+    <p>Work through the same sequence as B1 — medium speed first, then fast, then slow, then with spin. Pay particular attention to what happens with speed. The correction you need at hard speed versus soft speed will be larger here than it was on B1. That difference is a lesson about what distance does to a bank.</p>
+
+    <p>When you have shot both B1 and B2, you have felt a cross-side and a cross-corner from similar positions. Stand back from the table and ask yourself: what is the relationship between the angle and the pocket? Can you feel, just by looking, which pocket a given angle is headed toward? That intuition is what we are building.</p>
+
+  </section>
+
+<footer>
+  LeStar Z Pool Suite &nbsp;·&nbsp; Banker Manual &nbsp;·&nbsp; Session 20
+</footer>
+
+</body>
+</html>

@@ -59,13 +59,18 @@ h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-b
 .sval{font-size:15px;font-weight:900;min-width:70px;text-align:right;white-space:nowrap;color:#f0df70;}
 input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
-.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
-.sliders-unlocked input[type=range]{height:8px;}
-#sl-spd::-webkit-slider-thumb{background:#f0df70;}
+#block-sliders.#block-sliders.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
+#block-sliders.#block-sliders.sliders-unlocked input[type=range]{height:8px;}
+#block-sliders.#block-sliders.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
+.sgroup{background:rgba(0,0,0,0.18);border-radius:7px;padding:7px 10px 6px 10px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.07);}
+.srow{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
+.slbl{font-size:11px;color:#e8e8e8;min-width:52px;font-weight:700;}
+#sl-spd::-webkit-slider-thumb{background:#b090f0;}
 #sl-spn::-webkit-slider-thumb{background:#e870b0;}
 #sl-vert::-webkit-slider-thumb{background:#7dd3fc;}
 #sl-bias::-webkit-slider-thumb{background:#c890f0;}
-#sl-throw-lo::-webkit-slider-thumb,#sl-throw-mi::-webkit-slider-thumb,#sl-throw-hi::-webkit-slider-thumb{background:#e87030;}
+#sl-throw-lo::-webkit-slider-thumb{background:#e87030;}
+#sl-bias-fat::-webkit-slider-thumb,#sl-bias-med::-webkit-slider-thumb,#sl-bias-thin::-webkit-slider-thumb{background:#c890f0;}
 
 /* ── READOUTS ── */
 #readouts{margin-top:2px;padding:0 12px 4px 12px;}
@@ -95,7 +100,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 #bounce-pills{display:flex;gap:4px;padding:4px 0 2px;}
 .bpill{height:22px;padding:0 10px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:inline-flex;align-items:center;background:rgba(240,223,112,0.18);color:rgba(240,223,112,0.6);outline:none;-webkit-tap-highlight-color:transparent;}
 .bpill.active{background:#f0df70;color:#1a1a1a;}
-#cal-panel{display:none;background:#f0f0f0;border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
+#cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
 #cal-panel.open{display:block;}
 #cal-instruction{font-size:12px;color:#ffffff;font-weight:700;margin-bottom:8px;line-height:1.55;}
 #cal-status{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.05em;margin-bottom:8px;text-transform:uppercase;}
@@ -108,9 +113,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .cal-action-btn.danger{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.4);color:#ff8080;}
 #cal-result{font-size:11px;color:#88ee88;margin-top:6px;display:none;line-height:1.65;}
 
-footer{display:none;}
+footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:10px 8px 4px;letter-spacing:1.5px;text-transform:uppercase;margin-top:12px;}
 
-@media (orientation: landscape) and (max-height: 430px) {
+@media (orientation: landscape) and (max-width: 900px) {
   .outer-wrap { max-width: 100% !important; }
   .card { max-width: 100% !important; }
 }
@@ -191,7 +196,7 @@ footer{display:none;}
 
 #sl-bias-fat::-webkit-slider-thumb,#sl-bias-med::-webkit-slider-thumb,#sl-bias-thin::-webkit-slider-thumb{background:#c890f0;}
 #sl-bias-fat,#sl-bias-med,#sl-bias-thin{-webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;}
-@media(orientation:landscape) and (max-height:430px){
+@media(orientation:landscape) and (max-height:600px) and (max-width:900px){
   html,body{padding:0!important;margin:0;align-items:stretch;}
   .outer-wrap{max-width:100%!important;width:100%!important;border-radius:0;margin:0;}
 }
@@ -199,35 +204,23 @@ footer{display:none;}
 #btb {
   position: fixed;
   bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 8px;
   width: auto;
-  width: 540px;
   max-width: calc(100vw - 8px);
   box-sizing: border-box;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: flex-start;
   touch-action: none;
   background: transparent;
   border: none;
   box-shadow: none;
 }
-#btb-tab {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  height: 24px;
-  background: transparent;
-  border: none;
-  cursor: grab;
-  color: rgba(255,255,255,0.5);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: none;
+#btb-tab{
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:3px;background:transparent;padding:2px 0;cursor:grab;
+  user-select:none;-webkit-user-select:none;touch-action:none;
 }
 /* TOOLS pill — always yellow background, always brown text */
 #btb-pill {
@@ -242,14 +235,19 @@ footer{display:none;}
 #btb-pill #btb-arrow { color: #1a1400; }
 #btb-pill #btb-label { color: #1a1400; }
 #btb-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   background: transparent;
   border: none;
   padding: 4px 0 8px;
-  width: 100%;
+  width: auto;
+  min-width: min(520px, 96vw);
   box-sizing: border-box;
+  z-index: 1;
 }
 #btb-panel .btb-group {
   display: flex;
@@ -272,46 +270,47 @@ footer{display:none;}
 .btb-row2 {
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   gap: 4px;
   padding: 3px 6px;
   width: 100%;
   box-sizing: border-box;
 }
 .btb-row2 .ep-btn {
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;outline:none;
   flex: 1;
   height: 36px;
   font-size: 10px;
-  padding: 0 2px;
-  min-width: 0;
-  line-height: 1.2;
+  padding: 0 4px;
+  min-width: 44px;
   text-align: center;
 }
 /* group button colors */
-.ep-btn.g-zoom { background:#36478b; border-color:#44508c; }
-.ep-btn.g-lock { background:#691c1c; border-color:#802c2c; color:#ffaaaa; }
-.ep-btn.g-snap { background:#1c581c; border-color:#2c742c; }
-.ep-btn.g-zero { background:#693e03;  border-color:#805008; }
-.ep-btn.g-bias { background:#4f1c71; border-color:#68388c; }
-.ep-btn.g-tog  { background:#604f03;  border-color:#78640a; color:#f0df70; }
+.ep-btn.g-zoom { background:rgba(60,80,160,0.85); border-color:rgba(100,120,220,0.6); }
+.ep-btn.g-lock { background:rgba(120,30,30,0.85); border-color:rgba(200,60,60,0.6); }
+.ep-btn.g-snap { background:rgba(30,100,30,0.85); border-color:rgba(60,180,60,0.6); }
+.ep-btn.g-zero { background:rgba(120,70,0,0.85);  border-color:rgba(200,120,0,0.6); }
+.ep-btn.g-bias { background:rgba(90,30,130,0.85); border-color:rgba(160,80,220,0.6); }
+.ep-btn.g-tog  { background:rgba(110,90,0,0.85);  border-color:rgba(220,180,0,0.5); }
+.ep-btn.g-swap { background:rgba(0,70,35,0.85);   border-color:rgba(0,160,70,0.5); }
 .ep-btn.g-zoom.on  { background:#f0df70; color:#1a1400; }
 .ep-btn.g-snap.on  { background:#f0df70; color:#1a1400; }
 .ep-btn.g-bias.on  { background:#f0df70; color:#1a1400; }
 .ep-btn.g-tog.on   { background:#f0df70; color:#1a1400; }
+.ep-btn.g-swap.on  { background:#a0d0a0; color:#001a00; }
+.btb-row2 .ep-btn:not(.on):not(.locked) { opacity: 1; }
 .ep-btn.g-lock.locked { background:#ff6060; color:#1a0000; }
-.ep-btn.g-brown { background:#4a2800; border:1px solid #8a5010; color:#e8c080; }
-.ep-btn.g-brown.on { background:#f0df70; color:#1a1400; border-color:#c8b840; }
-.ep-btn.g-yel   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan          { background:#1a3a1a; color:#f0df70; border-color:#2a5a2a; }
-.ep-btn.g-pan.on   { background:#f0df70; color:#1a1400; border-color:#b8a020; }
-.ep-btn.g-pan.dim  { background:#1a3a1a; color:#f0df70; border-color:#1a3a1a; opacity:0.55; }
-.ep-btn.g-swap { background:#0a6a7a; border-color:#1a9aaa; color:#e0f8ff; font-size:16px; }
-.ep-btn.g-swap.on { background:#a0e8f0; color:#001a1a; }
 /* pad body so content isn't hidden under bottom bar */
 
 body { padding-bottom: 80px !important; }
 
 .vbtn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:5px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.85);font-size:15px;font-weight:900;cursor:pointer;touch-action:manipulation;vertical-align:middle;-webkit-user-select:none;user-select:none;margin:0 2px;}
 .vbtn:active{background:rgba(255,255,255,0.25);}
+
+.btb-pill-clone{display:inline-flex;align-items:center;background:#f0df70;border-radius:7px;padding:0 0 0 2px;border:none;pointer-events:auto;}
+.g-brown{background:#4a2800;border:1px solid #8a5010;color:#e8c080;}
+.g-pan{background:#1a3a1a;color:#f0df70;border-color:#2a5a2a;}
+.g-yel{background:#f0df70;color:#1a1400;border-color:#b8a020;}
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -349,190 +348,12 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
-
-// ── GRID COORDINATE SYSTEM ──────────────────────────────────────
-// 32 squares, numbered left-to-right top-to-bottom (row 1=top, row 4=bottom)
-// Sub-positions a-h clockwise from lower-left:
-// a=lower-left, b=left-center, c=upper-left, d=upper-center
-// e=upper-right, f=right-center, g=lower-right, h=lower-center
-const GRID_POS = {
-  a:[0,50], b:[0,25], c:[0,0], d:[25,0],
-  e:[50,0], f:[50,25], g:[50,50], h:[25,50],
-  '': [25,25]  // center — no letter suffix
-};
-function xyToGrid(x, y) {
-  // Find which square edge/corner the point is on
-  // Check all sub-positions of candidate squares
-  let best = null, bestD = 99;
-  for (let sq = 1; sq <= 32; sq++) {
-    const row = Math.floor((sq-1)/8), col = (sq-1)%8;
-    const tx = 30+col*50, ty = 30+row*50;
-    for (const [p,[dx,dy]] of Object.entries(GRID_POS)) {
-      const d = Math.hypot(x-(tx+dx), y-(ty+dy));
-      if (d < bestD) { bestD=d; best=sq+''+p; }
-    }
-  }
-  return best;
-}
-function gridDesc(cb, ob, pocket) {
-  const PNUM = {TL:1,TM:2,TR:3,BR:4,BM:5,BL:6};
-  return 'CB ' + xyToGrid(cb.x,cb.y) + ' · OB ' + xyToGrid(ob.x,ob.y) + ' · P' + (PNUM[pocket]||pocket);
-}
-
 const SHOT_LIBRARY = [
-  {
-    name: 'Easy Cross Side',
-    cb:{x:105,y:205}, ob:{x:155,y:80}, pocket:'BM', sol:0,
-    desc: gridDesc({x:130,y:205}, {x:155,y:80}, 'BM'),
-        lesson:'This is perhaps the second easiest bank to see and execute in our list of set shots. Try it with zero spin and zero follow or draw and a moderate speed. If it is short of the pocket, move the ghost ball to the left until you get it to go in. If it is wide of the pocket, move the ghost ball to the right until you find the perfect spot. Then shoot that shot until you can get five in a row to go in. If the shot that actually went in differs from what shows on the app, take the trouble to calibrate it. This teaches your LeStar Z\u2019s Banker how YOU shoot and eventually makes the app customized to your eye, and thusly gives you more accurate info.',
-    cue:'Find the spot that works for you, then own it.'
-  },
-  {
-    name: 'Easy Corner Bank',
-    cb:{x:180,y:180}, ob:{x:130,y:80}, pocket:'BL', sol:0,
-    desc: gridDesc({x:180,y:180}, {x:130,y:80}, 'BL'),
-    lesson:'This is perhaps the easiest bank in the list. It has the advantage of the forgiving nature of the corner pockets, compared to the side pockets. That is so because the corner rails can deflect a slight miss (or a deliberate one) into the pocket, but the side rails don\u2019t offer that pleasure. Shoot this shot head on, with no spin and shoot it with moderate speed. As always, if it misses wide, move the Ghost Ball \u2014 the Cue Ball \u2014 to the left. And of course if it misses short, move the Ghost to the right. When you get it to go in five times in a row, open Calibrate and record the original recommendation that LeStar Z made, and then record the settings that actually made it go in. This makes your app ever more accurate for your table and your eye and stroke.',
-    cue:'Corner pockets forgive. Use them.'
-  },
-,
-
-  {
-    name: 'B3 · Steep Cross Corner',
-    cb:{x:330,y:180}, ob:{x:280,y:80}, pocket:'BL', sol:0,
-    desc: gridDesc({x:330,y:180}, {x:280,y:80}, 'BL'),
-    lesson:'Steep angle — the most forgiving bank on the table. The mirror pocket (BL reflected across the top rail) falls near the top-left corner. At medium speed with a center-ball hit, aim the OB straight at that mirror point. If it goes wide, you are too fast. If it falls short, you are too slow. Own this shot before moving on.',
-    cue:'Steep angle. Mirror point near top-left corner. Medium speed, center ball.'
-  },
-  {
-    name: 'B4 · Steep Cross Side',
-    cb:{x:130,y:180}, ob:{x:230,y:80}, pocket:'BM', sol:0,
-    desc: gridDesc({x:130,y:180}, {x:230,y:80}, 'BM'),
-    lesson:'The OB is almost directly below the far side pocket. The mirror pocket is directly below the near side pocket — an easy line to visualize. This is a steep cross-side, one of the most reliable banks in the game. Medium speed, no spin, center hit. If it misses wide, slow down. If it falls short, speed up.',
-    cue:'OB below far side pocket. Mirror is straight across. Dead medium speed.'
-  },
-  {
-    name: 'B5 · Corner to Corner',
-    cb:{x:230,y:180}, ob:{x:180,y:80}, pocket:'BR', sol:0,
-    desc: gridDesc({x:230,y:180}, {x:180,y:80}, 'BR'),
-    lesson:'The purest bank — equal triangles on either side of the rail. The mirror of BR reflected across the top rail is directly above BR at the same distance. Aim the OB at that point. The diamond system is exact here: if the OB is 2 diamonds from the left rail, the mirror point is 2 diamonds from the right rail. This is your baseline shot for learning how speed affects the angle.',
-    cue:'Equal triangles. Mirror is the opposite corner. Learn how speed moves it.'
-  },
-  {
-    name: 'B6 · Left Rail to Corner',
-    cb:{x:280,y:130}, ob:{x:38,y:80}, pocket:'TR', sol:0,
-    desc: gridDesc({x:280,y:130}, {x:38,y:80}, 'TR'),
-    lesson:'The OB banks off the left rail into the top-right corner. Mirror the TR pocket across the left rail — the mirror falls to the left of the table at the same height as TR. Aim the OB there. This is a moderate angle. Notice how a little running english (right spin on the CB, which transfers left spin to the OB going into the left rail) opens the angle slightly and helps it reach the pocket.',
-    cue:'Left rail bank. Running english opens the angle if you fall short.'
-  },
-  {
-    name: 'B7 · Wide Cross Side',
-    cb:{x:80,y:180}, ob:{x:330,y:130}, pocket:'BM', sol:0,
-    desc: gridDesc({x:80,y:180}, {x:330,y:130}, 'BM'),
-    lesson:'The OB travels to the right rail and comes back to the bottom side pocket. Wider angle than the previous shots — speed matters more here. The mirror of BM across the right rail falls to the right at the same height. At medium speed this should work clean. Too fast and it goes wide past the pocket. Experiment: try a touch of left spin on the CB to see how it affects the OB off the right rail.',
-    cue:'Right rail to side pocket. Speed is critical — medium or slightly below.'
-  },
-  {
-    name: 'B8 · Short Rail Bank',
-    cb:{x:330,y:130}, ob:{x:330,y:38}, pocket:'BM', sol:0,
-    desc: gridDesc({x:330,y:130}, {x:330,y:38}, 'BM'),
-    lesson:'The OB is nearly against the top rail, almost straight between CB and side pocket. After it hits the rail it has almost no distance to travel. This shot is extremely speed-sensitive — even a small change in pace dramatically moves the landing point. Use a very controlled medium stroke. No spin. This teaches you what happens when the travel after the rail is short.',
-    cue:'Short travel after the rail. Any speed variation and you will miss. Commit.'
-  },
-  {
-    name: 'B9 · Shallow Cross Corner',
-    cb:{x:80,y:130}, ob:{x:330,y:80}, pocket:'BL', sol:0,
-    desc: gridDesc({x:80,y:130}, {x:330,y:80}, 'BL'),
-    lesson:'Now the angle gets shallow — the hardest category of bank. The mirror pocket is well past the far corner. Small errors in speed or aim move the landing point enormously. Medium speed, precise aim. This is where players start using a touch of top spin to help the OB hold its line after the rail. If it consistently falls short, try the slightest bit of follow on the OB — hit it a touch fuller.',
-    cue:'Shallow angle — small errors hurt. Medium speed. Consider slight follow.'
-  },
-  {
-    name: 'B10 · Running English Bank',
-    cb:{x:230,y:155}, ob:{x:155,y:130}, pocket:'BR', sol:0,
-    desc: gridDesc({x:230,y:155}, {x:155,y:130}, 'BR'),
-    lesson:'This shot introduces the power of running english on a bank. The OB goes into the left rail — running english (right spin on CB, left on OB into that rail) opens the rebound angle. Set up the shot first with no spin and note where it lands. Then add one tip of right english and observe the shift. This is how you compensate when pure geometry leaves you short of the pocket. One tip of spin moves the OB approximately one diamond.',
-    cue:'Learn running english here. One tip of spin = about one diamond of shift.'
-  }
-,
-
-  {
-    name: 'B11 · Natural Corner Bank',
-    cb:{x:330,y:130}, ob:{x:280,y:80}, pocket:'BL', sol:0,
-    desc: gridDesc({x:330,y:130}, {x:280,y:80}, 'BL'),
-    cue:'45° angle, contact dead center of the top rail. The diamond system is your friend here.',
-    lesson:'<b>Theory: Diamond System — Equal Angles</b><br><br>This is the fundamental corner bank — a 45° angle with the contact point at the exact center of the top rail. The geometry here is nearly perfect: equal triangles on each side of the rail. This is where the diamond system works best.<br><br><b>How to aim:</b> The mirror method — imagine BL pocket reflected across the top rail. That mirror point falls at the same distance above the top rail as BL is below it, directly above TL. Draw an imaginary line from the OB to that mirror point: where it crosses the top rail is your contact point. Here it’s at the center diamond — easy to visualize.<br><br><b>Speed:</b> Medium. One rail at 45° is the most forgiving condition on the table. Speed matters, but not as critically as with shallow or steep angles.<br><br><b>English:</b> None. Shoot center ball. Any english will shift the rebound and throw off your calibration of this shot.<br><br><b>If you miss:</b> Wide of BL = too fast (rail compression shortens the angle). Short of BL = too slow. Consistent left misses = aim a touch thinner. Consistent right misses = aim a touch fuller.<br><br>Own this shot before moving to the others. It is your reference for everything that follows.'
-  },
-
-  {
-    name: 'B12 · Wide Angle Corner Bank',
-    cb:{x:70,y:130}, ob:{x:130,y:80}, pocket:'BR', sol:0,
-    desc: gridDesc({x:70,y:130}, {x:130,y:80}, 'BR'),
-    cue:'Wide angle across the table to the far corner. Aim fuller than geometry says.',
-    lesson:'<b>Theory: Diamond System + Rail Throw Correction</b><br><br>The OB crosses most of the table width before hitting the rail, then travels to the far corner. The diamond system gives you a starting point, but rail throw becomes significant at this angle: the ball tends to kick shorter than pure geometry predicts. You will almost certainly need to aim <b>fuller</b> — hit the OB slightly more toward its center than the ghost ball shows.<br><br><b>How to aim:</b> Mirror BR across the top rail. The mirror falls above TR. Draw the line from OB to that mirror — your contact point is at about 3.2 diamonds from the left. Aim there, then add 5–10% fuller to account for rail throw.<br><br><b>Speed:</b> Medium-firm. This is a long bank. The ball needs to carry all the way to BR — players consistently leave this shot short by hitting it too softly.<br><br><b>English:</b> None to start. Once you have the shot dialed in, experiment with <b>left english</b> (which transfers right spin to OB, narrowing the rebound) vs <b>right english</b> (widening it) and observe the shifts.<br><br><b>Rail throw:</b> At this wide angle the cushion contact deflects the ball slightly. If you consistently miss short of BR even with correct aim, increase speed one notch before changing aim.'
-  },
-
-  {
-    name: 'B13 · Shallow Corner Bank',
-    cb:{x:370,y:130}, ob:{x:380,y:80}, pocket:'BR', sol:0,
-    desc: gridDesc({x:370,y:130}, {x:380,y:80}, 'BR'),
-    cue:'Shallow angle — the hardest category. Speed is everything here.',
-    lesson:'<b>Theory: Speed Control for Shallow Banks</b><br><br>The OB is close to the right side and banks to BR — a very shallow angle where the contact point on the top rail is near the TR corner. This is the hardest category of bank shot, and <b>speed is the primary variable</b>.<br><br><b>Why shallow banks are hard:</b> The contact point is very close to the corner of the rail. A small speed change dramatically moves the landing point: hit it firm and the rail compression shortens the angle (the ball runs long and misses past the pocket). Hit it soft and the ball dies short. The margin for error is much smaller than at 45°.<br><br><b>How to aim:</b> The mirror of BR reflected across the top rail falls just outside the TR corner. The OB barely glances the corner of the rail. Your aim point is so close to the corner that you’re almost shooting a kick shot off the rail tip. Hold your angle carefully.<br><br><b>Speed:</b> Medium-soft. This is where most players go too fast. The instinct is to hit it firmly, but slow down.<br><br><b>English:</b> None. At this shallow angle, even a half-tip of english will shift the landing point by nearly a diamond. Start clean.<br><br><b>Practice drill:</b> Shoot this shot 10 times at three speeds — soft, medium, firm. Observe where the ball lands each time. The speed-to-landing-point relationship is very steep here. Learning it teaches you more about banking than any other shot.'
-  },
-
-  {
-    name: 'B14 · Medium Corner with English',
-    cb:{x:190,y:130}, ob:{x:230,y:80}, pocket:'BR', sol:0,
-    desc: gridDesc({x:190,y:130}, {x:230,y:80}, 'BR'),
-    cue:'Learn running english here. One tip right opens the angle and saves the shot.',
-    lesson:'<b>Theory: Running English to Widen Rebound Angle</b><br><br>Medium angle corner bank from center table to BR. This shot is designed to teach you <b>running english</b> — the most valuable english skill for banking.<br><br><b>Step 1:</b> Shoot the shot with no english. Note exactly where it lands relative to BR. It should be close to the pocket. Write down what you see.<br><br><b>Step 2:</b> Add one tip of <b>right english</b> on the CB. Right english transfers <b>left spin</b> to the OB at contact. When that left-spinning OB hits the top rail (going right to left), the spin grabs the rail and kicks the ball <b>wider</b> — more toward BR. The rebound angle opens by about one diamond per tip of english.<br><br><b>Step 3:</b> Try one tip of <b>left english</b> (check english). This transfers right spin to OB, which <b>narrows</b> the rebound. The ball pulls up short of BR.<br><br><b>The lesson:</b> English gives you a correction tool that works without changing your aim or your speed. When geometry leaves you a diamond short, one tip of running english brings the ball home. This is how experienced players make adjustments during a game without resetting the shot.<br><br><b>Speed:</b> Medium. Keep speed constant across your english experiments so you isolate the english effect.'
-  },
-
-  {
-    name: 'B15 · Dead Straight Calibration',
-    cb:{x:230,y:180}, ob:{x:230,y:80}, pocket:'BM', sol:0,
-    desc: gridDesc({x:230,y:180}, {x:230,y:80}, 'BM'),
-    cue:'The only truly geometric shot. Shoot this first on any new table.',
-    lesson:'<b>Theory: Pure Geometry — Your Baseline Shot</b><br><br>The OB is directly between the CB and the BM pocket. The ball goes straight up, hits the center of the top rail, and comes straight back to BM. No angle. No throw. No english effects. <b>This is 100% geometry.</b><br><br><b>Why this shot matters:</b> This is your calibration baseline for every table you play on. Shoot it first. If the ball consistently lands short of BM, your cloth is slow (or your stroke is too soft). If it consistently overshoots, your cloth is fast. <b>All your other banks should be calibrated relative to this shot.</b><br><br><b>What it teaches:</b> The relationship between your stroke speed and travel distance on your specific table. Every table plays differently. Once you know how fast this straight bank travels at medium speed, you have a reference for the entire shot library.<br><br><b>Speed:</b> Shoot it at three speeds: soft, medium, firm. Note exactly where the ball lands each time. This is your personal speed chart for this table.<br><br><b>English:</b> Never. This is your reference. Any english corrupts the baseline.<br><br><b>Calibrate:</b> If this shot consistently lands off-center, recalibrate your app with the actual landing point. Everything else follows from here.'
-  },
-
-  {
-    name: 'B16 · Standard Cross-Side',
-    cb:{x:290,y:130}, ob:{x:280,y:80}, pocket:'BM', sol:0,
-    desc: gridDesc({x:290,y:130}, {x:280,y:80}, 'BM'),
-    cue:'The workhorse. Slightly off-center, reliable angle. Learn it cold.',
-    lesson:'<b>Theory: Diamond System for Cross-Side Banks</b><br><br>The bread-and-butter cross-side bank. OB is one diamond right of center, banking back to the center side pocket. The angle is gentle and predictable. This is one of the most common banks in actual play.<br><br><b>How to aim:</b> Diamond system: OB is at diamond 5 from the left. Mirror BM (diamond 4) across the top rail — the mirror falls directly above BM. The contact point is at diamond 5.2 — just slightly right of the OB’s starting position. The ball barely veers left at all before banking. Keep this subtle angle in mind: the shot looks like it should go straight, but it needs a tiny leftward component.<br><br><b>Speed:</b> Medium. The angle is gentle and speed is less critical than in the corner banks or the wider cross-sides.<br><br><b>English experiment:</b> Once you have this shot reliable with center ball, try <b>left check english</b> (one tip left on CB). This transfers right spin to OB, which narrows the rebound and pulls the ball toward the near side of BM. Try <b>right running english</b> to open the angle slightly. Observe and remember — this english knowledge applies to every cross-side you ever shoot.<br><br><b>Miss analysis:</b> Short of BM = going right of the pocket = angle too wide = aim thinner OR add running english. Past BM going left = angle too narrow = aim fuller OR add check english.'
-  },
-
-  {
-    name: 'B17 · Wide Cross-Side',
-    cb:{x:410,y:130}, ob:{x:380,y:80}, pocket:'BM', sol:0,
-    desc: gridDesc({x:410,y:130}, {x:380,y:80}, 'BM'),
-    cue:'Wide angle. Rail throw is significant. Aim fuller than the app says.',
-    lesson:'<b>Theory: Rail Throw Correction for Wide Angles</b><br><br>The OB is near the right rail, banking across to the center side pocket. This wide angle is where your Table Compensation (FAT setting) becomes essential, because <b>rail throw at wide angles is substantial</b>.<br><br><b>What is rail throw here:</b> At this steep angle, the OB contacts the top rail at an oblique angle. The cushion is not perfectly elastic — the ball’s contact with the rubber deflects it slightly less than pure geometry predicts. The result: the bank comes up short. The ball lands right of BM, closer to the right side of the pocket.<br><br><b>How much to correct:</b> Aim about 15–20% fuller than the app’s ghost ball position. If the app shows 35% contact, aim for 50–55%. Use your FAT slider in the Table Compensation section to dial this in for your table. The FAT slider adjusts aim for steep-angle banks like this one.<br><br><b>Speed:</b> Medium. Speed affects rail throw: hit it harder and compression increases, making the short-landing worse. Hit it softer and the ball may die before BM. Find the medium and hold it.<br><br><b>English:</b> Try left check english to narrow the angle (bring it further left). Try right running english to widen it. At this steep angle, english has a dramatic effect — one tip can move the landing point two diamonds.'
-  },
-
-  {
-    name: 'B18 · Tight Cross-Side with English',
-    cb:{x:110,y:130}, ob:{x:130,y:80}, pocket:'BM', sol:0,
-    desc: gridDesc({x:110,y:130}, {x:130,y:80}, 'BM'),
-    cue:'Tight angle. Running english is not optional here — it’s the shot.',
-    lesson:'<b>Theory: Running English for Tight-Angle Banks</b><br><br>OB is near the left side, banking to the center pocket. The angle is very shallow — the contact point is only 2.4 diamonds from the left corner. The ball barely veers right before hitting the rail. At this tight angle, pure geometry is marginal — <b>running english makes this shot.</b><br><br><b>The physics:</b> OB travels slightly right before the rail. With no english, it barely opens after the bank and lands well left of BM. Add <b>right english</b> on the CB: right spin transfers to the OB as left spin. When the left-spinning OB contacts the top rail (moving rightward), the spin grabs the rail and kicks the ball further right — opening the angle. One tip of right english can shift the landing by an entire diamond to the right.<br><br><b>Step 1:</b> Shoot it with no english. Note where it lands (probably left of BM).<br><b>Step 2:</b> Add one tip of right (running) english. Observe the shift.<br><b>Step 3:</b> Add two tips. Find where BM is.<br><br><b>Speed:</b> Medium-soft. The distance after the rail is short, so speed controls the final position dramatically.<br><br><b>The lesson:</b> Tight-angle banks are almost always enhanced by running english. When you see a bank where the OB is near the same rail as the pocket, running english is your go-to adjustment. You will use this knowledge on every tight bank you shoot for the rest of your career.'
-  },
-
-  {
-    name: 'B19 · Short Rail to Top — Direct',
-    cb:{x:290,y:130}, ob:{x:280,y:180}, pocket:'TM', sol:0,
-    desc: gridDesc({x:290,y:130}, {x:280,y:180}, 'TM'),
-    cue:'OB near your end of the table, bank to the far side pocket. Mirror method.',
-    lesson:'<b>Theory: End Rail Bank — Full Table Travel</b><br><br>The OB is near the bottom rail (your end). It banks off the bottom rail and travels the full length of the table to TM (the far side pocket). This is a different challenge than the top-rail banks: you’re banking away from you, and the ball must carry the full 9 feet.<br><br><b>How to aim:</b> Mirror method — imagine TM reflected across the bottom rail. The mirror falls below the table at (4 diamonds from left, 4 diamonds below the bottom rail). Draw a line from OB to that mirror point: it crosses the bottom rail at 4.8 diamonds from the left (just right of center). That’s your bank contact. Aim the OB to hit that spot on the bottom rail.<br><br><b>Speed:</b> Medium-firm to firm. The ball travels the full length of the table. This is the shot where players most commonly leave it short — the visual of the far pocket makes players subconsciously ease up. <b>Commit to the stroke.</b><br><br><b>English:</b> Center ball. With full-table travel, any english at contact magnifies over the distance. Small english errors become large misses at the far end.<br><br><b>What’s different about this shot:</b> You are the pivot point — you’re banking away from your body. Most players have less feel for shots going away from them than toward them. This shot diagnoses that.<br><br><b>If you miss:</b> Short of TM (falls on the table) = hit it firmer. Long past TM = ease up. Off to one side = review your aim point on the bottom rail.'
-  },
-
-  {
-    name: 'B20 · Short Rail to Top — Angled',
-    cb:{x:350,y:130}, ob:{x:330,y:180}, pocket:'TM', sol:0,
-    desc: gridDesc({x:350,y:130}, {x:330,y:180}, 'TM'),
-    cue:'Angled end rail bank. OB right of center, angled to far side pocket.',
-    lesson:'<b>Theory: Angled End Rail Bank — Speed and Throw Combined</b><br><br>OB is right of center near the bottom rail. It banks off the bottom rail at a point right of center (5.6 diamonds from left), then travels leftward and forward to TM. The ball must correct its rightward position while traveling the full table length.<br><br><b>How to aim:</b> Mirror TM across the bottom rail. Mirror falls 4 diamonds from left, far below table. Draw OB-to-mirror line — bank contact at 5.6 diamonds from left (between 5th and 6th diamond on the bottom rail). Aim OB to that contact point. The ball will bank and angle slightly left as it travels up the table.<br><br><b>Speed:</b> Firm. The ball must make the full table length AND correct its lateral position. Players consistently hit this shot too softly. If you’re consistently landing on the right side of TM, you’re probably also hitting it too soft.<br><br><b>Rail throw:</b> At this angle, the bottom rail will deflect the ball slightly. Expect to aim <b>a touch thinner</b> than pure geometry (hit the bottom rail contact point a little further left than calculated). Your THIN slider in Table Compensation handles this for steep banks.<br><br><b>English:</b> Try left english to pull the bank further left toward TM if it runs right. Right english will push it further right — use that if it consistently comes up left.<br><br><b>The two-variable lesson:</b> This shot teaches you that long banks have two independent errors: aim (lateral position at the far pocket) and speed (whether it gets there at all). Solve them separately — first get the lateral position right at medium-firm speed, then fine-tune the pace.'
-  }
+  { name:'B1', cb:{x:130,y:155}, ob:{x:155,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side', cbLabel:'18f', obLabel:'3h',  pocketLabel:'5', manualAnchor:'b1', text:'This shot, B1, attempts to set up the easiest shot, that theoretically has no spin, no cut. Set it up, shoot with moderate speed. See where it goes. What is the correction that makes it go? Make it go and set it on the sliders. Now what is the REAL angle that makes the shot go? Remember it, and remember how much from ideal you had to correct it. Then shoot it hard. Then shoot it easy. What happened? What do you have to do to make that shot go with those changes? Now, go back to your first, correct shot again. Do it with left spin and with right. What happened? What correction of aiming do you have to make?' },
+  { name:'B2', cb:{x:230,y:155}, ob:{x:280,y:80}, pocket:'BR', sol:0, cut:0, rh:false, desc:'Cross-corner', cbLabel:'20f', obLabel:'5g', pocketLabel:'4', manualAnchor:'b2' },
+  { name:'B3', cb:{x:180,y:180}, ob:{x:180,y:80}, pocket:'BL', sol:0, cut:0, rh:false, desc:'', cbLabel:'',    obLabel:'',     pocketLabel:'6' },
+  { name:'B4', cb:{x:280,y:180}, ob:{x:280,y:80}, pocket:'BR', sol:0, cut:0, rh:false, desc:'', cbLabel:'',    obLabel:'',     pocketLabel:'4' },
+  { name:'B5', cb:{x:380,y:180}, ob:{x:380,y:80}, pocket:'BL', sol:0, cut:0, rh:false, desc:'', cbLabel:'',    obLabel:'',     pocketLabel:'6' },
 ];
 let libraryOpen = false;
 // ── USER SHOT LIBRARY ──────────────────────────────────────────
@@ -579,183 +400,55 @@ function deleteUserShot(idx) {
   buildShotList();
 }
 
-let expandedPreset = -1;
-
-let _openCats = {}, _openGrps = {};
-function toggleCat(id){_openCats[id]=!_openCats[id];const el=document.getElementById(id);const ar=document.getElementById(id+'-arrow');if(el)el.style.display=_openCats[id]?'block':'none';if(ar)ar.textContent=_openCats[id]?'▴':'▾';}
-function toggleGrp(id){_openGrps[id]=!_openGrps[id];const el=document.getElementById(id);const ar=document.getElementById(id+'-arrow');if(el)el.style.display=_openGrps[id]?'block':'none';if(ar)ar.textContent=_openGrps[id]?'▴':'▾';}
-
-let shotNotes = {};
-let _shotListScale = 1;
-
-function loadShotNotes() {
-  try { shotNotes = JSON.parse(localStorage.getItem('lz-banker-notes') || '{}'); } catch(e) { shotNotes = {}; }
-}
-
-function toggleTeaching(code) {
-  const el = document.getElementById('teach-' + code);
-  const btn = document.getElementById('teach-btn-' + code);
-  if (!el) return;
-  const showing = el.style.display !== 'none';
-  el.style.display = showing ? 'none' : 'block';
-  if (btn) btn.innerHTML = showing ? '&#x25BE;' : '&#x25B4;';
-}
-
-function toggleNoteBox(code) {
-  const box = document.getElementById('notebox-' + code);
-  if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
-}
-
-function saveNote(code) {
-  const box = document.getElementById('notebox-' + code);
-  if (!box) return;
-  const ta = box.querySelector('textarea');
-  if (ta) {
-    shotNotes[code] = ta.value;
-    try { localStorage.setItem('lz-banker-notes', JSON.stringify(shotNotes)); } catch(e) {}
-  }
-  buildShotList();
-}
-
-function shotListFontSize(dir) {
-  _shotListScale = Math.max(0.7, Math.min(1.4, _shotListScale + dir * 0.1));
-  buildShotList();
-}
-
 function buildShotList() {
   const el = document.getElementById('shot-library-list');
   if (!el) return;
-
-  const GROUP_NAMES = {
-    'rail-7e-f':   'OB 7e — along the rail',
-    'rail-7e-g':   'OB 7e — one step out',
-    'rail-7e-long':'OB 7e — from deeper',
-    'rail-6e-f':   'OB 6e — along the rail',
-    'rail-6e-g':   'OB 6e — one step out',
-    'rail-6e-long':'OB 6e — from deeper',
-    'diagonal':    'The Same Shot — Moving'
-  };
-  function grpName(id) { return GROUP_NAMES[id] || id; }
-
-  const chapters = {};
-  SHOT_LIBRARY.forEach(function(s, i) {
-    const cat = s.category || 'Bank Shots';
-    const grp = s.group || cat;
-    if (!chapters[cat]) chapters[cat] = { groups:{}, order:[] };
-    if (!chapters[cat].groups[grp]) { chapters[cat].groups[grp]=[]; chapters[cat].order.push(grp); }
-    chapters[cat].groups[grp].push({s,i});
-  });
-
-  let h = '';
-  Object.entries(chapters).forEach(function([cat, data]) {
-    const catId = 'cat-' + cat.replace(/[^a-z0-9]/gi,'_');
-    const catOpen = !!_openCats[catId];
-    h += '<div style="background:#1a3a1a;border-bottom:2px solid #0a2a0a;">';
-    h += '<div onclick="toggleCat(\'' + catId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;user-select:none;">';
-    h += '<span style="font-size:12px;font-weight:900;letter-spacing:1px;color:#4ade80;">' + cat + '</span>';
-    h += '<span id="' + catId + '-arrow" style="color:#4ade80;font-size:12px;">' + (catOpen?'▴':'▾') + '</span>';
-    h += '</div>';
-    h += '<div id="' + catId + '" style="display:' + (catOpen?'block':'none') + ';">';
-    data.order.forEach(function(grp) {
-      const shots = data.groups[grp];
-      const grpId = 'grp-' + grp.replace(/[^a-z0-9]/gi,'_');
-      const grpOpen = !!_openGrps[grpId];
-      h += '<div style="border-bottom:1px solid #cccccc;">';
-      h += '<div onclick="toggleGrp(\'' + grpId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px;cursor:pointer;background:#e0e8e0;">';
-      h += '<span style="font-size:11px;font-weight:900;color:#1a5a1a;">' + grpName(grp) + '</span>';
-      h += '<span id="' + grpId + '-arrow" style="color:#1a5a1a;font-size:11px;">' + (grpOpen?'▴':'▾') + '</span>';
-      h += '</div>';
-      h += '<div id="' + grpId + '" style="display:' + (grpOpen?'block':'none') + ';">';
-      shots.forEach(function(obj) {
-        const s=obj.s, i=obj.i;
-        const note = shotNotes[(s.code||(i+''))] || '';
-        h += '<div style="border-bottom:1px solid #dddddd;background:#ffffff;">';
-        // Shot header row
-        h += '<div style="display:flex;align-items:stretch;">';
-        h += '<div onclick="loadShot(' + i + ')" style="flex:1;padding:8px 12px 6px 20px;cursor:pointer;">';
-        h += '<div style="display:flex;align-items:center;gap:6px;">';
-        h += '<span style="font-size:' + (14*_shotListScale) + 'px;font-weight:900;color:#0a4a0a;">' + (s.name||s.desc) + '</span>';
-        if (s.difficulty) { let stars=''; for(let x=0;x<s.difficulty;x++) stars+='<span style="color:#e8c040;font-size:10px;">★</span>'; h += stars; }
-        h += '</div>';
-        h += '<div style="font-size:' + (11*_shotListScale) + 'px;color:#555555;margin-top:2px;">' + s.desc + '</div>';
-        if (s.cue) h += '<div style="font-size:' + (12*_shotListScale) + 'px;color:#1a5a1a;font-style:italic;margin-top:4px;line-height:1.4;">"' + s.cue + '"</div>';
-        h += '</div>';
-        if (s.lesson || s.teaching) h += '<button onclick="event.stopPropagation();toggleTeaching(\'' + ((s.code||(i+''))||i) + '\')" id="teach-btn-' + (s.code||(i+'')) + '" style="flex-shrink:0;width:36px;background:#dff0df;border:none;border-left:2px solid #cccccc;cursor:pointer;font-size:18px;color:#1a5a1a;display:flex;align-items:flex-start;justify-content:center;padding-top:12px;">&#x25BE;</button>';
-        h += '</div>';
-        // Teaching text
-        if (s.lesson || s.teaching) h += '<div id="teach-' + ((s.code||(i+''))||i) + '" style="display:none;padding:10px 14px 12px;background:#f0f8f0;border-top:1px solid #bbddbb;font-size:' + (13*_shotListScale) + 'px;color:#111;line-height:1.75;">' + (s.lesson || s.teaching || '') + '</div>';
-        // Notes
-        h += '<div style="padding:3px 12px 6px 20px;background:#f8f8f8;">';
-        h += '<div style="display:flex;align-items:center;gap:4px;">';
-        h += '<span style="font-size:' + (10*_shotListScale) + 'px;color:#555;letter-spacing:1px;font-weight:900;">MY NOTES</span>';
-        h += '<button onclick="toggleNoteBox(\'' + (s.code||(i+'')) + '\')" style="font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid #999;background:#fff;color:#333;cursor:pointer;">' + (note?'edit':'+') + '</button>';
-        h += '</div>';
-        if (note) h += '<div id="note-' + (s.code||(i+'')) + '" style="font-size:11px;color:#222;margin-top:3px;padding:4px 6px;background:#fff;border:1px solid #ccc;border-radius:3px;">' + note.replace(/</g,'&lt;') + '</div>';
-        else h += '<div id="note-' + (s.code||(i+'')) + '"></div>';
-        h += '<div id="notebox-' + (s.code||(i+'')) + '" style="display:none;margin-top:4px;">';
-        h += '<textarea rows="2" style="width:100%;box-sizing:border-box;font-size:12px;background:#fff;color:#111;border:1px solid #999;border-radius:3px;padding:4px;resize:vertical;font-family:Lato,sans-serif;" placeholder="Your notes...">' + note.replace(/</g,'&lt;') + '</textarea>';
-        h += '<div style="display:flex;gap:4px;margin-top:4px;">';
-        h += '<button onclick="saveNote(\'' + (s.code||(i+'')) + '\')" style="font-size:11px;padding:3px 10px;border-radius:3px;border:none;background:#1a5a1a;color:#fff;cursor:pointer;font-weight:900;">SAVE</button>';
-        h += '<button onclick="toggleNoteBox(\'' + (s.code||(i+'')) + '\')" style="font-size:11px;padding:3px 10px;border-radius:3px;border:1px solid #999;background:#fff;color:#333;cursor:pointer;">CANCEL</button>';
-        h += '</div></div></div>';
-        h += '</div>';
-      });
-      h += '</div></div>';
-    });
-    h += '</div></div>';
-  });
+  let html = '<div style="font-size:9px;font-weight:900;color:#000;letter-spacing:1.5px;padding:6px 10px 4px;text-transform:uppercase;border-bottom:1px solid #ddd;background:#f0f0f0;">Preset Shots</div>';
+  html += SHOT_LIBRARY.map((s,i) => {
+    const cbLbl = s.cbLabel || '—';
+    const obLbl = s.obLabel || '—';
+    const pLbl  = s.pocketLabel || '—';
+    const title = s.desc ? s.name + ' · ' + s.desc : s.name;
+    const coords = 'Cue Ball: ' + cbLbl + '&nbsp;&nbsp;&nbsp;Object Ball: ' + obLbl + '&nbsp;&nbsp;&nbsp;Pocket: ' + pLbl;
+    const manualLink = s.manualAnchor
+      ? '<a href="banker-manual.html#' + s.manualAnchor + '" target="_blank" onclick="event.stopPropagation()" style="font-size:10px;font-weight:900;color:#1a6830;text-decoration:none;border-bottom:1px solid #1a6830;">Read more →</a>'
+      : '';
+    return '<div data-preset="' + i + '" class="shot-lib-item" style="padding:8px 12px;border-bottom:1px solid #ddd;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fff;">' +
+      '<div style="flex:1;">' +
+        '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:3px;">' +
+          '<div style="font-size:13px;font-weight:900;color:#000;">' + title + '</div>' +
+          manualLink +
+        '</div>' +
+        '<div style="font-size:11px;font-weight:700;color:#333;">' + coords + '</div>' +
+      '</div>' +
+      '<div style="font-size:18px;color:#999;margin-left:12px;align-self:flex-start;">▶</div>' +
+    '</div>';
+  }).join('');
   if (userShots.length) {
-    h += '<div style="font-size:7px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;padding:6px 6px 2px;border-top:1px solid rgba(255,255,255,0.06);">My Shots</div>';
-    h += userShots.map((s,i) => {
+    html += '<div style="font-size:9px;font-weight:900;color:#000;letter-spacing:1.5px;padding:6px 10px 4px;text-transform:uppercase;border-top:2px solid #ccc;border-bottom:1px solid #ddd;background:#f0f0f0;">My Shots</div>';
+    html += userShots.map((s,i) => {
       const d = new Date(s.ts);
       const dt = (d.getMonth()+1)+'/'+d.getDate();
-      return '<div style="padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;">' +
+      return '<div style="padding:7px 10px;border-bottom:1px solid #e8e8e8;display:flex;justify-content:space-between;align-items:center;background:#fff;">' +
         '<div onclick="loadUserShot('+i+')" style="flex:1;cursor:pointer;">' +
-        '<div style="font-size:10px;font-weight:900;color:#7dd3fc;">' + s.name + '</div>' +
-        '<div style="font-size:9px;color:rgba(255,255,255,0.75);">' + dt + ' · ' + s.desc + '</div></div>' +
-        '<button onclick="deleteUserShot('+i+')" style="font-size:9px;padding:1px 4px;border-radius:3px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;cursor:pointer;margin-left:4px;">✕</button>' +
+        '<div style="font-size:11px;font-weight:900;color:#000">' + s.name + '</div>' +
+        '<div style="font-size:9px;color:#777">' + dt + ' · Pocket ' + s.pocket + '</div></div>' +
+        '<button onclick="deleteUserShot('+i+')" style="font-size:9px;padding:2px 6px;border-radius:3px;border:1px solid #ccc;background:#f8f8f8;color:#c00;cursor:pointer;margin-left:6px;">✕</button>' +
         '</div>';
     }).join('');
   }
-
-  el.innerHTML = h;
-  // click handlers added inline via onclick attributes
-}
-
-function toggleLesson(i) {
-  const wasExpanded = expandedPreset === i;
-  expandedPreset = wasExpanded ? -1 : i;
-  buildShotList();
-  if (!wasExpanded) {
-    const saved = localStorage.getItem("banker-note-" + i) || "";
-    const ta = document.getElementById("note-" + i);
-    if (ta) ta.value = saved;
-  }
-}
-
-function presetClick(i) {
-  loadShot(i);
-  const wasExpanded = expandedPreset === i;
-  expandedPreset = wasExpanded ? -1 : i;
-  buildShotList();
-  // Restore note if just expanded
-  if (!wasExpanded) {
-    const saved = localStorage.getItem("banker-note-" + i) || "";
-    const ta = document.getElementById("note-" + i);
-    if (ta) ta.value = saved;
-  }
-}
-
-function saveNote(i) {
-  const ta = document.getElementById("note-" + i);
-  if (ta) localStorage.setItem("banker-note-" + i, ta.value);
+  el.innerHTML = html;
+  el.querySelectorAll('[data-preset]').forEach(item => {
+    item.addEventListener('click', () => {
+      loadShot(parseInt(item.dataset.preset));
+    });
+  });
 }
 
 function toggleShotLibrary() {
   libraryOpen = !libraryOpen;
   const panel = document.getElementById('shot-library-panel');
   if (panel) panel.style.display = libraryOpen ? 'block' : 'none';
-  if (libraryOpen) { loadUserShots(); buildShotList(); }
 }
 function loadShot(idx) {
   const shot = SHOT_LIBRARY[idx];
@@ -766,13 +459,12 @@ function loadShot(idx) {
   }
   S.activeSol  = shot.sol !== undefined ? shot.sol : 0;
   S.diagCutDeg = shot.cut !== undefined ? shot.cut : null;
-  S._userAdjustedDiag = false;
   S._diagDragRh = shot.rh !== undefined ? shot.rh : undefined;
   shotLocked = (shot.cut !== undefined);
   render();
   // Force readouts directly — override whatever render computed
   if (shot.cut !== undefined) {
-    const _aimF = Math.sin(Math.min(shot.cut, 90) * Math.PI/180);
+    const _aimF = Math.min(0.97, Math.sin(Math.min(shot.cut, 90) * Math.PI/180));
     const _dir  = shot.cut < 0.5 ? '' : (shot.rh ? ' L' : ' R');
     const _frac = (function(f){
       if(f>=0.875)return'full ball'; if(f>=0.75)return'⅞ ball';
@@ -838,51 +530,58 @@ function loadShot(idx) {
 </div>
 
 <!-- ── TABLE + AIMING DIAGRAM ── -->
-<div id="block-sliders"><div class="sgroup">
-  <div class="srow">
-    <span class="slbl">speed</span>
-    <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
-      <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
-    <span class="sval" id="sv-spd">med</span>
-  </div>
-  <div class="srow" style="margin-top:6px">
-    <span class="slbl">spin</span>
-    <input type="range" id="sl-spn" min="-4" max="4" value="0" step="1" oninput="onSliders()">
-      <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
-    <span class="sval" id="sv-spn" style="color:#e870b0">center</span>
-  </div>
-  <div class="srow" style="margin-top:6px">
-    <span class="slbl">vert</span>
-    <input type="range" id="sl-vert" min="-4" max="4" value="0" step="1" oninput="onSliders()">
-      <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
-    <span class="sval" id="sv-vert" style="color:#7dd3fc">center</span>
-  </div>
-  <div class="srow" style="margin-top:6px">
-    <span class="slbl" style="color:#c890f0;">BIAS</span>
-    <input type="range" id="sl-bias" min="-12" max="12" value="0" oninput="onSliders()">
-    <span id="sv-bias-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep(-1)">−</button><span id="sv-bias" style="color:#c890f0;min-width:36px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="biasStep(1)">+</button></span>
-  </div>
-  <div class="srow" style="margin-top:8px">
-    <span class="slbl" style="color:#e87030;font-size:9px;">T-LOW</span>
-    <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
-    <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
-  </div>
-  <div class="srow" style="margin-top:4px">
-    <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
-    <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
-    <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
-  </div>
-  <div class="srow" style="margin-top:4px">
-    <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
-    <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
-    <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-    <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
+<div id="block-sliders" style="display:none;position:fixed;z-index:8000;width:min(360px,96vw);min-width:200px;min-height:100px;background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:auto;resize:both;touch-action:none;">
+  <div id="sliders-handle" style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 3px 10px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+  <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(200,144,240,0.6);">≡ SLIDERS</span>
+  <div style="display:flex;gap:4px;align-items:center;">
+    <button id="sliders-active-btn" onclick="toggleSlidersActive()" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:5px;color:#80e080;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ACTIVE</button>
+    <button onclick="zeroSliders()" style="background:rgba(240,223,112,0.15);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ZERO</button>
+    <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
   </div>
 </div>
-</div><!-- /block-sliders -->
+<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Shot Compensation</div>
+<div class="sgroup">
+<div class="srow">
+      <span class="slbl" style="color:#b090f0;">speed</span>
+      <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
+      <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
+      <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
+    </div>
+<div class="srow" style="margin-top:6px">
+      <span class="slbl">spin</span>
+      <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
+      <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
+      <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
+    </div>
+<div class="srow" style="margin-top:6px">
+      <span class="slbl">vert</span>
+      <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
+      <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
+      <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
+    </div>
+</div>
+<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Table Compensation</div>
+<div class="sgroup">
+<div class="srow" style="margin-top:8px">
+      <span class="slbl" style="color:#e87030;font-size:9px;" title="Fine-tune around 50% baseline">FAT</span>
+      <input type="range" id="sl-bias-fat" min="-50" max="50" value="0" oninput="onSliders()">
+      <span id="sv-bias-fat-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('fat',-1)">−</button><span id="sv-bias-fat" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="biasStep('fat',1)">+</button></span>
+    </div>
+<div class="srow" style="margin-top:4px">
+      <span class="slbl" style="color:#e87030;font-size:9px;">MED</span>
+      <input type="range" id="sl-bias-med" min="-50" max="50" value="0" oninput="onSliders()">
+      <span id="sv-bias-med-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('med',-1)">−</button><span id="sv-bias-med" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="biasStep('med',1)">+</button></span>
+    </div>
+<div class="srow" style="margin-top:4px">
+      <span class="slbl" style="color:#e87030;font-size:9px;">THIN</span>
+      <input type="range" id="sl-bias-thin" min="-50" max="50" value="0" oninput="onSliders()">
+      <span id="sv-bias-thin-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('thin',-1)">−</button><span id="sv-bias-thin" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="biasStep('thin',1)">+</button></span>
+    </div>
+</div>
+  </div><!-- /block-sliders -->
 <div class="diagram-wrap">
 
   <!-- BIRD'S EYE TABLE -->
@@ -1241,9 +940,9 @@ function loadShot(idx) {
 
       <!-- Free draggable target — solid dot only -->
       <!-- Second object ball — draggable reference, not wired to physics -->
-      <circle id="ob2-shadow" cx="401" cy="211" r="10" fill="#000" opacity="0.32"/>
-      <circle id="ob2"        cx="400" cy="210" r="10" fill="url(#gOB)" stroke="#903010" stroke-width="1" opacity="0.55"/>
-      <circle id="ob2-hi"     cx="396" cy="206" r="3.5" fill="#fff" opacity="0.35"/>
+      <circle id="ob2-shadow" style="display:none" cx="401" cy="211" r="10" fill="#000" opacity="0.32"/>
+      <circle id="ob2" style="display:none"        cx="400" cy="210" r="10" fill="url(#gOB)" stroke="#903010" stroke-width="1" opacity="0.55"/>
+      <circle id="ob2-hi" style="display:none"     cx="396" cy="206" r="3.5" fill="#fff" opacity="0.35"/>
 
       <!-- Shot lines -->
       <line id="ob-path"  x1="0" y1="0" x2="0" y2="0" stroke="#7dd3fc" stroke-width="1.8" marker-end="url(#arr-ob)" opacity="0"/>
@@ -1255,31 +954,14 @@ function loadShot(idx) {
       <circle id="contact-dot2" cx="0" cy="0" r="5" fill="none" stroke="#a78bfa" stroke-width="1.6" opacity="0"/>
       <!-- Invisible hit zone for contact dot — always receives pointer events -->
 
+      <!-- Ghost ball (toggleable) -->
+      <line id="cb-ghost-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0"/>
+      <circle id="ghost-ball" cx="0" cy="0" r="10" fill="rgba(255,255,255,.06)" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3,3" opacity="0"/>
+
       <!-- Object ball -->
       <circle id="ob-shadow" cx="281" cy="131" r="10" fill="#000" opacity="0.32"/>
       <circle id="ob"        cx="280" cy="130" r="10" fill="url(#gOB)" stroke="#903010" stroke-width="1"/>
       <circle id="ob-hi"     cx="276" cy="126" r="3.5" fill="#fff" opacity="0.45"/>
-
-      <!-- CB path rays: stun/follow/draw -->
-      <line id="cb-stun"   x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-stun)"  opacity="0"/>
-      <line id="cb-follow" x1="0" y1="0" x2="0" y2="0" stroke="#f97316"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-follow)" opacity="0"/>
-      <line id="cb-draw"   x1="0" y1="0" x2="0" y2="0" stroke="#60a5fa"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-draw)"   opacity="0"/>
-      <circle id="cb-stun-dot"   cx="0" cy="0" r="5" opacity="0"/>
-      <circle id="cb-follow-dot" cx="0" cy="0" r="5" opacity="0"/>
-      <circle id="cb-draw-dot"   cx="0" cy="0" r="5" opacity="0"/>
-      <!-- CB Path legend -->
-      <g id="cb-path-legend" opacity="0">
-        <rect x="348" y="178" width="80" height="46" rx="4" fill="rgba(0,0,0,0.55)"/>
-        <line x1="353" y1="189" x2="370" y2="189" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="5,3"/>
-        <text x="374" y="192" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">STUN</text>
-        <line x1="353" y1="201" x2="370" y2="201" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
-        <text x="374" y="204" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">FOLLOW</text>
-        <line x1="353" y1="213" x2="370" y2="213" stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="5,3"/>
-        <text x="374" y="216" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#60a5fa">DRAW</text>
-      </g>
-      <!-- Ghost ball — rendered above OB -->
-      <line id="cb-ghost-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0"/>
-      <circle id="ghost-ball" cx="0" cy="0" r="10" fill="rgba(240,223,112,0.12)" stroke="#f0df70" stroke-width="2" stroke-dasharray="4,3" opacity="0"/>
 
       <!-- Cue ball -->
       <circle id="cb-shadow" cx="151" cy="131" r="10" fill="#000" opacity="0.32"/>
@@ -1296,58 +978,186 @@ function loadShot(idx) {
       <!-- Pocket tap zones (invisible, on top) -->
     </g><!-- dyn -->
     </g><!-- tbl-content -->
-    <g id="snap-labels-overlay"></g>
-</svg>
+    </svg>
   </div><!-- top-box -->
 
   <div class="sep"></div>
-
-  <!-- READOUT BAR -->
-  <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;gap:6px;margin:4px 0;height:52px;contain:layout style;width:100%;box-sizing:border-box;padding:0 4px;">
-    <div style="display:flex;flex-direction:column;align-items:center;">
-      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:#7fd0f0;text-transform:uppercase;margin-bottom:3px;">Contact</div>
-      <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;contain:strict;">
-        <div id="r-cp" style="color:#7fd0f0;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
-      </div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;">
-      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;">Inside Edge</div>
-      <div style="display:flex;gap:4px;flex:1;width:100%;">
-        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;display:flex;align-items:center;justify-content:center;contain:strict;">
-          <div id="r-aim" style="color:#e87030;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
-        </div>
-        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1.5;display:flex;align-items:center;justify-content:center;contain:strict;">
-          <div id="r-frc" style="color:#88ee88;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
+    <div style="text-align:center;letter-spacing:0.18em;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);padding:3px 0 2px;text-transform:uppercase;">The Doors of Perception</div>
+    <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr;gap:4px;margin:4px 0;height:36px;contain:layout style;width:100%;box-sizing:border-box;">
+      <!-- CONTACT — fixed left anchor -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#4ade80;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Contact</div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+          <div id="r-cp" style="color:#4ade80;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
         </div>
       </div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;">
-      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;">Cut</div>
-      <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;contain:strict;">
-        <div id="r-ang" style="color:#f0df70;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
-      </div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;">
-      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;">CB-OB</div>
-      <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;contain:strict;">
-        <div id="r-dist" style="color:#a0d0a0;font-size:16px;font-weight:900;white-space:nowrap;">—</div>
-      </div>
-    </div>
-  </div>
+      <!-- FLIPPABLE THREE: Inside Edge · Outside Edge · Twixt -->
+      <div id="diag-flip-row" style="display:flex;flex-direction:row;gap:4px;grid-column:span 3;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:2;">
+          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#e87030;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Inside Edge</div>
+          <div style="display:flex;gap:3px;flex:1;width:100%;">
+            <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+              <div id="r-aim" style="color:#e87030;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+            </div>
 
-  <!-- AIMING DIAGRAM — full-width interactive, CB draggable, OB centered -->
-  <div id="aim-wrap" style="width:100%;aspect-ratio:460/320;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;">
-    <svg id="botsvg" viewBox="0 0 460 320" preserveAspectRatio="xMidYMid meet"
-         style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;"
-         xmlns="http://www.w3.org/2000/svg">
-    </svg>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#7dd3fc;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Outside</div>
+          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+            <div id="r-oe" style="color:#7dd3fc;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#f0df70;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Twixt</div>
+          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+            <div id="r-twixt" style="color:#f0df70;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+          </div>
+        </div>
+      </div>
+      <!-- CUT — fixed -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Cut</div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+          <div id="r-ang" style="color:#f0df70;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+        </div>
+      </div>
+      <!-- CB-OB — fixed -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">CB-OB</div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+          <div id="r-dist" style="color:#a0d0a0;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOT LIBRARY PANEL placeholder — actual panel is fixed/floating -->
+
+    <!-- EYE-LEVEL DIAGRAM -->
+    <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;">
+    <svg id="botsvg" viewBox="0 0 460 300" preserveAspectRatio="xMidYMid meet"
+           style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;"
+           xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="revClip"><rect id="revClipRect" x="0" y="0" width="0" height="0"/></clipPath>
+        </defs>
+        <rect width="460" height="300" fill="rgba(0,0,0,0.28)"/>
+        <!-- Static tick marks — never change -->
+        <g id="bot-ticks">
+          <line x1="230" y1="131" x2="230" y2="165" stroke="#7fd0f0" stroke-width="2.2" opacity="1.0"/>
+          <line x1="189" y1="136" x2="189" y2="160" stroke="#7fd0f0" stroke-width="1.5" opacity="0.65"/>
+          <line x1="271" y1="136" x2="271" y2="160" stroke="#7fd0f0" stroke-width="1.5" opacity="0.65"/>
+          <line x1="158" y1="143" x2="158" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="167" y1="143" x2="167" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="176" y1="143" x2="176" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="194" y1="143" x2="194" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="203" y1="143" x2="203" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="212" y1="143" x2="212" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="221" y1="143" x2="221" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="239" y1="143" x2="239" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="248" y1="143" x2="248" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="257" y1="143" x2="257" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="266" y1="143" x2="266" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="284" y1="143" x2="284" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="293" y1="143" x2="293" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <line x1="302" y1="143" x2="302" y2="153" stroke="#7fd0f0" stroke-width="0.8" opacity="0.32"/>
+          <!-- left/right extreme ticks -->
+          <line x1="148" y1="131" x2="148" y2="165" stroke="#7fd0f0" stroke-width="2.2" opacity="1.0"/>
+          <line x1="312" y1="131" x2="312" y2="165" stroke="#7fd0f0" stroke-width="2.2" opacity="1.0"/>
+        </g>
+        <!-- Static fraction labels — never change -->
+        <!-- pct labels — two sets, toggled by rh -->
+        <g id="bot-pct-lh">
+          <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0%</text>
+          <text x="189" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">25%</text>
+          <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>
+          <text x="271" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">75%</text>
+          <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">100%</text>
+        </g>
+        <g id="bot-pct-rh" opacity="0">
+          <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">100%</text>
+          <text x="189" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">75%</text>
+          <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>
+          <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0%</text>
+        </g>
+        <!-- Fraction labels LH -->
+        <g id="bot-fracs-lh">
+          <text x="169" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅛</text>
+          <text x="189" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¼</text>
+          <text x="210" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅜</text>
+          <text x="251" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅝</text>
+          <text x="271" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¾</text>
+          <text x="292" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅞</text>
+        </g>
+        <!-- Fraction labels RH (flipped) -->
+        <g id="bot-fracs-rh" opacity="0">
+          <text x="169" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅞</text>
+          <text x="189" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¾</text>
+          <text x="210" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅝</text>
+          <text x="251" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅜</text>
+          <text x="271" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¼</text>
+          <text x="292" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅛</text>
+        </g>
+        <!-- OB fixed at center, r=82 -->
+        <circle id="bot-ob-dark" cx="230" cy="148" r="82" fill="url(#OGdB)" stroke="#2a0606" stroke-width="1.5"/>
+        <circle id="bot-ob-lit" cx="230" cy="148" r="82" fill="url(#OGB)" stroke="none" clip-path="url(#revClip)"/>
+        <circle id="bot-ob-rim" cx="230" cy="148" r="82" fill="none" stroke="#8a1818" stroke-width="1.5" clip-path="url(#revClip)"/>
+        <g id="frac-ticks"></g>
+        <text x="10" y="20" font-family="Lato,sans-serif" font-size="11" font-weight="900" fill="rgba(255,255,255,0.7)" letter-spacing="8">G H O S T</text>
+        <!-- CB -->
+        <circle id="bot-cb"   cx="230" cy="148" r="82" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5"/>
+      
+        <!-- bot-cb-v removed: center line gone -->
+        <circle id="bot-tip"  cx="230" cy="148" r="8.2" fill="#000" opacity="0.85"/>
+        <!-- edge marker -->
+        <!-- Outside edge of CB ghost ball -->
+        <line id="bot-cb-outer" x1="230" y1="54" x2="230" y2="242" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
+        <!-- Outside edges of OB — both sides, always visible -->
+        <line id="bot-ob-outer-l" x1="148" y1="54" x2="148" y2="242" stroke="#e87030" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
+        <line id="bot-ob-outer-r" x1="312" y1="54" x2="312" y2="242" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
+        <line   id="bot-edge-line" x1="230" y1="54" x2="230" y2="242" stroke="#e87030" stroke-width="2" stroke-linecap="round" stroke-dasharray="6,4" opacity="0"/>
+        <text   id="bot-edge-lbl"  x="230" y="50" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080" opacity="0">inside edge</text>
+        <text   id="bot-cb-outer-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#7dd3fc" opacity="0">Outside Edge</text>
+        <!-- aim % badge -->
+        <rect   id="bot-aim-bg"  x="190" y="240" width="80" height="30" rx="7" fill="#e87030" opacity="0"/>
+        <text   id="bot-aim-pct" x="230" y="260" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="900" fill="white" opacity="0">0%</text>
+        <!-- hint text -->
+        <text   id="bot-hint" x="322" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)" opacity="0">Drag ▶ to begin</text>
+        <!-- Vernier aim buttons -->
+        <g onclick="vernierAim(-1)" style="cursor:pointer;touch-action:manipulation;">
+          <rect x="8" y="248" width="48" height="48" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <text x="32" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="#e6e6e6">◀</text>
+        </g>
+        <g onclick="vernierAim(1)" style="cursor:pointer;touch-action:manipulation;">
+          <rect x="62" y="248" width="48" height="48" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <text x="86" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="#e6e6e6">▶</text>
+        </g>
+        <!-- Gold dashed ring on CB -->
+        <circle id="bot-cb-gold" cx="230" cy="148" r="82" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="0"/>
+        <!-- Contact Point label -->
+        <text id="bot-contact-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#4ade80" opacity="0">Contact Point</text>
+        <!-- Contact point line — always on top -->
+        <line id="bot-contact-line" x1="230" y1="54" x2="230" y2="242" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0"/>
+        <!-- Contact point dot on ball diagram -->
+        <circle id="cp-dot-diag" cx="230" cy="148" r="7" fill="#ffffff" stroke="#ff6600" stroke-width="2" opacity="0"/>
+        <!-- Opacity +/- buttons bottom-right -->
+        <g onclick="ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
+          <rect x="340" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+          <text x="358" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">−</text>
+        </g>
+        <text x="395" y="279" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>
+        <g onclick="ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
+          <rect x="418" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+          <text x="436" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">+</text>
+        </g>
+      </svg>
   </div><!-- aim-wrap -->
 
 </div><!-- diagram-wrap -->
 
 
 
-</div>
+</div></div>
 
 <!-- ── CALIBRATION PANEL ── -->
 <div id="cal-panel">
@@ -1377,10 +1187,22 @@ function loadShot(idx) {
 
 </div><!-- /swap-container -->
 
-
+  <!-- SHOT LIBRARY PANEL — floating, draggable -->
+  <div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(400px,96vw);background:#ffffff;border:1px solid #cccccc;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
+    <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;background:#f0f0f0;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
+      <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SHOT LIBRARY</span>
+      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+    </div>
+    <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
+    <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
+      <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
+        style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
+      <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
+    </div>
+  </div>
 
 <!-- ── READOUTS ── -->
-<div id="readouts">
+<div id="readouts" style="display:none;">
   <div class="ro-row">
     <span class="ro-lbl">CUT ANGLE</span>
     <span class="ro-val" id="ro-cut" style="font-size:22px;color:#e87030">—</span>
@@ -1420,7 +1242,6 @@ function loadShot(idx) {
 
 
 <script>
-let panMode = true;
 const DEG = 180/Math.PI, RAD = Math.PI/180;
 const Rb  = 82;   // OB radius in botsvg viewBox units
 const BOT_OCX = 148;
@@ -1437,13 +1258,12 @@ const FRACTIONS = [
 ];
 
 const S = {
-  ob:         {x:155, y:80},    // OB — Easy Cross Side (shot 1)
-  cb:         {x:105, y:205},   // CB — Easy Cross Side (shot 1)
+  ob:         {x:130, y:130},   // End Rail 1 — OB sq10g
+  cb:         {x:230, y:155},   // End Rail 1 — CB sq20f
   ob2:        {x:370, y:190},   // reference ball
-  target:     {x:230, y:230},   // BM pocket — shot 1 default
-  pocket:     'BM',
-  diagCutDeg: null,
-  _diagDragRh: undefined,
+  target:     {x:430, y:30},    // TR pocket 3 — End Rail 1
+  diagCutDeg: 1.15,         // 3% inside edge in diagram
+  _diagDragRh: false,
   activeSol:  0,
   speed:      0.5,
   spin:       0,
@@ -1574,19 +1394,14 @@ function reboundDir(dx, dy, rail, k) {
 // snapToPocket — small threshold, only catches exact corner geometry hits
 // (heavy lifting is done inside rayHit's CORNER_SNAP logic)
 function snapToPocket(pt, threshold) {
-  threshold = threshold || 22;
-  const allPockets = Object.values(POCKETS).map(p => ({x:p.x, y:p.y}));
+  threshold = threshold || 14;
+  const corners = [{x:TL.left,y:TL.top},{x:TL.right,y:TL.top},{x:TL.left,y:TL.bottom},{x:TL.right,y:TL.bottom}];
   let best = null, bestD = threshold;
-  for (const p of allPockets) {
-    const d = Math.hypot(pt.x - p.x, pt.y - p.y);
-    if (d < bestD) { bestD = d; best = p; }
+  for (const c of corners) {
+    const d = Math.hypot(pt.x-c.x, pt.y-c.y);
+    if (d < bestD) { bestD=d; best=c; }
   }
-  // If no pocket is close, snap to the selected target pocket only if VERY close
-  if (!best && S.target) {
-    const dTarget = Math.hypot(pt.x - S.target.x, pt.y - S.target.y);
-    if (dTarget < 18) return {x: S.target.x, y: S.target.y};
-  }
-  return best ? {x: best.x, y: best.y} : pt;
+  return best ? {x:best.x, y:best.y} : pt;
 }
 
 // Compute display shot from table geometry.
@@ -1958,140 +1773,144 @@ function clipToBox(ox,oy,tx,ty,W,H,m){
   return [ox+t*dx, oy+t*dy];
 }
 
-function drawBot(sol) {
-  var W=460, H=320, r=Rb;
-  var DRAG_RANGE = 224;
-
-  // Use diagram drag if active, else show neutral (0°) until user drags
-  var cutDeg = (S.diagCutDeg !== null && S.diagCutDeg !== undefined) ? S.diagCutDeg : 0;
-  // Ensure at least a sliver so CB is always visible
-  cutDeg = Math.max(0, Math.min(90, cutDeg));
-  var cutRaw = Math.sin(cutDeg * RAD);
-
-  // OB always centered; CB slides left (rh) or right (!rh)
-  var ocx = W/2;
-  var ocy = 148;
-  var laX1 = 8, laX2 = W-8;
-
-  var rh = (S._diagDragRh !== undefined && S.diagCutDeg !== null)
-           ? S._diagDragRh
-           : (sol.cross < 0);
-  // Apply bias to display aim fraction only — doesn't affect table geometry
-  var biasedZ = Math.max(0, Math.min(Math.PI/2, Math.asin(Math.max(0,Math.min(1,cutRaw))) + S.bias * 0.60 * RAD));
-  var aimF = (typeof biasOn !== 'undefined' && biasOn) ? Math.sin(biasedZ) : cutRaw;
-  var ccx  = rh ? ocx - aimF*2*r : ocx + aimF*2*r;
-  var edgeX   = rh ? ccx + r : ccx - r;
-  var clipX   = rh ? edgeX : (ocx - r);
-  var revealW = rh ? Math.max(0,(ocx+r)-edgeX) : Math.max(0,edgeX-(ocx-r));
-  var aimP = Math.round(aimF*100);
-
-  // Ticks and fraction labels ON the centerline — Aimer exact
-  var tickData = [
-    {f:1/8, lh:'⅛', rh:'⅞', s:9,  h:6},
-    {f:2/8, lh:'¼', rh:'¾', s:13, h:9},
-    {f:3/8, lh:'⅜', rh:'⅝', s:9,  h:6},
-    {f:4/8, lh:'½', rh:'½', s:17, h:13},
-    {f:5/8, lh:'⅝', rh:'⅜', s:9,  h:6},
-    {f:6/8, lh:'¾', rh:'¼', s:13, h:9},
-    {f:7/8, lh:'⅞', rh:'⅛', s:9,  h:6}
-  ];
-  var ticks = '';
-  // Edge ticks (0, 8, 16 = 0%, 50%, 100%)
-  [0, 0.5, 1].forEach(function(t) {
-    var tx = (ocx-r) + t*(2*r);
-    var big = (t===0||t===1), half = (t===0.5);
-    var th = big?17:13, sw = big?2.2:1.5, op = big?1.0:0.65;
-    ticks += '<line x1="'+tx+'" y1="'+(ocy-th)+'" x2="'+tx+'" y2="'+(ocy+th)+'" stroke="#7fd0f0" stroke-width="'+sw+'" opacity="'+op+'"/>';
-  });
-  // Percentage labels above
-  ticks += '<text x="'+(ocx-r)+'" y="'+(ocy-r-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">'+(rh?'100%':'0%')+'</text>';
-  ticks += '<text x="'+ocx+'" y="'+(ocy-r-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>';
-  ticks += '<text x="'+(ocx+r)+'" y="'+(ocy-r-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">'+(rh?'0%':'100%')+'</text>';
-  // Dynamic contact/inside-edge readout above ball
-  var _ieP = Math.round(aimF*100), _cpP = Math.round(aimF*50);
-  var _dir2 = cutDeg < 0.5 ? '' : (rh ? ' L' : ' R');
-  ticks += '<text x="'+ocx+'" y="'+(ocy-r-50)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="900" fill="#f0df70">Contact: '+_cpP+'%'+_dir2+'  ·  Inside Edge: '+_ieP+'%'+_dir2+'</text>';
-  // Fraction ticks + labels on centerline
-  tickData.forEach(function(fd) {
-    var tx = (ocx-r) + fd.f*2*r;
-    var lbl = rh ? fd.rh : fd.lh;
-    var half = fd.f === 0.5;
-    ticks += '<line x1="'+tx+'" y1="'+(ocy-fd.h/2)+'" x2="'+tx+'" y2="'+(ocy+fd.h/2)+'" stroke="#ffffff" stroke-width="'+(half?'2.5':'1.5')+'" opacity="'+(half?'1':'0.6')+'"/>';
-    ticks += '<text x="'+tx+'" y="'+(ocy+fd.h/2+fd.s+2)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="'+fd.s+'" font-weight="'+(fd.s>=13?'700':'400')+'" fill="#ffffff" opacity="'+(half?'1':'0.65')+'">'+lbl+'</text>';
-  });
-
-  var out = '<rect width="460" height="'+H+'" fill="rgba(0,0,0,0.28)"/>';
-  out += '<defs><clipPath id="revClip"><rect x="'+clipX+'" y="'+(ocy-r)+'" width="'+revealW+'" height="'+(2*r)+'"/></clipPath></defs>';
-
-  // OB — Aimer exact
-  out += '<circle cx="'+ocx+'" cy="'+ocy+'" r="'+r+'" fill="url(#OGdB)" stroke="#2a0606" stroke-width="1.5"/>';
-  out += '<circle cx="'+ocx+'" cy="'+ocy+'" r="'+r+'" fill="url(#OGB)" stroke="none" clip-path="url(#revClip)"/>';
-  out += '<circle cx="'+ocx+'" cy="'+ocy+'" r="'+r+'" fill="none" stroke="#8a1818" stroke-width="1.5" clip-path="url(#revClip)"/>';
-
-  // Line A — Aimer exact
-  out += '<line x1="'+laX1+'" y1="'+ocy+'" x2="'+laX2+'" y2="'+ocy+'" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round"/>';
-  out += '<text x="'+(laX1-8)+'" y="'+(ocy+5)+'" text-anchor="end" font-family="Lato,sans-serif" font-size="15" font-weight="900" fill="#b0e8ff">A</text>';
-  out += ticks;
-
-  // CB — Aimer exact
-  out += '<circle cx="'+ccx+'" cy="'+ocy+'" r="'+r+'" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5" opacity="'+ghostOpacity+'"/>';
-  out += '<line x1="'+(ccx-r*0.74)+'" y1="'+ocy+'" x2="'+(ccx+r*0.74)+'" y2="'+ocy+'" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>';
-  out += '<line x1="'+ccx+'" y1="'+(ocy-r*0.74)+'" x2="'+ccx+'" y2="'+(ocy+r*0.74)+'" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>';
-  // Tip dot: moves horizontally with side spin, vertically with vert spin
-  var spinDir = rh ? 1 : -1;
-  var tipX = ccx + spinDir * (S.spin/4) * 0.62 * r;
-  var tipY = ocy - (S.vert/4) * 0.62 * r;
-  out += '<circle cx="'+tipX+'" cy="'+tipY+'" r="'+(r*0.10)+'" fill="#000" opacity="0.85"/>';
-
-  // Edge marker + badge — Aimer exact
-  var showCut = S.diagCutDeg !== null && S.diagCutDeg > 0.5;
-  var showMarker = true;  // always show lines
-  if (showMarker) {
-    out += '<line x1="'+edgeX+'" y1="'+(ocy-r+6)+'" x2="'+edgeX+'" y2="'+(ocy+r-6)+'" stroke="#e87030" stroke-width="4" stroke-linecap="round" stroke-dasharray="6,4"/>';
-    var lblX = Math.max(72, Math.min(edgeX, W-76));
-    out += '<text x="'+lblX+'" y="'+(ocy-r-8)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080">inside edge</text>';
-    var bx = Math.max(44, Math.min(edgeX, W-44));
+// Stubs for aimer diagram variables not in banker
+var contactDotOn = false;
+// Stub for aimer's throw comp — banker uses its own model
+function getThrowComp(cutDeg) {
+  if (cutDeg <= 0) return 0;
+  if (cutDeg <= 20) {
+    // 0→20°: ramp from 0 up to throwLo at 20°
+    return throwLo * (cutDeg / 20);
+  } else if (cutDeg <= 50) {
+    // 20→50°: ramp from throwLo to throwMi
+    const t = (cutDeg - 20) / 30;
+    return throwLo + (throwMi - throwLo) * t;
+  } else {
+    // 50→90°: ramp from throwMi to throwHi
+    const t = (cutDeg - 50) / 40;
+    return throwMi + (throwHi - throwMi) * t;
   }
-  if (!showCut) {
-    var hintX = rh ? ocx-r-70 : ocx+r+24;
-    var anchor = rh ? 'end' : 'start';
-    out += '<text x="'+hintX+'" y="'+(ocy+5)+'" text-anchor="'+anchor+'" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)">'+(rh?'◄ Drag to begin':'Drag ▶ to begin')+'</text>';
+}
+
+
+function drawBot(d) {
+  const W = 460, r = Rb, ocy = 148, ocx = 230;
+  const cbx = S.ob.x - S.cb.x, cby = S.ob.y - S.cb.y;
+  const rh = (S._diagDragRh !== undefined) ? S._diagDragRh : (cby < 0);
+  const cutDeg = d.cutDeg || 0;
+  // Apply throw compensation to diagram contact point
+  const _diagThrowDelta = getThrowComp(cutDeg);
+  const aimF  = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _diagThrowDelta));
+  const ccx   = Math.max(4, Math.min(W-4, rh ? ocx - aimF*2*r : ocx + aimF*2*r));
+  const edgeX = Math.max(4, Math.min(W-4, rh ? ccx+r : ccx-r));
+  const clipX = rh ? edgeX : (ocx-r);
+  const revealW = Math.max(0, rh ? (ocx+r)-edgeX : edgeX-(ocx-r));
+  const aimP  = Math.round(Math.abs(d.diagFraction) * 1.5 * 100);
+
+  $('revClipRect').setAttribute('x', clipX);
+  $('revClipRect').setAttribute('y', ocy-r);
+  $('revClipRect').setAttribute('width',  revealW);
+  $('revClipRect').setAttribute('height', 2*r);
+
+  sC('bot-cb', ccx, ocy);
+  const _botCb = $('bot-cb'); if (_botCb) _botCb.setAttribute('opacity', Math.max(0.15, ghostOpacity));
+
+
+  sC('bot-tip', Math.max(ccx-r*0.7, Math.min(ccx+r*0.7, ccx+(S.spin/4)*0.62*r)),
+                Math.max(ocy-r*0.7, Math.min(ocy+r*0.7, ocy-(S.vert/4)*0.62*r)));
+  $('bot-pct-lh').setAttribute('opacity',   rh ? '0' : '1');
+  $('bot-pct-rh').setAttribute('opacity',   rh ? '1' : '0');
+  $('bot-fracs-lh').setAttribute('opacity', rh ? '0' : '1');
+  $('bot-fracs-rh').setAttribute('opacity', rh ? '1' : '0');
+
+  const showMarker = rh ? edgeX < ocx+r-3 : edgeX > ocx-r+3;
+  const op = showMarker ? '1' : '0';
+  // Show contact elements whenever there's any meaningful aim point
+  const showContact = Math.abs(ccx - ocx) > 5;
+  // Gold ring on CB
+  const _cLine = $('bot-contact-line');
+  // Contact point: on OB surface opposite the departure direction
+  // In the diagram (viewed along CB→OB axis), contact point is at angle (π - cutAngle) from OB center
+  // projected onto horizontal: ocx + r*cos(π - cutDeg) = ocx - r*cos(cutDeg) ... adjusted for side
+  const _cutR = Math.min(cutDeg, 90) * Math.PI / 180;
+  const _contactX = (ocx + ccx) / 2;
+  if (_cLine) { _cLine.setAttribute('x1',_contactX); _cLine.setAttribute('x2',_contactX); _cLine.setAttribute('y1',ocy-r-12); _cLine.setAttribute('y2',ocy+r+12); _cLine.setAttribute('opacity','1'); }
+  const _cpDiag = $('cp-dot-diag');
+  if (_cpDiag) { _cpDiag.setAttribute('cx', _contactX); _cpDiag.setAttribute('cy', ocy); _cpDiag.setAttribute('opacity', contactDotOn && showContact ? '1' : '0'); }
+  const _cLbl = $('bot-contact-lbl');
+  if (_cLbl) { _cLbl.setAttribute('x',_contactX); _cLbl.setAttribute('opacity','1'); }
+  const _gbg = $('bot-cb-gold');
+  if (_gbg) { _gbg.setAttribute('cx',ccx); _gbg.setAttribute('cy',ocy); _gbg.setAttribute('r',r); _gbg.setAttribute('opacity','1'); }
+  $('bot-edge-line').setAttribute('x1', edgeX); $('bot-edge-line').setAttribute('x2', edgeX);
+  $('bot-edge-line').setAttribute('opacity', op);
+
+  // New outer edge lines
+  const _cbOuterX = rh ? ccx - r : ccx + r;
+  const _obOuterX = rh ? ocx + r : ocx - r;
+  const _cbOuter = $('bot-cb-outer');
+  if (_cbOuter) { _cbOuter.setAttribute('x1',_cbOuterX); _cbOuter.setAttribute('x2',_cbOuterX);
+    _cbOuter.setAttribute('y1', ocy-r-12); _cbOuter.setAttribute('y2', ocy+r+12);
+    _cbOuter.setAttribute('opacity', op); }
+  const _cbOutLbl = $('bot-cb-outer-lbl');
+  if (_cbOutLbl) { _cbOutLbl.setAttribute('x', Math.max(50, Math.min(_cbOuterX, W-50)));
+    _cbOutLbl.setAttribute('opacity', op); }
+  const _obOutL = $('bot-ob-outer-l');
+  if (_obOutL) { _obOutL.setAttribute('x1', ocx-r); _obOutL.setAttribute('x2', ocx-r);
+    _obOutL.setAttribute('y1', ocy-r-12); _obOutL.setAttribute('y2', ocy+r+12);
+    _obOutL.setAttribute('stroke', rh ? '#7dd3fc' : '#e87030');
+    _obOutL.setAttribute('opacity', '1'); }
+  const _obOutR = $('bot-ob-outer-r');
+  if (_obOutR) { _obOutR.setAttribute('x1', ocx+r); _obOutR.setAttribute('x2', ocx+r);
+    _obOutR.setAttribute('y1', ocy-r-12); _obOutR.setAttribute('y2', ocy+r+12);
+    _obOutR.setAttribute('stroke', rh ? '#e87030' : '#7dd3fc');
+    _obOutR.setAttribute('opacity', '1'); }
+
+  // Update flippable readout boxes
+  const _flipRow = $('diag-flip-row');
+  // boxes no longer flip
+  const _roe = $('r-oe');   if (_roe)   _roe.textContent   = showMarker ? aimP + '%' : '0%';
+  const _rtwixt = $('r-twixt'); if (_rtwixt) _rtwixt.textContent = showMarker ? Math.max(0, 100 - aimP) + '%' : '100%';
+  // "inside edge" label sits just above the pct labels row
+  $('bot-edge-lbl').setAttribute('x', Math.max(60, Math.min(edgeX, W-60)));
+  $('bot-edge-lbl').setAttribute('y', '22');
+  $('bot-edge-lbl').setAttribute('opacity', op);
+  const bx = Math.max(44, Math.min(edgeX, W-44));
+  $('bot-aim-bg').setAttribute('x',  bx-40);
+  $('bot-aim-bg').setAttribute('y',  '262');
+  $('bot-aim-bg').setAttribute('opacity',  op);
+  $('bot-aim-pct').setAttribute('x', bx);
+  $('bot-aim-pct').setAttribute('y', '282');
+  $('bot-aim-pct').setAttribute('opacity', op);
+  // Use compensated fraction for diagram percentage label
+  const _botThrowDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
+  const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) * 1.5 + _botThrowDelta) * 100);
+  $('bot-aim-pct').textContent = Math.abs(_botAimP) + '%';
+  $('bot-hint').setAttribute('opacity', '0');
+  $('bot-hint').setAttribute('x', rh ? ocx-r-70 : ocx+r+24);
+  $('bot-hint').setAttribute('text-anchor', rh ? 'end' : 'start');
+  $('bot-hint').textContent = rh ? '◄ Drag to begin' : 'Drag ▶ to begin';
+  // Fraction ticks
+  const _tg = document.getElementById('frac-ticks');
+  if(_tg){
+    const _ns='http://www.w3.org/2000/svg'; while(_tg.firstChild)_tg.removeChild(_tg.firstChild);
+    [{f:1/8,lh:'⅛',rh:'⅞',s:9,h:6},{f:2/8,lh:'¼',rh:'¾',s:13,h:9},{f:3/8,lh:'⅜',rh:'⅝',s:9,h:6},
+     {f:4/8,lh:'½',rh:'½',s:17,h:13},{f:5/8,lh:'⅝',rh:'⅜',s:9,h:6},{f:6/8,lh:'¾',rh:'¼',s:13,h:9},{f:7/8,lh:'⅞',rh:'⅛',s:9,h:6}
+    ].forEach(fd=>{
+      const x=(ocx-r)+fd.f*2*r, lbl=rh?fd.rh:fd.lh, half=fd.f===0.5;
+      const tk=document.createElementNS(_ns,'line');
+      tk.setAttribute('x1',x);tk.setAttribute('x2',x);
+      tk.setAttribute('y1',ocy-fd.h/2);tk.setAttribute('y2',ocy+fd.h/2);
+      tk.setAttribute('stroke','#ffffff');tk.setAttribute('stroke-width',half?'2.5':'1.5');
+      tk.setAttribute('opacity',half?'1':'0.6');_tg.appendChild(tk);
+      const tx=document.createElementNS(_ns,'text');
+      tx.setAttribute('x',x);tx.setAttribute('y',ocy+fd.h/2+fd.s+2);
+      tx.setAttribute('text-anchor','middle');tx.setAttribute('font-family','Lato,sans-serif');
+      tx.setAttribute('font-size',fd.s);tx.setAttribute('font-weight',fd.s>=13?'700':'400');
+      tx.setAttribute('fill','#ffffff');tx.setAttribute('opacity',half?'1':'0.65');
+      tx.textContent=lbl;_tg.appendChild(tx);
+
+    });
   }
-
-  // Left — Ball Fraction
-  // Center — Aim Point
-  // Right — Cut Angle badge
-
-  // Gold dashed ring on CB
-  if (showMarker) {
-    out += '<circle cx="'+ccx+'" cy="'+ocy+'" r="'+r+'" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="'+ghostOpacity+'"/>';
-  }
-  // Contact Point line (blue) — midpoint between OB and CB centers, drawn last
-  if (showMarker) {
-    var _cpX = (ocx + ccx) / 2;
-    out += '<text x="'+_cpX+'" y="'+(ocy-r-36)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#7fd0f0">Contact Point</text>';
-    out += '<line x1="'+_cpX+'" y1="'+(ocy-r+4)+'" x2="'+_cpX+'" y2="'+(ocy+r-4)+'" stroke="#7fd0f0" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round"/>';
-  }
-  if (S.spin !== 0) out += '<text x="'+(W-8)+'" y="'+(H-8)+'" text-anchor="end" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#e870b0">'+spinLabels[String(S.spin)]+'</text>';
-
-
-  // Vernier aim buttons
-  out += '<g onclick="vernierAim(-1)" style="cursor:pointer;touch-action:manipulation;"><rect x="8" y="'+(H-52)+'" width="44" height="44" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><text x="30" y="'+(H-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="22" font-weight="900" fill="rgba(255,255,255,0.9)">&#9664;</text></g>';
-  out += '<g onclick="vernierAim(1)" style="cursor:pointer;touch-action:manipulation;"><rect x="58" y="'+(H-52)+'" width="44" height="44" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><text x="80" y="'+(H-22)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="22" font-weight="900" fill="rgba(255,255,255,0.9)">&#9654;</text></g>';
-
-  // Fraction tick labels — Aimer style: uniform 18px, weight 700, opacity 0.82
-  var tkLabels = rh ? ['\u215e','\u00be','\u215d','\u00bd','\u215c','\u00bc','\u215b'] : ['\u215b','\u00bc','\u215c','\u00bd','\u215d','\u00be','\u215e'];
-  for (var ti=0; ti<7; ti++) {
-    var tf = (ti+1)/8;
-    var tx = (ocx-r) + tf*2*r;
-    out += '<text x="'+tx+'" y="'+(ocy+r+26)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">'+tkLabels[ti]+'</text>';
-  }
-
-  // OPACITY buttons — top right
-  out += '<g onclick="ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;"><rect x="314" y="'+(H-36)+'" width="32" height="24" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><text x="330" y="'+(H-16)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="15" font-weight="900" fill="rgba(255,255,255,0.7)">−</text></g>';
-  out += '<text x="369" y="'+(H-18)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>';
-  out += '<g onclick="ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;"><rect x="402" y="'+(H-36)+'" width="32" height="24" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><text x="418" y="'+(H-16)+'" text-anchor="middle" font-family="Lato,sans-serif" font-size="15" font-weight="900" fill="rgba(255,255,255,0.7)">+</text></g>';
-  document.getElementById('botsvg').innerHTML = out;
 }
 
 // HELPERS
@@ -2120,51 +1939,7 @@ function applySpinToRebound(rdx, rdy, rail, cutDeg, side) {
   if (len < 1e-9) return {dx: rdx, dy: rdy};  // safety: return original if degenerate
   return {dx: nx/len, dy: ny/len};
 }
-function getThrowComp(cutDeg) {
-  if (cutDeg <= 0) return 0;
-  if (cutDeg <= 20) return throwLo * (cutDeg / 20);
-  if (cutDeg <= 50) { const t=(cutDeg-20)/30; return throwLo+(throwMi-throwLo)*t; }
-  const t=(cutDeg-50)/40; return throwMi+(throwHi-throwMi)*t;
-}
-
-// Compute cut angle from CB/OB positions — consistent formula
-// Rail shots use rail direction as departure; open shots use OB→pocket
-function computeCutFromPositions(cb, ob, pocketName) {
-  var _POCK = {
-    TL:{x:30,y:30}, TM:{x:230,y:30}, TR:{x:430,y:30},
-    BR:{x:430,y:230}, BM:{x:230,y:230}, BL:{x:30,y:230}
-  };
-  var p = _POCK[pocketName] || _POCK.TR;
-  var cbToOb = Math.atan2(ob.y-cb.y, ob.x-cb.x);
-  var onTop    = ob.y <= TL.top    + BALL_R + 4;
-  var onBottom = ob.y >= TL.bottom - BALL_R - 4;
-  var onLeft   = ob.x <= TL.left   + BALL_R + 4;
-  var onRight  = ob.x >= TL.right  - BALL_R - 4;
-  var departure;
-  if (onTop || onBottom) {
-    departure = p.x > ob.x ? 0 : Math.PI;
-  } else if (onLeft || onRight) {
-    departure = p.y > ob.y ? Math.PI/2 : -Math.PI/2;
-  } else {
-    departure = Math.atan2(p.y - ob.y, p.x - ob.x);
-  }
-  var diff = departure - cbToOb;
-  while (diff >  Math.PI) diff -= 2*Math.PI;
-  while (diff < -Math.PI) diff += 2*Math.PI;
-  return { cutDeg: Math.abs(diff * DEG), rh: diff > 0 };
-}
-
 function render() {
-  if (typeof snapOn !== 'undefined' && snapOn) {
-    if (!window._snapPos) window._snapPos = {};
-    if(typeof S !== 'undefined' && typeof xyToGrid !== 'undefined'){
-      window._snapPos.cb = {x:S.cb.x, y:S.cb.y, label:xyToGrid(S.cb.x,S.cb.y)};
-      window._snapPos.ob = {x:S.ob.x, y:S.ob.y, label:xyToGrid(S.ob.x,S.ob.y)};
-      updateSnapLabels(document.getElementById('tbl'));
-    }
-  } else {
-    ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
-  }
   const {ob, cb} = S;
 
   // Move balls
@@ -2182,40 +1957,8 @@ function render() {
   sC('ob2-hi',     S.ob2.x-3.5, S.ob2.y-3.5);
 
   // Hide all dynamic lines
-  ['ob-path','bk-path','bk-path2','contact-dot','contact-dot2'].forEach(id=>sV(id,false));
+  ['ob-path','bk-path','bk-path2','contact-dot','contact-dot2','ghost-ball'].forEach(id=>sV(id,false));
   ['aim-cut-val','aim-cut-lbl','aim-frac-val','aim-frac-lbl'].forEach(id=>sV(id,false));
-
-  // Ghost ball — always shown regardless of solution state
-  {
-    const _cbToObAngle0 = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x);
-    // Ghost: tracks cut angle like Aimer
-    const _cutDeg0 = (S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? S.diagCutDeg : 0;
-    const _rh0 = S._diagDragRh !== undefined ? S._diagDragRh : false;
-    const _ghostAngle0 = _cbToObAngle0 + (_rh0 ? 1 : -1) * Math.min(_cutDeg0, 90) * RAD;
-    // Throw compensation — shift ghost ball toward fuller contact
-    const _tc0 = getThrowComp(Math.abs(_cutDeg0));
-    const _td0 = _tc0 * BALL_R;
-    const _perpX0 = -Math.sin(_cbToObAngle0) * _td0 * (_rh0 ? -1 : 1);
-    const _perpY0 =  Math.cos(_cbToObAngle0) * _td0 * (_rh0 ? -1 : 1);
-    const gx0 = Math.max(TL.left+BALL_R, Math.min(TL.right-BALL_R,  S.ob.x - 2*BALL_R*Math.cos(_ghostAngle0) + _perpX0));
-    const gy0 = Math.max(TL.top+BALL_R,  Math.min(TL.bottom-BALL_R, S.ob.y - 2*BALL_R*Math.sin(_ghostAngle0) + _perpY0));
-    const _gb0 = $('ghost-ball');
-    if (_gb0) {
-      _gb0.setAttribute('fill', 'rgba(240,223,112,0.15)');
-      _gb0.setAttribute('stroke', '#f0df70');
-      _gb0.setAttribute('stroke-width', '1.8');
-      _gb0.setAttribute('stroke-dasharray', '4,3');
-      _gb0.setAttribute('r', String(BALL_R));
-      sC('ghost-ball', gx0, gy0);
-      sV('ghost-ball', true);
-    }
-    const _cgl0 = $('cb-ghost-line');
-    if (_cgl0) {
-      _cgl0.setAttribute('x1', S.cb.x); _cgl0.setAttribute('y1', S.cb.y);
-      _cgl0.setAttribute('x2', gx0);    _cgl0.setAttribute('y2', gy0);
-      _cgl0.setAttribute('opacity', '1');
-    }
-  }
 
   const sols = allSolutions();
   if (sols.length === 0) {
@@ -2243,18 +1986,16 @@ function render() {
     if (ddx < 0) { const t=(TL.left  -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='left';} }
     if (ddx > 0) { const t=(TL.right -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='right';} }
     if (hitRail && tMin < 9999) {
-      // Only set θ for ball diagram — keep physics sol.contact for bank path
+      sol.contact = { x: S.ob.x + ddx*tMin, y: S.ob.y + ddy*tMin, rail: hitRail };
       sol.θ = deptAngle;
-      if (S._userAdjustedDiag) {
-        // User dragged diagram — override bank path with their angle
-        sol.contact = { x: S.ob.x + ddx*tMin, y: S.ob.y + ddy*tMin, rail: hitRail };
-        const k1 = kFactor(1, Math.abs(hitRail==='top'||hitRail==='bottom' ? S.ob.y-(hitRail==='top'?TL.top:TL.bottom) : S.ob.x-(hitRail==='left'?TL.left:TL.right)));
-        const rb = reboundDir(ddx, ddy, hitRail, k1);
-        if (S.cushions === 2) {
-          // First rebound hits second rail
-          const rebHit = rayHit(sol.contact.x, sol.contact.y, rb.dx, rb.dy, hitRail);
-          if (rebHit) {
-            sol.contact2 = {x: rebHit.x, y: rebHit.y, rail: rebHit.rail};
+      // Compute actual rebound from first contact
+      const k1 = kFactor(1, Math.abs(hitRail==='top'||hitRail==='bottom' ? S.ob.y-(hitRail==='top'?TL.top:TL.bottom) : S.ob.x-(hitRail==='left'?TL.left:TL.right)));
+      const rb = reboundDir(ddx, ddy, hitRail, k1);
+      if (S.cushions === 2) {
+        // First rebound hits second rail
+        const rebHit = rayHit(sol.contact.x, sol.contact.y, rb.dx, rb.dy, hitRail);
+        if (rebHit) {
+          sol.contact2 = {x: rebHit.x, y: rebHit.y, rail: rebHit.rail};
           const k2 = kFactor(2, Math.hypot(sol.contact2.x - sol.contact.x, sol.contact2.y - sol.contact.y));
           const rb2 = reboundDir(rb.dx, rb.dy, rebHit.rail, k2);
           const rebHit2 = rayHit(sol.contact2.x, sol.contact2.y, rb2.dx, rb2.dy, rebHit.rail);
@@ -2278,88 +2019,26 @@ function render() {
   }
 
   // Apply bias: shift contact point along rail AFTER all overrides
-  if (typeof biasOn !== 'undefined' && biasOn && S.bias !== 0 && sol.contact) {
-    const DU_px = (TL.right - TL.left) / 8;
-    const shift = (S.bias / 6) * DU_px;
-    const rail = sol.contact.rail;
-    if (rail === 'top' || rail === 'bottom') {
-      const dir = (pocket.x > S.ob.x) ? 1 : -1;
-      const nx = Math.max(TL.left, Math.min(TL.right, sol.contact.x + shift * dir));
-      sol.contact = { ...sol.contact, x: nx };
-    } else {
-      const dir = (pocket.y > S.ob.y) ? 1 : -1;
-      const ny = Math.max(TL.top, Math.min(TL.bottom, sol.contact.y + shift * dir));
-      sol.contact = { ...sol.contact, y: ny };
-    }
-    const bdx = Math.cos(sol.θ), bdy = Math.sin(sol.θ);
-    const bk = kFactor(1, Math.hypot(sol.contact.x-S.ob.x, sol.contact.y-S.ob.y));
-    const brb = reboundDir(bdx, bdy, sol.contact.rail, bk);
-    const bHit = rayHit(sol.contact.x, sol.contact.y, brb.dx, brb.dy, sol.contact.rail);
-    sol._reboundEnd = snapToPocket(bHit ? {x:bHit.x,y:bHit.y} : {x:sol.contact.x+brb.dx*400,y:sol.contact.y+brb.dy*400});
-    sol.contact2 = null;
-  }
+    // TABLE COMP: throwLo/throwMi/throwHi set in onSliders → drawBot handles diagram shift
 
   // ── TABLE GRAPHICS ──
 
   // Ghost ball — always shown, starts congruent with OB at 0°
-  // Ghost: tracks cut angle like Aimer
   const _cbToObAngle = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x);
-  const _cutDegG = (S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? S.diagCutDeg : 0;
-  const _rhG = S._diagDragRh !== undefined ? S._diagDragRh : false;
-  const _ghostAngleG = _cbToObAngle + (_rhG ? 1 : -1) * Math.min(_cutDegG, 90) * RAD;
-  // Throw compensation — use baseSol geometric cut angle
-  const _bankCutDeg = (typeof baseSol !== 'undefined') ? (baseSol.cutDeg || (baseSol.Z_des ? baseSol.Z_des * 180/Math.PI : 30)) : 30;
-  const _tcG = getThrowComp(_bankCutDeg);
-  // Shift ghost ball perpendicular to CB→OB — scale by 3 for visibility
-  const _tdG = _tcG * BALL_R * 3;
-  const _rhG2 = S._diagDragRh !== undefined ? S._diagDragRh : (S.ob.x < S.cb.x);
-  const _perpXG = -Math.sin(_cbToObAngle) * _tdG * (_rhG2 ? 1 : -1);
-  const _perpYG =  Math.cos(_cbToObAngle) * _tdG * (_rhG2 ? 1 : -1);
-  const gx = Math.max(TL.left+BALL_R, Math.min(TL.right-BALL_R, S.ob.x - 2*BALL_R*Math.cos(_ghostAngleG) + _perpXG));
-  const gy = Math.max(TL.top+BALL_R,  Math.min(TL.bottom-BALL_R, S.ob.y - 2*BALL_R*Math.sin(_ghostAngleG) + _perpYG));
+  const _ghostAngle = _cbToObAngle + ((S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? (S._diagDragRh ? 1 : -1) * (sol.θ - _cbToObAngle) : 0);
+  const _ghostOffset = 2 * BALL_R;  // always offset so ghost ball is visible
+  const gx = S.ob.x - _ghostOffset * Math.cos(_ghostAngle);
+  const gy = S.ob.y - _ghostOffset * Math.sin(_ghostAngle);
   const _gb = $('ghost-ball');
   if (_gb) {
     _gb.setAttribute('fill', 'rgba(240,223,112,0.15)');
     _gb.setAttribute('stroke', '#f0df70');
-    _gb.setAttribute('stroke-width', '1.8');
+    _gb.setAttribute('stroke-width', '2');
     _gb.setAttribute('stroke-dasharray', '4,3');
     _gb.setAttribute('r', String(BALL_R));
     sC('ghost-ball', gx, gy);
     sV('ghost-ball', true);
   }
-
-  // CB Path (stun/follow/draw lines from ghost ball position)
-  if (cbPathOn && _cutDegG > 0.5) {
-    const _obDeptAngle = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x) + (_rhG ? 1 : -1) * _cutDegG * RAD;
-    const stunAngle   = _obDeptAngle + Math.PI/2 * (_rhG ? -1 : 1);
-    const followAngle = stunAngle + (_obDeptAngle - stunAngle) * 0.55;
-    const drawAngle   = stunAngle - (_obDeptAngle - stunAngle) * 0.55;
-    function _rayToRail(sx, sy, angle) {
-      const dx = Math.cos(angle), dy = Math.sin(angle);
-      let t = 9999;
-      if (dy < 0) t = Math.min(t, (TL.top    - sy) / dy);
-      if (dy > 0) t = Math.min(t, (TL.bottom - sy) / dy);
-      if (dx < 0) t = Math.min(t, (TL.left   - sx) / dx);
-      if (dx > 0) t = Math.min(t, (TL.right  - sx) / dx);
-      return { x: sx + dx*Math.max(10,t), y: sy + dy*Math.max(10,t) };
-    }
-    const _pks = [{x:TL.left,y:TL.top},{x:230,y:TL.top},{x:TL.right,y:TL.top},{x:TL.left,y:TL.bottom},{x:230,y:TL.bottom},{x:TL.right,y:TL.bottom}];
-    function _isScratch(ep) { return _pks.some((p,i)=>Math.hypot(ep.x-p.x,ep.y-p.y)<(i===1||i===4?22:28)); }
-    function _drawRay(lid, did, angle, col, scol) {
-      const end = _rayToRail(gx, gy, angle);
-      const scr = _isScratch(end);
-      const el = document.getElementById(lid); const dot = document.getElementById(did);
-      if (el) { sL(lid, gx, gy, end.x, end.y); el.style.opacity='1'; el.setAttribute('stroke', scr?scol:col); }
-      if (dot) { dot.setAttribute('cx',end.x); dot.setAttribute('cy',end.y); dot.setAttribute('fill',scr?'#ef4444':'#22c55e'); dot.style.opacity='1'; }
-    }
-    _drawRay('cb-stun',  'cb-stun-dot',   stunAngle,   'rgba(255,255,255,0.85)', '#ef4444');
-    _drawRay('cb-follow','cb-follow-dot', followAngle, '#f97316',                '#ef4444');
-    _drawRay('cb-draw',  'cb-draw-dot',   drawAngle,   '#60a5fa',                '#ef4444');
-  } else {
-    ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
-      .forEach(id=>{const el=document.getElementById(id);if(el)el.style.opacity='0';});
-  }
-
   // CB → Ghost gold dashed line
   const _cgl = $('cb-ghost-line');
   if (_cgl) {
@@ -2400,8 +2079,8 @@ function render() {
     }
   }
 
-  // Bank path: physics rebound end, snapped to pocket if close
-  const bkTarget = sol._reboundEnd || pocket;
+  // Bank path: contact → pocket (locked shots) or physics rebound (dragging)
+  const bkTarget = shotLocked ? pocket : (sol._reboundEnd || pocket);
   if (sol.contact2) {
     sL('bk-path',  sol.contact.x, sol.contact.y, sol.contact2.x, sol.contact2.y);
     sL('bk-path2', sol.contact2.x, sol.contact2.y, bkTarget.x, bkTarget.y);
@@ -2420,9 +2099,16 @@ function render() {
   sC('contact-dot', sol.contact.x, sol.contact.y);
   sV('contact-dot', true);
 
+  // Update throw panel if open
+  if (typeof throwPanelOpen !== 'undefined' && throwPanelOpen) updateThrowPanelCurrent();
+
+  // Update throw panel if open
+  if (typeof throwPanelOpen !== 'undefined' && throwPanelOpen) updateThrowPanelCurrent();
+
   // ── AIMING DIAGRAM ──
   try {
-    drawBot(sol);
+    const _botSol = Object.assign({}, sol, {diagFraction: sol.aimFraction || 0});
+    drawBot(_botSol);
   } catch(e) {
     console.error('drawBot error:', e);
   }
@@ -2442,9 +2128,13 @@ function render() {
   sT('ro-frac', fracStr(displayGeoF));
   sT('ro-aim',  Math.round(displayGeoF * 100) + '%' + _bdir);
   // Top readout bar — always update
-  const _raim = $('r-aim'); if(_raim) _raim.textContent = Math.round(displayGeoF*100)+'%'+_bdir;
+  const _baimP = Math.round(Math.min(0.97,displayGeoF)*100);
+  const _raim = $('r-aim'); if(_raim) _raim.textContent = _baimP+'%';
   const _rfrc = $('r-frc'); if(_rfrc) _rfrc.textContent = fracStr(displayGeoF);
-  const _rang = $('r-ang'); if(_rang) _rang.textContent = (displayCutDeg<0.5?'0':displayCutDeg.toFixed(1))+'°'+_bdir;
+  const _rang = $('r-ang'); if(_rang) _rang.textContent = (displayCutDeg<0.5?'0':displayCutDeg.toFixed(1))+'°'+(displayCutDeg<0.5?'':(S._diagDragRh?' R':' L'));
+  const _rcpEl = $('r-cp'); if(_rcpEl) _rcpEl.textContent = displayCutDeg<0.5?'0%':Math.round(_baimP*0.5)+'%'+(S._diagDragRh?' L':' R');
+  const _roe = $('r-oe'); if(_roe) _roe.textContent = _baimP+'%';
+  const _rtw = $('r-twixt'); if(_rtw) _rtw.textContent = Math.max(0,100-_baimP)+'%';
   const _svgD = Math.hypot(S.ob.x-S.cb.x,S.ob.y-S.cb.y);
   const _dft  = _svgD/400*S.tableSize;
   const _rdist = $('r-dist'); if(_rdist) _rdist.textContent = _dft<1?Math.round(_dft*12)+'"':_dft.toFixed(1)+"'";
@@ -2472,7 +2162,7 @@ function render() {
   }
 
   sT('ro-contact', RAIL_SHORT[sol.rail] + ' ◆ ' + toDiamond(sol.contact.x, sol.contact.y, sol.rail));
-  sT('ro-reb',     sol.rebDeg.toFixed(1) + '° from rail');
+  sT('ro-reb',     (typeof sol.rebDeg === 'number' && isFinite(sol.rebDeg) ? sol.rebDeg.toFixed(1) : '—') + '° from rail');
   
 
   const row2 = $('ro-contact2-row');
@@ -2488,8 +2178,6 @@ function render() {
 // DIAGRAM DRAG (botsvg CB)
 // ─────────────────────────────────────────────────────────────────────────────
 const botsvg = document.getElementById('botsvg');
-} // end render
-
 
 function botSvgPt(e) {
   const pt = botsvg.createSVGPoint();
@@ -2503,7 +2191,7 @@ botsvg.addEventListener('pointerdown', e => {
   const _p = botSvgPt(e);
   if (_p.y < 66 || _p.y > 230) return;  // dead zone above/below ball
   e.preventDefault();
-  diagDrag = true; S._userAdjustedDiag = true;;
+  diagDrag = true;
   botsvg.setPointerCapture(e.pointerId);
   updateDiagCut(_p.x);
   render();
@@ -2568,7 +2256,7 @@ svg.addEventListener('pointerdown', e => {
     const d = Math.hypot(p.x - pocket.x, p.y - pocket.y);
     if (d < bestD) { bestD = d; bestKey = k; }
   }
-  if (bestKey && bestD < 60 && !drag) {
+  if (bestKey && bestD < 60) {
     selectPocket(bestKey);
     sV('phl-' + bestKey, true);
     setTimeout(() => sV('phl-' + bestKey, false), 400);
@@ -2580,19 +2268,23 @@ svg.addEventListener('pointermove', e => {
   e.stopPropagation();
   const p = svgPt(e);
   if (drag==='ob') {
-    const sn=applySnap(p.x,p.y), c=clampBall(sn.x,sn.y);
-    S.ob={x:sn.x,y:sn.y}; shotLocked=false;
-    { const _c=computeCutFromPositions(S.cb,S.ob,S.pocket||'TR'); S.diagCutDeg=_c.cutDeg; S._diagDragRh=_c.rh; S._userAdjustedDiag=false; }
+    const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
+    S.ob={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
     if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'ob');
   } else if (drag==='cb') {
-    const sn2=applySnap(p.x,p.y), c=clampBall(sn2.x,sn2.y);
-    S.cb={x:sn.x,y:sn.y}; shotLocked=false;
-    { const _c=computeCutFromPositions(S.cb,S.ob,S.pocket||'TR'); S.diagCutDeg=_c.cutDeg; S._diagDragRh=_c.rh; S._userAdjustedDiag=false; }
+    const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
+    S.cb={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
     if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'cb');
   } else if (drag==='ob2') { S.ob2=clampBall(p.x,p.y); }
   render();
 });
-svg.addEventListener('pointerup',    () => { drag=null; });
+svg.addEventListener('pointerup', () => {
+  drag=null;
+  if (!window._snapPos) window._snapPos = {};
+  window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
+  window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
+  updateSnapLabels(document.getElementById('tbl'));
+});
 svg.addEventListener('pointercancel',() => { drag=null; });
 
 // Keyboard controls:
@@ -2642,35 +2334,57 @@ let SNAP_POINTS = [];
 const SNAP_RADIUS = 14;
 let lockTable = true;
 let lockBalls = true;
-let lockSliders = true;
+let lockSliders = false;
 let biasOn = false;
 let throwLo = 0, throwMi = 0, throwHi = 0;
-
-// getThrowComp moved before render
-
-function throwStep(seg, dir) {
-  const el = document.getElementById('sl-throw-'+seg);
-  if (!el) return;
-  el.value = Math.max(-50, Math.min(50, parseInt(el.value) + dir));
-  onSliders();
+function toggleSlidersActive() {
+  var panel = document.getElementById('block-sliders');
+  if (!panel) return;
+  var isActive = !panel.classList.contains('sliders-active');
+  panel.classList.toggle('sliders-active', isActive);
+  panel.classList.toggle('sliders-unlocked', isActive);
+  var btn = document.getElementById('sliders-active-btn');
+  if (btn) {
+    btn.textContent = isActive ? 'ACTIVE' : 'INACTIVE';
+    btn.style.background = isActive ? 'rgba(80,200,80,0.2)' : 'rgba(200,80,80,0.15)';
+    btn.style.borderColor = isActive ? 'rgba(80,200,80,0.4)' : 'rgba(200,80,80,0.3)';
+    btn.style.color = isActive ? '#80e080' : '#e08080';
+  }
+  panel.querySelectorAll('.sgroup').forEach(function(sg) {
+    sg.style.opacity = isActive ? '1' : '0.35';
+  });
+  panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el) {
+    el.disabled = !isActive;
+  });
 }
-function toggleBias(){
+
+function toggleBias() {
   biasOn = !biasOn;
-  const btn = document.getElementById('ep-bias');
-  if(btn){ btn.classList.toggle('on', biasOn); btn.innerHTML = biasOn ? 'BIAS<br>ON' : 'BIAS<br>OFF'; }
-  const bd = document.getElementById('bias-sliders');
-  if(bd) bd.style.opacity = biasOn ? '1' : '0.35';
+  var btn = document.getElementById('ep-bias');
+  if (btn) {
+    btn.innerHTML = biasOn ? 'TABLE<br>COMP ON' : 'TABLE<br>COMP OFF';
+    btn.style.background = biasOn ? 'rgba(240,140,20,0.85)' : 'rgba(74,40,0,0.85)';
+    btn.style.borderColor = biasOn ? 'rgba(255,180,50,0.8)' : 'rgba(138,80,16,0.6)';
+    btn.style.color = biasOn ? '#fff' : '#e8c080';
+  }
+  // Dim/undim the table comp section in the sliders panel
+  var panel = document.getElementById('block-sliders');
+  if (panel) {
+    var sgroups = panel.querySelectorAll('.sgroup');
+    if (sgroups.length > 1) {
+      sgroups[1].style.opacity = biasOn ? '1' : '0.35';
+      sgroups[1].querySelectorAll('input[type=range]').forEach(function(el) { el.disabled = !biasOn; });
+    }
+  }
   onSliders();
 }
-const ghostOn = true;
+let ghostOn = true;
 let bounceOn = false;
-let cbPathOn = false;
-function toggleCbPath() {
-  cbPathOn = !cbPathOn;
-  const btn = document.getElementById('btn-cbpath');
-  if (btn) btn.classList.toggle('on', cbPathOn);
-  const leg = document.getElementById('cb-path-legend');
-  if (leg) leg.setAttribute('opacity', cbPathOn ? '1' : '0');
+
+function toggleGhost() {
+  ghostOn = !ghostOn;
+  const btn = $('btn-ghost');
+  
   render();
 }
 function toggleMap() {
@@ -2699,7 +2413,7 @@ function angleFromRail(dx, dy, rail) {
     deg = Math.abs(Math.atan2(Math.abs(dy), Math.abs(dx)) * DEG);
   else
     deg = Math.abs(Math.atan2(Math.abs(dx), Math.abs(dy)) * DEG);
-  return deg;
+  return deg.toFixed(1);
 }
 
 let bounceRailIdx = 0;  // 0 = 1st rail, 1 = 2nd rail
@@ -2778,8 +2492,8 @@ function drawBankerBounce(sol) {
   const ax=cx-inNx*RAY, ay=cy-inNy*RAY;
   const rx=cx+rbNx*RAY, ry=cy+rbNy*RAY;
 
-  const inDeg  = angleFromRail(inDx, inDy, rail).toFixed(1);
-  const outDeg = angleFromRail(rbDx, rbDy, rail).toFixed(1);
+  const inDeg  = angleFromRail(inDx, inDy, rail);
+  const outDeg = angleFromRail(rbDx, rbDy, rail);
   // 2nd rail: IN/OUT labels are reversed due to geometry flip — swap them
   const labelInDeg  = useSecond ? outDeg : inDeg;
   const labelOutDeg = useSecond ? inDeg  : outDeg;
@@ -2853,23 +2567,22 @@ const vertLabels = {
 };
 
 function onSliders() {
-  S.speed = parseInt($('sl-spd').value) / 100;
-  S.spin  = parseInt($('sl-spn').value);
-  S.vert  = parseInt($('sl-vert').value);
-
-  // Single bias
-  if (typeof biasOn !== 'undefined' && biasOn) {
-    const bVal = parseInt($('sl-bias')?.value || '0');
-    S.bias = bVal;
-  } else {
-    S.bias = 0;
-  }
-  const _bv = parseInt($('sl-bias')?.value || '0');
-  const _bn = document.getElementById('sv-bias-n');
-  const _bs = document.getElementById('sv-bias');
-  if (_bn) _bn.textContent = Math.abs(_bv);
-  if (_bs) _bs.textContent = (_bv > 0 ? '+' : '') + _bv;
-
+  S.speed  = parseInt($('sl-spd').value)  / 100;
+  S.spin   = parseInt($('sl-spn').value) / 25;  // -4..4 continuously
+  S.vert   = parseInt($('sl-vert').value) / 25;  // -4..4 from -100..100
+  S.bias = 0;
+  // Three-segment throw compensation — only active when TABLE COMP is ON
+  throwLo = biasOn ? parseInt($('sl-bias-fat')?.value || '0') / 50 : 0;
+  throwMi = biasOn ? parseInt($('sl-bias-med')?.value || '0') / 50 : 0;
+  throwHi = biasOn ? parseInt($('sl-bias-thin')?.value || '0') / 50 : 0;
+  ['fat','med','thin'].forEach(seg => {
+    const v = parseInt($('sl-bias-'+seg)?.value || '0');
+    const n = document.getElementById('sv-bias-'+seg+'-n');
+    const s = document.getElementById('sv-bias-'+seg);
+    const disp = v === 0 ? '0' : (v > 0 ? '+' : '') + v;
+    if(n) n.textContent = v;
+    if(s) s.textContent = disp;
+  });
   $('sv-spd').textContent = S.speed < 0.28 ? 'slow' : S.speed < 0.72 ? 'med' : 'fast';
   const _sv=parseInt($('sl-spd').value), _sn=Math.abs(parseInt($('sl-spn').value));
   if($('sv-spd-n'))$('sv-spd-n').textContent=Math.max(1,Math.round(_sv/10));
@@ -2878,17 +2591,6 @@ function onSliders() {
   if($('sv-vert-n'))$('sv-vert-n').textContent=_vn===0?'0':Math.max(1,Math.round(_vn/4*10/10));
   $('sv-spn').textContent  = spinLabels[String(S.spin)];
   $('sv-vert').textContent = vertLabels[String(S.vert)];
-  // Throw compensation sliders
-  throwLo = parseInt(document.getElementById('sl-throw-lo')?.value || '0') / 50;
-  throwMi = parseInt(document.getElementById('sl-throw-mi')?.value || '0') / 50;
-  throwHi = parseInt(document.getElementById('sl-throw-hi')?.value || '0') / 50;
-  ['lo','mi','hi'].forEach(seg => {
-    const v = parseInt(document.getElementById('sl-throw-'+seg)?.value || '0');
-    const n = document.getElementById('sv-throw-'+seg+'-n');
-    const s = document.getElementById('sv-throw-'+seg);
-    if(n) n.textContent = v;
-    if(s) s.textContent = v === 0 ? '0' : (v > 0 ? '+' : '') + v + '%';
-  });
   render();
 }
 
@@ -3085,6 +2787,7 @@ function calUndo() {
 // INIT
 // ─────────────────────────────────────────────────────────────────────────────
 loadTableProfile();
+loadShot(0);  // default: B1 Easy Cross-Side
 render();
 calUpdateUI();
 // Map and ghost are on by default — show map layer immediately
@@ -3093,7 +2796,6 @@ if (_ml) { _ml.style.opacity = '1'; }
 SNAP_POINTS = buildSnapPoints();
 const _epB=document.getElementById('ep-bias');if(_epB){_epB.classList.add('on');_epB.textContent='ON';}
 
-loadShot(0);
 loadUserShots();
 buildShotList();
 const _ml2 = $('map2-layer');
@@ -3140,7 +2842,7 @@ document.addEventListener('touchcancel', () => {
 function buildSnapPoints() {
   const pts = [], seen = new Set();
   const DX=50, DY=50, OX=30, OY=30;
-  const BR=BALL_R, XMIN=OX+BR, XMAX=OX+8*DX-BR, YMIN=OY+BR, YMAX=OY+4*DY-BR;
+  const BR=9, XMIN=OX+BR, XMAX=OX+8*DX-BR, YMIN=OY+BR, YMAX=OY+4*DY-BR;
   function sc(x,y){return{x:Math.max(XMIN,Math.min(XMAX,x)),y:Math.max(YMIN,Math.min(YMAX,y))};}
   function add(x,y,label){
     const k=x+','+y; if(seen.has(k))return; seen.add(k); pts.push({x,y,label});
@@ -3171,62 +2873,24 @@ function applySnap(x,y){
   const pt=nearestSnap(x,y);
   return pt?{x:pt.x,y:pt.y,label:pt.label}:{x,y,label:null};
 }
-function showSnapLabel(svgEl, x, y, label, ballId) {
-  if (!snapOn) return;
-  if (!window._snapPos) window._snapPos = {};
-  window._snapPos[ballId] = {x, y, label};
-  updateSnapLabels(svgEl);
+function showSnapLabel(svgEl,x,y,label,ballId){
+  const old=document.getElementById('snap-lbl-'+ballId);
+  if(old)old.remove(); if(!label)return;
+  const rect=svgEl.getBoundingClientRect(),vb=svgEl.viewBox.baseVal;
+  const scx=rect.left+(x/vb.width)*rect.width, scy=rect.top+(y/vb.height)*rect.height;
+  const lbl=document.createElement('div');
+  lbl.id='snap-lbl-'+ballId; lbl.className='snap-label';
+  lbl.textContent=(ballId==='cb'?'CB: ':'OB: ')+label;
+  lbl.style.left=(scx+12)+'px'; lbl.style.top=(scy-10)+'px'; lbl.style.opacity='1';
+  document.body.appendChild(lbl);
+  if(snapLabelTimer)clearTimeout(snapLabelTimer);
+  snapLabelTimer=setTimeout(()=>{lbl.style.opacity='0';setTimeout(()=>lbl.remove(),400);},2000);
 }
-
-function updateSnapLabels(svgEl) {
-  if (!svgEl) svgEl = document.getElementById('tbl');
-  // Clean up old DOM divs
-  ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
-  if (!svgEl || !snapOn) {
-    ['cb','ob'].forEach(id => { const e = document.getElementById('snap-svg-lbl-'+id); if(e) e.remove(); });
-    return;
-  }
-  const overlay = document.getElementById('snap-labels-overlay') || svgEl;
-  const pos = window._snapPos || {};
-  ['cb','ob'].forEach(id => {
-    const oldGrp = document.getElementById('snap-svg-lbl-' + id);
-    if (oldGrp) oldGrp.remove();
-    const p = pos[id];
-    if (!p || !p.label) return;
-    const label_text = (id === 'cb' ? 'CB: ' : 'OB: ') + p.label;
-    const svgX = p.x;
-    const svgY = 8;
-    const charW = 5.5;
-    const bgW = label_text.length * charW + 6;
-    const bgH = 12;
-    const grp = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    grp.id = 'snap-svg-lbl-' + id;
-    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    bg.setAttribute('x', svgX - bgW/2);
-    bg.setAttribute('y', svgY - 9);
-    bg.setAttribute('width', bgW);
-    bg.setAttribute('height', bgH);
-    bg.setAttribute('rx', '2');
-    bg.setAttribute('fill', 'rgba(0,0,0,0.85)');
-    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    txt.setAttribute('font-family', 'Lato,sans-serif');
-    txt.setAttribute('font-size', '9');
-    txt.setAttribute('font-weight', '900');
-    txt.setAttribute('fill', '#80e880');
-    txt.setAttribute('text-anchor', 'middle');
-    txt.setAttribute('x', svgX);
-    txt.setAttribute('y', svgY);
-    txt.textContent = label_text;
-    grp.appendChild(bg);
-    grp.appendChild(txt);
-    overlay.appendChild(grp);
-  });
-}
-
+let panMode = false;
 function togglePan(){
   panMode = !panMode;
   const btn = document.getElementById('ep-pan');
-  if(btn){ btn.classList.toggle('on', panMode); btn.classList.toggle('dim', !panMode); btn.innerHTML = panMode ? 'LOCK<br>ON' : 'LOCK<br>OFF'; }
+  if(btn) btn.classList.toggle('on', panMode);
 }
 function toggleSnap(){
   snapOn=!snapOn;
@@ -3248,10 +2912,14 @@ function toggleLock(which){
   // touch-action managed per-drag
   const bs=document.getElementById('botsvg');
   
-  const sg=document.querySelector('.sgroup');
-  if(sg)sg.style.opacity=lockSliders?'0.4':'1';
-  document.querySelectorAll('.sgroup input[type=range]').forEach(el=>{el.disabled=lockSliders;});
-  const card=document.querySelector('.card'); if(card) card.classList.toggle('sliders-unlocked',!lockSliders);
+  // Update sliders in floating panel
+  const _slPanel = document.getElementById('block-sliders');
+  if(_slPanel) {
+    const sg = _slPanel.querySelector('.sgroup');
+    if(sg) sg.style.opacity = lockSliders ? '0.4' : '1';
+    _slPanel.querySelectorAll('.sgroup input[type=range]').forEach(el=>{el.disabled=lockSliders;});
+  }
+  const card=document.querySelector('.card'); // if(card) card.classList.toggle('sliders-unlocked',!lockSliders);
   document.activeElement&&document.activeElement.blur();
 }
 
@@ -3261,15 +2929,18 @@ function zeroBall(){
   render();
   document.activeElement&&document.activeElement.blur();
 }
-function zeroSliders(){
-  ['lo','mi','hi'].forEach(seg=>{ const el=document.getElementById('sl-throw-'+seg); if(el) el.value='0'; });
-  throwLo=0; throwMi=0; throwHi=0;
-  if(lockSliders)return;
-  S.speed=0.5; S.spin=0; S.vert=0; S.bias=0;
-  $('sl-spd').value='50'; $('sl-spn').value='0';
-  $('sl-vert').value='0'; ['fat','med','thin'].forEach(z=>{const sl=$('sl-bias-'+z);if(sl)sl.value='0';});
+function zeroSliders() {
+  S.speed = 0.5; S.spin = 0; S.vert = 0; S.bias = 0;
+  $('sl-spd').value  = '50';
+  $('sl-spn').value  = '0';
+  $('sl-vert').value = '0';
+    ['lo','mi','hi'].forEach(seg => {
+    const el = document.getElementById('sl-throw-'+seg);
+    if(el) el.value = '0';
+  });
+  throwLo = 0; throwMi = 0; throwHi = 0;
   onSliders();
-  document.activeElement&&document.activeElement.blur();
+  document.activeElement && document.activeElement.blur();
 }
 
 // Button zoom only — no pinch
@@ -3317,21 +2988,6 @@ const _pz = {
 <!-- ── EDGE CONTROL PANEL ── -->
 
 </div><!-- /outer-wrap -->
-<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;touch-action:none;">
-  <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:#f0f0f0;">
-    <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#111111;">≡ SHOT LIBRARY</span>
-    <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
-  </div>
-  <div id="shot-library-list" style="max-height:min(70vh,600px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;"></div>
-  <div style="display:flex;gap:6px;padding:7px 10px;border-top:2px solid #cccccc;background:#f0f0f0;">
-    <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
-      style="flex:1;min-width:0;background:#ffffff;border:1px solid #999999;border-radius:4px;padding:5px 8px;color:#111111;font-size:13px;outline:none;-webkit-appearance:none;">
-    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#1a5a1a;color:#ffffff;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
-  </div>
-  <div id="shot-lib-resize" style="height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;touch-action:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05);">
-    <div style="width:32px;height:3px;border-radius:2px;background:rgba(240,223,112,0.25);pointer-events:none;"></div>
-  </div>
-</div>
 <footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
 <div id="info-overlay">
   <div id="info-inner">
@@ -3364,33 +3020,42 @@ const _pz = {
   </div>
 </div>
 <div id="btb">
-  <div id="btb-tab"><span id="btb-pill"><button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 6px;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button><span id="btb-label" style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding-right:8px;">TOOLS</span></span></div>
+  <div id="btb-tab">
+    <span class="btb-pill-clone" onclick="toggleAllLocks()" id="quick-lock" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">LOCK</span></span>
+    <span class="btb-pill-clone" onclick="toggleShotLibrary()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">LEARN</span></span>
+    <span class="btb-pill-clone" onclick="toggleThrowPanel()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">DATA</span></span>
+    <span class="btb-pill-clone" onclick="toggleSlidersPanel()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">SLIDERS</span></span>
+    <span id="btb-pill"><button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 6px;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button><span id="btb-label" style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding-right:8px;">TOOLS</span></span>
+  </div>
   <div id="btb-panel" style="display:none;">
     <div class="btb-row2">
-      <button class="ep-btn g-tog on" id="btn-map"     onclick="toggleMap()">GRID</button>
-      <button class="ep-btn g-snap on" id="ep-snap"    onclick="toggleSnap()">SNAP<br>TO</button>
-      <button class="ep-btn g-brown"  id="cal-btn"     onclick="toggleCal()">CAL</button>
-      <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">SHOT<br>LIST</button>
-      <button class="ep-btn g-yel"    id="btn-cbpath"  onclick="toggleCbPath()">CUE<br>PATH</button>
-      <button class="ep-btn g-yel"    id="btn-cushion" onclick="toggleCushions()">1 CUSHION</button>
-      <button class="ep-btn g-brown"  id="btn-angle"   onclick="toggleBounce()">ANGLE</button>
-      <button class="ep-btn g-bias"   id="ep-bias"     onclick="toggleBias()">BIAS<br>OFF</button>
-      <button class="ep-btn g-brown"  id="btn-throw"   onclick="toggleThrowPanel()">THROW<br>DATA</button>
-      <button class="ep-btn g-swap"   id="btn-swap"    onclick="swapPanels()" title="Swap panels">⇅</button>
+      <button class="ep-btn g-tog on" id="btn-map"    onclick="toggleMap()">GRID</button>
+      <button class="ep-btn g-snap on" id="ep-snap"   onclick="toggleSnap()">SNAP<br>TO</button>
+      <button class="ep-btn g-brown"  id="btn-cal"    onclick="toggleCal()">CAL</button>
+      <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">LEARN</button>
+      <button class="ep-btn g-yel"    id="btn-cbpath" onclick="toggleCbPath()">CUE<br>PATH</button>
+      <button class="ep-btn g-brown"  id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
+      <button class="ep-btn g-brown" id="btn-cp"     onclick="toggleContactDot()">C·PT</button>
+      <button class="ep-btn g-brown"  id="btn-throw"  onclick="toggleThrowPanel()">DATA</button>
+      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">TABLE<br>COMP OFF</button>
+      <button class="ep-btn g-swap"   id="btn-swap"   onclick="swapPanels()">⇅</button>
     </div>
     <div class="btb-row2">
       <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">ZOOM<br>IN</button>
       <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">ZOOM<br>OUT</button>
       <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET<br>ZOOM</button>
-      <button class="ep-btn g-pan on" id="ep-pan" onclick="togglePan()">LOCK<br>ON</button>
+      <button class="ep-btn g-pan on" id="ep-pan" onclick="togglePan()">PAN<br>LOCK ON</button>
     </div>
     <div class="btb-row2">
       <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE<br>LOCK</button>
-      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">BALL<br>LOCK</button>
+      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">GHOST<br>LOCK</button>
       <button class="ep-btn g-lock" id="ep-ls" onclick="toggleLock('sliders')">SLIDERS<br>LOCK</button>
       <button class="ep-btn g-brown" onclick="zeroSliders()">ZERO<br>SLIDERS</button>
     </div>
+    <div id="btb-drag-bottom" style="height:10px;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;"></div>
+
   </div>
+  <div id="btb-drag-bottom" style="height:10px;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;display:none;"></div>
 </div>
 
 <script>
@@ -3411,7 +3076,7 @@ function toggleBtb(){
     if (!btb || !tab) return;
     // Position at middle-left of the table SVG on load
     (function positionAtTableLeft() {
-      var tbl = document.getElementById('tbl') || document.querySelector('.svg-box');
+      var tbl = document.querySelector('.svg-box.top-box') || document.querySelector('.svg-box');
       if (!tbl) { requestAnimationFrame(positionAtTableLeft); return; }
       var r = tbl.getBoundingClientRect();
       var bw = btb.offsetWidth || 320;
@@ -3455,15 +3120,13 @@ function toggleBtb(){
     tab.addEventListener('pointerup', function(e){
       if (e.pointerId !== activePtr) return;
       activePtr = null;
-      if (!didDrag) toggleBtb();
+      if (!didDrag && !e.target.closest('.btb-pill-clone')) toggleBtb();
     });
     tab.addEventListener('pointercancel', function(e){
       activePtr = null;
     });
   });
 })();
-
-
 </script>
 <script>
 // ── PAN VIA POINTER EVENTS ON ZOOM-WRAP ──────────────────────
@@ -3503,7 +3166,9 @@ function toggleBtb(){
   // Load bias settings
   try {
     const b = JSON.parse(localStorage.getItem('lz-banker-bias') || '{}');
-    if (b.bias !== undefined) { const el = document.getElementById('sl-bias'); if(el) el.value = b.bias; }
+    if (b.fat !== undefined) { const el = document.getElementById('sl-bias-fat'); if(el) el.value = b.fat; }
+    if (b.med !== undefined) { const el = document.getElementById('sl-bias-med'); if(el) el.value = b.med; }
+    if (b.thin !== undefined) { const el = document.getElementById('sl-bias-thin'); if(el) el.value = b.thin; }
   } catch(e) {}
 
     var w = getWrap();
@@ -3525,8 +3190,7 @@ window.addEventListener('load', function(){
   const sg = document.querySelector('.sgroup');
   if(sg) sg.style.opacity = lockSliders ? '0.4' : '1';
   document.querySelectorAll('.sgroup input[type=range]').forEach(el => { el.disabled = lockSliders; });
-  const card = document.querySelector('.card');
-  if(card) card.classList.toggle('sliders-unlocked', !lockSliders);
+  // sliders-unlocked not used on main card
 });
 </script>
 <script>
@@ -3540,11 +3204,12 @@ function vernierAim(dir){
   if(Math.abs(signed)<0.001)signed=dir*oneDeg;
   S._diagDragRh=signed<0;S.diagCutDeg=Math.abs(signed);render();
 }
-function biasStep(dir){
-  const el=document.getElementById('sl-bias');
-  if(!el)return;
-  el.value=Math.max(-12,Math.min(12,parseInt(el.value)+dir));
-  onSliders();render();
+function biasStep(zone, dir) {
+  var id = zone ? 'sl-bias-' + zone : 'sl-bias-fat';
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.value = Math.max(-50, Math.min(50, parseInt(el.value) + dir));
+  onSliders();
 }
 </script>
 <script>
@@ -3580,15 +3245,20 @@ function biasStep(dir){
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName === 'BUTTON') return;
       var r = panel.getBoundingClientRect();
-      grabOffX = e.clientX - r.left;
-      grabOffY = e.clientY - r.top;
-      activePtr = e.pointerId;
-      try{ header.setPointerCapture(e.pointerId); }catch(ex){}
+      startX=e.clientX; startY=e.clientY;
+      origLeft=r.left; origTop=r.top;
+      didDrag=false; activePtr=e.pointerId;
     });
     header.addEventListener('pointermove', function(e){
       if (activePtr===null || e.pointerId!==activePtr) return;
-      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,  e.clientX-grabOffX));
-      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, e.clientY-grabOffY));
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if (!didDrag && Math.hypot(dx,dy)>8){
+        didDrag=true;
+        try{ header.setPointerCapture(e.pointerId); }catch(ex){}
+      }
+      if (!didDrag) return;
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,  origLeft+dx));
+      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
     });
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
@@ -3606,27 +3276,444 @@ function biasStep(dir){
 })();
 </script>
 <script>
-(function(){
-  var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
-  var positioned = false;
+function updateLockBtn() {
+  const allLocked = lockTable && lockBalls && lockSliders;
+  const _ql = document.getElementById('quick-lock');
+  if (_ql) {
+    const lbl = _ql.querySelector('span');
+    if (lbl) lbl.textContent = allLocked ? 'LOCKED' : 'UNLOCKED';
+  }
+}
+function toggleAllLocks() {
+  const allLocked = lockTable && lockBalls && lockSliders;
+  lockTable = lockBalls = lockSliders = !allLocked;
+  const _lt = document.getElementById('ep-lt'); if(_lt){ _lt.classList.toggle('locked', lockTable); _lt.classList.toggle('on', !lockTable); }
+  const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
+  const _ls = document.getElementById('ep-ls'); if(_ls){ _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
+  updateLockBtn();
+  render();
+  // Update floating sliders panel if open
+  var _sp = document.getElementById('sliders-block');
+  if (_sp && _slidersPanelOpen) {
+    _sp.classList.toggle('sliders-unlocked', !lockSliders);
+    var _sg2 = _sp.querySelector('.sgroup');
+    if (_sg2) _sg2.style.opacity = lockSliders ? '0.4' : '1';
+    _sp.querySelectorAll('.sgroup input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
+  }
+}
+</script>
 
-  function positionUnderTable() {
-    var topBox = document.querySelector('.svg-box.top-box');
-    if (!topBox || !panel) return;
-    var r = topBox.getBoundingClientRect();
-    var pw = panel.offsetWidth || 420;
-    var left = r.left + (r.width - pw) / 2;
-    left = Math.max(4, Math.min(window.innerWidth - pw - 4, left));
-    panel.style.left = left + 'px';
-    panel.style.top  = (r.bottom + 6) + 'px';
-    positioned = true;
+<script>
+var _slidersPanelOpen = false;
+var _slidersPositioned = false;
+
+var _slidersPositioned = false;
+function toggleSlidersPanel() {
+  _slidersPanelOpen = !_slidersPanelOpen;
+  var panel = document.getElementById('block-sliders');
+  if (!panel) return;
+  panel.style.display = _slidersPanelOpen ? 'block' : 'none';
+  if (_slidersPanelOpen) {
+    // Always open ACTIVE with big sliders
+    panel.classList.add('sliders-unlocked', 'sliders-active');
+    panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el){ el.disabled = false; });
+    panel.querySelectorAll('.sgroup').forEach(function(sg){ sg.style.opacity = '1'; });
+    var ab = document.getElementById('sliders-active-btn');
+    if (ab) { ab.textContent='ACTIVE'; ab.style.background='rgba(80,200,80,0.2)'; ab.style.borderColor='rgba(80,200,80,0.4)'; ab.style.color='#80e080'; }
+    if (!_slidersPositioned) {
+      var btb = document.getElementById('btb');
+      var r = btb ? btb.getBoundingClientRect() : {top:200, left:10};
+      var ph = panel.offsetHeight || 200;
+      panel.style.top  = Math.max(10, r.top - ph - 8) + 'px';
+      panel.style.left = r.left + 'px';
+      _slidersPositioned = true;
+    }
+  }
+}
+
+(function(){
+  var panel, header, startX, startY, origLeft, origTop, didDrag=false, activePtr=null;
+  window.addEventListener('load', function(){
+    updateLockBtn();
+    panel  = document.getElementById('sliders-block');
+    header = document.getElementById('sliders-handle');
+    if (!panel || !header) return;
+    header.addEventListener('pointerdown', function(e){
+      if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+      var r=panel.getBoundingClientRect();
+      startX=e.clientX; startY=e.clientY;
+      origLeft=r.left; origTop=r.top;
+      didDrag=false; activePtr=e.pointerId;
+      header.setPointerCapture(e.pointerId);
+    });
+    header.addEventListener('pointermove', function(e){
+      if (activePtr===null||e.pointerId!==activePtr) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; panel.style.transition='none'; }
+      if (didDrag){ panel.style.left=(origLeft+dx)+'px'; panel.style.top=(origTop+dy)+'px'; }
+    });
+    header.addEventListener('pointerup', function(e){ activePtr=null; });
+    header.addEventListener('pointercancel', function(e){ activePtr=null; });
+  });
+})();
+</script>
+<script>
+// Stubs for aimer-only toolbar buttons not in banker
+function toggleCbPath() {
+  var btn = document.getElementById('btn-cbpath');
+  if (btn) btn.classList.toggle('on');
+}
+function toggleAngle() {
+  var btn = document.getElementById('btn-angle');
+  if (btn) btn.classList.toggle('on');
+}
+function toggleContactDot() {
+  contactDotOn = !contactDotOn;
+  var btn = document.getElementById('btn-cp');
+  if (btn) btn.classList.toggle('on', contactDotOn);
+  render();
+}
+
+</script>
+<script>
+(function(){
+  var panel, header, startX, startY, origLeft, origTop, didDrag=false, activePtr=null;
+  window.addEventListener('load', function(){
+    panel  = document.getElementById('block-sliders');
+    header = document.getElementById('sliders-handle');
+    if (!panel || !header) return;
+    header.addEventListener('pointerdown', function(e){
+      if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+      var r=panel.getBoundingClientRect();
+      startX=e.clientX; startY=e.clientY;
+      origLeft=r.left; origTop=r.top;
+      didDrag=false; activePtr=e.pointerId;
+      header.setPointerCapture(e.pointerId);
+    });
+    header.addEventListener('pointermove', function(e){
+      if (activePtr===null||e.pointerId!==activePtr) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; panel.style.transition='none'; }
+      if (didDrag){ panel.style.left=(origLeft+dx)+'px'; panel.style.top=(origTop+dy)+'px'; }
+    });
+    header.addEventListener('pointerup', function(e){ activePtr=null; });
+    header.addEventListener('pointercancel', function(e){ activePtr=null; });
+  });
+})();
+</script>
+<div id="throw-panel" style="display:none;position:fixed;z-index:8888;width:min(420px,96vw);
+     background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;
+     box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
+  <div id="throw-panel-header" style="display:flex;justify-content:space-between;align-items:center;
+       padding:10px 12px;background:#f0f0f0;border-bottom:2px solid #cccccc;
+       cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+    <span style="font-size:13px;font-weight:900;letter-spacing:1px;color:#111111;">THROW COMP DATA</span>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button onclick="minimizeThrowPanel()" style="background:none;border:1px solid #aaa;border-radius:4px;color:#333;font-size:13px;font-weight:900;padding:2px 8px;cursor:pointer;" title="Minimize">—</button>
+      <button onclick="toggleThrowPanel()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;">✕</button>
+    </div>
+  </div>
+<script>
+// ── THROW COMP DATA PANEL ─────────────────────────────────────────────
+let throwPanelOpen = false;
+let throwData = [];
+
+function loadThrowData() {
+  try { throwData = JSON.parse(localStorage.getItem('lz-throw-data') || '[]'); } catch(e) { throwData = []; }
+}
+function saveThrowData() {
+  try {
+    localStorage.setItem('lz-throw-data', JSON.stringify(throwData));
+  } catch(e) {
+    // localStorage blocked (private mode or file://) — warn user
+    const el = document.getElementById('throw-data-list');
+    if (el && !document.getElementById('throw-save-warn')) {
+      const warn = document.createElement('div');
+      warn.id = 'throw-save-warn';
+      warn.style.cssText = 'padding:8px 12px;font-size:11px;color:#cc3333;background:#fff0f0;border-bottom:1px solid #ffcccc;';
+      warn.textContent = '⚠ Data cannot be saved on this device (private mode or file access). Export before closing.';
+      el.before(warn);
+    }
+  }
+}
+
+function minimizeThrowPanel() {
+  const list = document.getElementById('throw-data-list');
+  const footer = document.querySelector('#throw-panel > div:last-child');
+  const info = document.getElementById('throw-panel').querySelector('div:nth-child(2)');
+  const minimized = list && list.style.display === 'none';
+  if (list) list.style.display = minimized ? '' : 'none';
+  if (info) info.style.display = minimized ? '' : 'none';
+}
+
+function toggleThrowPanel() {
+  throwPanelOpen = !throwPanelOpen;
+  const panel = document.getElementById('throw-panel');
+  if (!panel) return;
+  panel.style.display = throwPanelOpen ? 'block' : 'none';
+  if (throwPanelOpen) {
+    loadThrowData();
+    updateThrowPanelCurrent();
+    buildThrowList();
+  }
+}
+
+function updateThrowPanelCurrent() {
+  // Use banker's current solution values
+  const sols = typeof allSolutions === 'function' ? allSolutions() : [];
+  const sol = sols.length > 0 ? sols[S.activeSol || 0] : null;
+  const cutDeg = sol ? (sol.cutDeg || 0) : 0;
+  const geoPct = sol ? Math.round(Math.min(0.97, sol.aimFraction || 0) * 100) : 0;
+  const compPct = geoPct; // banker uses its own throw model via FAT/MED/THIN
+  const el = (id) => document.getElementById(id);
+  const dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? 'L' : 'R');
+  if(el('td-cut'))  el('td-cut').textContent  = cutDeg.toFixed(1) + '°' + dir;
+  if(el('td-geo'))  el('td-geo').textContent  = geoPct + '%';
+  if(el('td-comp')) el('td-comp').textContent = compPct + '%';
+}
+
+function recordThrowShot() {
+  const sols = typeof allSolutions === 'function' ? allSolutions() : [];
+  const sol = sols.length > 0 ? sols[S.activeSol || 0] : null;
+  const cutDeg = sol ? (sol.cutDeg || 0) : 0;
+  if (cutDeg < 0.5) { alert('Set a cut angle first.'); return; }
+  const geoPct = Math.round(Math.min(0.97, sol.aimFraction || 0) * 100);
+  const compPct = geoPct;
+  const dir = S._diagDragRh ? 'L' : 'R';
+  const rail = document.getElementById('td-rail')?.checked || false;
+  const note = document.getElementById('td-note')?.value.trim() || '';
+  // Banker throw values from FAT/MED/THIN sliders
+  const fatEl = document.getElementById('sl-bias-fat');
+  const medEl = document.getElementById('sl-bias-med');
+  const hiEl  = document.getElementById('sl-bias-thin');
+  const record = {
+    ts: Date.now(),
+    cutDeg: Math.round(cutDeg * 10) / 10,
+    dir,
+    geoPct,
+    compPct,
+    tLo: fatEl ? parseInt(fatEl.value) : 0,
+    tMi: medEl ? parseInt(medEl.value) : 0,
+    tHi: hiEl  ? parseInt(hiEl.value)  : 0,
+    rail,
+    note
+  };
+  throwData.push(record);
+  saveThrowData();
+  if(document.getElementById('td-note')) document.getElementById('td-note').value = '';
+  buildThrowList();
+}
+
+function buildThrowList() {
+  const el = document.getElementById('throw-data-list');
+  if (!el) return;
+  if (!throwData.length) {
+    el.innerHTML = '<div style="padding:16px 12px;font-size:13px;color:#888888;text-align:center;">No data recorded yet.<br>Set sliders, shoot, then tap RECORD.</div>';
+    return;
+  }
+  const rows = throwData.slice().reverse().map((r, ri) => {
+    const i = throwData.length - 1 - ri;
+    const d = new Date(r.ts);
+    const dt = (d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+    return '<div style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #dddddd;font-size:12px;background:#ffffff;">' +
+      '<div style="flex:1;">' +
+        '<span style="color:#111111;font-weight:900;">' + r.cutDeg + '°' + r.dir + '</span>' +
+        '<span style="color:#888888;margin:0 4px;">·</span>' +
+        '<span style="color:#444444;">geo ' + r.geoPct + '%</span>' +
+        '<span style="color:#888888;margin:0 4px;">→</span>' +
+        '<span style="color:#1a4a1a;font-weight:900;">' + r.compPct + '%</span>' +
+        (r.rail ? '<span style="color:#666666;margin-left:6px;font-size:11px;">rail</span>' : '') +
+        (r.note ? '<div style="color:#555555;margin-top:2px;font-style:italic;">' + r.note + '</div>' : '') +
+        '<div style="color:#999999;margin-top:2px;font-size:10px;">T-LO:'+r.tLo+'% T-MI:'+r.tMi+'% T-HI:'+r.tHi+'% · '+dt+'</div>' +
+      '</div>' +
+      '<button onclick="deleteThrowRecord('+i+')" style="padding:3px 8px;border-radius:3px;border:1px solid #cc3333;background:#ffffff;color:#cc3333;cursor:pointer;font-size:11px;font-weight:900;">✕</button>' +
+    '</div>';
+  }).join('');
+  el.innerHTML = rows;
+}
+
+function deleteThrowRecord(i) {
+  throwData.splice(i, 1);
+  saveThrowData();
+  buildThrowList();
+}
+
+function exportThrowData() {
+  if (!throwData.length) { alert('No data recorded yet.'); return; }
+  const header = 'Date,Cut°,Dir,Geo%,Comp%,T-LO,T-MID,T-HI,Rail,Note';
+  const rows = throwData.map(r => {
+    const d = new Date(r.ts);
+    const dt = d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+    return [dt, r.cutDeg, r.dir, r.geoPct, r.compPct, r.tLo, r.tMi, r.tHi, r.rail?'yes':'no', '"'+(r.note||'')+'"'].join(',');
+  });
+  const csv = header + '\n' + rows.join('\n');
+  let box = document.getElementById('throw-export-box');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'throw-export-box';
+    box.style.cssText = 'position:fixed;z-index:9999;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #888;border-radius:8px;padding:16px;width:min(500px,95vw);box-shadow:0 8px 32px rgba(0,0,0,0.4);';
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;';
+    hdr.innerHTML = '<span style="font-weight:900;font-size:13px;color:#111;">Copy this data</span>';
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕';
+    closeBtn.style.cssText = 'border:none;background:none;font-size:20px;cursor:pointer;color:#333;';
+    closeBtn.onclick = function(){ box.remove(); };
+    hdr.appendChild(closeBtn);
+    box.appendChild(hdr);
+    const ta = document.createElement('textarea');
+    ta.id = 'throw-csv-text';
+    ta.readOnly = true;
+    ta.style.cssText = 'width:100%;height:180px;font-family:monospace;font-size:11px;border:1px solid #ccc;border-radius:4px;padding:8px;box-sizing:border-box;color:#111;background:#f9f9f9;resize:vertical;';
+    box.appendChild(ta);
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'SELECT ALL & COPY';
+    copyBtn.style.cssText = 'width:100%;margin-top:10px;padding:8px;background:#1a4a1a;color:#fff;border:none;border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;';
+    copyBtn.onclick = function(){
+      const t = document.getElementById('throw-csv-text');
+      t.select(); document.execCommand('copy');
+      copyBtn.textContent = 'Copied!';
+      setTimeout(function(){ copyBtn.textContent = 'SELECT ALL & COPY'; }, 1500);
+    };
+    box.appendChild(copyBtn);
+    document.body.appendChild(box);
+  }
+  document.getElementById('throw-csv-text').value = csv;
+}
+function updateSnapLabels(svgEl) {
+  if (!svgEl) svgEl = document.getElementById('tbl');
+  if (!svgEl || !snapOn) {
+    ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
+    ['cb','ob','combined'].forEach(id => { const e = document.getElementById('snap-svg-lbl-'+id); if(e) e.remove(); });
+    return;
+  }
+  const rect = svgEl.getBoundingClientRect();
+  const vb = svgEl.viewBox.baseVal;
+  const toScreen = (sx, sy) => ({
+    x: rect.left + (sx / vb.width)  * rect.width,
+    y: rect.top  + (sy / vb.height) * rect.height
+  });
+
+  // Top rail screen Y — place labels just above it
+  const railTop = rect.top + (TL.top / vb.height) * rect.height;
+  const LBL_Y = railTop - 39; // 35px higher
+
+  const pos = window._snapPos || {};
+  const overlay = document.getElementById('snap-labels-overlay') || svgEl;
+
+  const oldCombined = document.getElementById('snap-svg-lbl-combined');
+  if (oldCombined) oldCombined.remove();
+
+  ['cb','ob'].forEach(id => {
+    const p = pos[id];
+    const oldGrp = document.getElementById('snap-svg-lbl-' + id);
+    if (oldGrp) oldGrp.remove();
+  });
+
+  const cbP = pos['cb'], obP = pos['ob'];
+  if (!cbP || !obP) return;
+
+  // Compute x positions — offset if balls share the same column
+  const charW = 5.5, bgH = 13, svgY = 8;
+  const cbText = 'CB: ' + (cbP.label || '?');
+  const obText = 'OB: ' + (obP.label || '?');
+  const cbBgW = cbText.length * charW + 10;
+  const obBgW = obText.length * charW + 10;
+
+  let cbX = cbP.x, obX = obP.x;
+  const minSep = (cbBgW + obBgW) / 2 + 4;
+  if (Math.abs(cbX - obX) < minSep) {
+    // Push apart: CB left, OB right
+    const mid = (cbX + obX) / 2;
+    cbX = mid - minSep / 2;
+    obX = mid + minSep / 2;
+    // Clamp to table width
+    cbX = Math.max(cbBgW/2 + 2, Math.min(458 - cbBgW/2, cbX));
+    obX = Math.max(obBgW/2 + 2, Math.min(458 - obBgW/2, obX));
   }
 
-  window.addEventListener('load', function(){
-    panel  = document.getElementById('shot-library-panel');
-    header = document.getElementById('shot-lib-header');
-    if (!panel || !header) return;
+  [[cbText, cbX, cbBgW, 'cb'], [obText, obX, obBgW, 'ob']].forEach(([text, sx, bgW, id]) => {
+    const grp = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    grp.id = 'snap-svg-lbl-' + id;
 
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('x', sx - bgW/2);
+    bg.setAttribute('y', svgY - 9);
+    bg.setAttribute('width', bgW);
+    bg.setAttribute('height', bgH);
+    bg.setAttribute('rx', '2');
+    bg.setAttribute('fill', 'rgba(0,0,0,0.85)');
+
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('font-family', 'Lato,sans-serif');
+    txt.setAttribute('font-size', '9');
+    txt.setAttribute('font-weight', '900');
+    txt.setAttribute('fill', '#f0df70');
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('x', sx);
+    txt.setAttribute('y', svgY);
+    txt.textContent = text;
+
+    grp.appendChild(bg);
+    grp.appendChild(txt);
+    overlay.appendChild(grp);
+  });
+}
+
+const GRID_POS = {
+  a:[0,50], b:[0,25], c:[0,0], d:[25,0],
+  e:[50,0], f:[50,25], g:[50,50], h:[25,50],
+  '':[25,25]
+};
+function xyToGrid(x, y) {
+  let best = null, bestD = 99;
+  for (let sq = 1; sq <= 32; sq++) {
+    const row = Math.floor((sq-1)/8), col = (sq-1)%8;
+    const tx = 30+col*50, ty = 30+row*50;
+    for (const [p,[dx,dy]] of Object.entries(GRID_POS)) {
+      const d = Math.hypot(x-(tx+dx), y-(ty+dy));
+      if (d < bestD) { bestD=d; best=sq+p; }
+    }
+  }
+  return best;
+}
+
+function clearThrowData() {
+  if (!confirm('Clear all throw comp data?')) return;
+  throwData = [];
+  saveThrowData();
+  buildThrowList();
+}
+
+// Update current shot display when render fires
+const _origRender = window.render;
+window.render = function() {
+  _origRender && _origRender();
+  if (throwPanelOpen) updateThrowPanelCurrent();
+  // Keep snap labels current after every render (covers loadShot, drag, etc.)
+  if (!window._snapPos) window._snapPos = {};
+  window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
+  window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
+  updateSnapLabels(document.getElementById('tbl'));
+};
+
+// Draggable panel
+(function(){
+  var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
+  window.addEventListener('load', function(){
+    // Show snap labels immediately on load
+    setTimeout(function(){
+      if (!window._snapPos) window._snapPos = {};
+      window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
+      window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
+      updateSnapLabels(document.getElementById('tbl'));
+    }, 300);
+    panel  = document.getElementById('throw-panel');
+    header = document.getElementById('throw-panel-header');
+    if (!panel || !header) return;
+    // Position center-right on first open
+    panel.style.top  = '80px';
+    panel.style.left = Math.max(4, window.innerWidth - 440) + 'px';
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName === 'BUTTON') return;
       var r = panel.getBoundingClientRect();
@@ -3637,173 +3724,14 @@ function biasStep(dir){
     header.addEventListener('pointermove', function(e){
       if (activePtr===null || e.pointerId!==activePtr) return;
       var dx=e.clientX-startX, dy=e.clientY-startY;
-      if (!didDrag && Math.hypot(dx,dy)>8){
-        didDrag=true;
-        try{ header.setPointerCapture(e.pointerId); }catch(ex){}
-      }
+      if (!didDrag && Math.hypot(dx,dy)>8) { didDrag=true; try{header.setPointerCapture(e.pointerId);}catch(ex){} }
       if (!didDrag) return;
       var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
       var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
     });
-    header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    header.addEventListener('pointerup', function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
-
-    // ── Resize grip ──────────────────────────────────────────────────────────
-    var grip = document.getElementById('shot-lib-resize');
-    var list = document.getElementById('shot-library-list');
-    var rStartY, rStartH, rPtr=null;
-    if (grip && list) {
-      grip.addEventListener('pointerdown', function(e){
-        rStartY = e.clientY;
-        rStartH = list.offsetHeight;
-        rPtr = e.pointerId;
-        try{ grip.setPointerCapture(e.pointerId); }catch(x){}
-        e.stopPropagation();
-      });
-      grip.addEventListener('pointermove', function(e){
-        if(rPtr===null||e.pointerId!==rPtr) return;
-        var dy = e.clientY - rStartY;
-        var newH = Math.max(44, Math.min(window.innerHeight * 0.75, rStartH + dy));
-        list.style.maxHeight = newH + 'px';
-        list.style.height    = newH + 'px';
-      });
-      grip.addEventListener('pointerup',     function(e){ if(e.pointerId===rPtr) rPtr=null; });
-      grip.addEventListener('pointercancel', function(e){ if(e.pointerId===rPtr) rPtr=null; });
-    }
-  });
-
-  // Hook into toggleShotLibrary to position on first open
-  var _orig = window.toggleShotLibrary;
-  window.addEventListener('load', function(){
-    var origToggle = window.toggleShotLibrary;
-    window.toggleShotLibrary = function(){
-      origToggle();
-      if (!positioned && panel && panel.style.display !== 'none') {
-        requestAnimationFrame(positionUnderTable);
-      }
-    };
-  });
-})();
-</script>
-
-<!-- ── THROW COMP DATA PANEL ─────────────────────────────────── -->
-<div id="throw-panel" style="display:none;position:fixed;z-index:8888;width:min(420px,96vw);
-     background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;
-     box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
-  <div id="throw-panel-header" style="display:flex;justify-content:space-between;align-items:center;
-       padding:10px 12px;background:#f0f0f0;border-bottom:2px solid #cccccc;
-       cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
-    <span style="font-size:13px;font-weight:900;letter-spacing:1px;color:#111111;">THROW COMP DATA</span>
-    <button onclick="toggleThrowPanel()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;">✕</button>
-  </div>
-  <div style="padding:10px 12px;border-bottom:2px solid #dddddd;background:#ffffff;">
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-      <div style="flex:1;font-size:13px;color:#111111;font-weight:700;">
-        <span style="color:#333333;">Cut:</span> <span id="td-cut" style="color:#000;">—</span>
-        &nbsp;&nbsp;<span style="color:#333333;">Geo%:</span> <span id="td-geo" style="color:#000;">—</span>
-        &nbsp;&nbsp;<span style="color:#333333;">Comp%:</span> <span id="td-comp" style="color:#000;font-weight:900;">—</span>
-      </div>
-    </div>
-    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#111111;cursor:pointer;font-weight:700;">
-        <input type="checkbox" id="td-rail" style="width:16px;height:16px;"> Rail shot
-      </label>
-      <input id="td-note" type="text" placeholder="Note (optional)…" autocomplete="off"
-        style="flex:1;min-width:80px;background:#ffffff;border:1px solid #999999;
-               border-radius:4px;padding:5px 8px;color:#111111;font-size:13px;outline:none;">
-      <button onclick="recordThrowShot()" style="padding:6px 16px;border-radius:4px;border:none;
-              background:#1a4a1a;color:#ffffff;font-family:'Lato',sans-serif;font-size:13px;
-              font-weight:900;cursor:pointer;white-space:nowrap;">RECORD</button>
-    </div>
-  </div>
-  <div id="throw-data-list" style="max-height:min(45vh,340px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;"></div>
-  <div style="display:flex;gap:6px;padding:8px 12px;border-top:2px solid #cccccc;background:#f0f0f0;">
-    <button onclick="exportThrowData()" style="flex:1;padding:7px;border-radius:4px;border:1px solid #888888;
-            background:#ffffff;color:#111111;font-size:12px;font-weight:900;cursor:pointer;">EXPORT CSV</button>
-    <button onclick="clearThrowData()" style="padding:7px 14px;border-radius:4px;border:1px solid #cc3333;
-            background:#ffffff;color:#cc3333;font-size:12px;font-weight:900;cursor:pointer;">CLEAR</button>
-  </div>
-</div>
-
-<script>
-let throwPanelOpen = false;
-let throwData = [];
-function loadThrowData(){ try{ throwData=JSON.parse(localStorage.getItem('lz-banker-throw')||'[]'); }catch(e){ throwData=[]; } }
-function saveThrowData(){ try{ localStorage.setItem('lz-banker-throw', JSON.stringify(throwData)); }catch(e){} }
-function toggleThrowPanel(){
-  throwPanelOpen=!throwPanelOpen;
-  const panel=document.getElementById('throw-panel');
-  if(!panel) return;
-  panel.style.display=throwPanelOpen?'block':'none';
-  if(throwPanelOpen){ loadThrowData(); buildThrowList(); }
-}
-function recordThrowShot(){
-  const cutDeg = S.diagCutDeg||0;
-  if(cutDeg<0.5){ alert('Set a cut angle first.'); return; }
-  const geoPct = Math.round(Math.abs(S.diagFraction||0)*100);
-  const compPct = Math.round(Math.min(1, Math.abs(S.diagFraction||0)*1.5+getThrowComp(cutDeg))*100);
-  const dir = S._diagDragRh ? 'L' : 'R';
-  const rail = document.getElementById('td-rail')?.checked||false;
-  const note = document.getElementById('td-note')?.value.trim()||'';
-  throwData.push({ ts:Date.now(), cutDeg:Math.round(cutDeg*10)/10, dir,
-    geoPct, compPct, tLo:Math.round(throwLo*50), tMi:Math.round(throwMi*50), tHi:Math.round(throwHi*50), rail, note });
-  saveThrowData();
-  if(document.getElementById('td-note')) document.getElementById('td-note').value='';
-  buildThrowList();
-}
-function buildThrowList(){
-  const el=document.getElementById('throw-data-list');
-  if(!el) return;
-  if(!throwData.length){ el.innerHTML='<div style="padding:16px 12px;font-size:13px;color:#888;text-align:center;">No data yet. Set sliders, shoot, tap RECORD.</div>'; return; }
-  el.innerHTML=throwData.slice().reverse().map((r,ri)=>{
-    const i=throwData.length-1-ri;
-    const d=new Date(r.ts);
-    const dt=(d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
-    return '<div style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #ddd;font-size:12px;background:#fff;">'+
-      '<div style="flex:1;"><span style="font-weight:900;">'+r.cutDeg+'°'+r.dir+'</span> · geo '+r.geoPct+'% → <span style="color:#1a4a1a;font-weight:900;">'+r.compPct+'%</span>'+
-      (r.rail?'<span style="color:#666;margin-left:6px;">rail</span>':'')+
-      (r.note?'<div style="color:#555;font-style:italic;">'+r.note+'</div>':'')+
-      '<div style="color:#999;font-size:10px;">T-LO:'+r.tLo+'% T-MI:'+r.tMi+'% T-HI:'+r.tHi+'% · '+dt+'</div></div>'+
-      '<button onclick="deleteThrowRecord('+i+')" style="padding:3px 8px;border:1px solid #c33;background:#fff;color:#c33;border-radius:3px;cursor:pointer;font-weight:900;">✕</button></div>';
-  }).join('');
-}
-function deleteThrowRecord(i){ throwData.splice(i,1); saveThrowData(); buildThrowList(); }
-function exportThrowData(){
-  if(!throwData.length){ alert('No data yet.'); return; }
-  const header='Date,Cut°,Dir,Geo%,Comp%,T-LO,T-MID,T-HI,Rail,Note';
-  const rows=throwData.map(r=>{ const d=new Date(r.ts); return [d.toLocaleDateString()+' '+d.toLocaleTimeString(),r.cutDeg,r.dir,r.geoPct,r.compPct,r.tLo,r.tMi,r.tHi,r.rail?'yes':'no','"'+(r.note||'')+'"'].join(','); });
-  const csv=header+'\n'+rows.join('\n');
-  let box=document.getElementById('throw-export-box');
-  if(!box){
-    box=document.createElement('div'); box.id='throw-export-box';
-    box.style.cssText='position:fixed;z-index:9999;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #888;border-radius:8px;padding:16px;width:min(500px,95vw);box-shadow:0 8px 32px rgba(0,0,0,0.4);';
-    const hdr=document.createElement('div'); hdr.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;';
-    hdr.innerHTML='<span style="font-weight:900;font-size:13px;color:#111;">Copy this data</span>';
-    const cb=document.createElement('button'); cb.textContent='✕'; cb.style.cssText='border:none;background:none;font-size:20px;cursor:pointer;color:#333;'; cb.onclick=function(){ box.remove(); };
-    hdr.appendChild(cb); box.appendChild(hdr);
-    const ta=document.createElement('textarea'); ta.id='throw-csv-text'; ta.readOnly=true;
-    ta.style.cssText='width:100%;height:160px;font-family:monospace;font-size:11px;border:1px solid #ccc;border-radius:4px;padding:8px;box-sizing:border-box;color:#111;background:#f9f9f9;resize:vertical;';
-    box.appendChild(ta);
-    const cpBtn=document.createElement('button'); cpBtn.textContent='SELECT ALL & COPY';
-    cpBtn.style.cssText='width:100%;margin-top:10px;padding:8px;background:#1a4a1a;color:#fff;border:none;border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;';
-    cpBtn.onclick=function(){ const t=document.getElementById('throw-csv-text'); t.select(); document.execCommand('copy'); cpBtn.textContent='Copied!'; setTimeout(function(){ cpBtn.textContent='SELECT ALL & COPY'; },1500); };
-    box.appendChild(cpBtn); document.body.appendChild(box);
-  }
-  document.getElementById('throw-csv-text').value=csv;
-}
-function clearThrowData(){ if(!confirm('Clear all throw comp data?')) return; throwData=[]; saveThrowData(); buildThrowList(); }
-// Draggable panel
-(function(){
-  var panel,header,startX,startY,origLeft,origTop,didDrag,activePtr=null;
-  window.addEventListener('load',function(){
-    panel=document.getElementById('throw-panel');
-    header=document.getElementById('throw-panel-header');
-    if(!panel||!header) return;
-    panel.style.top='80px'; panel.style.left=Math.max(4,window.innerWidth-440)+'px';
-    header.addEventListener('pointerdown',function(e){ if(e.target.tagName==='BUTTON') return; var r=panel.getBoundingClientRect(); startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top; didDrag=false; activePtr=e.pointerId; });
-    header.addEventListener('pointermove',function(e){ if(activePtr===null||e.pointerId!==activePtr) return; var dx=e.clientX-startX,dy=e.clientY-startY; if(!didDrag&&Math.hypot(dx,dy)>8){didDrag=true;try{header.setPointerCapture(e.pointerId);}catch(ex){}} if(!didDrag) return; panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px'; panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px'; });
-    header.addEventListener('pointerup',function(e){ if(e.pointerId===activePtr) activePtr=null; });
     loadThrowData();
   });
 })();
