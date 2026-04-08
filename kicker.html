@@ -266,16 +266,50 @@ function gridDesc(cb, ob, pocket) {
 }
 
 const SHOT_LIBRARY = [
-  { name: '5-Rail → P1', cb:{x:230,y:205}, angle:-2.6104, rails:5,
-    ob:{x:39, y:39},  desc: 'CB '+xyToGrid(230,205)+' → left rail @ 1.15, 5 rails → P1' },
-  { name: '5-Rail → P2', cb:{x:130,y:205}, angle:-2.4429, rails:5,
-    ob:{x:230,y:30},  desc: 'CB '+xyToGrid(130,205)+' → left rail @ 1.82, 5 rails → P2' },
-  { name: '4-Rail → P3', cb:{x:130,y:205}, angle:-2.3064, rails:4,
-    ob:{x:430,y:30},  desc: 'CB '+xyToGrid(130,205)+' → left rail @ 1.29, 4 rails → P3' },
-  { name: '3-Rail → P5', cb:{x:230,y:155}, angle:-2.4676, rails:3,
-    ob:{x:230,y:230}, desc: 'CB '+xyToGrid(230,155)+' → top rail @ 0.87, 3 rails → P5' },
-  { name: '3-Rail → P4', cb:{x:230,y:180}, angle:-2.6049, rails:3,
-    ob:{x:39, y:221}, desc: 'CB '+xyToGrid(230,180)+' → left rail @ 0.62, 3 rails → P4' },
+  // ── ONE-RAIL KICKS — LONG RAIL ────────────────────────────────────────────
+  // K1: The bread-and-butter safety answer. CB center table, OB near top rail.
+  // Most common kick in the game. Learn this position cold.
+  { name:'K1', cb:{x:230,y:155}, ob:{x:155,y:80},  angle:-1.9757, rails:1,
+    desc:'Long rail kick · CB center · OB near top rail left',
+    cbLabel:'20f', obLabel:'3h', subshot:false },
+
+  // K2: CB near bottom-left corner area, OB across table on right side.
+  // Comes up when pinned in the corner after a missed safety.
+  { name:'K2', cb:{x:80,y:180},  ob:{x:305,y:130}, angle:0.5880,  rails:1,
+    desc:'Long rail kick · CB near corner · OB across table',
+    cbLabel:'17g', obLabel:'14h', subshot:false },
+
+  // K3: Steep angle — CB near right rail, OB on far top-left.
+  // Forces a sharper-than-usual rebound. Speed critical.
+  { name:'K3', cb:{x:430,y:205}, ob:{x:55,y:80},   angle:-2.6012, rails:1,
+    desc:'Long rail kick · steep angle · CB right · OB top-left',
+    cbLabel:'32g', obLabel:'1h', subshot:false },
+
+  // ── ONE-RAIL KICKS — SHORT RAIL ───────────────────────────────────────────
+  // K4: CB bottom-center, kick off left short rail to reach OB top-right area.
+  // Short rail kicks travel the full length — distance magnifies every error.
+  { name:'K4', cb:{x:230,y:180}, ob:{x:305,y:80},  angle:-2.9341, rails:1,
+    desc:'Short rail kick · CB center bottom · OB top right',
+    cbLabel:'20g', obLabel:'6h', subshot:false },
+
+  // ── TWO-RAIL KICKS ────────────────────────────────────────────────────────
+  // K5: Corner-to-corner — long rail then short rail. The most reliable two-railer.
+  // The geometry is forgiving; this pattern repeats across the whole table.
+  { name:'K5', cb:{x:430,y:180}, ob:{x:55,y:180},  angle:-2.5269, rails:2,
+    desc:'Two-rail · top then left · corner-to-corner',
+    cbLabel:'32g', obLabel:'17b', subshot:false },
+
+  // K6: Short rail then long rail — the reverse pattern of K5.
+  // Useful when the direct corner-to-corner route is blocked.
+  { name:'K6', cb:{x:180,y:130}, ob:{x:305,y:180}, angle:2.8023,  rails:2,
+    desc:'Two-rail · left then bottom · reverse corner pattern',
+    cbLabel:'11g', obLabel:'22h', subshot:false },
+
+  // K7: Two long rails — top then bottom, ball comes straight back.
+  // Rare but reliable when both short-rail routes are blocked.
+  { name:'K7', cb:{x:230,y:155}, ob:{x:230,y:180}, angle:-1.5708, rails:2,
+    desc:'Two-rail · top then bottom · straight return',
+    cbLabel:'20f', obLabel:'20g', subshot:false },
 ];
 let libraryOpen = false;
 // ── USER SHOT LIBRARY ──────────────────────────────────────────
