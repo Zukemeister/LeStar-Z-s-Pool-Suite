@@ -59,9 +59,9 @@ h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-b
 .sval{font-size:15px;font-weight:900;min-width:70px;text-align:right;white-space:nowrap;color:#f0df70;}
 input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
-#block-sliders.#block-sliders.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
-#block-sliders.#block-sliders.sliders-unlocked input[type=range]{height:8px;}
-#block-sliders.#block-sliders.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
+#block-sliders.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
+#block-sliders.sliders-unlocked input[type=range]{height:8px;}
+#block-sliders.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
 .sgroup{background:rgba(0,0,0,0.18);border-radius:7px;padding:7px 10px 6px 10px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.07);}
 .srow{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
 .slbl{font-size:11px;color:#e8e8e8;min-width:52px;font-weight:700;}
@@ -100,7 +100,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 #bounce-pills{display:flex;gap:4px;padding:4px 0 2px;}
 .bpill{height:22px;padding:0 10px;border-radius:6px;border:none;font-family:'Lato',sans-serif;font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;display:inline-flex;align-items:center;background:rgba(240,223,112,0.18);color:rgba(240,223,112,0.6);outline:none;-webkit-tap-highlight-color:transparent;}
 .bpill.active{background:#f0df70;color:#1a1a1a;}
-#cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
 #cal-panel.open{display:block;}
 #cal-instruction{font-size:12px;color:#ffffff;font-weight:700;margin-bottom:8px;line-height:1.55;}
 #cal-status{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.05em;margin-bottom:8px;text-transform:uppercase;}
@@ -208,7 +207,7 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.15);padding:
   width: auto;
   max-width: calc(100vw - 8px);
   box-sizing: border-box;
-  z-index: 9999;
+  z-index: 8800;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -349,11 +348,19 @@ if ('serviceWorker' in navigator) {
   });
 }
 const SHOT_LIBRARY = [
-  { name:'B1', cb:{x:130,y:155}, ob:{x:155,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side', cbLabel:'18f', obLabel:'3h',  pocketLabel:'5', manualAnchor:'b1', text:'This shot, B1, attempts to set up the easiest shot, that theoretically has no spin, no cut. Set it up, shoot with moderate speed. See where it goes. What is the correction that makes it go? Make it go and set it on the sliders. Now what is the REAL angle that makes the shot go? Remember it, and remember how much from ideal you had to correct it. Then shoot it hard. Then shoot it easy. What happened? What do you have to do to make that shot go with those changes? Now, go back to your first, correct shot again. Do it with left spin and with right. What happened? What correction of aiming do you have to make?' },
-  { name:'B2', cb:{x:230,y:155}, ob:{x:280,y:80}, pocket:'BR', sol:0, cut:0, rh:false, desc:'Cross-corner', cbLabel:'20f', obLabel:'5g', pocketLabel:'4', manualAnchor:'b2' },
-  { name:'B3', cb:{x:180,y:180}, ob:{x:180,y:80}, pocket:'BL', sol:0, cut:0, rh:false, desc:'', cbLabel:'',    obLabel:'',     pocketLabel:'6' },
-  { name:'B4', cb:{x:280,y:180}, ob:{x:280,y:80}, pocket:'BR', sol:0, cut:0, rh:false, desc:'', cbLabel:'',    obLabel:'',     pocketLabel:'4' },
-  { name:'B5', cb:{x:380,y:180}, ob:{x:380,y:80}, pocket:'BL', sol:0, cut:0, rh:false, desc:'', cbLabel:'',    obLabel:'',     pocketLabel:'6' },
+  { name:'B1',  cb:{x:130,y:155}, ob:{x:155,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side', cbLabel:'18f', obLabel:'3h',  pocketLabel:'5', manualAnchor:'b1', text:'This shot, B1, attempts to set up the easiest shot, that theoretically has no spin, no cut. Set it up, shoot with moderate speed. See where it goes. What is the correction that makes it go? Make it go and set it on the sliders. Now what is the REAL angle that makes the shot go? Remember it, and remember how much from ideal you had to correct it. Then shoot it hard. Then shoot it easy. What happened? What do you have to do to make that shot go with those changes? Now, go back to your first, correct shot again. Do it with left spin and with right. What happened? What correction of aiming do you have to make?' },
+  { name:'B1a', cb:{x:105,y:155}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side · ½ diamond left',  cbLabel:'18',  obLabel:'3a', pocketLabel:'5', manualAnchor:'b1', subshot:true },
+  { name:'B1b', cb:{x:155,y:155}, ob:{x:180,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side · ½ diamond right', cbLabel:'19',  obLabel:'3g', pocketLabel:'5', manualAnchor:'b1', subshot:true },
+  { name:'B1c', cb:{x:80, y:155}, ob:{x:105,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side · 1 diamond left',  cbLabel:'17f', obLabel:'2h', pocketLabel:'5', manualAnchor:'b1', subshot:true },
+  { name:'B2',  cb:{x:230,y:155}, ob:{x:280,y:80}, pocket:'BR', sol:0, cut:0, rh:false, desc:'Cross-corner', cbLabel:'20f', obLabel:'5g', pocketLabel:'4', manualAnchor:'b2' },
+  { name:'B2a', cb:{x:255,y:155}, ob:{x:305,y:80}, pocket:'BR', sol:0, cut:0, rh:false, desc:'Cross-corner · ½ diamond right', cbLabel:'21',  obLabel:'6h', pocketLabel:'4', subshot:true },
+  { name:'B2b', cb:{x:205,y:155}, ob:{x:255,y:80}, pocket:'BR', sol:0, cut:0, rh:false, desc:'Cross-corner · ½ diamond left',  cbLabel:'20',  obLabel:'5h', pocketLabel:'4', subshot:true },
+  { name:'B2c', cb:{x:180,y:155}, ob:{x:230,y:80}, pocket:'BR', sol:0, cut:0, rh:false, desc:'Cross-corner · 1 diamond left',  cbLabel:'19f', obLabel:'5a', pocketLabel:'4', subshot:true },
+  { name:'B3',  cb:{x:180,y:155}, ob:{x:180,y:40}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Rail bank · OB frozen', cbLabel:'19f', obLabel:'3e', pocketLabel:'5' },
+  { name:'B3a', cb:{x:130,y:155}, ob:{x:130,y:40}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Rail bank · 1 diamond left',  cbLabel:'18f', obLabel:'2e', pocketLabel:'5', subshot:true },
+  { name:'B4',  cb:{x:180,y:130}, ob:{x:80, y:105}, pocket:'TR', sol:0, cut:0, rh:false, desc:'Short rail bank', cbLabel:'11g', obLabel:'9f',  pocketLabel:'3' },
+  { name:'B5',  cb:{x:180,y:180}, ob:{x:80, y:155}, pocket:'TR', sol:0, cut:0, rh:false, desc:'Short rail bank', cbLabel:'19g', obLabel:'17f', pocketLabel:'3' },
+  { name:'B6',  cb:{x:180,y:155}, ob:{x:80, y:180}, pocket:'BR', sol:0, cut:0, rh:false, desc:'Short rail bank', cbLabel:'19f', obLabel:'17g', pocketLabel:'4' },
 ];
 let libraryOpen = false;
 // ── USER SHOT LIBRARY ──────────────────────────────────────────
@@ -411,12 +418,14 @@ function buildShotList() {
     const title = s.desc ? s.name + ' · ' + s.desc : s.name;
     const coords = 'Cue Ball: ' + cbLbl + '&nbsp;&nbsp;&nbsp;Object Ball: ' + obLbl + '&nbsp;&nbsp;&nbsp;Pocket: ' + pLbl;
     const manualLink = s.manualAnchor
-      ? '<a href="banker-manual.html#' + s.manualAnchor + '" target="_blank" onclick="event.stopPropagation()" style="font-size:10px;font-weight:900;color:#1a6830;text-decoration:none;border-bottom:1px solid #1a6830;">Read more →</a>'
+      ? '<a href="banker-manual.html#' + s.manualAnchor + '" target="_blank" ontouchend="event.stopPropagation()" onmousedown="event.stopPropagation()" style="font-size:10px;font-weight:900;color:#1a6830;text-decoration:none;border-bottom:1px solid #1a6830;padding:2px 0;">Read more →</a>'
       : '';
-    return '<div data-preset="' + i + '" class="shot-lib-item" style="padding:8px 12px;border-bottom:1px solid #ddd;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fff;">' +
+    const indent   = s.subshot ? 'padding-left:28px;background:#fafafa;border-left:3px solid #ccc;' : '';
+    const nameSize = s.subshot ? 'font-size:12px;' : 'font-size:13px;';
+    return '<div data-preset="' + i + '" class="shot-lib-item" style="padding:7px 12px;border-bottom:1px solid #ddd;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fff;' + indent + '">' +
       '<div style="flex:1;">' +
         '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:3px;">' +
-          '<div style="font-size:13px;font-weight:900;color:#000;">' + title + '</div>' +
+          '<div style="' + nameSize + 'font-weight:900;color:#000;">' + title + '</div>' +
           manualLink +
         '</div>' +
         '<div style="font-size:11px;font-weight:700;color:#333;">' + coords + '</div>' +
@@ -448,7 +457,10 @@ function buildShotList() {
 function toggleShotLibrary() {
   libraryOpen = !libraryOpen;
   const panel = document.getElementById('shot-library-panel');
-  if (panel) panel.style.display = libraryOpen ? 'block' : 'none';
+  if (panel) {
+    panel.style.display = libraryOpen ? 'block' : 'none';
+    if (libraryOpen) bringToTop('shot-library-panel');
+  }
 }
 function loadShot(idx) {
   const shot = SHOT_LIBRARY[idx];
@@ -511,7 +523,7 @@ function loadShot(idx) {
   </defs>
 </svg>
 <div class="outer-wrap">
-<div id="zoom-wrap" style="flex:1;min-width:0;transform-origin:top left;isolation:isolate;overflow:hidden;"><div class="card">
+<div class="card">
 
 <!-- ── HEADER ── -->
 <div class="hdr">
@@ -530,16 +542,16 @@ function loadShot(idx) {
 </div>
 
 <!-- ── TABLE + AIMING DIAGRAM ── -->
-<div id="block-sliders" style="display:none;position:fixed;z-index:8000;width:min(360px,96vw);min-width:200px;min-height:100px;background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:auto;resize:both;touch-action:none;">
-  <div id="sliders-handle" style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 3px 10px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
-  <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(200,144,240,0.6);">≡ SLIDERS</span>
+<div id="block-sliders" onpointerdown="bringToTop('block-sliders')" style="display:none;position:fixed;z-index:8800;width:min(360px,96vw);min-width:200px;background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;">
+  <div id="sliders-handle" style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 3px 10px;border-bottom:1px solid rgba(255,255,255,0.07);touch-action:none;user-select:none;-webkit-user-select:none;">
+  <span id="sliders-drag-zone" style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(200,144,240,0.6);cursor:grab;flex:1;padding:4px 0;">≡ SLIDERS</span>
   <div style="display:flex;gap:4px;align-items:center;">
     <button id="sliders-active-btn" onclick="toggleSlidersActive()" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:5px;color:#80e080;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ACTIVE</button>
     <button onclick="zeroSliders()" style="background:rgba(240,223,112,0.15);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ZERO</button>
     <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
   </div>
 </div>
-<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Shot Compensation</div>
+<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.55);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Shot Compensation</div>
 <div class="sgroup">
 <div class="srow">
       <span class="slbl" style="color:#b090f0;">speed</span>
@@ -560,7 +572,7 @@ function loadShot(idx) {
       <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
     </div>
 </div>
-<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Table Compensation</div>
+<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.55);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Table Compensation Bias</div>
 <div class="sgroup">
 <div class="srow" style="margin-top:8px">
       <span class="slbl" style="color:#e87030;font-size:9px;" title="Fine-tune around 50% baseline">FAT</span>
@@ -581,11 +593,15 @@ function loadShot(idx) {
       <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="biasStep('thin',-1)">−</button><span id="sv-bias-thin" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="biasStep('thin',1)">+</button></span>
     </div>
 </div>
+  <!-- Resize handle -->
+  <div id="sliders-resize" style="height:14px;display:flex;align-items:center;justify-content:flex-end;padding:0 6px;cursor:se-resize;touch-action:none;user-select:none;">
+    <span style="font-size:10px;color:rgba(255,255,255,0.2);line-height:1;">⇲</span>
+  </div>
   </div><!-- /block-sliders -->
 <div class="diagram-wrap">
-
-  <!-- BIRD'S EYE TABLE -->
-  <div class="svg-box top-box" style="position:relative;">
+  <!-- BIRD'S EYE TABLE — zoom-wrap applies only here -->
+  <div id="zoom-wrap" style="position:relative;transform-origin:top left;overflow:hidden;z-index:1;">
+  <div id="section-table" class="svg-box top-box" style="position:relative;">
     <svg id="tbl" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg" style="touch-action:none;">
     <defs>
       <radialGradient id="gFelt" cx="50%" cy="50%" r="60%">
@@ -603,6 +619,9 @@ function loadShot(idx) {
       <marker id="arr-ob" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#7dd3fc"/></marker>
       <marker id="arr-bk" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#4ade80"/></marker>
       <marker id="arr-ai" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#f0df70" opacity=".7"/></marker>
+      <marker id="arr-stun"   markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#e6e6e6"/></marker>
+      <marker id="arr-follow" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#f97316"/></marker>
+      <marker id="arr-draw"   markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#60a5fa"/></marker>
     </defs>
 
     <g id="tbl-content">
@@ -957,6 +976,24 @@ function loadShot(idx) {
       <!-- Ghost ball (toggleable) -->
       <line id="cb-ghost-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0"/>
       <circle id="ghost-ball" cx="0" cy="0" r="10" fill="rgba(255,255,255,.06)" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3,3" opacity="0"/>
+      <!-- CB path rays: stun (white) / follow (orange) / draw (blue) -->
+      <line id="cb-stun"   x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-stun)"  opacity="0"/>
+      <line id="cb-follow" x1="0" y1="0" x2="0" y2="0" stroke="#f97316"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-follow)" opacity="0"/>
+      <line id="cb-draw"   x1="0" y1="0" x2="0" y2="0" stroke="#60a5fa"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-draw)"   opacity="0"/>
+      <!-- CB path scratch-threat dots at rail -->
+      <circle id="cb-stun-dot"   cx="0" cy="0" r="5" opacity="0"/>
+      <circle id="cb-follow-dot" cx="0" cy="0" r="5" opacity="0"/>
+      <circle id="cb-draw-dot"   cx="0" cy="0" r="5" opacity="0"/>
+      <!-- CB Path legend -->
+      <g id="cb-path-legend" opacity="0">
+        <rect x="348" y="178" width="80" height="46" rx="4" fill="rgba(0,0,0,0.55)"/>
+        <line x1="353" y1="189" x2="370" y2="189" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text x="374" y="192" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">HIGH</text>
+        <line x1="353" y1="201" x2="370" y2="201" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text x="374" y="204" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">MIDDLE</text>
+        <line x1="353" y1="213" x2="370" y2="213" stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text x="374" y="216" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#60a5fa">LOW</text>
+      </g>
 
       <!-- Object ball -->
       <circle id="ob-shadow" cx="281" cy="131" r="10" fill="#000" opacity="0.32"/>
@@ -979,8 +1016,10 @@ function loadShot(idx) {
     </g><!-- dyn -->
     </g><!-- tbl-content -->
     </svg>
-  </div><!-- top-box -->
+  </div><!-- top-box / section-table -->
+  </div><!-- zoom-wrap -->
 
+  <div id="section-aim" style="position:relative;z-index:2;background:#1a361a;">
   <div class="sep"></div>
     <div style="text-align:center;letter-spacing:0.18em;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);padding:3px 0 2px;text-transform:uppercase;">The Doors of Perception</div>
     <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr;gap:4px;margin:4px 0;height:36px;contain:layout style;width:100%;box-sizing:border-box;">
@@ -1103,7 +1142,7 @@ function loadShot(idx) {
         <circle id="bot-ob-lit" cx="230" cy="148" r="82" fill="url(#OGB)" stroke="none" clip-path="url(#revClip)"/>
         <circle id="bot-ob-rim" cx="230" cy="148" r="82" fill="none" stroke="#8a1818" stroke-width="1.5" clip-path="url(#revClip)"/>
         <g id="frac-ticks"></g>
-        <text x="10" y="20" font-family="Lato,sans-serif" font-size="11" font-weight="900" fill="rgba(255,255,255,0.7)" letter-spacing="8">G H O S T</text>
+        <!-- GHOST label removed — panel is the Perception Panel -->
         <!-- CB -->
         <circle id="bot-cb"   cx="230" cy="148" r="82" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5"/>
       
@@ -1152,52 +1191,72 @@ function loadShot(idx) {
         </g>
       </svg>
   </div><!-- aim-wrap -->
-
+  </div><!-- section-aim -->
 </div><!-- diagram-wrap -->
 
-
-
-</div></div>
+<!-- ── BOUNCE / ANGLE PANEL — sits below diagram, shown when ANGLE is on ── -->
+<div id="block-ball">
+  <div id="bounce-pills"></div>
+  <div id="bounce-nums" style="display:none;text-align:center;font-size:11px;color:rgba(255,255,255,0.5);padding:2px 0 4px;letter-spacing:1px;"></div>
+  <div id="bounce-wrap" style="display:none;background:rgba(0,0,0,0.28);border-radius:4px;margin-bottom:6px;overflow:hidden;">
+    <svg id="bounce-svg" viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+      <rect width="460" height="150" fill="rgba(0,0,0,0.28)"/>
+    </svg>
+  </div>
+</div><!-- block-ball -->
 
 <!-- ── CALIBRATION PANEL ── -->
-<div id="cal-panel">
-  <div id="cal-instruction"></div>
-  <div id="cal-status" style="font-size:10px;color:rgba(255,255,255,0.5);margin:3px 0;"></div>
-  <div class="cal-actions" style="display:flex;gap:4px;flex-wrap:wrap;">
+<div id="cal-panel" onpointerdown="bringToTop('cal-panel')" style="display:none;position:fixed;z-index:8800;width:min(380px,96vw);
+     background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;
+     box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
+  <!-- Draggable header -->
+  <div id="cal-panel-header" style="display:flex;justify-content:space-between;align-items:center;
+       padding:10px 12px;background:#f0f0f0;border-bottom:2px solid #cccccc;
+       cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+    <span style="font-size:13px;font-weight:900;letter-spacing:1px;color:#111111;">CALIBRATION</span>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <span id="cal-status" style="font-size:10px;color:#888;font-weight:700;"></span>
+      <button onclick="toggleCal()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;line-height:1;padding:0 2px;">✕</button>
+    </div>
+  </div>
+  <!-- Instruction -->
+  <div style="padding:10px 12px;background:#f8f8f8;border-bottom:1px solid #dddddd;">
+    <div id="cal-instruction" style="font-size:12px;font-weight:700;color:#222;line-height:1.5;"></div>
+  </div>
+  <!-- Actions -->
+  <div style="padding:10px 12px;border-bottom:1px solid #dddddd;display:flex;gap:6px;flex-wrap:wrap;">
     <button class="cal-action-btn primary" id="cal-rec1-btn" onclick="calRecord1()">① RECORD PREDICTED</button>
     <button class="cal-action-btn primary" id="cal-rec2-btn" onclick="calRecord2()" style="display:none;background:#1a5a3a;">② RECORD ACTUAL</button>
     <button class="cal-action-btn" onclick="calUndo()">UNDO</button>
     <button class="cal-action-btn danger" onclick="calReset()">RESET ALL</button>
     <button class="cal-action-btn" onclick="toggleCalLibrary()" style="background:#2a3a5a;color:#aaccff;">LIBRARY</button>
   </div>
-  <div id="cal-result" style="margin-top:4px;"></div>
-  <div id="cal-library" style="display:none;margin-top:6px;max-height:120px;overflow-y:auto;font-size:10px;color:rgba(255,255,255,0.6);border-top:1px solid rgba(255,255,255,0.1);padding-top:4px;"></div>
+  <!-- Result -->
+  <div id="cal-result" style="padding:8px 12px;font-size:11px;color:#88ee88;display:none;line-height:1.65;border-bottom:1px solid #dddddd;background:#f8f8f8;"></div>
+  <!-- Library -->
+  <div id="cal-library" style="display:none;max-height:160px;overflow-y:auto;-webkit-overflow-scrolling:touch;font-size:10px;color:rgba(255,255,255,0.6);padding:6px 12px;background:#1a2e1a;"></div>
 </div>
-<!-- ── BOUNCE PANEL ── -->
-<div id="swap-container" style="display:flex;flex-direction:column;">
-<div id="block-ball"><div id="bounce-pills"></div>
-<div id="bounce-nums" style="display:none;text-align:center;font-size:11px;color:rgba(255,255,255,0.5);padding:2px 0 4px;letter-spacing:1px;"></div>
-<div id="bounce-wrap" style="display:none;background:rgba(0,0,0,0.28);border-radius:4px;margin-bottom:6px;overflow:hidden;">
-  <svg id="bounce-svg" viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
-    <rect width="460" height="150" fill="rgba(0,0,0,0.28)"/>
-  </svg>
-</div>
-</div><!-- /block-ball -->
 
 
-</div><!-- /swap-container -->
 
-  <!-- SHOT LIBRARY PANEL — floating, draggable -->
-  <div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(400px,96vw);background:#ffffff;border:1px solid #cccccc;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
-    <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;background:#f0f0f0;border-bottom:1px solid rgba(255,255,255,0.08);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,0.25);">
-      <span style="font-size:11px;font-weight:900;letter-spacing:1.5px;color:#f0df70;">≡ SHOT LIBRARY</span>
-      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+  <!-- SHOT LIBRARY PANEL — floating, draggable, resizable -->
+  <div id="shot-library-panel" onpointerdown="bringToTop('shot-library-panel')" style="display:none;position:fixed;z-index:8800;width:min(400px,96vw);background:#ffffff;border:1px solid #cccccc;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
+    <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;background:#f0f0f0;border-bottom:1px solid #ddd;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+      <span style="font-size:13px;font-weight:900;letter-spacing:1.5px;color:#000;">≡ LEARN</span>
+      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:#666;font-size:20px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
     </div>
-    <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
-    <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.3);">
+    <div id="shot-library-list" style="max-height:min(380px,55vh);overflow-y:auto;-webkit-overflow-scrolling:touch;cursor:grab;"></div>
+    <div style="display:flex;gap:6px;padding:7px 10px;border-top:1px solid #ddd;background:#f8f8f8;align-items:center;">
       <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
-        style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:5px 8px;color:#f0df70;font-size:13px;outline:none;-webkit-appearance:none;">
+        style="flex:1;min-width:0;background:#fff;border:1px solid #ccc;border-radius:4px;padding:5px 8px;color:#111;font-size:13px;outline:none;-webkit-appearance:none;">
       <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:5px 12px;border-radius:4px;border:none;background:#4ade80;color:#001a00;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;cursor:pointer;">SAVE</button>
+      <div id="learn-panel-resize" style="width:28px;height:28px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:4px;background:#f0f0f0;border:1px solid #ccc;">
+        <span style="font-size:14px;color:#666;line-height:1;">⇲</span>
+      </div>
+    </div>
+    <!-- Bottom drag handle -->
+    <div id="learn-panel-footer-drag" style="height:18px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:#f8f8f8;border-top:1px solid #e8e8e8;">
+      <span style="font-size:11px;color:#bbb;letter-spacing:3px;">⠿</span>
     </div>
   </div>
 
@@ -1243,6 +1302,9 @@ function loadShot(idx) {
 
 <script>
 const DEG = 180/Math.PI, RAD = Math.PI/180;
+// Flags declared here so render() can reference them regardless of script block load order
+let cbPathOn = false;  // CUE PATH button — three CB departure rays
+let panMode  = false;  // PAN button — two-finger pan on zoom-wrap
 const Rb  = 82;   // OB radius in botsvg viewBox units
 const BOT_OCX = 148;
 
@@ -1342,9 +1404,11 @@ function kFactor(cushionNum, obToRailDist) {
 
   // Vertical spin (follow/draw) — modifies rolling bonus
   // Follow adds more topspin on top of natural roll; draw subtracts
-  const vertBonus = S.vert * 0.012;
+  const vertBonus = S.vert * 0.020;
 
-  return Math.max(0.40, Math.min(0.99, base - S.speed * 0.24 + tbl + player + rollingBonus + vertBonus));
+  // Speed range: slow plays long (high k), fast plays short (low k)
+  // 0.40 factor gives noticeable arrow movement across the speed range
+  return Math.max(0.40, Math.min(0.99, base - S.speed * 0.40 + tbl + player + rollingBonus + vertBonus));
 }
 
 // Forward ray from (px,py) in direction (dx,dy), finds nearest rail
@@ -1428,7 +1492,7 @@ function computeDiagShot(sol) {
     if (ddx < 0) { const t=(TL.left  -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='left';} }
     if (ddx > 0) { const t=(TL.right -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='right';} }
     const contact = hitRail ? {x:S.ob.x+ddx*tMin, y:S.ob.y+ddy*tMin, rail:hitRail} : sol.contact;
-    sol.contact = contact; sol.θ = deptAngle;
+    sol.contact = contact; sol.theta = deptAngle;
     const aimF = Math.sin(Math.min(cutDeg,90)*RAD);
     // Rebound
     const pocket = S.target || sol._reboundEnd;
@@ -1439,7 +1503,7 @@ function computeDiagShot(sol) {
     const _rLen = 400;
     const rbEnd = pocket ? snapToPocket(pocket) : snapToPocket({x:contact.x+rdx*_rLen, y:contact.y+rdy*_rLen});
     return {
-      θ: deptAngle, contact, _reboundEnd: rbEnd,
+      theta: deptAngle, contact, _reboundEnd: rbEnd,
       cutDeg, Z_des:cutDeg*RAD, Z_aim:cutDeg*RAD,
       aimFraction:aimF, diagFraction:aimF,
       rebDeg: angleFromRail(rdx,rdy,contact.rail),
@@ -1449,8 +1513,8 @@ function computeDiagShot(sol) {
   }
 
   // OB departure from the bank solution (authoritative rail contact)
-  const solθ = Math.atan2(sol.contact.y - S.ob.y, sol.contact.x - S.ob.x);
-  const sdx = Math.cos(solθ), sdy = Math.sin(solθ);
+  const soltheta = Math.atan2(sol.contact.y - S.ob.y, sol.contact.x - S.ob.x);
+  const sdx = Math.cos(soltheta), sdy = Math.sin(soltheta);
 
   // Cut angle and side from table geometry
   let tableCutDeg = 0;
@@ -1537,7 +1601,7 @@ function computeDiagShot(sol) {
 
   return {
     ...sol,
-    θ: departureAngle,
+    theta: departureAngle,
     contact, rail: contact.rail,
     contact2,
     cutDeg,
@@ -1602,7 +1666,7 @@ function calibratedAimFrac(cutDeg) {
   const cr = Math.sin(Math.min(cutDeg,90)*RAD);
   const cz = Math.cos(47*RAD);
   // Taper corrections from 0 at 0° to full at 25° — prevents cliff-edge jump at low angles
-  // Pure sin(θ) is the correct geometric baseline; corrections build smoothly on top
+  // Pure sin(theta) is the correct geometric baseline; corrections build smoothly on top
   const taper = Math.min(1, cutDeg / 25);
   let f;
   if (cutDeg < 47) {
@@ -1612,7 +1676,7 @@ function calibratedAimFrac(cutDeg) {
   return Math.min(1, f + taper * 0.064*Math.cos(Math.min(cutDeg,90)*RAD)**2);
 }
 function buildSol1(contact) {
-  const θ = Math.atan2(contact.y - S.ob.y, contact.x - S.ob.x);
+  const theta = Math.atan2(contact.y - S.ob.y, contact.x - S.ob.x);
 
   // ── Spin physics stage 1: throw at OB contact ──
   // Aimer protocol: cutThrow + spinThrow, modulated by speed factor
@@ -1621,7 +1685,7 @@ function buildSol1(contact) {
   let cutDeg = 0, Z_des = 0, Z_aim = 0, aimFraction = 0, squirtFraction = 0;
   if (d > 1) {
     const cbToObUnit = {x: cbToOb.x/d, y: cbToOb.y/d};
-    const depUnit    = {x: Math.cos(θ), y: Math.sin(θ)};
+    const depUnit    = {x: Math.cos(theta), y: Math.sin(theta)};
     const dot  = Math.max(-1, Math.min(1, cbToObUnit.x*depUnit.x + cbToObUnit.y*depUnit.y));
     Z_des  = Math.acos(dot);
     cutDeg = Z_des * DEG;
@@ -1655,8 +1719,8 @@ function buildSol1(contact) {
   // aimFraction = sin(cut angle) = lateral offset / (2*BALL_R)
   // ghost is behind OB along the required approach direction, adjusted for throw
   const ghost = {
-    x: S.ob.x - 2 * BALL_R * Math.cos(θ),
-    y: S.ob.y - 2 * BALL_R * Math.sin(θ),
+    x: S.ob.x - 2 * BALL_R * Math.cos(theta),
+    y: S.ob.y - 2 * BALL_R * Math.sin(theta),
   };
 
   // ── Spin physics stage 2: OB running english at rail ──
@@ -1665,7 +1729,7 @@ function buildSol1(contact) {
   // Induced spin magnitude: spin * cos(cutAngle) * 0.10 rad
   const inducedRailSpin = S.spin * Math.cos(Z_des) * 0.10;
 
-  const dx = Math.cos(θ), dy = Math.sin(θ);
+  const dx = Math.cos(theta), dy = Math.sin(theta);
   let rebDeg;
   if (contact.rail === 'top' || contact.rail === 'bottom')
     rebDeg = Math.abs(Math.atan2(Math.abs(dy), Math.abs(dx)) * DEG);
@@ -1676,7 +1740,7 @@ function buildSol1(contact) {
 
   const cross = cbToOb.x * dy - cbToOb.y * dx;
   return {
-    contact, contact2:null, θ, ghost,
+    contact, contact2:null, theta, ghost,
     cutDeg, Z_des, Z_aim, aimFraction, squirtFraction,
     rebDeg, cross, rail:contact.rail,
     label: RAIL_SHORT[contact.rail]
@@ -1707,7 +1771,7 @@ function solutions2Rail() {
       // Verify geometry makes sense — c1 and c2 should not be too close
       if (Math.hypot(c1.x-c2.x, c1.y-c2.y) < 15) continue;
 
-      const θ = Math.atan2(c1.y - S.ob.y, c1.x - S.ob.x);
+      const theta = Math.atan2(c1.y - S.ob.y, c1.x - S.ob.x);
       // Build full solution using buildSol1 which handles all spin physics
       const base = buildSol1(c1);
       // Override rail/contact with 2-cushion specifics
@@ -1987,7 +2051,7 @@ function render() {
     if (ddx > 0) { const t=(TL.right -S.ob.x)/ddx; if(t>0&&t<tMin){tMin=t;hitRail='right';} }
     if (hitRail && tMin < 9999) {
       sol.contact = { x: S.ob.x + ddx*tMin, y: S.ob.y + ddy*tMin, rail: hitRail };
-      sol.θ = deptAngle;
+      sol.theta = deptAngle;
       // Compute actual rebound from first contact
       const k1 = kFactor(1, Math.abs(hitRail==='top'||hitRail==='bottom' ? S.ob.y-(hitRail==='top'?TL.top:TL.bottom) : S.ob.x-(hitRail==='left'?TL.left:TL.right)));
       const rb = reboundDir(ddx, ddy, hitRail, k1);
@@ -2023,12 +2087,20 @@ function render() {
 
   // ── TABLE GRAPHICS ──
 
-  // Ghost ball — always shown, starts congruent with OB at 0°
+  // Ghost ball — sits 2 ball-radii from OB along the CB approach direction.
+  // When no cut is set: along CB→OB line.
+  // When diagram cut is active: rotated by cut angle from CB→OB, so ghost shows
+  // where CB center needs to be to achieve that contact point on the OB.
+  // Spin adds a small lateral offset (throw effect on contact point).
   const _cbToObAngle = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x);
-  const _ghostAngle = _cbToObAngle + ((S.diagCutDeg !== null && S.diagCutDeg > 0.5) ? (S._diagDragRh ? 1 : -1) * (sol.θ - _cbToObAngle) : 0);
-  const _ghostOffset = 2 * BALL_R;  // always offset so ghost ball is visible
-  const gx = S.ob.x - _ghostOffset * Math.cos(_ghostAngle);
-  const gy = S.ob.y - _ghostOffset * Math.sin(_ghostAngle);
+  const _hasCut = S.diagCutDeg !== null && S.diagCutDeg > 0.5;
+  const _cutSide = (S._diagDragRh !== undefined ? S._diagDragRh : false) ? 1 : -1;
+  const _approachAngle = _hasCut
+    ? _cbToObAngle + _cutSide * Math.min(S.diagCutDeg, 90) * RAD
+    : _cbToObAngle;
+  // Spin does not shift the table ghost ball — spin effect is shown in the Perception diagram.
+  const gx = S.ob.x - 2 * BALL_R * Math.cos(_approachAngle);
+  const gy = S.ob.y - 2 * BALL_R * Math.sin(_approachAngle);
   const _gb = $('ghost-ball');
   if (_gb) {
     _gb.setAttribute('fill', 'rgba(240,223,112,0.15)');
@@ -2047,7 +2119,48 @@ function render() {
     _cgl.setAttribute('opacity', '1');
   }
 
-  // OB path: OB → rail contact
+  // ── CB PATH RAYS ─────────────────────────────────────────────
+  // stun=white(90° to OB), follow=orange(high/top), draw=blue(low/bottom)
+  if (cbPathOn && sol.cutDeg > 0.5) {
+    const _cbToObAngle2 = Math.atan2(S.ob.y - S.cb.y, S.ob.x - S.cb.x);
+    const _rh2 = S._diagDragRh !== undefined ? S._diagDragRh : false;
+    const _obDepartAngle = sol.theta !== undefined ? sol.theta : _cbToObAngle2;
+    const _stunAngle   = _obDepartAngle + Math.PI/2 * (_rh2 ? -1 : 1);
+    const _followAngle = _stunAngle + (_obDepartAngle - _stunAngle) * 0.55;
+    const _drawAngle   = _stunAngle - (_obDepartAngle - _stunAngle) * 0.55;
+
+    const _rayToRail = (sx, sy, angle) => {
+      const dx = Math.cos(angle), dy = Math.sin(angle);
+      let t = 9999;
+      if (dy < 0) t = Math.min(t, (TL.top    - sy) / dy);
+      if (dy > 0) t = Math.min(t, (TL.bottom - sy) / dy);
+      if (dx < 0) t = Math.min(t, (TL.left   - sx) / dx);
+      if (dx > 0) t = Math.min(t, (TL.right  - sx) / dx);
+      return { x: sx + dx * Math.max(10, t), y: sy + dy * Math.max(10, t) };
+    };
+    const _pocketList = [
+      {x:TL.left,y:TL.top},{x:(TL.left+TL.right)/2,y:TL.top},{x:TL.right,y:TL.top},
+      {x:TL.left,y:TL.bottom},{x:(TL.left+TL.right)/2,y:TL.bottom},{x:TL.right,y:TL.bottom}
+    ];
+    const _isScratch = (pt) => {
+      return _pocketList.some((p, i) => Math.hypot(pt.x-p.x,pt.y-p.y) < (i===1||i===4?22:28));
+    };
+    const _drawRay = (lineId, dotId, angle, baseColor) => {
+      const end = _rayToRail(gx, gy, angle);
+      const scratch = _isScratch(end);
+      const el = $(lineId), dot = $(dotId);
+      if (el) { sL(lineId, gx, gy, end.x, end.y); el.style.opacity='1'; el.setAttribute('stroke', scratch ? '#ef4444' : baseColor); }
+      if (dot) { dot.setAttribute('cx', end.x); dot.setAttribute('cy', end.y); dot.setAttribute('fill', scratch ? '#ef4444' : '#22c55e'); dot.style.opacity='1'; }
+    };
+    _drawRay('cb-stun',   'cb-stun-dot',   _stunAngle,   'rgba(255,255,255,0.85)');
+    _drawRay('cb-follow', 'cb-follow-dot', _followAngle, '#f97316');
+    _drawRay('cb-draw',   'cb-draw-dot',   _drawAngle,   '#60a5fa');
+  } else if (!cbPathOn) {
+    ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
+      .forEach(function(id){ const el=$(id); if(el) el.style.opacity='0'; });
+  }
+
+
   const startOff = BALL_R + 2;
   const obDx = sol.contact.x - ob.x, obDy = sol.contact.y - ob.y;
   const obLen = Math.hypot(obDx, obDy);
@@ -2065,7 +2178,7 @@ function render() {
     const along = (rail==='top'||rail==='bottom') ? Math.sign(ex) : Math.sign(ey);
     const speedFactor = 1.2 - S.speed;
     const cutFade = Math.cos(Math.min(S.diagCutDeg||0, 90) * Math.PI/180);
-    const spinAngle = S.spin * 0.04 * speedFactor * along * cutFade;
+    const spinAngle = S.spin * 0.08 * speedFactor * along * cutFade;
     const biasVal = (typeof biasOn!=='undefined' && biasOn) ? S.bias : 0;
     const biasAngle = biasVal * 0.0567 * cutFade;
     const totalAngle = spinAngle + biasAngle;
@@ -2079,8 +2192,11 @@ function render() {
     }
   }
 
-  // Bank path: contact → pocket (locked shots) or physics rebound (dragging)
-  const bkTarget = shotLocked ? pocket : (sol._reboundEnd || pocket);
+  // Bank path target: always follow physics UNLESS recording table bias correction.
+  // Speed, spin, vert all affect sol._reboundEnd via kFactor/spin rotation — let them show.
+  // Only bias (FAT/MED/THIN) pins the arrow to pocket (it's a data recording tool, not physics).
+  const _biasActive = biasOn && (throwLo !== 0 || throwMi !== 0 || throwHi !== 0);
+  const bkTarget = _biasActive ? pocket : (sol._reboundEnd || pocket);
   if (sol.contact2) {
     sL('bk-path',  sol.contact.x, sol.contact.y, sol.contact2.x, sol.contact2.y);
     sL('bk-path2', sol.contact2.x, sol.contact2.y, bkTarget.x, bkTarget.y);
@@ -2112,7 +2228,9 @@ function render() {
   } catch(e) {
     console.error('drawBot error:', e);
   }
-  drawBankerBounce(sol);
+  // Skip bounce redraw during slider-only renders — it uses innerHTML which causes reflow/vibration
+  if (!render._sliderOnly) drawBankerBounce(sol);
+  render._sliderOnly = false;
 
   // Pocket display
   const _activePocket = S.target ? Object.entries(POCKETS).find(([k,p]) => !isNaN(k) && Math.hypot(p.x-S.target.x,p.y-S.target.y)<5) : null;
@@ -2123,22 +2241,21 @@ function render() {
   // Pure geometric fraction — matches the ball diagram exactly (sin of cut angle)
   // calibratedAimFrac is for banking aim correction only, not for display
   const displayGeoF   = displayCutDeg < 0.5 ? 0 : Math.sin(Math.min(displayCutDeg, 90) * RAD);
+  // Readouts — use sol.aimFraction (perceptually corrected, 1.5x diagFraction) like Aimer
+  // not raw sin(cutDeg), so diagram and readouts agree
+  const _compFrac = Math.max(0, Math.min(1, (sol.aimFraction || Math.abs(displayGeoF)) * 1.5));
+  const _baimP = Math.round(_compFrac * 100);
   const _bdir = displayCutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
-  sT('ro-cut', displayCutDeg < 0.5 ? '0°' : displayCutDeg.toFixed(1) + '°' + _bdir);
-  sT('ro-frac', fracStr(displayGeoF));
-  sT('ro-aim',  Math.round(displayGeoF * 100) + '%' + _bdir);
-  // Top readout bar — always update
-  const _baimP = Math.round(Math.min(0.97,displayGeoF)*100);
   const _raim = $('r-aim'); if(_raim) _raim.textContent = _baimP+'%';
-  const _rfrc = $('r-frc'); if(_rfrc) _rfrc.textContent = fracStr(displayGeoF);
+  const _rfrc = $('r-frc'); if(_rfrc) _rfrc.textContent = fracStr(_compFrac);
   const _rang = $('r-ang'); if(_rang) _rang.textContent = (displayCutDeg<0.5?'0':displayCutDeg.toFixed(1))+'°'+(displayCutDeg<0.5?'':(S._diagDragRh?' R':' L'));
-  const _rcpEl = $('r-cp'); if(_rcpEl) _rcpEl.textContent = displayCutDeg<0.5?'0%':Math.round(_baimP*0.5)+'%'+(S._diagDragRh?' L':' R');
-  const _roe = $('r-oe'); if(_roe) _roe.textContent = _baimP+'%';
-  const _rtw = $('r-twixt'); if(_rtw) _rtw.textContent = Math.max(0,100-_baimP)+'%';
-  const _svgD = Math.hypot(S.ob.x-S.cb.x,S.ob.y-S.cb.y);
-  const _dft  = _svgD/400*S.tableSize;
-  const _rdist = $('r-dist'); if(_rdist) _rdist.textContent = _dft<1?Math.round(_dft*12)+'"':_dft.toFixed(1)+"'";
-  const _rcp = $('r-cp'); if(_rcp) _rcp.textContent = (displayCutDeg<0.5?'0':Math.round(displayGeoF*50))+'%'+_bdir;
+  const _rcp  = $('r-cp');  if(_rcp)  _rcp.textContent  = Math.round((100-_baimP)/2)+'%'+_bdir;
+  const _roe  = $('r-oe');  if(_roe)  _roe.textContent  = _baimP+'%';
+  const _rtw  = $('r-twixt'); if(_rtw) _rtw.textContent = Math.max(0,100-_baimP)+'%';
+
+  sT('ro-cut',  displayCutDeg < 0.5 ? '0°' : displayCutDeg.toFixed(1) + '°' + _bdir);
+  sT('ro-frac', fracStr(_compFrac));
+  sT('ro-aim',  _baimP + '%' + _bdir);
 
   // CB→OB distance
   const svgDist = Math.hypot(S.ob.x - S.cb.x, S.ob.y - S.cb.y);
@@ -2176,6 +2293,8 @@ function render() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DIAGRAM DRAG (botsvg CB)
+// Uses relative drag — ghost ball moves from where it IS, not where you touch.
+// This prevents the jump-to-finger on first contact.
 // ─────────────────────────────────────────────────────────────────────────────
 const botsvg = document.getElementById('botsvg');
 
@@ -2186,28 +2305,48 @@ function botSvgPt(e) {
   return pt.matrixTransform(botsvg.getScreenCTM().inverse());
 }
 
+let _diagDragStartX   = null;  // SVG X where drag began
+let _diagDragStartDeg = 0;     // S.diagCutDeg at drag start
+let _diagDragStartRh  = false; // S._diagDragRh at drag start
+
 botsvg.addEventListener('pointerdown', e => {
-  if (lockBalls) return;  // locked — let touch pass through for scroll/pinch
+  if (lockBalls || panMode) return;
   const _p = botSvgPt(e);
   if (_p.y < 66 || _p.y > 230) return;  // dead zone above/below ball
   e.preventDefault();
   diagDrag = true;
   botsvg.setPointerCapture(e.pointerId);
-  updateDiagCut(_p.x);
-  render();
+  // Record start state — do NOT call updateDiagCut yet
+  _diagDragStartX   = _p.x;
+  _diagDragStartDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+  _diagDragStartRh  = S._diagDragRh !== undefined ? S._diagDragRh : false;
 });
 botsvg.addEventListener('pointermove', e => {
-  if (!diagDrag) return; e.preventDefault();
-  updateDiagCut(botSvgPt(e).x);
+  if (!diagDrag) return;
+  e.preventDefault();
+  const _p = botSvgPt(e);
+  updateDiagCutRelative(_p.x);
   render();
 });
 
-function updateDiagCut(svgX) {
+const DRAG_RANGE = 224;  // SVG units for full 90° swing
+function updateDiagCutRelative(svgX) {
   const ocx = 230;
-  const DRAG_RANGE = 224;
+  const delta = svgX - _diagDragStartX;
+  // Convert starting position back to signed SVG offset
+  const startSigned = _diagDragStartRh
+    ? -(_diagDragStartDeg / 90 * DRAG_RANGE)
+    :  (_diagDragStartDeg / 90 * DRAG_RANGE);
+  const newSigned = Math.max(-DRAG_RANGE, Math.min(DRAG_RANGE, startSigned + delta));
+  S.diagCutDeg  = Math.min(90, Math.abs(newSigned) / DRAG_RANGE * 90);
+  S._diagDragRh = (newSigned < 0);
+}
+
+function updateDiagCut(svgX) {
+  // Legacy absolute version — kept for any callers outside drag
+  const ocx = 230;
   const raw     = svgX - ocx;
   const clamped = Math.max(-DRAG_RANGE, Math.min(DRAG_RANGE, raw));
-  // Clamp to 89° max so CB never goes past 100% on either side
   S.diagCutDeg  = Math.min(90, Math.abs(clamped) / DRAG_RANGE * 90);
   S._diagDragRh = (clamped < 0);
 }
@@ -2244,8 +2383,8 @@ svg.addEventListener('pointerdown', e => {
   if (calMode && calPhase === 'tap') { calTapActual(p); return; }
   e.preventDefault();
   const {ob, cb, ob2} = S;
-  // Ball dragging — only when TABLE unlocked
-  if (!lockTable) {
+  // Ball dragging — only when TABLE unlocked and not in Pan Mode
+  if (!lockTable && !panMode) {
     if (Math.hypot(p.x-ob.x,  p.y-ob.y)  < 36) { drag='ob';  svg.setPointerCapture(e.pointerId); return; }
     if (Math.hypot(p.x-cb.x,  p.y-cb.y)  < 36) { drag='cb';  svg.setPointerCapture(e.pointerId); return; }
     if (Math.hypot(p.x-ob2.x, p.y-ob2.y) < 36) { drag='ob2'; svg.setPointerCapture(e.pointerId); return; }
@@ -2270,11 +2409,9 @@ svg.addEventListener('pointermove', e => {
   if (drag==='ob') {
     const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
     S.ob={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
-    if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'ob');
   } else if (drag==='cb') {
     const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
     S.cb={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
-    if(sn.label)showSnapLabel($('tbl'),sn.x,sn.y,sn.label,'cb');
   } else if (drag==='ob2') { S.ob2=clampBall(p.x,p.y); }
   render();
 });
@@ -2334,7 +2471,7 @@ let SNAP_POINTS = [];
 const SNAP_RADIUS = 14;
 let lockTable = true;
 let lockBalls = true;
-let lockSliders = false;
+let lockSliders = true;
 let biasOn = false;
 let throwLo = 0, throwMi = 0, throwHi = 0;
 function toggleSlidersActive() {
@@ -2362,7 +2499,7 @@ function toggleBias() {
   biasOn = !biasOn;
   var btn = document.getElementById('ep-bias');
   if (btn) {
-    btn.innerHTML = biasOn ? 'TABLE<br>COMP ON' : 'TABLE<br>COMP OFF';
+    btn.innerHTML = biasOn ? 'TABLE<br>BIAS ON' : 'TABLE<br>BIAS OFF';
     btn.style.background = biasOn ? 'rgba(240,140,20,0.85)' : 'rgba(74,40,0,0.85)';
     btn.style.borderColor = biasOn ? 'rgba(255,180,50,0.8)' : 'rgba(138,80,16,0.6)';
     btn.style.color = biasOn ? '#fff' : '#e8c080';
@@ -2566,14 +2703,25 @@ const vertLabels = {
   '0':'center','1':'soft follow','2':'follow','3':'heavy follow','4':'max follow'
 };
 
+// ── SLIDERS ────────────────────────────────────────────────────
+// speed:    S.speed 0..1  — affects kFactor (cushion rebound length)
+// spin:     S.spin  -4..4 — affects rebound angle via running/reverse english
+// vert:     S.vert  -4..4 — follow/draw, modifies rolling bonus in kFactor
+// FAT/MED/THIN: table compensation segments — only active when TABLE COMP ON
+//   throwLo (FAT):  correction at shallow cuts (0-20°)
+//   throwMi (MED):  correction at mid cuts (20-50°)
+//   throwHi (THIN): correction at steep cuts (50-90°)
+//   These shift the ball diagram contact point in drawBot().
+//   They are DATA — record what you had to do to make the shot go.
+//   S.bias is NOT driven from these sliders. It is driven by the aiming diagram drag.
 function onSliders() {
   S.speed  = parseInt($('sl-spd').value)  / 100;
   S.spin   = parseInt($('sl-spn').value) / 25;  // -4..4 continuously
   S.vert   = parseInt($('sl-vert').value) / 25;  // -4..4 from -100..100
-  S.bias = 0;
+  S.bias   = 0;
   // Three-segment throw compensation — only active when TABLE COMP is ON
-  throwLo = biasOn ? parseInt($('sl-bias-fat')?.value || '0') / 50 : 0;
-  throwMi = biasOn ? parseInt($('sl-bias-med')?.value || '0') / 50 : 0;
+  throwLo = biasOn ? parseInt($('sl-bias-fat')?.value  || '0') / 50 : 0;
+  throwMi = biasOn ? parseInt($('sl-bias-med')?.value  || '0') / 50 : 0;
   throwHi = biasOn ? parseInt($('sl-bias-thin')?.value || '0') / 50 : 0;
   ['fat','med','thin'].forEach(seg => {
     const v = parseInt($('sl-bias-'+seg)?.value || '0');
@@ -2589,9 +2737,17 @@ function onSliders() {
   if($('sv-spn-n'))$('sv-spn-n').textContent=_sn===0?'0':Math.max(1,Math.round(_sn/4*10/10));
   const _vn=Math.abs(parseInt($('sl-vert').value));
   if($('sv-vert-n'))$('sv-vert-n').textContent=_vn===0?'0':Math.max(1,Math.round(_vn/4*10/10));
-  $('sv-spn').textContent  = spinLabels[String(S.spin)];
-  $('sv-vert').textContent = vertLabels[String(S.vert)];
-  render();
+  $('sv-spn').textContent  = spinLabels[String(Math.round(S.spin))]  || 'center';
+  $('sv-vert').textContent = vertLabels[String(Math.round(S.vert))]  || 'center';
+  // Throttle render via rAF — prevents layout thrash/vibration during fast slider drag
+  // Set _sliderOnly so bounce diagram (innerHTML) is skipped — prevents panel vibration
+  if (!onSliders._raf) {
+    render._sliderOnly = true;
+    onSliders._raf = requestAnimationFrame(function() {
+      onSliders._raf = null;
+      render();
+    });
+  }
 }
 
 function toggleTable() {
@@ -2652,23 +2808,93 @@ function cycleRotation() {
 let calMode = false;
 let calPhase = 'idle';   // 'setup' | 'tap'
 let calShots = [];        // [{predicted, bias, throwMult}]
+let calLibraryOpen = false;
+let calPendingShot = null;
 const CAL_MAX = 5;
 
 // Derived calibration constants (applied on top of defaults)
 let calBiasAdj   = 0;     // accumulated bias adjustment
 let calThrowAdj  = 1.0;   // throw multiplier (1.0 = default)
 
+// ── FLOATING PANEL Z-ORDER ────────────────────────────────────
+// All floating panels share a managed z-index stack.
+// Panels: block-sliders, cal-panel, shot-library-panel, throw-panel, btb (toolbox)
+// Z_TOP  = 9100 — the active/foreground panel
+// Z_BASE = 8800 — all background panels
+//
+// bringToTop(id) raises one panel and drops all others.
+// It is called:
+//   • In each panel's toggle function when opened
+//   • Via onpointerdown="bringToTop(...)" on each panel div (direct HTML attribute)
+//   • In each header's pointerdown drag handler
+//
+// NOTE: The sliders panel (block-sliders) z-order and resize are not fully
+// working as of Session 20. Known issues:
+//   • Panel does not reliably come to foreground on touch — cause unclear,
+//     possibly iOS stacking context or pointer event interception by range inputs
+//   • Resize handle added (⇲) but not fully reliable on touch
+//   • To revisit: consider replacing range inputs with custom touch sliders
+//     that don't intercept pointer events at the panel level
+// ─────────────────────────────────────────────────────────────
+const FLOAT_PANELS = ['block-sliders','cal-panel','shot-library-panel','throw-panel','btb'];
+const Z_TOP  = 9100;
+const Z_BASE = 8800;
+function bringToTop(id) {
+  FLOAT_PANELS.forEach(pid => {
+    const el = document.getElementById(pid);
+    if (el) el.style.zIndex = (pid === id) ? Z_TOP : Z_BASE;
+  });
+}
+
+let _calPositioned = false;
 function toggleCal() {
   calMode = !calMode;
-  const btn = $('cal-btn');
-  if ($('cal-panel')) $('cal-panel').classList.toggle('open', calMode);
-  if (!calMode) {
+  const panel = $('cal-panel');
+  if (!panel) return;
+  panel.style.display = calMode ? 'block' : 'none';
+  if (calMode) {
+    bringToTop('cal-panel');
+    if (!_calPositioned) {
+      panel.style.top  = '80px';
+      panel.style.left = Math.max(4, window.innerWidth - 420) + 'px';
+      _calPositioned = true;
+    }
+  } else {
     calPhase = 'idle'; calPendingShot = null;
     sV('cal-predicted', false); sV('cal-predicted-lbl', false);
     sV('cal-actual',    false); sV('cal-actual-lbl',    false);
   }
   calUpdateUI(); render();
 }
+
+// Draggable cal panel
+(function(){
+  var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
+  window.addEventListener('load', function(){
+    panel  = document.getElementById('cal-panel');
+    header = document.getElementById('cal-panel-header');
+    if (!panel || !header) return;
+    header.addEventListener('pointerdown', function(e){
+      if (e.target.tagName === 'BUTTON') return;
+      bringToTop('cal-panel');
+      var r = panel.getBoundingClientRect();
+      startX=e.clientX; startY=e.clientY;
+      origLeft=r.left; origTop=r.top;
+      didDrag=false; activePtr=e.pointerId;
+    });
+    header.addEventListener('pointermove', function(e){
+      if (activePtr===null || e.pointerId!==activePtr) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if (!didDrag && Math.hypot(dx,dy)>8) { didDrag=true; try{header.setPointerCapture(e.pointerId);}catch(ex){} }
+      if (!didDrag) return;
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
+      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
+      panel.style.left=nx+'px'; panel.style.top=ny+'px';
+    });
+    header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+  });
+})();
 
 function calUpdateUI() {
   const n = calShots.filter(s => s.actual).length;
@@ -2809,21 +3035,23 @@ function flipDiagram() {
 }
 
 // ── SWAP PANELS ──────────────────────────────────────────────
-let panelsSwapped = true;
+// Swaps the bird's-eye table and the aiming diagram top-to-bottom.
+// Both live inside diagram-wrap. Swapping moves section-aim before
+// zoom-wrap (table), or restores default order.
+let panelsSwapped = false;
 function swapPanels() {
   panelsSwapped = !panelsSwapped;
-  const card = document.querySelector('.card');
-  const sliders = document.getElementById('block-sliders');
   const diagWrap = document.querySelector('.diagram-wrap');
-  const swapCont = document.getElementById('swap-container');
+  const zoomWrap = document.getElementById('zoom-wrap');
+  const aim      = document.getElementById('section-aim');
+  if (!diagWrap || !zoomWrap || !aim) return;
   if (panelsSwapped) {
-    // Sliders above table
-    card.insertBefore(sliders, diagWrap);
+    diagWrap.insertBefore(aim, zoomWrap);
   } else {
-    // Sliders below table (inside swap-container, before block-ball)
-    const ball = document.getElementById('block-ball');
-    swapCont.insertBefore(sliders, ball);
+    diagWrap.appendChild(aim);
   }
+  const btn = document.getElementById('btn-swap');
+  if (btn) btn.classList.toggle('on', panelsSwapped);
 }
 
 // ── GLOBAL TOUCH SAFETY RESET (iOS pointer capture bug) ──────
@@ -2886,11 +3114,13 @@ function showSnapLabel(svgEl,x,y,label,ballId){
   if(snapLabelTimer)clearTimeout(snapLabelTimer);
   snapLabelTimer=setTimeout(()=>{lbl.style.opacity='0';setTimeout(()=>lbl.remove(),400);},2000);
 }
-let panMode = false;
 function togglePan(){
   panMode = !panMode;
   const btn = document.getElementById('ep-pan');
-  if(btn) btn.classList.toggle('on', panMode);
+  if(btn) {
+    btn.classList.toggle('on', panMode);
+    btn.innerHTML = panMode ? 'PAN<br>MODE ON' : 'PAN<br>MODE OFF';
+  }
 }
 function toggleSnap(){
   snapOn=!snapOn;
@@ -2983,10 +3213,10 @@ const _pz = {
 
 
 </script>
-</div><!-- /zoom-wrap -->
 
 <!-- ── EDGE CONTROL PANEL ── -->
 
+</div><!-- /card -->
 </div><!-- /outer-wrap -->
 <footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
 <div id="info-overlay">
@@ -3029,22 +3259,105 @@ const _pz = {
   </div>
   <div id="btb-panel" style="display:none;">
     <div class="btb-row2">
+      <!-- ══════════════════════════════════════════════════════════════
+           TOOLBOX BUTTON REFERENCE
+           ══════════════════════════════════════════════════════════════
+           ROW 1 — TOOLS
+           GRID        toggleMap()           Shows/hides the diamond grid overlay.
+                                             Grid lines run at every diamond (50px) on
+                                             both axes. Always-on by default. Use it to
+                                             map ball positions before a shot.
+
+           SNAP TO     toggleSnap()          Makes ball drag snap to the 9 named points
+                                             inside each grid square: center (plain number),
+                                             corners (c=TL, e=TR, a=BL, g=BR),
+                                             edge midpoints (b=L, d=T, f=R, h=B).
+                                             Rail diamonds are included as edge points of
+                                             border squares. Always-on by default.
+                                             All preset shots use a snap point.
+                                             Users may turn off between shots if desired.
+
+           CAL         toggleCal()           Calibration panel. Record predicted vs actual
+                                             landing positions to build a correction curve
+                                             for this table over time.
+
+           LEARN       toggleShotLibrary()   Shot library panel. Shows preset shots (B1, B2…)
+                                             with setup coordinates and Read More links to
+                                             the Banker Manual. Users can also save their
+                                             own setups here.
+
+           CUE PATH    toggleCbPath()        Shows the CB path lines after contact —
+                                             stun, follow, and draw departure rays from
+                                             the ghost ball position.
+
+           ANGLE       toggleAngle()         Shows/hides the bounce angle diagram directly
+                                             below the table — a side-view of the OB
+                                             approaching and rebounding from the rail, with
+                                             approach and rebound angles labeled.
+
+           +1 ANGLE    toggleCushions()      Toggles between 1-cushion and 2-cushion mode.
+                                             In 2-cushion mode the app computes all valid
+                                             two-rail routes. Rail tabs show pairs (TOP→LFT).
+                                             The angle diagram shows both cushion contacts.
+
+           C·PT        toggleContactDot()    Shows/hides the contact point dot on the OB
+                                             in the table view — the exact point where CB
+                                             surface meets OB surface.
+
+           DATA        toggleThrowPanel()    Opens the Shot Data Record panel — a floating
+                                             white panel where the player records what
+                                             slider settings made each shot go. Records
+                                             cut angle, geo%, comp%, FAT/MED/THIN values,
+                                             and an optional note. Exportable as CSV.
+
+           TABLE BIAS  toggleBias()          Enables the FAT/MED/THIN table compensation
+                                             sliders. When OFF, sliders are dimmed and
+                                             throwLo/throwMi/throwHi are zeroed.
+                                             When ON, sliders shift the ball diagram
+                                             contact point to reflect this table's behavior.
+                                             FAT = shallow cuts (0-20°)
+                                             MED = mid cuts (20-50°)
+                                             THIN = steep cuts (50-90°)
+
+           ⇅           swapPanels()          Swaps the order of the table view and the
+                                             aiming diagram (top/bottom).
+
+           ROW 2 — ZOOM / PAN
+           ZOOM IN     edgeZoom(1.3)         Scales the zoom-wrap element up.
+           ZOOM OUT    edgeZoom(1/1.3)       Scales down.
+           RESET ZOOM  edgeZoomReset()       Returns to 1:1 scale.
+           PAN MODE    togglePan()           Enables single-finger drag to pan the table view.
+                                             When ON, single-finger drag pans instead
+                                             of dragging balls.
+
+           ROW 3 — LOCKS
+           TABLE LOCK    toggleLock('table')    Locks the table from panning/zooming.
+                                                Default: LOCKED.
+           GHOST LOCK    toggleLock('balls')    Locks ball dragging on the table and
+                                                diagram drag on the aiming diagram.
+                                                Default: LOCKED.
+           SLIDERS LOCK  toggleLock('sliders')  Locks all sliders (disables input).
+                                                Default: LOCKED.
+           ZERO SLIDERS  zeroSliders()          Resets speed to center (50), spin to 0,
+                                                vert to 0, and all bias sliders to 0.
+           ══════════════════════════════════════════════════════════════ -->
       <button class="ep-btn g-tog on" id="btn-map"    onclick="toggleMap()">GRID</button>
       <button class="ep-btn g-snap on" id="ep-snap"   onclick="toggleSnap()">SNAP<br>TO</button>
       <button class="ep-btn g-brown"  id="btn-cal"    onclick="toggleCal()">CAL</button>
       <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">LEARN</button>
       <button class="ep-btn g-yel"    id="btn-cbpath" onclick="toggleCbPath()">CUE<br>PATH</button>
       <button class="ep-btn g-brown"  id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
+      <button class="ep-btn g-brown"  id="btn-cushion" onclick="toggleCushions()">+1<br>ANGLE</button>
       <button class="ep-btn g-brown" id="btn-cp"     onclick="toggleContactDot()">C·PT</button>
       <button class="ep-btn g-brown"  id="btn-throw"  onclick="toggleThrowPanel()">DATA</button>
-      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">TABLE<br>COMP OFF</button>
+      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">TABLE<br>BIAS OFF</button>
       <button class="ep-btn g-swap"   id="btn-swap"   onclick="swapPanels()">⇅</button>
     </div>
     <div class="btb-row2">
       <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">ZOOM<br>IN</button>
       <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">ZOOM<br>OUT</button>
       <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET<br>ZOOM</button>
-      <button class="ep-btn g-pan on" id="ep-pan" onclick="togglePan()">PAN<br>LOCK ON</button>
+      <button class="ep-btn g-pan" id="ep-pan" onclick="togglePan()">PAN<br>MODE OFF</button>
     </div>
     <div class="btb-row2">
       <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE<br>LOCK</button>
@@ -3066,6 +3379,7 @@ function toggleBtb(){
   document.getElementById('btb-arrow').textContent = btbVisible ? '▼' : '▲';
   var pill = document.getElementById('btb-pill');
   if (pill) pill.classList.toggle('open', btbVisible);
+  bringToTop('btb');
 }
 // Floating drag via TOOLS bar
 (function(){
@@ -3092,7 +3406,8 @@ function toggleBtb(){
     })();
     var activePtr = null;
     tab.addEventListener('pointerdown', function(e){
-      if (e.target.id === 'btb-arrow') return; // arrow button handles toggle itself
+      if (e.target.id === 'btb-arrow') return;
+      bringToTop('btb');
       var rect = btb.getBoundingClientRect();
       btb.style.transform = 'none';
       btb.style.left = rect.left + 'px';
@@ -3190,7 +3505,13 @@ window.addEventListener('load', function(){
   const sg = document.querySelector('.sgroup');
   if(sg) sg.style.opacity = lockSliders ? '0.4' : '1';
   document.querySelectorAll('.sgroup input[type=range]').forEach(el => { el.disabled = lockSliders; });
-  // sliders-unlocked not used on main card
+
+  // ── PANEL-WIDE BRING-TO-TOP ──
+  // Any touch anywhere on a floating panel raises it — not just the header.
+  ['block-sliders','cal-panel','shot-library-panel','throw-panel','btb'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('pointerdown', function() { bringToTop(id); }, true);
+  });
 });
 </script>
 <script>
@@ -3244,6 +3565,7 @@ function biasStep(zone, dir) {
 
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName === 'BUTTON') return;
+      bringToTop('shot-library-panel');
       var r = panel.getBoundingClientRect();
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
@@ -3263,6 +3585,86 @@ function biasStep(zone, dir) {
     });
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+
+    // Bottom drag handle
+    var footer = document.getElementById('learn-panel-footer-drag');
+    if (footer) {
+      footer.addEventListener('pointerdown', function(e){
+        bringToTop('shot-library-panel');
+        var r=panel.getBoundingClientRect();
+        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
+        didDrag=false; activePtr=e.pointerId;
+        footer.setPointerCapture(e.pointerId);
+      });
+      footer.addEventListener('pointermove', function(e){
+        if (activePtr===null||e.pointerId!==activePtr) return;
+        var dx=e.clientX-startX, dy=e.clientY-startY;
+        if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
+        if (!didDrag) return;
+        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
+        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+      });
+      footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+      footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    }
+
+    // List drag — when at scroll edge
+    var list = document.getElementById('shot-library-list');
+    if (list) {
+      var listDragActive = false;
+      list.addEventListener('pointerdown', function(e){
+        if (e.target.tagName === 'A' || e.target.closest('a')) return;
+        if (e.target.closest('[data-preset]')) return;
+        var atTop    = list.scrollTop === 0;
+        var atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 2;
+        if (!atTop && !atBottom) return;
+        var r=panel.getBoundingClientRect();
+        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
+        didDrag=false; listDragActive=true; activePtr=e.pointerId;
+      });
+      list.addEventListener('pointermove', function(e){
+        if (!listDragActive||e.pointerId!==activePtr) return;
+        var dx=e.clientX-startX, dy=e.clientY-startY;
+        if (!didDrag&&Math.hypot(dx,dy)>8) {
+          didDrag=true;
+          bringToTop('shot-library-panel');
+          list.setPointerCapture(e.pointerId);
+        }
+        if (!didDrag) return;
+        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
+        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+      });
+      list.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
+      list.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
+    }
+
+    // Resize handle
+    var resizeHandle = document.getElementById('learn-panel-resize');
+    if (resizeHandle) {
+      var resizing=false, resizeStartX, resizeStartY, resizeStartW, resizeStartH, resizePtr=null;
+      resizeHandle.addEventListener('pointerdown', function(e){
+        e.stopPropagation();
+        bringToTop('shot-library-panel');
+        resizing=true; resizePtr=e.pointerId;
+        resizeStartX=e.clientX; resizeStartY=e.clientY;
+        resizeStartW=panel.offsetWidth; resizeStartH=panel.offsetHeight;
+        resizeHandle.setPointerCapture(e.pointerId);
+      });
+      resizeHandle.addEventListener('pointermove', function(e){
+        if (!resizing||e.pointerId!==resizePtr) return;
+        var nw=Math.max(260, resizeStartW+(e.clientX-resizeStartX));
+        var nh=Math.max(150, resizeStartH+(e.clientY-resizeStartY));
+        panel.style.width=Math.min(nw, window.innerWidth-8)+'px';
+        panel.style.height=Math.min(nh, window.innerHeight-8)+'px';
+        if (list) {
+          var hdrH = document.getElementById('shot-lib-header').offsetHeight || 40;
+          list.style.maxHeight=Math.max(60, nh - hdrH - 80)+'px';
+          list.style.minHeight=Math.max(60, nh - hdrH - 80)+'px';
+        }
+      });
+      resizeHandle.addEventListener('pointerup',     function(e){ resizing=false; resizePtr=null; });
+      resizeHandle.addEventListener('pointercancel', function(e){ resizing=false; resizePtr=null; });
+    }
 
     // Position on first open
     var origToggle = window.toggleShotLibrary;
@@ -3314,6 +3716,7 @@ function toggleSlidersPanel() {
   if (!panel) return;
   panel.style.display = _slidersPanelOpen ? 'block' : 'none';
   if (_slidersPanelOpen) {
+    bringToTop('block-sliders');
     // Always open ACTIVE with big sliders
     panel.classList.add('sliders-unlocked', 'sliders-active');
     panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el){ el.disabled = false; });
@@ -3335,17 +3738,41 @@ function toggleSlidersPanel() {
   var panel, header, startX, startY, origLeft, origTop, didDrag=false, activePtr=null;
   window.addEventListener('load', function(){
     updateLockBtn();
-    panel  = document.getElementById('sliders-block');
-    header = document.getElementById('sliders-handle');
+    panel  = document.getElementById('block-sliders');
+    header = document.getElementById('sliders-drag-zone');
     if (!panel || !header) return;
     header.addEventListener('pointerdown', function(e){
-      if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+      bringToTop('block-sliders');
       var r=panel.getBoundingClientRect();
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
       didDrag=false; activePtr=e.pointerId;
       header.setPointerCapture(e.pointerId);
     });
+
+    // Resize handle
+    var resizeHandle = document.getElementById('sliders-resize');
+    var resizing=false, resizeStartX, resizeStartY, resizeStartW, resizeStartH, resizePtr=null;
+    if (resizeHandle) {
+      resizeHandle.addEventListener('pointerdown', function(e){
+        e.stopPropagation();
+        bringToTop('block-sliders');
+        resizing=true; resizePtr=e.pointerId;
+        resizeStartX=e.clientX; resizeStartY=e.clientY;
+        resizeStartW=panel.offsetWidth; resizeStartH=panel.offsetHeight;
+        resizeHandle.setPointerCapture(e.pointerId);
+      });
+      resizeHandle.addEventListener('pointermove', function(e){
+        if (!resizing||e.pointerId!==resizePtr) return;
+        var nw=Math.max(200, resizeStartW+(e.clientX-resizeStartX));
+        var nh=Math.max(100, resizeStartH+(e.clientY-resizeStartY));
+        panel.style.width=nw+'px';
+        panel.style.height=nh+'px';
+        panel.style.overflow='auto';
+      });
+      resizeHandle.addEventListener('pointerup',     function(e){ resizing=false; resizePtr=null; });
+      resizeHandle.addEventListener('pointercancel', function(e){ resizing=false; resizePtr=null; });
+    }
     header.addEventListener('pointermove', function(e){
       if (activePtr===null||e.pointerId!==activePtr) return;
       var dx=e.clientX-startX, dy=e.clientY-startY;
@@ -3359,13 +3786,23 @@ function toggleSlidersPanel() {
 </script>
 <script>
 // Stubs for aimer-only toolbar buttons not in banker
+// cbPathOn declared at top of main script
 function toggleCbPath() {
+  cbPathOn = !cbPathOn;
   var btn = document.getElementById('btn-cbpath');
-  if (btn) btn.classList.toggle('on');
+  if (btn) btn.classList.toggle('on', cbPathOn);
+  const leg = document.getElementById('cb-path-legend');
+  if (leg) leg.setAttribute('opacity', cbPathOn ? '1' : '0');
+  if (!cbPathOn) {
+    ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
+      .forEach(function(id){ const el=document.getElementById(id); if(el) el.style.opacity='0'; });
+  }
+  render();
 }
 function toggleAngle() {
+  toggleBounce();
   var btn = document.getElementById('btn-angle');
-  if (btn) btn.classList.toggle('on');
+  if (btn) btn.classList.toggle('on', bounceOn);
 }
 function toggleContactDot() {
   contactDotOn = !contactDotOn;
@@ -3375,43 +3812,54 @@ function toggleContactDot() {
 }
 
 </script>
-<script>
-(function(){
-  var panel, header, startX, startY, origLeft, origTop, didDrag=false, activePtr=null;
-  window.addEventListener('load', function(){
-    panel  = document.getElementById('block-sliders');
-    header = document.getElementById('sliders-handle');
-    if (!panel || !header) return;
-    header.addEventListener('pointerdown', function(e){
-      if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
-      var r=panel.getBoundingClientRect();
-      startX=e.clientX; startY=e.clientY;
-      origLeft=r.left; origTop=r.top;
-      didDrag=false; activePtr=e.pointerId;
-      header.setPointerCapture(e.pointerId);
-    });
-    header.addEventListener('pointermove', function(e){
-      if (activePtr===null||e.pointerId!==activePtr) return;
-      var dx=e.clientX-startX, dy=e.clientY-startY;
-      if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; panel.style.transition='none'; }
-      if (didDrag){ panel.style.left=(origLeft+dx)+'px'; panel.style.top=(origTop+dy)+'px'; }
-    });
-    header.addEventListener('pointerup', function(e){ activePtr=null; });
-    header.addEventListener('pointercancel', function(e){ activePtr=null; });
-  });
-})();
-</script>
-<div id="throw-panel" style="display:none;position:fixed;z-index:8888;width:min(420px,96vw);
+
+<div id="throw-panel" onpointerdown="bringToTop('throw-panel')" style="display:none;position:fixed;z-index:8800;width:min(420px,96vw);
      background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;
      box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
   <div id="throw-panel-header" style="display:flex;justify-content:space-between;align-items:center;
        padding:10px 12px;background:#f0f0f0;border-bottom:2px solid #cccccc;
        cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
-    <span style="font-size:13px;font-weight:900;letter-spacing:1px;color:#111111;">THROW COMP DATA</span>
+    <span style="font-size:13px;font-weight:900;letter-spacing:1px;color:#111111;">SHOT DATA RECORD</span>
     <div style="display:flex;gap:6px;align-items:center;">
       <button onclick="minimizeThrowPanel()" style="background:none;border:1px solid #aaa;border-radius:4px;color:#333;font-size:13px;font-weight:900;padding:2px 8px;cursor:pointer;" title="Minimize">—</button>
       <button onclick="toggleThrowPanel()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;">✕</button>
     </div>
+  </div>
+  <!-- Current shot summary -->
+  <div style="padding:10px 12px;background:#f8f8f8;border-bottom:1px solid #dddddd;display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+    <div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Current shot</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <span style="font-size:13px;font-weight:900;color:#111;">Cut: <span id="td-cut">—</span></span>
+      <span style="font-size:13px;font-weight:900;color:#1a4a1a;">Geo: <span id="td-geo">—</span></span>
+      <span style="font-size:13px;font-weight:900;color:#4a1a1a;">Comp: <span id="td-comp">—</span></span>
+    </div>
+  </div>
+  <!-- Record controls -->
+  <div style="padding:10px 12px;border-bottom:1px solid #dddddd;display:flex;flex-direction:column;gap:7px;">
+    <textarea id="td-note" placeholder="Note (optional)…" rows="2"
+      style="width:100%;font-family:Lato,sans-serif;font-size:12px;border:1px solid #cccccc;border-radius:4px;padding:6px 8px;resize:none;color:#111;background:#fff;box-sizing:border-box;"></textarea>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <label style="font-size:12px;color:#444;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="td-rail"> Rail shot
+      </label>
+      <button onclick="recordThrowShot()" style="flex:1;padding:8px;border-radius:5px;border:none;background:#1a4a1a;color:#ffffff;font-family:Lato,sans-serif;font-size:12px;font-weight:900;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">Record</button>
+      <button onclick="exportThrowData()" style="padding:8px 12px;border-radius:5px;border:1px solid #aaaaaa;background:#ffffff;color:#333333;font-family:Lato,sans-serif;font-size:11px;font-weight:900;cursor:pointer;">Export</button>
+    </div>
+  </div>
+  <!-- Data list — draggable when not scrolling -->
+  <div id="throw-data-list" style="max-height:220px;overflow-y:auto;-webkit-overflow-scrolling:touch;cursor:grab;">
+    <div style="padding:16px 12px;font-size:13px;color:#888888;text-align:center;">No data recorded yet.<br>Set sliders, shoot, then tap RECORD.</div>
+  </div>
+  <!-- Clear + resize corner -->
+  <div style="padding:8px 12px;border-top:1px solid #dddddd;display:flex;justify-content:space-between;align-items:center;">
+    <button onclick="clearThrowData()" style="padding:5px 12px;border-radius:4px;border:1px solid #cc3333;background:#fff;color:#cc3333;font-size:11px;font-weight:900;cursor:pointer;">Clear All</button>
+    <div id="throw-panel-resize" style="width:28px;height:28px;cursor:se-resize;touch-action:none;user-select:none;display:flex;align-items:center;justify-content:center;border-radius:4px;background:#f0f0f0;border:1px solid #ccc;">
+      <span style="font-size:14px;color:#666;line-height:1;">⇲</span>
+    </div>
+  </div>
+  <!-- Bottom drag handle -->
+  <div id="throw-panel-footer-drag" style="height:18px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:#f8f8f8;border-top:1px solid #e8e8e8;">
+    <span style="font-size:11px;color:#bbb;letter-spacing:3px;">⠿</span>
   </div>
 <script>
 // ── THROW COMP DATA PANEL ─────────────────────────────────────────────
@@ -3452,6 +3900,7 @@ function toggleThrowPanel() {
   if (!panel) return;
   panel.style.display = throwPanelOpen ? 'block' : 'none';
   if (throwPanelOpen) {
+    bringToTop('throw-panel');
     loadThrowData();
     updateThrowPanelCurrent();
     buildThrowList();
@@ -3679,7 +4128,7 @@ function xyToGrid(x, y) {
 }
 
 function clearThrowData() {
-  if (!confirm('Clear all throw comp data?')) return;
+  if (!confirm('Clear all shot data records?')) return;
   throwData = [];
   saveThrowData();
   buildThrowList();
@@ -3690,11 +4139,16 @@ const _origRender = window.render;
 window.render = function() {
   _origRender && _origRender();
   if (throwPanelOpen) updateThrowPanelCurrent();
-  // Keep snap labels current after every render (covers loadShot, drag, etc.)
+  // Only update snap labels when ball positions actually changed — not on every render.
+  // This prevents layout reflow from SVG DOM changes during slider use (vibration fix).
   if (!window._snapPos) window._snapPos = {};
-  window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
-  window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
-  updateSnapLabels(document.getElementById('tbl'));
+  const _cbMoved = !window._snapPos.cb || window._snapPos.cb.x !== S.cb.x || window._snapPos.cb.y !== S.cb.y;
+  const _obMoved = !window._snapPos.ob || window._snapPos.ob.x !== S.ob.x || window._snapPos.ob.y !== S.ob.y;
+  if (_cbMoved || _obMoved) {
+    window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
+    window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
+    updateSnapLabels(document.getElementById('tbl'));
+  }
 };
 
 // Draggable panel
@@ -3716,6 +4170,7 @@ window.render = function() {
     panel.style.left = Math.max(4, window.innerWidth - 440) + 'px';
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName === 'BUTTON') return;
+      bringToTop('throw-panel');
       var r = panel.getBoundingClientRect();
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
@@ -3732,6 +4187,97 @@ window.render = function() {
     });
     header.addEventListener('pointerup', function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+
+    // Bottom drag handle — same drag logic as header
+    var footer = document.getElementById('throw-panel-footer-drag');
+    if (footer) {
+      footer.addEventListener('pointerdown', function(e){
+        bringToTop('throw-panel');
+        var r = panel.getBoundingClientRect();
+        startX=e.clientX; startY=e.clientY;
+        origLeft=r.left; origTop=r.top;
+        didDrag=false; activePtr=e.pointerId;
+        footer.setPointerCapture(e.pointerId);
+      });
+      footer.addEventListener('pointermove', function(e){
+        if (activePtr===null || e.pointerId!==activePtr) return;
+        var dx=e.clientX-startX, dy=e.clientY-startY;
+        if (!didDrag && Math.hypot(dx,dy)>8) didDrag=true;
+        if (!didDrag) return;
+        var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
+        var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
+        panel.style.left=nx+'px'; panel.style.top=ny+'px';
+      });
+      footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+      footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    }
+
+    // Data list drag — only activates when not scrolling (at top or bottom of list)
+    var dataList = document.getElementById('throw-data-list');
+    if (dataList) {
+      var listDragActive = false;
+      dataList.addEventListener('pointerdown', function(e){
+        // Only drag if list is not scrollable or is at an edge
+        var atTop    = dataList.scrollTop === 0;
+        var atBottom = dataList.scrollTop + dataList.clientHeight >= dataList.scrollHeight - 2;
+        if (!atTop && !atBottom) return; // let scroll handle it
+        bringToTop('throw-panel');
+        var r = panel.getBoundingClientRect();
+        startX=e.clientX; startY=e.clientY;
+        origLeft=r.left; origTop=r.top;
+        didDrag=false; listDragActive=true; activePtr=e.pointerId;
+        dataList.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+      dataList.addEventListener('pointermove', function(e){
+        if (!listDragActive || e.pointerId!==activePtr) return;
+        var dx=e.clientX-startX, dy=e.clientY-startY;
+        if (!didDrag && Math.hypot(dx,dy)>8) didDrag=true;
+        if (!didDrag) return;
+        var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
+        var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
+        panel.style.left=nx+'px'; panel.style.top=ny+'px';
+      });
+      dataList.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
+      dataList.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
+    }
+
+    // Resize handle
+    var resizeHandle = document.getElementById('throw-panel-resize');
+    if (resizeHandle) {
+      var resizing=false, resizeStartX, resizeStartY, resizeStartW, resizeStartH, resizePtr=null;
+      resizeHandle.addEventListener('pointerdown', function(e){
+        e.stopPropagation();
+        bringToTop('throw-panel');
+        resizing=true; resizePtr=e.pointerId;
+        resizeStartX=e.clientX; resizeStartY=e.clientY;
+        resizeStartW=panel.offsetWidth; resizeStartH=panel.offsetHeight;
+        resizeHandle.setPointerCapture(e.pointerId);
+      });
+      resizeHandle.addEventListener('pointermove', function(e){
+        if (!resizing || e.pointerId!==resizePtr) return;
+        var nw = Math.max(260, resizeStartW + (e.clientX - resizeStartX));
+        var nh = Math.max(150, resizeStartH + (e.clientY - resizeStartY));
+        panel.style.width  = Math.min(nw, window.innerWidth - 8) + 'px';
+        panel.style.height = Math.min(nh, window.innerHeight - 8) + 'px';
+        // Grow the data list area to fill available space
+        var dl = document.getElementById('throw-data-list');
+        if (dl) {
+          var usedH = 0;
+          ['throw-panel-header','throw-panel-footer-drag'].forEach(function(id){
+            var el = document.getElementById(id);
+            if (el) usedH += el.offsetHeight;
+          });
+          // Also account for the fixed sections (current shot, controls, clear row)
+          usedH += 140;
+          dl.style.maxHeight = Math.max(60, nh - usedH) + 'px';
+          dl.style.minHeight = Math.max(60, nh - usedH) + 'px';
+        }
+      });
+      resizeHandle.addEventListener('pointerup',     function(e){ resizing=false; resizePtr=null; });
+      resizeHandle.addEventListener('pointercancel', function(e){ resizing=false; resizePtr=null; });
+    }
+
     loadThrowData();
   });
 })();

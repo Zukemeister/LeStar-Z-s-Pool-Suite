@@ -2205,7 +2205,7 @@ function render() {
   const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%';
   const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = cutDeg < 0.5 ? 0 : Math.round(_compFrac * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R')); }
+  if (_cpEl) { const _cpPct = Math.round((100 - Math.round(_compFrac * 100)) / 2); _cpEl.textContent = _cpPct + '%' + (cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R')); }
   const _roe = $('r-oe'); if (_roe) _roe.textContent = cutDeg < 0.5 ? '0%' : aimP + '%';
   const _rtw = $('r-twixt'); if (_rtw) _rtw.textContent = cutDeg < 0.5 ? '100%' : Math.max(0, 100 - aimP) + '%';
 
