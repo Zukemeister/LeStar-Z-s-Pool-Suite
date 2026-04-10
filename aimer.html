@@ -562,19 +562,20 @@ body { padding-bottom: 80px !important; }
 .lp-btn.zoomed::after {
   content: attr(data-lbl);
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
-  width: 52px; height: 32px;
+  width: 88px; height: 48px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 9px; font-weight: 900; letter-spacing: 0.03em;
-  border-radius: 3px;
-  border: 1px solid rgba(255,255,255,0.45);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.8);
+  font-size: 13px; font-weight: 900; letter-spacing: 0.04em;
+  border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.9);
   z-index: 200;
-  pointer-events: none;
+  pointer-events: auto;
   text-align: center; white-space: nowrap;
   isolation: isolate;
+  cursor: pointer;
 }
 /* Zoomed parent needs high z-index so ::after sits above siblings */
 .lp-btn.zoomed { position: relative; z-index: 100; }
@@ -4725,28 +4726,36 @@ function toggleSlidersPanel() {
     ribbon.addEventListener('pointermove',  function(e){ loupeUpdate(e.clientX,e.clientY); });
     ribbon.addEventListener('pointerleave', loupeReset);
 
-    // Tap to invoke
+    // Touch: move to zoom, tap big box to invoke
+    var _activeBtn = null;
     btns.forEach(function(btn){
       var def = btnDef(btn.getAttribute('data-bid'));
       if (!def) return;
-      var ptr=null, moved=false, sx=0, sy=0;
-      btn.addEventListener('pointerdown', function(e){
-        e.stopPropagation();
-        ptr=e.pointerId; sx=e.clientX; sy=e.clientY; moved=false;
-        try { btn.setPointerCapture(ptr); } catch(x){}
-      });
-      btn.addEventListener('pointermove', function(e){
-        if(e.pointerId!==ptr) return;
-        if(Math.hypot(e.clientX-sx,e.clientY-sy)>6) moved=true;
-      });
+
+      // Tap the small gem OR the zoomed popup = invoke
       btn.addEventListener('pointerup', function(e){
-        if(e.pointerId!==ptr) return;
-        ptr=null;
-        if(!moved) { try { eval(def.fn); } catch(x){ console.log(x); } }
-        moved=false;
+        e.stopPropagation();
+        if (_activeBtn === btn) {
+          // already zoomed — tap invokes
+          try { eval(def.fn); } catch(x){ console.log(x); }
+          btn.classList.remove('zoomed');
+          _activeBtn = null;
+        } else {
+          // first tap — just zoom it, stay open
+          if (_activeBtn) _activeBtn.classList.remove('zoomed');
+          btn.classList.add('zoomed');
+          _activeBtn = btn;
+        }
       });
-      btn.addEventListener('pointercancel', function(){ ptr=null; moved=false; });
     });
+
+    // Dismiss on tap outside ribbon
+    document.addEventListener('pointerdown', function(e){
+      if (_activeBtn && !e.target.closest('#loupe-ribbon')) {
+        _activeBtn.classList.remove('zoomed');
+        _activeBtn = null;
+      }
+    }, true);
   }
 
   // ── Edit mode — tap to pen, drag to reorder ───────────────
