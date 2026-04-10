@@ -54,6 +54,63 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 #sliders-block.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
 .sliders-unlocked input[type=range],
 #sliders-block.sliders-unlocked input[type=range]{height:8px;}
+/* ── MINIMIZED PANEL STYLES ── */
+.panel-minimized { overflow:hidden !important; }
+.panel-minimized .min-btn {
+  font-size:22px !important; font-weight:900 !important;
+  width:38px !important; height:38px !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+  border-radius:6px !important; padding:0 !important;
+  touch-action:manipulation;
+}
+/* SLIDERS — purple */
+#sliders-block.panel-minimized {
+  background:#f5eeff !important; border:2px solid #c084fc !important;
+}
+#sliders-block.panel-minimized #sliders-handle {
+  background:#f5eeff; border-bottom:none; padding:6px 8px 6px 12px;
+}
+#sliders-block.panel-minimized #sliders-handle span {
+  color:#111111 !important; font-size:13px !important; font-weight:900 !important; letter-spacing:0.1em;
+}
+#sliders-block.panel-minimized .min-btn {
+  background:#c084fc !important; border-color:#c084fc !important; color:#fff !important;
+}
+#sliders-block.panel-minimized button:not(.min-btn) {
+  color:#7e22ce !important; border-color:#c084fc !important; background:rgba(192,132,252,0.15) !important;
+}
+/* LEARN — gold */
+#shot-library-panel.panel-minimized {
+  background:#fffbe6 !important; border:2px solid #f0df70 !important;
+}
+#shot-library-panel.panel-minimized #shot-lib-header {
+  background:#fffbe6; border-bottom:none; padding:6px 8px 6px 12px;
+}
+#shot-library-panel.panel-minimized #shot-lib-header > span {
+  color:#111111 !important; font-size:13px !important; font-weight:900 !important; letter-spacing:0.1em;
+}
+#shot-library-panel.panel-minimized .min-btn {
+  background:#f0df70 !important; border-color:#f0df70 !important; color:#1a1400 !important;
+}
+#shot-library-panel.panel-minimized button:not(.min-btn) {
+  color:#78610a !important; border-color:#c8a820 !important; background:rgba(240,223,112,0.2) !important;
+}
+/* DATA — brown */
+#throw-panel.panel-minimized {
+  background:#fff8f0 !important; border:2px solid #8a5010 !important;
+}
+#throw-panel.panel-minimized #throw-panel-header {
+  background:#fff8f0; border-bottom:none; padding:6px 8px 6px 12px;
+}
+#throw-panel.panel-minimized #throw-panel-header > span {
+  color:#111111 !important; font-size:13px !important; font-weight:900 !important; letter-spacing:0.1em;
+}
+#throw-panel.panel-minimized .min-btn {
+  background:#8a5010 !important; border-color:#8a5010 !important; color:#ffffff !important;
+}
+#throw-panel.panel-minimized button:not(.min-btn) {
+  color:#333333 !important; border-color:#aaaaaa !important; background:rgba(0,0,0,0.08) !important;
+}
 #cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
 #cal-panel.open{display:block;}
 #cal-instruction{font-size:11px;color:#fff;font-weight:700;margin-bottom:6px;line-height:1.5;}
@@ -323,6 +380,231 @@ body { padding-bottom: 80px !important; }
   pointer-events: auto;
   margin-right: 2px;
 }
+
+/* ── LONG-PRESS TOOLTIP ── */
+#lp-tooltip {
+  position: fixed; z-index: 9999;
+  background: rgba(20,20,20,0.92); color: #f0df70;
+  font-family: 'Lato', sans-serif; font-size: 12px; font-weight: 700;
+  padding: 5px 10px; border-radius: 6px; pointer-events: none;
+  white-space: nowrap; opacity: 0; transition: opacity 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+/* ── DOCK ── */
+#dock {
+  position: fixed; bottom: max(18px, env(safe-area-inset-bottom, 18px)); left: 50%; transform: translateX(-50%);
+  z-index: 8900; display: flex; flex-direction: column; align-items: center;
+  gap: 6px; user-select: none; -webkit-user-select: none;
+}
+#dock-bar {
+  display: flex; flex-direction: row; align-items: center; gap: 10px;
+  background: rgba(10,15,10,0.88); border: 1px solid rgba(240,223,112,0.3);
+  border-radius: 28px; padding: 8px 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  touch-action: none; cursor: grab;
+}
+.dock-slot {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(20,30,20,0.9); border: 1.5px solid rgba(240,223,112,0.45);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; touch-action: manipulation;
+  flex-direction: column; gap: 3px;
+  transition: border-color 0.15s, transform 0.1s; flex-shrink: 0;
+}
+.dock-slot.active { border-color: rgba(255,255,255,0.85); transform: scale(1.12); }
+.dock-slot .dline { border-radius: 1px; pointer-events: none; display: block; }
+#dock-minimize { width: 36px; height: 5px; background: rgba(240,223,112,0.35); border-radius: 3px; cursor: pointer; touch-action: manipulation; }
+#dock-mini {
+  display: none; width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(10,15,10,0.88); border: 1.5px solid rgba(240,223,112,0.55);
+  cursor: pointer; touch-action: manipulation; box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  overflow: hidden; position: relative;
+}
+
+/* ── SCALEABLE PANEL ── */
+.panel-scale-wrap {
+  transform-origin: top left;
+  transition: transform 0.1s ease;
+}
+.panel-scale-control {
+  display:flex; align-items:center; gap:5px; padding: 3px 8px;
+  background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.05);
+}
+.panel-scale-control input[type=range] {
+  flex:1; height:2px; accent-color: #888;
+  background: #333; border-radius:1px; cursor:pointer;
+}
+.panel-scale-control input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:8px; height:8px;
+  border-radius:50%; background:#888; cursor:pointer;
+}
+.panel-scale-label {
+  font-size:8px; font-weight:900; color:rgba(255,255,255,0.7);
+  font-family:'Lato',sans-serif; white-space:nowrap; min-width:28px; text-align:right;
+}
+
+
+/* ── SHARED FLOATING PANELS ── */
+.float-panel {
+  display: none;
+  position: fixed;
+  z-index: 8888;
+  width: min(92vw, 340px);
+  background: #ffffff;
+  border: 1px solid rgba(240,223,112,0.6);
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+  touch-action: none;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 32vh;
+  overflow: hidden;
+}
+.float-panel-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 26vh;
+  min-height: 0;
+  background: #ffffff;
+}
+.float-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 8px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8e8e8;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  flex-shrink: 0;
+  min-height: 0;
+}
+
+/* Minimized = only header visible */
+#sliders-block { background: rgba(10,15,10,0.97) !important; border-radius:10px !important; }
+#sliders-block * { background-color: inherit; }
+#sliders-block .float-panel-body { background: rgba(10,15,10,0.97) !important; }
+.float-panel.panel-minimized {
+  max-height: none;
+}
+.float-panel.panel-minimized > *:not(.float-panel-header):not(#sliders-handle):not(#shot-lib-header):not(#throw-panel-header) {
+  display: none !important;
+}
+
+
+
+
+#sliders-block.float-panel { background: rgba(10,15,10,0.97) !important; overflow: hidden !important; }
+#sliders-block.float-panel, #sliders-block.float-panel * { box-sizing: border-box; }
+
+#sl-scale { -webkit-appearance:none; appearance:none; cursor:pointer; }
+#sl-scale::-webkit-slider-thumb {
+  -webkit-appearance:none; width:10px; height:10px;
+  border-radius:2px; background:#888; cursor:pointer; border:none;
+}
+#sl-scale::-moz-range-thumb {
+  width:10px; height:10px; border-radius:2px;
+  background:#888; cursor:pointer; border:none;
+}
+/* Black scrollbar channel */
+.float-panel-body::-webkit-scrollbar { width: 6px; }
+.float-panel-body::-webkit-scrollbar-track { background: #000; }
+.float-panel-body::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+.float-panel-body::-webkit-scrollbar-corner { background: #000; }
+
+/* ── CHARM BRACELET RIBBON ── */
+#loupe-ribbon {
+  display: flex; flex-direction: row; align-items: center;
+  gap: 3px; padding: 8px 10px;
+  background: rgba(12,16,12,0.98);
+  border-radius: 0 0 10px 10px;
+  overflow: visible; flex-wrap: nowrap;
+  touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  min-height: 36px;
+  height: 36px; /* fixed — prevents ribbon from growing when gem zooms */
+  overflow: visible;
+}
+
+/* The gem at rest — small jewel rectangle */
+.lp-btn {
+  flex-shrink: 0;
+  width: 12px; height: 20px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.15);
+  font-family: 'Lato', sans-serif;
+  font-size: 0px; font-weight: 900; color: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; line-height: 1.1; padding: 0 1px;
+  touch-action: manipulation; outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: center center;
+  transition: none;
+  position: relative; overflow: visible;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 1px 4px rgba(0,0,0,0.6);
+  white-space: nowrap;
+  will-change: transform;
+}
+/* Jewel color schemes — deep saturated gem tones */
+.lp-c-green  { background:linear-gradient(160deg,#1c5c08,#0a2e02); border-color:#2a7a10; }
+.lp-c-green.on  { background:linear-gradient(160deg,#2e8c14,#165806); border-color:#60c030; }
+.lp-c-gold   { background:linear-gradient(160deg,#7a6006,#3a2c02); border-color:#9a7c0c; }
+.lp-c-gold.on   { background:linear-gradient(160deg,#c0a018,#7a6006); border-color:#f0df70; }
+.lp-c-brown  { background:linear-gradient(160deg,#6a3606,#381a02); border-color:#8a4e0e; }
+.lp-c-purple { background:linear-gradient(160deg,#6a1e8e,#380c54); border-color:#8e3eae; }
+.lp-c-blue   { background:linear-gradient(160deg,#1c3c8e,#0c1e56); border-color:#2c58ae; }
+.lp-c-red    { background:linear-gradient(160deg,#7a0e0e,#460606); border-color:#a02424; }
+.lp-c-red.locked { background:linear-gradient(160deg,#ae1c1c,#6c0e0e); border-color:#ff3c3c; }
+.lp-c-teal   { background:linear-gradient(160deg,#0c5c6c,#042e3e); border-color:#1c8a9a; }
+/* Zoomed gem — absolutely positioned overlay, parent stays 12x20px */
+.lp-btn.zoomed::after {
+  content: attr(data-lbl);
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 900; letter-spacing: 0.03em;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.45);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.8);
+  z-index: 200;
+  pointer-events: none;
+  text-align: center; white-space: nowrap;
+  isolation: isolate;
+}
+/* Zoomed parent needs high z-index so ::after sits above siblings */
+.lp-btn.zoomed { position: relative; z-index: 100; }
+.lp-btn.zoomed.lp-c-green::after  { background:linear-gradient(160deg,#2e8c14,#165806); color:#a8f060; }
+.lp-btn.zoomed.lp-c-gold::after   { background:linear-gradient(160deg,#c0a018,#7a6006); color:#f0df70; }
+.lp-btn.zoomed.lp-c-brown::after  { background:linear-gradient(160deg,#6a3606,#381a02); color:#f0c060; }
+.lp-btn.zoomed.lp-c-purple::after { background:linear-gradient(160deg,#6a1e8e,#380c54); color:#dea8ff; }
+.lp-btn.zoomed.lp-c-blue::after   { background:linear-gradient(160deg,#1c3c8e,#0c1e56); color:#a8ccff; }
+.lp-btn.zoomed.lp-c-red::after    { background:linear-gradient(160deg,#7a0e0e,#460606); color:#ffaaaa; }
+.lp-btn.zoomed.lp-c-teal::after   { background:linear-gradient(160deg,#0c5c6c,#042e3e); color:#90f0f8; }
+
+/* Edit mode */
+#loupe-ribbon.edit-mode .lp-btn { cursor:grab; width:16px; height:24px; }
+#loupe-ribbon.edit-mode .lp-btn.lp-fixed { cursor:default; opacity:0.6; }
+.lp-sep {
+  width:1px; height:14px;
+  background:rgba(240,223,112,0.15);
+  flex-shrink:0;
+}
+
+.lp-remove {
+  position:absolute; top:-6px; right:-6px;
+  width:13px; height:13px; border-radius:50%;
+  background:#cc2020; color:#fff;
+  font-size:8px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; pointer-events:auto; line-height:1;
+  font-family:sans-serif; font-weight:900; z-index:20;
+  touch-action:manipulation; box-shadow:0 1px 4px rgba(0,0,0,0.6);
+}
+
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -889,7 +1171,7 @@ function saveCurrentShot() {
   const input = document.getElementById('shot-name-input');
   const name = (input ? input.value.trim() : '') || ('Shot ' + (userShots.length + 1));
   const cutDeg = S.diagCutDeg || 0;
-  const dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
+  const dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' L' : ' R');
   userShots.push({
     name,
     cb: {...S.cb}, ob: {...S.ob},
@@ -1084,11 +1366,31 @@ function _rebuildShotList() {
     el.style.fontSize = (orig * base) + 'px';
   });
 }
+// Generic panel minimize — hides all children except the header
+function minimizePanel(panelId, headerEl) {
+  const panel = document.getElementById(panelId);
+  if (!panel || !headerEl) return;
+  const isMin = panel.dataset.minimized === '1';
+  panel.dataset.minimized = isMin ? '0' : '1';
+  panel.classList.toggle('panel-minimized', !isMin);
+  const btn = headerEl.querySelector('.min-btn');
+  if (btn) btn.textContent = isMin ? '—' : '+';
+}
+
 function toggleShotLibrary() {
   libraryOpen = !libraryOpen;
   const panel = document.getElementById('shot-library-panel');
-  if (panel) panel.style.display = libraryOpen ? 'block' : 'none';
-  if (libraryOpen) { loadShotNotes(); buildShotList(); }
+  if (panel) {
+    panel.style.display = libraryOpen ? 'flex' : 'none';
+    if (libraryOpen) {
+      buildShotList();
+      bringToTop('shot-library-panel');
+      requestAnimationFrame(function(){
+        positionPanelAtDock(panel);
+        // open expanded
+      });
+    }
+  }
 }
 
 function loadShot(idx) {
@@ -1799,57 +2101,97 @@ if ('serviceWorker' in navigator) {
   </div>
 
   <!-- SLIDERS FLOATING PANEL -->
-  <div id="sliders-block" style="display:none;position:fixed;z-index:8000;width:min(360px,96vw);min-width:200px;min-height:100px;background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:auto;resize:both;touch-action:none;">
-  <div id="sliders-handle" style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 3px 10px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
-  <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(200,144,240,0.6);">≡ SLIDERS</span>
-  <div style="display:flex;gap:4px;align-items:center;">
-    <button id="sliders-active-btn" onclick="toggleSlidersActive()" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:5px;color:#80e080;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ACTIVE</button>
-    <button onclick="zeroSliders()" style="background:rgba(240,223,112,0.15);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ZERO</button>
-    <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+  <div id="sliders-block" class="float-panel" style="background:rgba(10,15,10,0.97) !important;border-color:rgba(200,144,240,0.4);">
+
+  <!-- Header -->
+  <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);">
+    <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#f0df70;pointer-events:none;">SLIDERS</span>
+    <div style="display:flex;gap:4px;align-items:center;">
+      <button class="min-btn" title="Minimize sliders" onclick="minimizePanel('sliders-block',document.getElementById('sliders-handle'))" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">—</button>
+      <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+    </div>
   </div>
-</div>
-<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Shot Compensation</div>
-<div class="sgroup">
-<div class="srow">
-      <span class="slbl" style="color:#b090f0;">speed</span>
-      <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
-      <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
-      <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
+
+  <div class="float-panel-body">
+    <div id="sliders-scale-wrap" class="panel-scale-wrap" style="padding:8px 10px 10px;width:340px;">
+
+    <!-- BALL CONTROL group -->
+    <div id="sg-ball" style="background:rgba(176,144,240,0.08);border:1px solid rgba(176,144,240,0.2);border-radius:8px;padding:8px 10px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(176,144,240,0.9);text-transform:uppercase;">Ball Control</span>
+        <div style="display:flex;gap:4px;">
+          <button id="bc-freeze" onclick="sgFreeze('ball')" title="Freeze values" style="background:rgba(176,144,240,0.12);border:1px solid rgba(176,144,240,0.3);border-radius:4px;color:rgba(176,144,240,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
+          <button onclick="sgZero('ball')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
+          <button id="bc-on" onclick="sgToggle('ball')" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:4px;color:#80e080;font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ON</button>
+        </div>
+      </div>
+      <div class="srow">
+        <span class="slbl" style="color:#b090f0;">speed</span>
+        <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
+        <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
+        <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
+      </div>
+      <div class="srow" style="margin-top:6px;">
+        <span class="slbl">spin</span>
+        <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
+        <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
+        <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
+      </div>
+      <div class="srow" style="margin-top:6px;">
+        <span class="slbl">vert</span>
+        <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
+        <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
+        <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
+      </div>
     </div>
-<div class="srow" style="margin-top:6px">
-      <span class="slbl">spin</span>
-      <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
-      <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
-      <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
+
+    <!-- GHOST BALL group -->
+    <div id="sg-ghost" style="background:rgba(232,112,48,0.08);border:1px solid rgba(232,112,48,0.2);border-radius:8px;padding:8px 10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(232,112,48,0.9);text-transform:uppercase;">Ghost Ball</span>
+        <div style="display:flex;gap:4px;">
+          <button id="gb-freeze" onclick="sgFreeze('ghost')" title="Freeze values" style="background:rgba(232,112,48,0.12);border:1px solid rgba(232,112,48,0.3);border-radius:4px;color:rgba(232,112,48,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
+          <button onclick="sgZero('ghost')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
+          <button id="gb-on" onclick="sgToggle('ghost')" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:4px;color:#80e080;font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ON</button>
+        </div>
+      </div>
+      <div class="srow">
+        <span class="slbl" style="color:#e87030;font-size:9px;">T-LOW</span>
+        <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
+        <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
+      </div>
+      <div class="srow" style="margin-top:4px;">
+        <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
+        <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
+        <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
+      </div>
+      <div class="srow" style="margin-top:4px;">
+        <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
+        <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
+        <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
+      </div>
     </div>
-<div class="srow" style="margin-top:6px">
-      <span class="slbl">vert</span>
-      <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
-      <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
-      <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
+
+  </div>
+    </div><!-- /sliders-scale-wrap -->
+  <!-- Bottom bar: SIZE scale + resize grip -->
+  <div style="display:flex;align-items:center;padding:3px 0 3px 8px;background:#0a0a0a;border-top:1px solid #1a1a1a;border-radius:0 0 10px 10px;">
+    <span style="font-size:7px;font-weight:900;color:rgba(255,255,255,0.4);font-family:Lato,sans-serif;flex-shrink:0;margin-right:5px;letter-spacing:0.5px;">SIZE</span>
+    <input type="range" id="sl-scale" min="50" max="100" value="100"
+      onclick="event.stopPropagation()"
+      oninput="scaleSliderPanel(this.value)"
+      style="flex:1;height:2px;-webkit-appearance:none;appearance:none;background:#333;border-radius:1px;cursor:pointer;outline:none;">
+    <div id="sliders-resize" style="width:28px;height:28px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:0 0 10px 0;">
+      <svg width="16" height="16" viewBox="0 0 16 16" style="pointer-events:none;opacity:0.4;">
+        <line x1="4" y1="14" x2="14" y2="4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="14" x2="14" y2="9" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="14" y1="14" x2="14" y2="14" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
     </div>
-</div>
-<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Table Compensation</div>
-<div class="sgroup">
-<div class="srow" style="margin-top:8px">
-      <span class="slbl" style="color:#e87030;font-size:9px;" title="Fine-tune around 50% baseline">T-LOW</span>
-      <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
-      <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
-    </div>
-<div class="srow" style="margin-top:4px">
-      <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
-      <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
-      <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
-    </div>
-<div class="srow" style="margin-top:4px">
-      <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
-      <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
-      <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
-    </div>
-</div>
+  </div>
   </div><!-- /sliders-block -->
 
   <!-- SHOT ATTRIBUTES -->
@@ -1857,12 +2199,15 @@ if ('serviceWorker' in navigator) {
 
 </div><!-- card -->
 
-<footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
+
 
 
 
 <script>
 const DEG = 180/Math.PI, RAD = Math.PI/180;
+// Declared at top so render() can reference them regardless of script load order
+let cbPathOn = false;
+let panMode  = false;
 const Rb = 82;
 const TL = {left:30, right:430, top:30, bottom:230};
 const BALL_R  = 8;   // CB/OB radius in SVG px
@@ -1904,7 +2249,6 @@ let drag = null;
 let diagDrag = false;
 let mapOn = true;
 let snapOn = true;
-let panMode = true;
 
 function isZoomed() {
   var w = document.getElementById('zoom-wrap');
@@ -1926,11 +2270,11 @@ function updatePanBtn() {
 function togglePan(){
   panMode = !panMode;
   const _pan = document.getElementById('ep-pan');
-  if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'PAN<br>LOCK OFF' : 'PAN<br>LOCK ON'; }
+  if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'PAN<br>MODE ON' : 'PAN<br>MODE OFF'; }
 }
-let lockTable = true;
-let lockBalls = true;
-let lockSliders = true;
+let lockTable = false;
+let lockBalls = false;
+let lockSliders = false;
 let biasOn = false;
 let contactDotOn = false; // contact point dot off by default
 let throwLo = 0, throwMi = 0, throwHi = 0; // 0-100 each, segments 0-20°, 20-50°, 50-90°
@@ -1953,7 +2297,6 @@ function toggleAngle() {
   if (panel) panel.style.display = angleOn ? 'block' : 'none';
   render();
 }
-let cbPathOn = false;
 function toggleCbPath() {
   cbPathOn = !cbPathOn;
   const btn = document.getElementById('btn-cbpath');
@@ -2182,11 +2525,13 @@ function render() {
   if (snapOn) {
     const svgEl = document.getElementById('topsvg');
     if (!window._snapPos) window._snapPos = {};
-    if (!window._snapPos.cb) window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
-    if (!window._snapPos.ob) window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
-    window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
-    window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
-    updateSnapLabels(svgEl);
+    const _cbMoved = !window._snapPos.cb || window._snapPos.cb.x !== S.cb.x || window._snapPos.cb.y !== S.cb.y;
+    const _obMoved = !window._snapPos.ob || window._snapPos.ob.x !== S.ob.x || window._snapPos.ob.y !== S.ob.y;
+    if (_cbMoved || _obMoved) {
+      window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
+      window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
+      updateSnapLabels(svgEl);
+    }
   } else {
     ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
   }
@@ -2196,18 +2541,19 @@ function render() {
   drawBot(d);
 
   // Readouts: contact/IE/fraction follow ghost ball (throw compensated); angle and distance stay pure
-  const Zdeg = cutDeg < 0.5 ? 0 : Math.round(cutDeg * 10)/10;
-  const _dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' R' : ' L');
+  const Zdeg = cutDeg < 1.0 ? 0 : Math.round(cutDeg * 10)/10;
+  const _dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' R' : ' L');
   // Throw compensation applied to fraction
-  const _throwDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
-  const _compFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _throwDelta)); // 1.5x perceptual correction
-  const aimP = Math.round(_compFrac * 100);
+  const _throwDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
+  const _compFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _throwDelta)); // 1.5x perceptual correction — for ghost ball position only
+  const _displayFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) + _throwDelta));     // true ball fraction — for readouts
+  const aimP = Math.round(_displayFrac * 100);
   const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%';
-  const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
+  const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = Math.round((100 - Math.round(_compFrac * 100)) / 2); _cpEl.textContent = _cpPct + '%' + (cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R')); }
-  const _roe = $('r-oe'); if (_roe) _roe.textContent = cutDeg < 0.5 ? '0%' : aimP + '%';
-  const _rtw = $('r-twixt'); if (_rtw) _rtw.textContent = cutDeg < 0.5 ? '100%' : Math.max(0, 100 - aimP) + '%';
+  if (_cpEl) { const _cpPct = Math.round((1 - _displayFrac) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (S._diagDragRh ? ' L' : ' R')); }
+  const _roe = $('r-oe'); if (_roe) _roe.textContent = cutDeg < 1.0 ? '0%' : aimP + '%';
+  const _rtw = $('r-twixt'); if (_rtw) _rtw.textContent = cutDeg < 1.0 ? '100%' : Math.max(0, 100 - aimP) + '%';
 
   // Distance readout
   const distEl = $('r-dist');
@@ -2233,8 +2579,8 @@ function render() {
   }
 
   // Shot attributes panel
-  const rocut  = $('ro-cut');  if (rocut)  rocut.textContent  = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
-  const rofrac = $('ro-frac'); if (rofrac) rofrac.textContent = fracStr(_compFrac * (S._diagDragRh ? -1 : 1));
+  const rocut  = $('ro-cut');  if (rocut)  rocut.textContent  = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
+  const rofrac = $('ro-frac'); if (rofrac) rofrac.textContent = fracStr(_displayFrac * (S._diagDragRh ? -1 : 1));
   const roaim  = $('ro-aim');  if (roaim)  roaim.textContent  = aimP + '%' + _dir;
   const rodist = $('ro-dist'); if (rodist) {
     const ft = d.distFt;
@@ -2469,7 +2815,7 @@ function drawBot(d) {
   const edgeX = Math.max(4, Math.min(W-4, rh ? ccx+r : ccx-r));
   const clipX = rh ? edgeX : (ocx-r);
   const revealW = Math.max(0, rh ? (ocx+r)-edgeX : edgeX-(ocx-r));
-  const aimP  = Math.round(Math.abs(d.diagFraction) * 1.5 * 100);
+  const aimP  = Math.round(Math.abs(d.diagFraction) * 100);
 
   $('revClipRect').setAttribute('x', clipX);
   $('revClipRect').setAttribute('y', ocy-r);
@@ -2534,10 +2880,8 @@ function drawBot(d) {
   // boxes no longer flip
   const _roe = $('r-oe');   if (_roe)   _roe.textContent   = showMarker ? aimP + '%' : '0%';
   const _rtwixt = $('r-twixt'); if (_rtwixt) _rtwixt.textContent = showMarker ? Math.max(0, 100 - aimP) + '%' : '100%';
-  // "inside edge" label sits just above the pct labels row
-  $('bot-edge-lbl').setAttribute('x', Math.max(60, Math.min(edgeX, W-60)));
-  $('bot-edge-lbl').setAttribute('y', '22');
-  $('bot-edge-lbl').setAttribute('opacity', op);
+  // "inside edge" floating label removed — fixed readout row shows all values
+  $('bot-edge-lbl').setAttribute('opacity', '0');
   const bx = Math.max(44, Math.min(edgeX, W-44));
   $('bot-aim-bg').setAttribute('x',  bx-40);
   $('bot-aim-bg').setAttribute('y',  '262');
@@ -2546,7 +2890,7 @@ function drawBot(d) {
   $('bot-aim-pct').setAttribute('y', '282');
   $('bot-aim-pct').setAttribute('opacity', op);
   // Use compensated fraction for diagram percentage label
-  const _botThrowDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
+  const _botThrowDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
   const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) * 1.5 + _botThrowDelta) * 100);
   $('bot-aim-pct').textContent = Math.abs(_botAimP) + '%';
   $('bot-hint').setAttribute('opacity', '0');
@@ -2634,6 +2978,7 @@ document.addEventListener('keydown', e => {
 
 // ── SLIDERS ────────────────────────────────────────────────────
 function onSliders() {
+  if(typeof _sgState!=="undefined") _syncBias();
   S.speed  = parseInt($('sl-spd').value)  / 100;
   S.spin   = parseInt($('sl-spn').value) / 25;  // -4..4 continuously
   S.vert   = parseInt($('sl-vert').value) / 25;  // -4..4 from -100..100
@@ -2662,7 +3007,12 @@ function onSliders() {
     if(n) n.textContent = v;
     if(s) s.textContent = disp;
   });
-  render();
+  if (!onSliders._raf) {
+    onSliders._raf = requestAnimationFrame(function() {
+      onSliders._raf = null;
+      render();
+    });
+  }
 }
 
 function toggleCal() {
@@ -2671,6 +3021,11 @@ function toggleCal() {
   const isOpen = panel.classList.toggle('open');
   const btn = document.getElementById('btn-cal');
   if (btn) { btn.classList.toggle('on', isOpen); }
+  if (isOpen) {
+    positionPanelAtDock(panel);
+    const hdr = panel.querySelector('[id$="-header"],[id$="-handle"]') || panel.firstElementChild;
+    if (hdr) { panel.dataset.minimized='0'; panel.classList.remove('panel-minimized'); Array.from(panel.children).forEach(function(c){c.style.display='';}); minimizePanel(panel.id, hdr); }
+  }
 }
 
 function toggleCalLibrary() {
@@ -3294,6 +3649,43 @@ function updateLockBtn() {
     if (lbl) lbl.textContent = allLocked ? 'LOCKED' : 'UNLOCKED';
   }
 }
+function btbCollapse() { /* pill stack removed — handled by dock */ }
+
+function btbExpand() { /* pill stack removed — handled by dock */ }
+
+const FLOAT_Z_A = 8800;
+const FLOAT_PANELS_A = ['sliders-block','shot-library-panel','throw-panel'];
+function bringToTop(id) {
+  FLOAT_PANELS_A.forEach(function(pid) {
+    const el = document.getElementById(pid);
+    if (el) el.style.zIndex = pid === id ? FLOAT_Z_A + 10 : FLOAT_Z_A;
+  });
+}
+
+// Position a panel at the top of the app, centered
+function positionPanelAtDock(panel) {
+  if (!panel) return;
+  panel.style.transform = 'none';
+  panel.style.bottom = 'auto';
+  // Wait for layout then center in pixels
+  requestAnimationFrame(function(){
+    var pw = panel.offsetWidth || 340;
+    var left = Math.max(4, Math.round(window.innerWidth/2 - pw/2));
+    panel.style.left = left + 'px';
+    panel.style.top  = '8px';
+  });
+}
+
+function forceMinimizePanel(panelId, headerId) {
+  const panel = document.getElementById(panelId);
+  const hdr   = document.getElementById(headerId);
+  if (!panel || !hdr) return;
+  // Always open minimized — show only header
+  panel.dataset.minimized = '1';
+  panel.classList.add('panel-minimized');
+  const btn = hdr.querySelector('.min-btn');
+  if (btn) btn.textContent = '+';
+}
 function toggleAllLocks() {
   const allLocked = lockTable && lockBalls && lockSliders;
   lockTable = lockBalls = lockSliders = !allLocked;
@@ -3314,60 +3706,50 @@ function toggleAllLocks() {
 </script>
 
 <div id="btb">
-  <div id="btb-tab">
-    <span class="btb-pill-clone" onclick="toggleAllLocks()" id="quick-lock" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">LOCK</span></span>
-    <span class="btb-pill-clone" onclick="toggleShotLibrary()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">LEARN</span></span>
-    <span class="btb-pill-clone" onclick="toggleThrowPanel()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">DATA</span></span>
-    <span class="btb-pill-clone" onclick="toggleSlidersPanel()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">SLIDERS</span></span>
-    <span id="btb-pill"><button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 6px;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button><span id="btb-label" style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding-right:8px;">TOOLS</span></span>
-  </div>
-  <div id="btb-panel" style="display:none;min-width:min(540px,96vw);">
-    <div class="btb-row2">
-      <button class="ep-btn g-tog on" id="btn-map"    onclick="toggleMap()">GRID</button>
-      <button class="ep-btn g-snap on" id="ep-snap"   onclick="toggleSnap()">SNAP<br>TO</button>
-      <button class="ep-btn g-brown"  id="btn-cal"    onclick="toggleCal()">CAL</button>
-      <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">LEARN</button>
-      <button class="ep-btn g-yel"    id="btn-cbpath" onclick="toggleCbPath()">CUE<br>PATH</button>
-      <button class="ep-btn g-brown"  id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
-      <button class="ep-btn g-brown" id="btn-cp"     onclick="toggleContactDot()">C·PT</button>
-      <button class="ep-btn g-brown"  id="btn-throw"  onclick="toggleThrowPanel()">DATA</button>
-      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">TABLE<br>COMP OFF</button>
-      <button class="ep-btn g-swap"   id="btn-swap"   onclick="swapPanels()">⇅</button>
-    </div>
-    <div class="btb-row2">
-      <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">ZOOM<br>IN</button>
-      <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">ZOOM<br>OUT</button>
-      <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET<br>ZOOM</button>
-      <button class="ep-btn g-pan on" id="ep-pan" onclick="togglePan()">LOCK<br>ON</button>
-    </div>
-    <div class="btb-row2">
-      <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE<br>LOCK</button>
-      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">GHOST<br>LOCK</button>
-      <button class="ep-btn g-lock" id="ep-ls" onclick="toggleLock('sliders')">SLIDERS<br>LOCK</button>
-      <button class="ep-btn g-brown" onclick="zeroSliders()">ZERO<br>SLIDERS</button>
-    </div>
-    <div id="btb-drag-bottom" style="height:10px;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;"></div>
 
+  <div id="btb-panel" style="display:none;width:max-content;max-width:96vw;">
+    <!-- Gold pill header — drag handle + close -->
+    <div id="btb-tools-header" style="display:flex;align-items:center;justify-content:space-between;padding:2px 8px;background:#f0df70;border-radius:10px 10px 0 0;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+      <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">TOOLS</span>
+      <button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:16px;font-weight:900;cursor:pointer;padding:0 0 0 10px;line-height:1;touch-action:manipulation;">✕</button>
+    </div>
+    <!-- Loupe Ribbon — small dots, magnify on hover/touch. Long-press to customize -->
+    <div id="loupe-ribbon">
+    </div>
+    <div id="loupe-palette" style="min-height:0;"></div>
   </div>
-  <div id="btb-drag-bottom" style="height:10px;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;display:none;"></div>
 </div>
 
 <script>
 var btbVisible = false;
 function toggleBtb(){
   btbVisible = !btbVisible;
-  document.getElementById('btb-panel').style.display = btbVisible ? 'flex' : 'none';
-  document.getElementById('btb-arrow').textContent = btbVisible ? '▼' : '▲';
-  var pill = document.getElementById('btb-pill');
-  if (pill) pill.classList.toggle('open', btbVisible);
+  var panel = document.getElementById('btb-panel');
+  if (panel) {
+    panel.style.display = btbVisible ? 'flex' : 'none';
+    if (btbVisible) {
+      // Center in viewport
+      panel.style.transform = 'none';
+      requestAnimationFrame(function(){
+        var pw = panel.offsetWidth || 300;
+        var ph = panel.offsetHeight || 100;
+        panel.style.left = Math.max(4, Math.round(window.innerWidth/2 - pw/2)) + 'px';
+        panel.style.top  = Math.max(4, Math.round(window.innerHeight/2 - ph/2)) + 'px';
+      });
+    }
+  }
+  var arrow = document.getElementById('btb-arrow');
+  if (arrow) arrow.textContent = btbVisible ? '▼' : '▲';
 }
 // Floating drag via TOOLS bar
 (function(){
   var btb, tab, startX, startY, origLeft, origTop, didDrag;
   window.addEventListener('load', function(){
     btb = document.getElementById('btb');
-    tab = document.getElementById('btb-tab');
-    if (!btb || !tab) return;
+    if (!btb) return;
+    tab = document.getElementById('btb-tab'); // may be null - that's ok
+
+    // btbPanel drag handles whole panel including header
     // Position at middle-left of the table SVG on load
     (function positionAtTableLeft() {
       var tbl = document.querySelector('.svg-box.top-box') || document.querySelector('.svg-box');
@@ -3383,70 +3765,9 @@ function toggleBtb(){
       btb.style.transform = 'none';
       btb.style.left = lx + 'px';
       btb.style.top  = ly + 'px';
+      btbCollapse();
     })();
-    var activePtr = null;
-    var btbPanel = document.getElementById('btb-panel');
-    if (btbPanel) {
-      btbPanel.addEventListener('pointerdown', function(e){
-        if (e.target.closest('.ep-btn') || e.target.closest('button') || e.target.closest('input')) return;
-        var rect = btb.getBoundingClientRect();
-        startX = e.clientX; startY = e.clientY;
-        origLeft = rect.left; origTop = rect.top;
-        didDrag = false; activePtr = e.pointerId;
-        btbPanel.setPointerCapture(e.pointerId);
-      });
-      btbPanel.addEventListener('pointermove', function(e){
-        if (activePtr === null || e.pointerId !== activePtr) return;
-        var dx = e.clientX - startX, dy = e.clientY - startY;
-        if (!didDrag && Math.hypot(dx,dy) > 8) {
-          didDrag = true;
-          btb.style.bottom = 'auto'; btb.style.transform = 'none';
-          btb.style.left = origLeft + 'px'; btb.style.top = origTop + 'px';
-        }
-        if (didDrag) {
-          var lx = origLeft+dx, ly = origTop+dy;
-          lx = Math.max(0,Math.min(window.innerWidth-btb.offsetWidth-4,lx));
-          ly = Math.max(0,Math.min(window.innerHeight-btb.offsetHeight-4,ly));
-          btb.style.left = lx+'px'; btb.style.top = ly+'px';
-        }
-      });
-      btbPanel.addEventListener('pointerup', function(e){ activePtr=null; });
-      btbPanel.addEventListener('pointercancel', function(e){ activePtr=null; });
-    }
-    tab.addEventListener('pointerdown', function(e){
-      if (e.target.id === 'btb-arrow') return;
-      var rect = btb.getBoundingClientRect();
-      startX = e.clientX; startY = e.clientY;
-      origLeft = rect.left; origTop = rect.top;
-      didDrag = false; activePtr = e.pointerId;
-    });
-    tab.addEventListener('pointermove', function(e){
-      if (activePtr === null || e.pointerId !== activePtr) return;
-      var dx = e.clientX - startX, dy = e.clientY - startY;
-      if (!didDrag && Math.hypot(dx,dy) > 8) {
-        didDrag = true;
-        // Only NOW commit to pixel positioning (no jump — drag already started)
-        btb.style.transform = 'none';
-        btb.style.bottom = 'auto';
-        btb.style.left = origLeft + 'px';
-        btb.style.top  = origTop  + 'px';
-        try { tab.setPointerCapture(e.pointerId); } catch(ex){}
-      }
-      if (!didDrag) return;
-      var nx = origLeft + dx, ny = origTop + dy;
-      nx = Math.max(0, Math.min(window.innerWidth  - btb.offsetWidth,  nx));
-      ny = Math.max(0, Math.min(window.innerHeight - btb.offsetHeight, ny));
-      btb.style.left = nx + 'px';
-      btb.style.top  = ny + 'px';
-    });
-    tab.addEventListener('pointerup', function(e){
-      if (e.pointerId !== activePtr) return;
-      activePtr = null;
-      if (!didDrag && !e.target.closest('.btb-pill-clone') && !e.target.closest('#btb-panel')) toggleBtb();
-    });
-    tab.addEventListener('pointercancel', function(e){
-      activePtr = null;
-    });
+    // Panel drag handled by btb-tools-header gold pill only
   });
 })();
 </script>
@@ -3459,7 +3780,7 @@ function vernierAim(dir) {
   let signed = rh ? -cur : cur;
   signed += dir * oneDeg;
   signed = Math.max(-90, Math.min(90, signed));
-  if (Math.abs(signed) < 0.001) signed = dir * oneDeg;
+  if (Math.abs(signed) < oneDeg * 0.6) { signed = 0; }  // snap to zero when close
   S._diagDragRh = signed < 0;
   S.diagCutDeg  = Math.abs(signed);
   render();
@@ -3480,25 +3801,22 @@ function biasStep(dir) {
 }
 </script>
 <!-- SHOT LIBRARY — floating, draggable -->
-<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(500px,98vw);background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;touch-action:none;">
+<div id="shot-library-panel" class="float-panel" style="border-color:rgba(240,223,112,0.5);">
   <!-- Drag header -->
-  <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:2px solid #cccccc;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:#f0f0f0;">
-    <span style="font-size:13px;font-weight:900;letter-spacing:1.5px;color:#111111;">≡ SHOT LIBRARY</span>
+  <div id="shot-lib-header" class="float-panel-header"><span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">LEARN</span>
     <div style="display:flex;align-items:center;gap:6px;">
-      <button onclick="shotListFontSize(-1)" style="width:28px;height:28px;border-radius:50%;border:1px solid #999;background:#fff;color:#111;font-size:18px;line-height:1;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;">−</button>
-      <button onclick="shotListFontSize(1)"  style="width:28px;height:28px;border-radius:50%;border:1px solid #999;background:#fff;color:#111;font-size:18px;line-height:1;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;">+</button>
+      <button class="min-btn" onclick="minimizePanel('shot-library-panel',this.closest('#shot-lib-header'))" style="background:none;border:1px solid #aaa;border-radius:4px;color:#666;font-size:13px;font-weight:900;padding:1px 7px;cursor:pointer;touch-action:manipulation;">—</button>
       <button onclick="toggleShotLibrary()" style="background:none;border:none;color:#333333;font-size:22px;line-height:1;cursor:pointer;padding:0 4px;touch-action:manipulation;">✕</button>
     </div>
   </div>
-  <div id="shot-library-list" style="max-height:min(70vh,600px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;"></div>
-  <div style="display:flex;gap:6px;padding:8px 12px;border-top:2px solid #cccccc;background:#f0f0f0;">
-    <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
-      style="flex:1;min-width:0;background:#ffffff;border:1px solid #999999;border-radius:4px;padding:6px 10px;color:#111111;font-size:14px;outline:none;-webkit-appearance:none;">
-    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:6px 14px;border-radius:4px;border:none;background:#1a5a1a;color:#ffffff;font-family:'Lato',sans-serif;font-size:13px;font-weight:900;cursor:pointer;">SAVE</button>
-  </div>
-  <!-- Resize grip -->
-  <div id="shot-lib-resize" style="height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;touch-action:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05);">
-    <div style="width:32px;height:3px;border-radius:2px;background:rgba(240,223,112,0.25);pointer-events:none;"></div>
+  <div id="shot-library-list" class="float-panel-body" style="cursor:grab;max-height:20vh;"></div>
+  <div style="display:flex;gap:4px;padding:4px 8px;border-top:1px solid #e0e0e0;background:#f8f8f8;align-items:center;">
+    <span style="font-size:8px;font-weight:900;color:rgba(0,0,0,0.35);font-family:'Lato',sans-serif;min-width:28px;text-align:right;" id="learn-scale-lbl">100%</span>
+    <input type="range" id="learn-scale" min="50" max="100" value="100" oninput="scalePanel('shot-library-panel','learn-scale','learn-scale-lbl')" style="flex:1;height:3px;accent-color:rgba(240,223,112,0.8);">
+    <input id="shot-name-input" type="text" placeholder="Name to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
+      style="flex:2;min-width:0;background:#fff;border:1px solid #bbb;border-radius:4px;padding:3px 6px;color:#111;font-size:11px;outline:none;">
+    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:3px 8px;border-radius:4px;border:none;background:#1a5a1a;color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">SAVE</button>
+    <div id="learn-panel-resize" style="width:18px;height:18px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px;">⇲</div>
   </div>
 </div>
 
@@ -3527,14 +3845,16 @@ function biasStep(dir) {
 
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName === 'BUTTON') return;
+      panel.style.transform = 'none';
       var r = panel.getBoundingClientRect();
+      panel.style.left = r.left + 'px'; panel.style.top = r.top + 'px';
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
       didDrag=false; activePtr=e.pointerId;
     });
     header.addEventListener('pointermove', function(e){
       if (activePtr===null || e.pointerId!==activePtr) return;
-      var dx=e.clientX-startX, dy=e.clientY-startY;
+      var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
       if (!didDrag && Math.hypot(dx,dy)>8){
         didDrag=true;
         try{ header.setPointerCapture(e.pointerId); }catch(ex){}
@@ -3547,27 +3867,73 @@ function biasStep(dir) {
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
 
-    // ── Resize grip ──────────────────────────────────────────────────────────
-    var grip = document.getElementById('shot-lib-resize');
     var list = document.getElementById('shot-library-list');
-    var rStartY, rStartH, rPtr=null;
-    if (grip && list) {
-      grip.addEventListener('pointerdown', function(e){
-        rStartY = e.clientY;
-        rStartH = list.offsetHeight;
-        rPtr = e.pointerId;
-        try{ grip.setPointerCapture(e.pointerId); }catch(x){}
+
+    // Bottom drag handle
+    var footer = document.getElementById('learn-panel-footer-drag');
+    if (footer) {
+      footer.addEventListener('pointerdown', function(e){
+        var r=panel.getBoundingClientRect();
+        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
+        didDrag=false; activePtr=e.pointerId;
+        footer.setPointerCapture(e.pointerId);
+      });
+      footer.addEventListener('pointermove', function(e){
+        if (activePtr===null||e.pointerId!==activePtr) return;
+        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
+        if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
+        if (!didDrag) return;
+        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
+        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+      });
+      footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+      footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    }
+
+    // List drag at scroll edge
+    if (list) {
+      var listDragActive=false;
+      list.addEventListener('pointerdown', function(e){
+        if (e.target.tagName==='A'||e.target.closest('a')) return;
+        if (e.target.closest('[data-preset]')) return;
+        var atTop=list.scrollTop===0, atBottom=list.scrollTop+list.clientHeight>=list.scrollHeight-2;
+        if (!atTop&&!atBottom) return;
+        var r=panel.getBoundingClientRect();
+        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
+        didDrag=false; listDragActive=true; activePtr=e.pointerId;
+      });
+      list.addEventListener('pointermove', function(e){
+        if (!listDragActive||e.pointerId!==activePtr) return;
+        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
+        if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; list.setPointerCapture(e.pointerId); }
+        if (!didDrag) return;
+        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
+        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+      });
+      list.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
+      list.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
+    }
+
+    // SE resize handle
+    var resizeHandle = document.getElementById('learn-panel-resize');
+    if (resizeHandle) {
+      var resizing=false, resizeStartX, resizeStartY, resizeStartW, resizeStartH, resizePtr=null;
+      resizeHandle.addEventListener('pointerdown', function(e){
         e.stopPropagation();
+        resizing=true; resizePtr=e.pointerId;
+        resizeStartX=e.clientX; resizeStartY=e.clientY;
+        resizeStartW=panel.offsetWidth; resizeStartH=panel.offsetHeight;
+        resizeHandle.setPointerCapture(e.pointerId);
       });
-      grip.addEventListener('pointermove', function(e){
-        if(rPtr===null||e.pointerId!==rPtr) return;
-        var dy = e.clientY - rStartY;
-        var newH = Math.max(44, Math.min(window.innerHeight * 0.75, rStartH + dy));
-        list.style.maxHeight = newH + 'px';
-        list.style.height    = newH + 'px';
+      resizeHandle.addEventListener('pointermove', function(e){
+        if (!resizing||e.pointerId!==resizePtr) return;
+        var nw=Math.max(260,resizeStartW+(e.clientX-resizeStartX));
+        var nh=Math.max(150,resizeStartH+(e.clientY-resizeStartY));
+        panel.style.width=Math.min(nw,window.innerWidth-8)+'px';
+        if (list) { var hh=document.getElementById('shot-lib-header').offsetHeight||44; list.style.maxHeight=Math.max(60,nh-hh-80)+'px'; list.style.minHeight=Math.max(60,nh-hh-80)+'px'; }
       });
-      grip.addEventListener('pointerup',     function(e){ if(e.pointerId===rPtr) rPtr=null; });
-      grip.addEventListener('pointercancel', function(e){ if(e.pointerId===rPtr) rPtr=null; });
+      resizeHandle.addEventListener('pointerup',     function(e){ resizing=false; resizePtr=null; });
+      resizeHandle.addEventListener('pointercancel', function(e){ resizing=false; resizePtr=null; });
     }
   });
 
@@ -3621,52 +3987,37 @@ function biasStep(dir) {
 })();
 </script>
 
-<!-- ── THROW COMP DATA PANEL ─────────────────────────────────── -->
-<div id="throw-panel" style="display:none;position:fixed;z-index:8888;width:min(420px,96vw);
-     background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;
-     box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
-  <div id="throw-panel-header" style="display:flex;justify-content:space-between;align-items:center;
-       padding:10px 12px;background:#f0f0f0;border-bottom:2px solid #cccccc;
-       cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
-    <span style="font-size:13px;font-weight:900;letter-spacing:1px;color:#111111;">THROW COMP DATA</span>
+<!-- ── SHOT DATA RECORD PANEL ─────────────────────────────────── -->
+<div id="throw-panel" class="float-panel" style="border-color:rgba(200,112,48,0.4);">
+  <div id="throw-panel-header" class="float-panel-header"><span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">SHOT DATA RECORD</span>
     <div style="display:flex;gap:6px;align-items:center;">
-      <button onclick="minimizeThrowPanel()" style="background:none;border:1px solid #aaa;border-radius:4px;color:#333;font-size:13px;font-weight:900;padding:2px 8px;cursor:pointer;" title="Minimize">—</button>
-      <button onclick="toggleThrowPanel()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;">✕</button>
+      <button class="min-btn" onclick="minimizeThrowPanel()" style="background:none;border:1px solid #aaa;border-radius:4px;color:#333;font-size:13px;font-weight:900;padding:2px 8px;cursor:pointer;touch-action:manipulation;" title="Minimize">—</button>
+      <button onclick="toggleThrowPanel()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;touch-action:manipulation;">✕</button>
     </div>
   </div>
   <!-- Current shot info + record button -->
-  <div style="padding:10px 12px;border-bottom:2px solid #dddddd;background:#ffffff;">
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-      <div style="flex:1;font-size:13px;color:#111111;font-weight:700;">
-        <span style="color:#333333;">Cut:</span> <span id="td-cut" style="color:#000;">—</span>
-        &nbsp;&nbsp;<span style="color:#333333;">Geo%:</span> <span id="td-geo" style="color:#000;">—</span>
-        &nbsp;&nbsp;<span style="color:#333333;">Comp%:</span> <span id="td-comp" style="color:#000;font-weight:900;">—</span>
-      </div>
-    </div>
+  <div id="throw-panel-info" style="padding:4px 8px;border-bottom:1px solid #e8e8e8;background:#fff;">
     <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#111111;cursor:pointer;font-weight:700;">
-        <input type="checkbox" id="td-rail" style="width:16px;height:16px;"> Rail shot
+      <span style="font-size:10px;color:#333;font-weight:700;">Cut:</span> <span id="td-cut" style="font-size:10px;color:#000;font-weight:900;">—</span>
+      <span style="font-size:10px;color:#333;font-weight:700;">Geo:</span> <span id="td-geo" style="font-size:10px;color:#000;font-weight:900;">—</span>
+      <span style="font-size:10px;color:#333;font-weight:700;">Comp:</span> <span id="td-comp" style="font-size:10px;color:#000;font-weight:900;">—</span>
+      <label style="display:flex;align-items:center;gap:3px;font-size:10px;color:#111;cursor:pointer;font-weight:700;">
+        <input type="checkbox" id="td-rail" style="width:11px;height:11px;"> Rail
       </label>
-      <input id="td-note" type="text" placeholder="Note (optional)…" autocomplete="off"
-        style="flex:1;min-width:80px;background:#ffffff;border:1px solid #999999;
-               border-radius:4px;padding:5px 8px;color:#111111;font-size:13px;outline:none;">
-      <button onclick="recordThrowShot()" style="padding:6px 16px;border-radius:4px;border:none;
-              background:#1a4a1a;color:#ffffff;font-family:'Lato',sans-serif;font-size:13px;
-              font-weight:900;cursor:pointer;white-space:nowrap;">RECORD</button>
+      <input id="td-note" type="text" placeholder="Note…" autocomplete="off"
+        style="flex:1;min-width:50px;background:#fff;border:1px solid #bbb;border-radius:3px;padding:2px 5px;color:#111;font-size:10px;outline:none;">
+      <button onclick="recordThrowShot()" style="padding:2px 8px;border-radius:3px;border:none;background:#1a4a1a;color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;white-space:nowrap;">REC</button>
     </div>
   </div>
   <!-- Data log -->
-  <div id="throw-data-list" style="max-height:min(45vh,340px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;"></div>
-  <!-- Footer: export + clear -->
-  <div style="display:flex;gap:6px;padding:8px 12px;border-top:2px solid #cccccc;background:#f0f0f0;">
-    <button onclick="exportThrowData()" style="flex:1;padding:7px;border-radius:4px;border:1px solid #888888;
-            background:#ffffff;color:#111111;font-size:12px;font-weight:900;cursor:pointer;">
-      EXPORT CSV
-    </button>
-    <button onclick="clearThrowData()" style="padding:7px 14px;border-radius:4px;border:1px solid #cc3333;
-            background:#ffffff;color:#cc3333;font-size:12px;font-weight:900;cursor:pointer;">
-      CLEAR
-    </button>
+  <div id="throw-data-list" class="float-panel-body" style="cursor:grab;max-height:18vh;"></div>
+  <!-- Footer: scale + export + clear -->
+  <div id="throw-panel-footer" style="display:flex;gap:4px;padding:4px 8px;border-top:1px solid #e0e0e0;background:#f8f8f8;align-items:center;">
+    <span class="panel-scale-label" id="data-scale-lbl" style="font-size:8px;font-weight:900;color:rgba(0,0,0,0.35);font-family:'Lato',sans-serif;min-width:28px;text-align:right;">100%</span>
+    <input type="range" id="data-scale" min="50" max="100" value="100" oninput="scalePanel('throw-panel','data-scale','data-scale-lbl')" style="flex:1;height:3px;accent-color:rgba(240,223,112,0.8);">
+    <button onclick="exportThrowData()" style="padding:2px 8px;border-radius:3px;border:1px solid #888;background:#fff;color:#111;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">CSV</button>
+    <button onclick="clearThrowData()" style="padding:2px 8px;border-radius:3px;border:1px solid #cc3333;background:#fff;color:#cc3333;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">CLEAR</button>
+    <div id="throw-panel-resize" style="width:18px;height:18px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px;">⇲</div>
   </div>
 </div>
 
@@ -3695,23 +4046,22 @@ function saveThrowData() {
 }
 
 function minimizeThrowPanel() {
-  const list = document.getElementById('throw-data-list');
-  const footer = document.querySelector('#throw-panel > div:last-child');
-  const info = document.getElementById('throw-panel').querySelector('div:nth-child(2)');
-  const minimized = list && list.style.display === 'none';
-  if (list) list.style.display = minimized ? '' : 'none';
-  if (info) info.style.display = minimized ? '' : 'none';
+  minimizePanel('throw-panel', document.getElementById('throw-panel-header'));
 }
 
 function toggleThrowPanel() {
   throwPanelOpen = !throwPanelOpen;
   const panel = document.getElementById('throw-panel');
   if (!panel) return;
-  panel.style.display = throwPanelOpen ? 'block' : 'none';
+  panel.style.display = throwPanelOpen ? 'flex' : 'none';
   if (throwPanelOpen) {
+    bringToTop('throw-panel');
     loadThrowData();
     updateThrowPanelCurrent();
     buildThrowList();
+    requestAnimationFrame(function(){
+      positionPanelAtDock(panel);
+    });
   }
 }
 
@@ -3719,10 +4069,10 @@ function updateThrowPanelCurrent() {
   const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
   const _d = compute(cutDeg);
   const geoPct = Math.round(Math.abs(_d.diagFraction) * 100);
-  const throwDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
+  const throwDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
   const compPct = Math.round(Math.min(1, Math.abs(_d.diagFraction) + throwDelta) * 100);
   const el = (id) => document.getElementById(id);
-  const dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? 'L' : 'R');
+  const dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? 'L' : 'R');
   if(el('td-cut'))  el('td-cut').textContent  = cutDeg.toFixed(1) + '°' + dir;
   if(el('td-geo'))  el('td-geo').textContent  = geoPct + '%';
   if(el('td-comp')) el('td-comp').textContent = compPct + '%';
@@ -3730,7 +4080,7 @@ function updateThrowPanelCurrent() {
 
 function recordThrowShot() {
   const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
-  if (cutDeg < 0.5) { alert('Set a cut angle first.'); return; }
+  if (cutDeg < 1.0) { alert('Set a cut angle first.'); return; }
   const d = compute(cutDeg);
   const geoPct  = Math.round(Math.abs(d.diagFraction) * 100);
   const throwDelta = getThrowComp(cutDeg);
@@ -3865,14 +4215,16 @@ window.render = function() {
     panel.style.left = Math.max(4, window.innerWidth - 440) + 'px';
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName === 'BUTTON') return;
+      panel.style.transform = 'none';
       var r = panel.getBoundingClientRect();
+      panel.style.left = r.left + 'px'; panel.style.top = r.top + 'px';
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
       didDrag=false; activePtr=e.pointerId;
     });
     header.addEventListener('pointermove', function(e){
       if (activePtr===null || e.pointerId!==activePtr) return;
-      var dx=e.clientX-startX, dy=e.clientY-startY;
+      var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
       if (!didDrag && Math.hypot(dx,dy)>8) { didDrag=true; try{header.setPointerCapture(e.pointerId);}catch(ex){} }
       if (!didDrag) return;
       var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
@@ -3881,6 +4233,75 @@ window.render = function() {
     });
     header.addEventListener('pointerup', function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+
+    // Bottom drag handle
+    var footer = document.getElementById('throw-panel-footer-drag');
+    if (footer) {
+      footer.addEventListener('pointerdown', function(e){
+        var r=panel.getBoundingClientRect();
+        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
+        didDrag=false; activePtr=e.pointerId;
+        footer.setPointerCapture(e.pointerId);
+      });
+      footer.addEventListener('pointermove', function(e){
+        if (activePtr===null||e.pointerId!==activePtr) return;
+        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
+        if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
+        if (!didDrag) return;
+        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
+        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+      });
+      footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
+      footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
+    }
+
+    // Data list drag at scroll edge
+    var dataList = document.getElementById('throw-data-list');
+    if (dataList) {
+      var listDragActive=false;
+      dataList.addEventListener('pointerdown', function(e){
+        var atTop=dataList.scrollTop===0, atBottom=dataList.scrollTop+dataList.clientHeight>=dataList.scrollHeight-2;
+        if (!atTop&&!atBottom) return;
+        var r=panel.getBoundingClientRect();
+        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
+        didDrag=false; listDragActive=true; activePtr=e.pointerId;
+        dataList.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+      dataList.addEventListener('pointermove', function(e){
+        if (!listDragActive||e.pointerId!==activePtr) return;
+        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
+        if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
+        if (!didDrag) return;
+        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
+        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+      });
+      dataList.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
+      dataList.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
+    }
+
+    // Resize handle
+    var resizeHandle = document.getElementById('throw-panel-resize');
+    if (resizeHandle) {
+      var resizing=false, resizeStartX, resizeStartY, resizeStartW, resizeStartH, resizePtr=null;
+      resizeHandle.addEventListener('pointerdown', function(e){
+        e.stopPropagation();
+        resizing=true; resizePtr=e.pointerId;
+        resizeStartX=e.clientX; resizeStartY=e.clientY;
+        resizeStartW=panel.offsetWidth; resizeStartH=panel.offsetHeight;
+        resizeHandle.setPointerCapture(e.pointerId);
+      });
+      resizeHandle.addEventListener('pointermove', function(e){
+        if (!resizing||e.pointerId!==resizePtr) return;
+        var nw=Math.max(260,resizeStartW+(e.clientX-resizeStartX));
+        var nh=Math.max(150,resizeStartH+(e.clientY-resizeStartY));
+        panel.style.width=Math.min(nw,window.innerWidth-8)+'px';
+        if (dataList) { dataList.style.maxHeight=Math.max(60,nh-180)+'px'; dataList.style.minHeight=Math.max(60,nh-180)+'px'; }
+      });
+      resizeHandle.addEventListener('pointerup',     function(e){ resizing=false; resizePtr=null; });
+      resizeHandle.addEventListener('pointercancel', function(e){ resizing=false; resizePtr=null; });
+    }
+
     loadThrowData();
   });
 })();
@@ -3891,44 +4312,102 @@ var _slidersPanelOpen = false;
 var _slidersPositioned = false;
 
 
-function toggleSlidersActive() {
-  var panel = document.getElementById('sliders-block');
-  if (!panel) return;
-  var isActive = !panel.classList.contains('sliders-active');
-  panel.classList.toggle('sliders-active', isActive);
-  panel.classList.toggle('sliders-unlocked', isActive);
-  var btn = document.getElementById('sliders-active-btn');
-  if (btn) {
-    btn.textContent = isActive ? 'ACTIVE' : 'INACTIVE';
-    btn.style.background = isActive ? 'rgba(80,200,80,0.2)' : 'rgba(200,80,80,0.15)';
-    btn.style.borderColor = isActive ? 'rgba(80,200,80,0.4)' : 'rgba(200,80,80,0.3)';
-    btn.style.color = isActive ? '#80e080' : '#e08080';
-  }
-  panel.querySelectorAll('.sgroup').forEach(function(sg) {
-    sg.style.opacity = isActive ? '1' : '0.35';
+// ── Slider group state ───────────────────────────────────────
+var _sgState = {
+  ball:  { on:true, frozen:false },
+  ghost: { on:true, frozen:false }
+};
+
+
+function scaleSliderPanel(val) { scalePanel('sliders-block','sl-scale',null); }
+
+
+function scalePanel(panelId, sliderId, lblId) {
+  var val = document.getElementById(sliderId) ? parseInt(document.getElementById(sliderId).value) : 100;
+  var wrap = panelId === 'sliders-block'
+    ? document.getElementById('sliders-scale-wrap')
+    : document.getElementById(panelId) ? document.getElementById(panelId).querySelector('.float-panel-body') : null;
+  if (!wrap) return;
+  var scale = val / 100;
+  wrap.style.transformOrigin = 'top left';
+  wrap.style.transform = 'scale(' + scale + ')';
+  var h = Math.round(wrap.scrollHeight * scale);
+  wrap.parentElement.style.height = h + 'px';
+}
+
+function sgToggle(group) {
+  _sgState[group].on = !_sgState[group].on;
+  _sgApply(group);
+  onSliders();
+}
+
+function sgFreeze(group) {
+  _sgState[group].frozen = !_sgState[group].frozen;
+  _sgApply(group);
+}
+
+function sgZero(group) {
+  var ids = group === 'ball'
+    ? ['sl-spd','sl-spn','sl-vert']
+    : ['sl-throw-lo','sl-throw-mi','sl-throw-hi'];
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) { el.value = id==='sl-spd' ? 50 : 0; }
   });
-  panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el) {
-    el.disabled = !isActive;
+  onSliders();
+}
+
+function _sgApply(group) {
+  var st  = _sgState[group];
+  var grp = document.getElementById(group==='ball' ? 'sg-ball' : 'sg-ghost');
+  var onBtn  = document.getElementById(group==='ball' ? 'bc-on' : 'gb-on');
+  var frzBtn = document.getElementById(group==='ball' ? 'bc-freeze' : 'gb-freeze');
+  var ids = group === 'ball'
+    ? ['sl-spd','sl-spn','sl-vert']
+    : ['sl-throw-lo','sl-throw-mi','sl-throw-hi'];
+
+  // ON/OFF button
+  if (onBtn) {
+    onBtn.textContent = st.on ? 'ON' : 'OFF';
+    onBtn.style.background = st.on ? 'rgba(80,200,80,0.2)' : 'rgba(200,80,80,0.2)';
+    onBtn.style.borderColor = st.on ? 'rgba(80,200,80,0.4)' : 'rgba(200,80,80,0.4)';
+    onBtn.style.color       = st.on ? '#80e080' : '#e08080';
+  }
+  // FREEZE button
+  if (frzBtn) {
+    frzBtn.style.background   = st.frozen ? 'rgba(125,211,252,0.25)' : '';
+    frzBtn.style.borderColor  = st.frozen ? 'rgba(125,211,252,0.6)'  : '';
+    frzBtn.style.color        = st.frozen ? '#7dd3fc' : '';
+  }
+  // Dim group and disable sliders when off or frozen
+  var disabled = !st.on || st.frozen;
+  if (grp) grp.style.opacity = st.on ? (st.frozen ? '0.6' : '1') : '0.35';
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.disabled = disabled;
   });
 }
+
+// Keep biasOn in sync with ghost group for render()
+function _syncBias() {
+  biasOn = _sgState.ghost.on && !_sgState.ghost.frozen;
+}
+
+// Override onSliders to respect group state
+var _origOnSliders = null;
+
+// toggleSlidersActive replaced by sgToggle
 
 function toggleSlidersPanel() {
   _slidersPanelOpen = !_slidersPanelOpen;
   var panel = document.getElementById('sliders-block');
   if (!panel) return;
-  // Apply current slider lock state to the panel
-  if (panel) panel.classList.toggle('sliders-unlocked', !lockSliders);
-  const _sg = panel.querySelector('.sgroup');
-  if (_sg) _sg.style.opacity = lockSliders ? '0.4' : '1';
-  panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
-  panel.style.display = _slidersPanelOpen ? 'block' : 'none';
-  if (_slidersPanelOpen && !_slidersPositioned) {
-    var btb = document.getElementById('btb');
-    var r = btb ? btb.getBoundingClientRect() : {top:200, left:10};
-    var ph = panel.offsetHeight || 200;
-    panel.style.top  = Math.max(10, r.top - ph - 8) + 'px';
-    panel.style.left = r.left + 'px';
-    _slidersPositioned = true;
+  panel.style.display = _slidersPanelOpen ? 'flex' : 'none';
+  if (_slidersPanelOpen) {
+    bringToTop('sliders-block');
+    requestAnimationFrame(function(){
+      positionPanelAtDock(panel);
+    });
   }
 }
 
@@ -3941,15 +4420,17 @@ function toggleSlidersPanel() {
     if (!panel || !header) return;
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+      panel.style.transform = 'none';
       var r=panel.getBoundingClientRect();
+      panel.style.left=r.left+'px'; panel.style.top=r.top+'px';
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
       didDrag=false; activePtr=e.pointerId;
-      header.setPointerCapture(e.pointerId);
+      try{ header.setPointerCapture(e.pointerId); }catch(x){}
     });
     header.addEventListener('pointermove', function(e){
       if (activePtr===null||e.pointerId!==activePtr) return;
-      var dx=e.clientX-startX, dy=e.clientY-startY;
+      var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
       if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; panel.style.transition='none'; }
       if (didDrag){ panel.style.left=(origLeft+dx)+'px'; panel.style.top=(origTop+dy)+'px'; }
     });
@@ -3957,7 +4438,543 @@ function toggleSlidersPanel() {
     header.addEventListener('pointercancel', function(e){ activePtr=null; });
   });
 })();
+
+// ── PINCH ZOOM COMPENSATION ───────────────────────────────────
+// Keeps the BTB toolbar at constant visual size during pinch zoom.
+(function(){
+  if (!window.visualViewport) return;
+  function applyViewportScale() {
+    var s = window.visualViewport.scale;
+    var btb = document.getElementById('btb');
+    if (btb) {
+      btb.style.transform = 'scale(' + (1/s) + ')';
+      btb.style.transformOrigin = 'bottom left';
+    }
+    window._vpScale = s;
+  }
+  window.visualViewport.addEventListener('resize', applyViewportScale);
+  window.visualViewport.addEventListener('scroll', applyViewportScale);
+  applyViewportScale();
+})();
+
+// Collapsed circle — drag moves BTB without expanding
+(function(){
+  window.addEventListener('load', function(){
+    var circle = document.getElementById('btb-collapsed');
+    var btb    = document.getElementById('btb');
+    if (!circle || !btb) return;
+    var startX, startY, origLeft, origTop, didDrag, ptr=null;
+    circle.addEventListener('pointerdown', function(e){
+      e.stopPropagation(); e.preventDefault();
+      var r = btb.getBoundingClientRect();
+      btb.style.left = r.left+'px'; btb.style.top = r.top+'px'; btb.style.bottom='auto';
+      startX=e.clientX; startY=e.clientY;
+      origLeft=r.left; origTop=r.top;
+      didDrag=false; ptr=e.pointerId;
+      circle.setPointerCapture(e.pointerId);
+    });
+    circle.addEventListener('pointermove', function(e){
+      if (ptr===null||e.pointerId!==ptr) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
+      if (!didDrag) return;
+      e.stopPropagation();
+      btb.style.left=Math.max(0,origLeft+dx)+'px';
+      btb.style.top =Math.max(0,origTop+dy)+'px';
+    });
+    circle.addEventListener('pointerup', function(e){
+      if (e.pointerId!==ptr) return;
+      e.stopPropagation(); ptr=null;
+      if (!didDrag) btbExpand();
+    });
+    circle.addEventListener('pointercancel', function(){ ptr=null; });
+    circle.addEventListener('click', function(e){ e.stopPropagation(); });
+  });
+})();
 </script>
 
+<!-- Long-press tooltip -->
+<div id="lp-tooltip"></div>
+
+<!-- ── DOCK ── -->
+<div id="dock">
+  <div id="dock-mini" title="Open dock">
+    <svg width="36" height="36" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none;">
+      <line x1="6"  y1="30" x2="30" y2="6"  stroke="#f0df70" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="12" y1="30" x2="30" y2="12" stroke="#f0df70" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+      <line x1="6"  y1="24" x2="24" y2="6"  stroke="#f0df70" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+    </svg>
+  </div>
+  <div id="dock-bar">
+    <div class="dock-slot" id="dock-lock" title="Lock / Unlock all">
+      <div style="display:flex;flex-direction:column;gap:3px;align-items:center;pointer-events:none;">
+        <div class="dline" style="width:14px;height:2px;background:#f0df70;"></div>
+        <div class="dline" style="width:10px;height:2px;background:#f0df70;"></div>
+        <div class="dline" style="width:14px;height:2px;background:#f0df70;"></div>
+      </div>
+    </div>
+    <div class="dock-slot" id="dock-learn" title="Learn">
+      <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
+      <div class="dline" style="width:12px;height:3px;background:#f0df70;"></div>
+      <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
+    </div>
+    <div class="dock-slot" id="dock-sliders" title="Sliders">
+      <div class="dline" style="width:16px;height:3px;background:#c084fc;"></div>
+      <div class="dline" style="width:16px;height:3px;background:#c084fc;"></div>
+      <div class="dline" style="width:16px;height:3px;background:#c084fc;"></div>
+    </div>
+    <div class="dock-slot" id="dock-data" title="Data">
+      <div class="dline" style="width:16px;height:3px;background:#c87020;"></div>
+      <div class="dline" style="width:16px;height:3px;background:#c87020;"></div>
+      <div class="dline" style="width:16px;height:3px;background:#c87020;"></div>
+    </div>
+    <div class="dock-slot" id="dock-tools" title="Tools panel">
+      <div style="display:flex;flex-direction:row;align-items:center;gap:2.5px;pointer-events:none;">
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+      </div>
+    </div>
+    <div id="dock-minimize" title="Minimize dock"></div>
+  </div>
+</div>
+
+<script>
+// ── DOCK ─────────────────────────────────────────────────────
+(function(){
+  var _open = { lock:false, learn:false, sliders:false, data:false, tools:false };
+
+  function setActive(key, on) {
+    _open[key] = on;
+    var el = document.getElementById('dock-' + key);
+    if (el) el.classList.toggle('active', on);
+  }
+
+  window.dockCollapse = function() {
+    var bar=document.getElementById('dock-bar'), mini=document.getElementById('dock-mini');
+    if (bar)  bar.style.display='none';
+    if (mini) mini.style.display='flex';
+  };
+  window.dockExpand = function() {
+    var bar=document.getElementById('dock-bar'), mini=document.getElementById('dock-mini');
+    if (bar)  bar.style.display='flex';
+    if (mini) mini.style.display='none';
+  };
+
+  window.addEventListener('load', function(){
+    function bind(id, fn) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
+    }
+    bind('dock-lock',     function(){ toggleAllLocks(); setActive('lock', !lockTable||!lockSliders); });
+    bind('dock-learn',    function(){ var on=!_open.learn;   toggleShotLibrary();  setActive('learn',  on); });
+    bind('dock-sliders',  function(){ var on=!_open.sliders; toggleSlidersPanel(); setActive('sliders',on); });
+    bind('dock-data',     function(){ var on=!_open.data;    toggleThrowPanel();   setActive('data',   on); });
+    bind('dock-tools',    function(){ var on=!_open.tools; toggleBtb(); setActive('tools', on); });
+    bind('dock-minimize', function(){ dockCollapse(); });
+    bind('dock-mini',     function(){ dockExpand(); });
+
+    var bar = document.getElementById('dock-bar');
+    var dock = document.getElementById('dock');
+    if (!bar || !dock) return;
+    var sx, sy, ox, oy, dragging=false, ptr=null, isXfm=true;
+    bar.addEventListener('pointerdown', function(e){
+      if (e.target.closest('.dock-slot')||e.target.id==='dock-minimize') return;
+      var r=dock.getBoundingClientRect();
+      if(isXfm){dock.style.transform='none';dock.style.left=r.left+'px';dock.style.top=r.top+'px';dock.style.bottom='auto';isXfm=false;}
+      sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;dragging=false;ptr=e.pointerId;
+      bar.setPointerCapture(e.pointerId);
+    });
+    bar.addEventListener('pointermove',function(e){
+      if(ptr===null||e.pointerId!==ptr)return;
+      var dx=e.clientX-sx,dy=e.clientY-sy;
+      if(!dragging&&Math.hypot(dx,dy)>6)dragging=true;
+      if(!dragging)return;
+      dock.style.left=Math.max(0,Math.min(window.innerWidth-dock.offsetWidth,ox+dx))+'px';
+      dock.style.top=Math.max(0,Math.min(window.innerHeight-dock.offsetHeight,oy+dy))+'px';
+    });
+    bar.addEventListener('pointerup',function(e){if(e.pointerId===ptr)ptr=null;});
+    bar.addEventListener('pointercancel',function(){ptr=null;});
+
+    // Snap dock near bottom of app
+    requestAnimationFrame(function(){
+      var app=document.getElementById('app')||document.getElementById('outer-wrap');
+      if(app&&dock){
+        var r=app.getBoundingClientRect();
+        dock.style.transform='none';
+        dock.style.left=(r.left+r.width/2-(dock.offsetWidth||180)/2)+'px';
+        dock.style.top=Math.max(4,Math.min(window.innerHeight-80, r.top+r.height/2))+'px';
+        dock.style.bottom='auto';isXfm=false;
+      }
+    });
+  });
+})();
+
+// ── LONG-PRESS TOOLTIP ───────────────────────────────────────
+(function(){
+  var tip=document.getElementById('lp-tooltip');
+  if(!tip)return;
+  var timer=null;
+  function show(el,x,y){
+    var label=el.getAttribute('title')||el.getAttribute('data-tip');
+    if(!label)return;
+    tip.textContent=label;tip.style.opacity='0';tip.style.display='block';
+    var tw=tip.offsetWidth;
+    tip.style.left=Math.max(4,Math.min(window.innerWidth-tw-4,x-tw/2))+'px';
+    tip.style.top=Math.max(4,y-tip.offsetHeight-10)+'px';
+    tip.style.opacity='1';
+  }
+  function hide(){tip.style.opacity='0';clearTimeout(timer);timer=null;}
+  document.addEventListener('pointerdown',function(e){
+    var el=e.target.closest('[title],[data-tip]');if(!el)return;
+    timer=setTimeout(function(){show(el,e.clientX,e.clientY);},500);
+  },true);
+  document.addEventListener('pointerup',function(){hide();},true);
+  document.addEventListener('pointermove',function(){clearTimeout(timer);timer=null;},true);
+  document.addEventListener('pointercancel',function(){hide();},true);
+})();
+</script>
+
+<script>
+// ── LOUPE RIBBON ─────────────────────────────────────────────
+(function(){
+  var STORAGE_KEY = 'lz-aimer-ribbon';
+  var RADIUS = 55;
+
+  // fixed:true = always present, always in position, not removable/reorderable
+  var ALL_BTNS = [
+    { id:'btn-map',    lbl:'GRID',          cls:'lp-c-green',  fn:'toggleMap()',         on:true, fixed:true },
+    { id:'ep-snap',    lbl:'SNAP TO',       cls:'lp-c-gold',   fn:'toggleSnap()',        on:true, fixed:true },
+    { id:'_zoom_in',   lbl:'ZOOM IN',       cls:'lp-c-blue',   fn:'edgeZoom(1.3)',               fixed:true },
+    { id:'_zoom_out',  lbl:'ZOOM OUT',      cls:'lp-c-blue',   fn:'edgeZoom(1/1.3)',             fixed:true },
+    { id:'_zoom_rst',  lbl:'RESET ZOOM',    cls:'lp-c-blue',   fn:'edgeZoomReset()',             fixed:true },
+    { id:'ep-lt',      lbl:'TABLE LOCK',    cls:'lp-c-red',    fn:"toggleLock('table')", fixed:true },
+    { id:'ep-lb',      lbl:'GHOST LOCK',    cls:'lp-c-red',    fn:"toggleLock('balls')", fixed:true },
+    { id:'ep-ls',      lbl:'SLIDERS LOCK',  cls:'lp-c-red',    fn:"toggleLock('sliders')",fixed:true },
+    { id:'btn-cbpath', lbl:'CUE PATH',      cls:'lp-c-green',  fn:'toggleCbPath()'               },
+    { id:'_zero',      lbl:'ZERO SLIDERS',  cls:'lp-c-brown',  fn:'zeroSliders()'                },
+    { id:'btn-angle',  lbl:'ANGLE',         cls:'lp-c-brown',  fn:'toggleAngle()'                },
+    { id:'btn-cp',     lbl:'CENTER POINT', cls:'lp-c-brown',  fn:'toggleContactDot()'           },
+    { id:'ep-pan',     lbl:'PAN MODE',      cls:'lp-c-blue',   fn:'togglePan()'                  },
+    { id:'ep-bias',    lbl:'TABLE COMP',    cls:'lp-c-purple', fn:'toggleBias()'                 },
+    { id:'btn-cal',    lbl:'CAL',           cls:'lp-c-brown',  fn:'toggleCal()'                  },
+    { id:'btn-swap',   lbl:'SWAP',          cls:'lp-c-teal',   fn:'swapPanels()',        fixed:true },
+  ];
+
+  var DEFAULT_ORDER = ALL_BTNS.map(function(b){ return b.id; });
+  function loadOrder() { return DEFAULT_ORDER.slice(); }
+  function btnDef(id) {
+    for (var i=0; i<ALL_BTNS.length; i++) if (ALL_BTNS[i].id===id) return ALL_BTNS[i];
+  }
+
+  // ── Build ribbon ──────────────────────────────────────────
+  function buildRibbon() {
+    var ribbon = document.getElementById('loupe-ribbon');
+    var hint   = document.getElementById('lp-hint');
+    if (!ribbon) return;
+    // Clear
+    Array.from(ribbon.querySelectorAll('.lp-btn,.lp-sep')).forEach(function(e){ e.remove(); });
+    
+    
+
+    var order = loadOrder();
+    order.forEach(function(id, i) {
+      var def = btnDef(id); if (!def) return;
+      if (i > 0) {
+        var sep = document.createElement('div');
+        sep.className = 'lp-sep'; ribbon.appendChild(sep);
+      }
+      var btn = document.createElement('button');
+      btn.className = 'lp-btn ' + def.cls + (def.on ? ' on' : '') + (def.fixed ? ' lp-fixed' : '');
+      if (!def.id.startsWith('_')) btn.id = def.id;
+      btn.setAttribute('data-bid', def.id);
+      btn.setAttribute('data-lbl', def.lbl);
+      var lbl = document.createElement('span');
+      lbl.style.cssText = 'pointer-events:none;white-space:nowrap;font-size:inherit;';
+      lbl.textContent = def.lbl;
+      btn.appendChild(lbl);
+      ribbon.appendChild(btn);
+    });
+
+    wireNormal(ribbon);
+  }
+
+  // ── Normal mode — loupe + click to invoke ─────────────────
+  function wireNormal(ribbon) {
+    var btns = ribbon.querySelectorAll('.lp-btn');
+
+    // Loupe: highlight nearest gem
+    function loupeUpdate(cx, cy) {
+      var closest = null, cd = Infinity;
+      btns.forEach(function(b){
+        var r = b.getBoundingClientRect();
+        var d = Math.hypot(cx-(r.left+r.width/2), cy-(r.top+r.height/2));
+        if (d < cd) { cd=d; closest=b; }
+      });
+      btns.forEach(function(b){
+        b.classList.toggle('zoomed', b===closest && cd<RADIUS);
+      });
+    }
+    function loupeReset() { btns.forEach(function(b){ b.classList.remove('zoomed'); }); }
+
+    ribbon.addEventListener('mousemove',    function(e){ loupeUpdate(e.clientX,e.clientY); });
+    ribbon.addEventListener('mouseleave',   loupeReset);
+    ribbon.addEventListener('pointermove',  function(e){ loupeUpdate(e.clientX,e.clientY); });
+    ribbon.addEventListener('pointerleave', loupeReset);
+
+    // Tap to invoke
+    btns.forEach(function(btn){
+      var def = btnDef(btn.getAttribute('data-bid'));
+      if (!def) return;
+      var ptr=null, moved=false, sx=0, sy=0;
+      btn.addEventListener('pointerdown', function(e){
+        e.stopPropagation();
+        ptr=e.pointerId; sx=e.clientX; sy=e.clientY; moved=false;
+        try { btn.setPointerCapture(ptr); } catch(x){}
+      });
+      btn.addEventListener('pointermove', function(e){
+        if(e.pointerId!==ptr) return;
+        if(Math.hypot(e.clientX-sx,e.clientY-sy)>6) moved=true;
+      });
+      btn.addEventListener('pointerup', function(e){
+        if(e.pointerId!==ptr) return;
+        ptr=null;
+        if(!moved) { try { eval(def.fn); } catch(x){ console.log(x); } }
+        moved=false;
+      });
+      btn.addEventListener('pointercancel', function(){ ptr=null; moved=false; });
+    });
+  }
+
+  // ── Edit mode — tap to pen, drag to reorder ───────────────
+  function wireEditMode(ribbon) {
+    var btns = Array.from(ribbon.querySelectorAll('.lp-btn'));
+    btns.forEach(function(btn){
+      var ptr=null, sx=0, sy=0, dragging=false;
+
+      btn.addEventListener('pointerdown', function(e){
+        e.stopPropagation(); e.preventDefault();
+        ptr=e.pointerId; sx=e.clientX; sy=e.clientY; dragging=false;
+        try { btn.setPointerCapture(ptr); } catch(x){}
+      }, {passive:false});
+
+      btn.addEventListener('pointermove', function(e){
+        if (e.pointerId!==ptr) return;
+        if (!dragging && Math.hypot(e.clientX-sx, e.clientY-sy) > 8) {
+          dragging=true; btn.style.opacity='0.45';
+        }
+        if (!dragging) return;
+        // Show drop hint
+        var allBtns = Array.from(ribbon.querySelectorAll('.lp-btn'));
+        allBtns.forEach(function(b){ b.style.outline=''; });
+        var target = getDropTarget(allBtns, btn, e.clientX);
+        if (target) target.style.outline='2px solid rgba(240,223,112,0.8)';
+      });
+
+      btn.addEventListener('pointerup', function(e){
+        if (e.pointerId!==ptr) return;
+        btn.style.opacity='';
+        var allBtns = Array.from(ribbon.querySelectorAll('.lp-btn'));
+        allBtns.forEach(function(b){ b.style.outline=''; });
+        var id = btn.getAttribute('data-bid');
+        var def = btnDef(id);
+        var isFixed = def && def.fixed;
+        if (!dragging) {
+          // Tap — send to pen (fixed gems are immovable)
+          if (!isFixed) {
+            var saved = loadOrder().filter(function(x){
+              var d=btnDef(x); return d && !d.fixed && x!==id;
+            });
+            saveOrder(saved);
+            buildRibbon(); buildPalette();
+          }
+        } else {
+          // Drop — reorder non-fixed only
+          if (!isFixed) {
+            var target = getDropTarget(
+              allBtns.filter(function(b){ var d=btnDef(b.getAttribute('data-bid')); return d&&!d.fixed; }),
+              btn, e.clientX
+            );
+            if (target) {
+              var saved2 = loadOrder().filter(function(x){ var d=btnDef(x); return d&&!d.fixed; });
+              var from = saved2.indexOf(id);
+              var to   = saved2.indexOf(target.getAttribute('data-bid'));
+              if (from>=0 && to>=0 && from!==to) {
+                saved2.splice(from,1); saved2.splice(to,0,id);
+                saveOrder(saved2);
+              }
+            }
+          }
+          buildRibbon(); buildPalette();
+        }
+        ptr=null; dragging=false;
+      });
+
+      btn.addEventListener('pointercancel', function(){
+        btn.style.opacity='';
+        Array.from(ribbon.querySelectorAll('.lp-btn')).forEach(function(b){ b.style.outline=''; });
+        ptr=null; dragging=false;
+      });
+    });
+  }
+
+  function getDropTarget(allBtns, dragged, clientX) {
+    var target=null, cd=Infinity;
+    allBtns.forEach(function(b){
+      if (b===dragged) return;
+      var r=b.getBoundingClientRect(), cx=r.left+r.width/2;
+      var d=Math.abs(clientX-cx);
+      if (d<cd){ cd=d; target=b; }
+    });
+    return target;
+  }
+
+  // ── Palette (pen) ─────────────────────────────────────────
+  function buildPalette() {
+    var pal = document.getElementById('loupe-palette');
+    if (!pal) return;
+    var order = loadOrder();
+    var avail = ALL_BTNS.filter(function(b){ return !b.fixed && order.indexOf(b.id)<0; });
+    pal.innerHTML = '';
+    if (!avail.length) {
+      pal.style.display='none'; return;
+    }
+    pal.style.display='flex';
+    var lbl = document.createElement('span');
+    lbl.style.cssText='font-size:9px;color:rgba(240,223,112,0.55);font-family:Lato,sans-serif;font-weight:900;align-self:center;padding-right:4px;white-space:nowrap;';
+    lbl.textContent='TAP TO RESTORE:';
+    pal.appendChild(lbl);
+    avail.forEach(function(def){
+      var btn = document.createElement('button');
+      btn.className = 'lp-btn zoomed ' + def.cls;
+      btn.title = def.lbl;
+      var s = document.createElement('span');
+      s.style.cssText='pointer-events:none;white-space:nowrap;font-size:inherit;';
+      s.textContent=def.lbl; btn.appendChild(s);
+      btn.addEventListener('click', function(){
+        var o = loadOrder(); o.push(def.id); saveOrder(o);
+        buildRibbon(); buildPalette();
+      });
+      pal.appendChild(btn);
+    });
+  }
+
+  // ── Enter / exit edit mode ────────────────────────────────
+  var _editing = false;
+  function enterEditMode() {
+    if (_editing) return;
+    _editing = true;
+    buildRibbon();
+    buildPalette();
+    var pal = document.getElementById('loupe-palette');
+    if (pal) pal.classList.add('open');
+    // Done + Reset bar
+    var old = document.getElementById('lp-done-bar');
+    if (old) old.remove();
+    var bar = document.createElement('div');
+    bar.id = 'lp-done-bar';
+    bar.style.cssText='display:flex;gap:8px;justify-content:center;padding:6px 10px 8px;background:rgba(8,12,8,0.98);border-top:1px solid rgba(240,223,112,0.1);';
+    var done  = document.createElement('button');
+    done.textContent='DONE';
+    done.style.cssText='padding:4px 18px;border-radius:12px;border:1px solid #f0df70;background:rgba(240,223,112,0.15);color:#f0df70;font-family:Lato,sans-serif;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;';
+    var reset = document.createElement('button');
+    reset.textContent='RESET ALL';
+    reset.style.cssText='padding:4px 14px;border-radius:12px;border:1px solid rgba(240,223,112,0.3);background:transparent;color:rgba(240,223,112,0.5);font-family:Lato,sans-serif;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;';
+    done.addEventListener('click', function(){
+      _editing=false;
+      var pal=document.getElementById('loupe-palette');
+      if(pal){pal.classList.remove('open');pal.style.display='none';pal.innerHTML='';}
+      bar.remove();
+      buildRibbon();
+    });
+    reset.addEventListener('click', function(){
+      saveOrder(DEFAULT_ORDER.slice());
+      buildRibbon(); buildPalette();
+    });
+    bar.appendChild(done); bar.appendChild(reset);
+    var panel = document.getElementById('btb-panel');
+    if (panel) panel.appendChild(bar);
+  }
+
+  // ── Restore toolbar drag from header ─────────────────────
+  window.addEventListener('load', function(){
+    buildRibbon();
+
+    // Header drag — moves #btb
+    var hdr = document.getElementById('btb-tools-header');
+    var btb = document.getElementById('btb');
+    if (hdr && btb) {
+      var ptr=null, sx,sy,ox,oy;
+      hdr.addEventListener('pointerdown', function(e){
+        if (e.target.tagName==='BUTTON') return;
+        ptr=e.pointerId; var r=btb.getBoundingClientRect();
+        btb.style.left=r.left+'px'; btb.style.top=r.top+'px';
+        btb.style.bottom='auto'; btb.style.transform='none';
+        sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top;
+        try { hdr.setPointerCapture(ptr); } catch(x){}
+      });
+      hdr.addEventListener('pointermove', function(e){
+        if (e.pointerId!==ptr) return;
+        btb.style.left=Math.max(0,Math.min(window.innerWidth-btb.offsetWidth,  ox+e.clientX-sx))+'px';
+        btb.style.top =Math.max(0,Math.min(window.innerHeight-btb.offsetHeight,oy+e.clientY-sy))+'px';
+      });
+      hdr.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr) ptr=null; });
+      hdr.addEventListener('pointercancel', function(){ ptr=null; });
+    }
+  });
+})();
+</script>
+<script>
+// Snap dock to bottom of Perception panel on load
+window.addEventListener('load', function(){
+  function snapDock() {
+    var dock = document.getElementById('dock');
+    var perc = document.getElementById('block-ball-wrap');
+    if (!dock || !perc) { requestAnimationFrame(snapDock); return; }
+    var r = perc.getBoundingClientRect();
+    if (r.width === 0) { requestAnimationFrame(snapDock); return; }
+    var dw = dock.offsetWidth || 220;
+    dock.style.transform = 'none';
+    dock.style.left   = Math.max(4, r.left + r.width/2 - dw/2) + 'px';
+    dock.style.top    = Math.max(4, r.bottom - dock.offsetHeight - 4) + 'px';
+    dock.style.bottom = 'auto';
+  }
+  snapDock();
+});
+
+// ── Resize handle wiring ──────────────────────────────────────
+function wireResizeHandle(handleId, panelId) {
+  var handle = document.getElementById(handleId);
+  var panel  = document.getElementById(panelId);
+  if (!handle || !panel) return;
+  var ptr=null, sx, sy, sw, sh;
+  handle.addEventListener('pointerdown', function(e){
+    e.stopPropagation();
+    ptr=e.pointerId; sx=e.clientX; sy=e.clientY;
+    sw=panel.offsetWidth; sh=panel.offsetHeight;
+    try{ handle.setPointerCapture(ptr); }catch(x){}
+  });
+  handle.addEventListener('pointermove', function(e){
+    if(e.pointerId!==ptr) return;
+    var nw = Math.max(200, sw + (e.clientX-sx));
+    var nh = Math.max(80,  sh + (e.clientY-sy));
+    panel.style.width  = Math.min(nw, window.innerWidth-8)  + 'px';
+    panel.style.height = Math.min(nh, window.innerHeight-8) + 'px';
+    panel.style.maxHeight = 'none';
+  });
+  handle.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr) ptr=null; });
+  handle.addEventListener('pointercancel', function(){ ptr=null; });
+}
+
+window.addEventListener('load', function(){
+  wireResizeHandle('learn-panel-resize', 'shot-library-panel');
+  wireResizeHandle('throw-panel-resize',  'throw-panel');
+  wireResizeHandle('sliders-resize',      'sliders-block');
+});
+
+</script>
 </body>
 </html>
