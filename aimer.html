@@ -514,97 +514,29 @@ body { padding-bottom: 80px !important; }
 .float-panel-body::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
 .float-panel-body::-webkit-scrollbar-corner { background: #000; }
 
-/* ── CHARM BRACELET RIBBON ── */
-#loupe-ribbon {
-  display: flex; flex-direction: row; align-items: center;
-  gap: 3px; padding: 8px 10px;
-  background: rgba(12,16,12,0.98);
-  border-radius: 0 0 10px 10px;
-  overflow: visible; flex-wrap: nowrap;
-  touch-action: manipulation; user-select: none; -webkit-user-select: none;
-  min-height: 36px;
-  height: 36px; /* fixed — prevents ribbon from growing when gem zooms */
-  overflow: visible;
-}
-
-/* The gem at rest — small jewel rectangle */
-.lp-btn {
-  flex-shrink: 0;
-  width: 12px; height: 20px;
-  border-radius: 3px;
-  border: 1px solid rgba(255,255,255,0.15);
+/* ── COMPACT TOOL GRID ── */
+.tg-btn {
   font-family: 'Lato', sans-serif;
-  font-size: 0px; font-weight: 900; color: transparent;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  text-align: center; line-height: 1.1; padding: 0 1px;
-  touch-action: manipulation; outline: none;
-  -webkit-tap-highlight-color: transparent;
-  transform-origin: center center;
-  transition: none;
-  position: relative; overflow: visible;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 1px 4px rgba(0,0,0,0.6);
-  white-space: nowrap;
-  will-change: transform;
+  font-size: 11px; font-weight: 900; letter-spacing: 0.04em;
+  padding: 7px 10px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer; touch-action: manipulation;
+  outline: none; -webkit-tap-highlight-color: transparent;
+  white-space: nowrap; line-height: 1;
+  transition: opacity 0.1s;
 }
-/* Jewel color schemes — deep saturated gem tones */
-.lp-c-green  { background:linear-gradient(160deg,#1c5c08,#0a2e02); border-color:#2a7a10; }
-.lp-c-green.on  { background:linear-gradient(160deg,#2e8c14,#165806); border-color:#60c030; }
-.lp-c-gold   { background:linear-gradient(160deg,#7a6006,#3a2c02); border-color:#9a7c0c; }
-.lp-c-gold.on   { background:linear-gradient(160deg,#c0a018,#7a6006); border-color:#f0df70; }
-.lp-c-brown  { background:linear-gradient(160deg,#6a3606,#381a02); border-color:#8a4e0e; }
-.lp-c-purple { background:linear-gradient(160deg,#6a1e8e,#380c54); border-color:#8e3eae; }
-.lp-c-blue   { background:linear-gradient(160deg,#1c3c8e,#0c1e56); border-color:#2c58ae; }
-.lp-c-red    { background:linear-gradient(160deg,#7a0e0e,#460606); border-color:#a02424; }
-.lp-c-red.locked { background:linear-gradient(160deg,#ae1c1c,#6c0e0e); border-color:#ff3c3c; }
-.lp-c-teal   { background:linear-gradient(160deg,#0c5c6c,#042e3e); border-color:#1c8a9a; }
-/* Zoomed gem — absolutely positioned overlay, parent stays 12x20px */
-.lp-btn.zoomed::after {
-  content: attr(data-lbl);
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 88px; height: 48px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 900; letter-spacing: 0.04em;
-  border-radius: 6px;
-  border: 1.5px solid rgba(255,255,255,0.5);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.9);
-  z-index: 200;
-  pointer-events: auto;
-  text-align: center; white-space: nowrap;
-  isolation: isolate;
-  cursor: pointer;
-}
-/* Zoomed parent needs high z-index so ::after sits above siblings */
-.lp-btn.zoomed { position: relative; z-index: 100; }
-.lp-btn.zoomed.lp-c-green::after  { background:linear-gradient(160deg,#2e8c14,#165806); color:#a8f060; }
-.lp-btn.zoomed.lp-c-gold::after   { background:linear-gradient(160deg,#c0a018,#7a6006); color:#f0df70; }
-.lp-btn.zoomed.lp-c-brown::after  { background:linear-gradient(160deg,#6a3606,#381a02); color:#f0c060; }
-.lp-btn.zoomed.lp-c-purple::after { background:linear-gradient(160deg,#6a1e8e,#380c54); color:#dea8ff; }
-.lp-btn.zoomed.lp-c-blue::after   { background:linear-gradient(160deg,#1c3c8e,#0c1e56); color:#a8ccff; }
-.lp-btn.zoomed.lp-c-red::after    { background:linear-gradient(160deg,#7a0e0e,#460606); color:#ffaaaa; }
-.lp-btn.zoomed.lp-c-teal::after   { background:linear-gradient(160deg,#0c5c6c,#042e3e); color:#90f0f8; }
-
-/* Edit mode */
-#loupe-ribbon.edit-mode .lp-btn { cursor:grab; width:16px; height:24px; }
-#loupe-ribbon.edit-mode .lp-btn.lp-fixed { cursor:default; opacity:0.6; }
-.lp-sep {
-  width:1px; height:14px;
-  background:rgba(240,223,112,0.15);
-  flex-shrink:0;
-}
-
-.lp-remove {
-  position:absolute; top:-6px; right:-6px;
-  width:13px; height:13px; border-radius:50%;
-  background:#cc2020; color:#fff;
-  font-size:8px; display:flex; align-items:center; justify-content:center;
-  cursor:pointer; pointer-events:auto; line-height:1;
-  font-family:sans-serif; font-weight:900; z-index:20;
-  touch-action:manipulation; box-shadow:0 1px 4px rgba(0,0,0,0.6);
-}
+.tg-btn:active { opacity: 0.7; }
+.tg-btn.on { border-color: rgba(255,255,255,0.6); }
+.tg-green  { background:#1c5c08; color:#a8f060; border-color:#2a7a10; }
+.tg-green.on { background:#2e8c14; border-color:#60c030; }
+.tg-gold   { background:#7a6006; color:#f0df70; border-color:#9a7c0c; }
+.tg-gold.on { background:#c0a018; border-color:#f0df70; }
+.tg-brown  { background:#6a3606; color:#f0c060; border-color:#8a4e0e; }
+.tg-purple { background:#6a1e8e; color:#dea8ff; border-color:#8e3eae; }
+.tg-blue   { background:#1c3c8e; color:#a8ccff; border-color:#2c58ae; }
+.tg-red    { background:#7a0e0e; color:#ffaaaa; border-color:#a02424; }
+.tg-red.locked { background:#ae1c1c; border-color:#ff3c3c; }
+.tg-teal   { background:#0c5c6c; color:#90f0f8; border-color:#1c8a9a; }
 
 </style>
   <script>
@@ -3714,10 +3646,29 @@ function toggleAllLocks() {
       <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">TOOLS</span>
       <button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:16px;font-weight:900;cursor:pointer;padding:0 0 0 10px;line-height:1;touch-action:manipulation;">✕</button>
     </div>
-    <!-- Loupe Ribbon — small dots, magnify on hover/touch. Long-press to customize -->
-    <div id="loupe-ribbon">
+    <!-- Compact tool grid -->
+    <div id="tool-grid" style="display:flex;flex-direction:column;gap:4px;padding:8px;background:rgba(12,16,12,0.98);">
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <button class="tg-btn tg-green on" id="btn-map"    onclick="toggleMap()">GRID</button>
+        <button class="tg-btn tg-gold  on" id="ep-snap"   onclick="toggleSnap()">SNAP</button>
+        <button class="tg-btn tg-green"    id="btn-cbpath" onclick="toggleCbPath()">CUE PATH</button>
+        <button class="tg-btn tg-brown"    id="btn-cp"     onclick="toggleContactDot()">C·PT</button>
+        <button class="tg-btn tg-brown"    id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
+        <button class="tg-btn tg-purple"   id="ep-bias"    onclick="toggleBias()">TABLE COMP</button>
+        <button class="tg-btn tg-brown"    id="btn-cal"    onclick="toggleCal()">CAL</button>
+        <button class="tg-btn tg-teal"     id="btn-swap"   onclick="swapPanels()">SWAP</button>
+      </div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <button class="tg-btn tg-blue" onclick="edgeZoom(1.3)">ZOOM+</button>
+        <button class="tg-btn tg-blue" onclick="edgeZoom(1/1.3)">ZOOM−</button>
+        <button class="tg-btn tg-blue" onclick="edgeZoomReset()">RESET</button>
+        <button class="tg-btn tg-blue" id="ep-pan" onclick="togglePan()">PAN</button>
+        <button class="tg-btn tg-red"  id="ep-lt"  onclick="toggleLock('table')">TBL LOCK</button>
+        <button class="tg-btn tg-red"  id="ep-lb"  onclick="toggleLock('balls')">GHO LOCK</button>
+        <button class="tg-btn tg-red"  id="ep-ls"  onclick="toggleLock('sliders')">SLD LOCK</button>
+        <button class="tg-btn tg-brown" onclick="zeroSliders()">ZERO</button>
+      </div>
     </div>
-    <div id="loupe-palette" style="min-height:0;"></div>
   </div>
 </div>
 
@@ -3769,6 +3720,26 @@ function toggleBtb(){
       btbCollapse();
     })();
     // Panel drag handled by btb-tools-header gold pill only
+    var hdr = document.getElementById('btb-tools-header');
+    var btb = document.getElementById('btb');
+    if (hdr && btb) {
+      var ptr=null, sx,sy,ox,oy;
+      hdr.addEventListener('pointerdown', function(e){
+        if (e.target.tagName==='BUTTON') return;
+        ptr=e.pointerId; var r=btb.getBoundingClientRect();
+        btb.style.left=r.left+'px'; btb.style.top=r.top+'px';
+        btb.style.bottom='auto'; btb.style.transform='none';
+        sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top;
+        try { hdr.setPointerCapture(ptr); } catch(x){}
+      });
+      hdr.addEventListener('pointermove', function(e){
+        if (e.pointerId!==ptr) return;
+        btb.style.left=Math.max(0,Math.min(window.innerWidth-btb.offsetWidth,  ox+e.clientX-sx))+'px';
+        btb.style.top =Math.max(0,Math.min(window.innerHeight-btb.offsetHeight,oy+e.clientY-sy))+'px';
+      });
+      hdr.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr) ptr=null; });
+      hdr.addEventListener('pointercancel', function(){ ptr=null; });
+    }
   });
 })();
 </script>
@@ -4639,303 +4610,7 @@ function toggleSlidersPanel() {
 })();
 </script>
 
-<script>
-// ── LOUPE RIBBON ─────────────────────────────────────────────
-(function(){
-  var STORAGE_KEY = 'lz-aimer-ribbon';
-  var RADIUS = 55;
 
-  // fixed:true = always present, always in position, not removable/reorderable
-  var ALL_BTNS = [
-    { id:'btn-map',    lbl:'GRID',          cls:'lp-c-green',  fn:'toggleMap()',         on:true, fixed:true },
-    { id:'ep-snap',    lbl:'SNAP TO',       cls:'lp-c-gold',   fn:'toggleSnap()',        on:true, fixed:true },
-    { id:'_zoom_in',   lbl:'ZOOM IN',       cls:'lp-c-blue',   fn:'edgeZoom(1.3)',               fixed:true },
-    { id:'_zoom_out',  lbl:'ZOOM OUT',      cls:'lp-c-blue',   fn:'edgeZoom(1/1.3)',             fixed:true },
-    { id:'_zoom_rst',  lbl:'RESET ZOOM',    cls:'lp-c-blue',   fn:'edgeZoomReset()',             fixed:true },
-    { id:'ep-lt',      lbl:'TABLE LOCK',    cls:'lp-c-red',    fn:"toggleLock('table')", fixed:true },
-    { id:'ep-lb',      lbl:'GHOST LOCK',    cls:'lp-c-red',    fn:"toggleLock('balls')", fixed:true },
-    { id:'ep-ls',      lbl:'SLIDERS LOCK',  cls:'lp-c-red',    fn:"toggleLock('sliders')",fixed:true },
-    { id:'btn-cbpath', lbl:'CUE PATH',      cls:'lp-c-green',  fn:'toggleCbPath()'               },
-    { id:'_zero',      lbl:'ZERO SLIDERS',  cls:'lp-c-brown',  fn:'zeroSliders()'                },
-    { id:'btn-angle',  lbl:'ANGLE',         cls:'lp-c-brown',  fn:'toggleAngle()'                },
-    { id:'btn-cp',     lbl:'CENTER POINT', cls:'lp-c-brown',  fn:'toggleContactDot()'           },
-    { id:'ep-pan',     lbl:'PAN MODE',      cls:'lp-c-blue',   fn:'togglePan()'                  },
-    { id:'ep-bias',    lbl:'TABLE COMP',    cls:'lp-c-purple', fn:'toggleBias()'                 },
-    { id:'btn-cal',    lbl:'CAL',           cls:'lp-c-brown',  fn:'toggleCal()'                  },
-    { id:'btn-swap',   lbl:'SWAP',          cls:'lp-c-teal',   fn:'swapPanels()',        fixed:true },
-  ];
-
-  var DEFAULT_ORDER = ALL_BTNS.map(function(b){ return b.id; });
-  function loadOrder() { return DEFAULT_ORDER.slice(); }
-  function btnDef(id) {
-    for (var i=0; i<ALL_BTNS.length; i++) if (ALL_BTNS[i].id===id) return ALL_BTNS[i];
-  }
-
-  // ── Build ribbon ──────────────────────────────────────────
-  function buildRibbon() {
-    var ribbon = document.getElementById('loupe-ribbon');
-    var hint   = document.getElementById('lp-hint');
-    if (!ribbon) return;
-    // Clear
-    Array.from(ribbon.querySelectorAll('.lp-btn,.lp-sep')).forEach(function(e){ e.remove(); });
-    
-    
-
-    var order = loadOrder();
-    order.forEach(function(id, i) {
-      var def = btnDef(id); if (!def) return;
-      if (i > 0) {
-        var sep = document.createElement('div');
-        sep.className = 'lp-sep'; ribbon.appendChild(sep);
-      }
-      var btn = document.createElement('button');
-      btn.className = 'lp-btn ' + def.cls + (def.on ? ' on' : '') + (def.fixed ? ' lp-fixed' : '');
-      if (!def.id.startsWith('_')) btn.id = def.id;
-      btn.setAttribute('data-bid', def.id);
-      btn.setAttribute('data-lbl', def.lbl);
-      var lbl = document.createElement('span');
-      lbl.style.cssText = 'pointer-events:none;white-space:nowrap;font-size:inherit;';
-      lbl.textContent = def.lbl;
-      btn.appendChild(lbl);
-      ribbon.appendChild(btn);
-    });
-
-    wireNormal(ribbon);
-  }
-
-  // ── Normal mode — loupe + click to invoke ─────────────────
-  function wireNormal(ribbon) {
-    var btns = ribbon.querySelectorAll('.lp-btn');
-
-    // Loupe: highlight nearest gem
-    function loupeUpdate(cx, cy) {
-      var closest = null, cd = Infinity;
-      btns.forEach(function(b){
-        var r = b.getBoundingClientRect();
-        var d = Math.hypot(cx-(r.left+r.width/2), cy-(r.top+r.height/2));
-        if (d < cd) { cd=d; closest=b; }
-      });
-      btns.forEach(function(b){
-        b.classList.toggle('zoomed', b===closest && cd<RADIUS);
-      });
-    }
-    function loupeReset() { btns.forEach(function(b){ b.classList.remove('zoomed'); }); }
-
-    ribbon.addEventListener('mousemove',    function(e){ loupeUpdate(e.clientX,e.clientY); });
-    ribbon.addEventListener('mouseleave',   loupeReset);
-    ribbon.addEventListener('pointermove',  function(e){ loupeUpdate(e.clientX,e.clientY); });
-    ribbon.addEventListener('pointerleave', loupeReset);
-
-    // Touch: move to zoom, tap big box to invoke
-    var _activeBtn = null;
-    btns.forEach(function(btn){
-      var def = btnDef(btn.getAttribute('data-bid'));
-      if (!def) return;
-
-      // Tap the small gem OR the zoomed popup = invoke
-      btn.addEventListener('pointerup', function(e){
-        e.stopPropagation();
-        if (_activeBtn === btn) {
-          // already zoomed — tap invokes
-          try { eval(def.fn); } catch(x){ console.log(x); }
-          btn.classList.remove('zoomed');
-          _activeBtn = null;
-        } else {
-          // first tap — just zoom it, stay open
-          if (_activeBtn) _activeBtn.classList.remove('zoomed');
-          btn.classList.add('zoomed');
-          _activeBtn = btn;
-        }
-      });
-    });
-
-    // Dismiss on tap outside ribbon
-    document.addEventListener('pointerdown', function(e){
-      if (_activeBtn && !e.target.closest('#loupe-ribbon')) {
-        _activeBtn.classList.remove('zoomed');
-        _activeBtn = null;
-      }
-    }, true);
-  }
-
-  // ── Edit mode — tap to pen, drag to reorder ───────────────
-  function wireEditMode(ribbon) {
-    var btns = Array.from(ribbon.querySelectorAll('.lp-btn'));
-    btns.forEach(function(btn){
-      var ptr=null, sx=0, sy=0, dragging=false;
-
-      btn.addEventListener('pointerdown', function(e){
-        e.stopPropagation(); e.preventDefault();
-        ptr=e.pointerId; sx=e.clientX; sy=e.clientY; dragging=false;
-        try { btn.setPointerCapture(ptr); } catch(x){}
-      }, {passive:false});
-
-      btn.addEventListener('pointermove', function(e){
-        if (e.pointerId!==ptr) return;
-        if (!dragging && Math.hypot(e.clientX-sx, e.clientY-sy) > 8) {
-          dragging=true; btn.style.opacity='0.45';
-        }
-        if (!dragging) return;
-        // Show drop hint
-        var allBtns = Array.from(ribbon.querySelectorAll('.lp-btn'));
-        allBtns.forEach(function(b){ b.style.outline=''; });
-        var target = getDropTarget(allBtns, btn, e.clientX);
-        if (target) target.style.outline='2px solid rgba(240,223,112,0.8)';
-      });
-
-      btn.addEventListener('pointerup', function(e){
-        if (e.pointerId!==ptr) return;
-        btn.style.opacity='';
-        var allBtns = Array.from(ribbon.querySelectorAll('.lp-btn'));
-        allBtns.forEach(function(b){ b.style.outline=''; });
-        var id = btn.getAttribute('data-bid');
-        var def = btnDef(id);
-        var isFixed = def && def.fixed;
-        if (!dragging) {
-          // Tap — send to pen (fixed gems are immovable)
-          if (!isFixed) {
-            var saved = loadOrder().filter(function(x){
-              var d=btnDef(x); return d && !d.fixed && x!==id;
-            });
-            saveOrder(saved);
-            buildRibbon(); buildPalette();
-          }
-        } else {
-          // Drop — reorder non-fixed only
-          if (!isFixed) {
-            var target = getDropTarget(
-              allBtns.filter(function(b){ var d=btnDef(b.getAttribute('data-bid')); return d&&!d.fixed; }),
-              btn, e.clientX
-            );
-            if (target) {
-              var saved2 = loadOrder().filter(function(x){ var d=btnDef(x); return d&&!d.fixed; });
-              var from = saved2.indexOf(id);
-              var to   = saved2.indexOf(target.getAttribute('data-bid'));
-              if (from>=0 && to>=0 && from!==to) {
-                saved2.splice(from,1); saved2.splice(to,0,id);
-                saveOrder(saved2);
-              }
-            }
-          }
-          buildRibbon(); buildPalette();
-        }
-        ptr=null; dragging=false;
-      });
-
-      btn.addEventListener('pointercancel', function(){
-        btn.style.opacity='';
-        Array.from(ribbon.querySelectorAll('.lp-btn')).forEach(function(b){ b.style.outline=''; });
-        ptr=null; dragging=false;
-      });
-    });
-  }
-
-  function getDropTarget(allBtns, dragged, clientX) {
-    var target=null, cd=Infinity;
-    allBtns.forEach(function(b){
-      if (b===dragged) return;
-      var r=b.getBoundingClientRect(), cx=r.left+r.width/2;
-      var d=Math.abs(clientX-cx);
-      if (d<cd){ cd=d; target=b; }
-    });
-    return target;
-  }
-
-  // ── Palette (pen) ─────────────────────────────────────────
-  function buildPalette() {
-    var pal = document.getElementById('loupe-palette');
-    if (!pal) return;
-    var order = loadOrder();
-    var avail = ALL_BTNS.filter(function(b){ return !b.fixed && order.indexOf(b.id)<0; });
-    pal.innerHTML = '';
-    if (!avail.length) {
-      pal.style.display='none'; return;
-    }
-    pal.style.display='flex';
-    var lbl = document.createElement('span');
-    lbl.style.cssText='font-size:9px;color:rgba(240,223,112,0.55);font-family:Lato,sans-serif;font-weight:900;align-self:center;padding-right:4px;white-space:nowrap;';
-    lbl.textContent='TAP TO RESTORE:';
-    pal.appendChild(lbl);
-    avail.forEach(function(def){
-      var btn = document.createElement('button');
-      btn.className = 'lp-btn zoomed ' + def.cls;
-      btn.title = def.lbl;
-      var s = document.createElement('span');
-      s.style.cssText='pointer-events:none;white-space:nowrap;font-size:inherit;';
-      s.textContent=def.lbl; btn.appendChild(s);
-      btn.addEventListener('click', function(){
-        var o = loadOrder(); o.push(def.id); saveOrder(o);
-        buildRibbon(); buildPalette();
-      });
-      pal.appendChild(btn);
-    });
-  }
-
-  // ── Enter / exit edit mode ────────────────────────────────
-  var _editing = false;
-  function enterEditMode() {
-    if (_editing) return;
-    _editing = true;
-    buildRibbon();
-    buildPalette();
-    var pal = document.getElementById('loupe-palette');
-    if (pal) pal.classList.add('open');
-    // Done + Reset bar
-    var old = document.getElementById('lp-done-bar');
-    if (old) old.remove();
-    var bar = document.createElement('div');
-    bar.id = 'lp-done-bar';
-    bar.style.cssText='display:flex;gap:8px;justify-content:center;padding:6px 10px 8px;background:rgba(8,12,8,0.98);border-top:1px solid rgba(240,223,112,0.1);';
-    var done  = document.createElement('button');
-    done.textContent='DONE';
-    done.style.cssText='padding:4px 18px;border-radius:12px;border:1px solid #f0df70;background:rgba(240,223,112,0.15);color:#f0df70;font-family:Lato,sans-serif;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;';
-    var reset = document.createElement('button');
-    reset.textContent='RESET ALL';
-    reset.style.cssText='padding:4px 14px;border-radius:12px;border:1px solid rgba(240,223,112,0.3);background:transparent;color:rgba(240,223,112,0.5);font-family:Lato,sans-serif;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;';
-    done.addEventListener('click', function(){
-      _editing=false;
-      var pal=document.getElementById('loupe-palette');
-      if(pal){pal.classList.remove('open');pal.style.display='none';pal.innerHTML='';}
-      bar.remove();
-      buildRibbon();
-    });
-    reset.addEventListener('click', function(){
-      saveOrder(DEFAULT_ORDER.slice());
-      buildRibbon(); buildPalette();
-    });
-    bar.appendChild(done); bar.appendChild(reset);
-    var panel = document.getElementById('btb-panel');
-    if (panel) panel.appendChild(bar);
-  }
-
-  // ── Restore toolbar drag from header ─────────────────────
-  window.addEventListener('load', function(){
-    buildRibbon();
-
-    // Header drag — moves #btb
-    var hdr = document.getElementById('btb-tools-header');
-    var btb = document.getElementById('btb');
-    if (hdr && btb) {
-      var ptr=null, sx,sy,ox,oy;
-      hdr.addEventListener('pointerdown', function(e){
-        if (e.target.tagName==='BUTTON') return;
-        ptr=e.pointerId; var r=btb.getBoundingClientRect();
-        btb.style.left=r.left+'px'; btb.style.top=r.top+'px';
-        btb.style.bottom='auto'; btb.style.transform='none';
-        sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top;
-        try { hdr.setPointerCapture(ptr); } catch(x){}
-      });
-      hdr.addEventListener('pointermove', function(e){
-        if (e.pointerId!==ptr) return;
-        btb.style.left=Math.max(0,Math.min(window.innerWidth-btb.offsetWidth,  ox+e.clientX-sx))+'px';
-        btb.style.top =Math.max(0,Math.min(window.innerHeight-btb.offsetHeight,oy+e.clientY-sy))+'px';
-      });
-      hdr.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr) ptr=null; });
-      hdr.addEventListener('pointercancel', function(){ ptr=null; });
-    }
-  });
-})();
-</script>
 <script>
 // Snap dock to bottom of Perception panel on load
 window.addEventListener('load', function(){
