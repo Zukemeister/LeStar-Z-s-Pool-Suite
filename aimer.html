@@ -2115,9 +2115,9 @@ function togglePan(){
   const _pan = document.getElementById('ep-pan');
   if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'DRAG<br>MODE ON' : 'DRAG<br>MODE OFF'; }
 }
-let lockTable = false;
-let lockBalls = false;
-let lockSliders = false;
+let lockTable = true;
+let lockBalls = true;
+let lockSliders = true;
 let biasOn = false;
 let contactDotOn = false; // contact point dot off by default
 let throwLo = 0, throwMi = 0, throwHi = 0; // 0-100 each, segments 0-20°, 20-50°, 50-90°
@@ -2280,7 +2280,7 @@ const svg = $('topsvg');
 svg.addEventListener('pointerdown', e => {
   const p = svgPt(e);
   if (calTapActual(p)) return;
-  if (lockTable || (isZoomed() && !e.target.closest("[data-ball], circle"))) return;
+  if (lockTable) return;
   if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
   if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
 });
@@ -2784,7 +2784,7 @@ function updateDiagCut(svgX) {
 }
 
 botsvg.addEventListener('pointerdown', e => {
-  if (lockBalls || (isZoomed() && !e.target.closest("[data-ball], circle"))) return;
+  if (lockBalls) return;
   const p2 = botSvgPt(e);
   // Dead zone: only respond within the ball's vertical extent (center 148 ± radius 82)
   if (p2.y < 66 || p2.y > 230) return;
@@ -2837,7 +2837,7 @@ function onSliders() {
   } else {
     S.bias = 0;
   }
-  // Three-segment throw compensation — only active when TABLE COMP is ON
+  // Three-segment throw compensation — only active when TABLE BIAS is ON
   throwLo = biasOn ? parseInt($('sl-throw-lo')?.value || '0') / 50 : 0;
   throwMi = biasOn ? parseInt($('sl-throw-mi')?.value || '0') / 50 : 0;
   throwHi = biasOn ? parseInt($('sl-throw-hi')?.value || '0') / 50 : 0;
@@ -3136,7 +3136,7 @@ function toggleBias() {
   biasOn = !biasOn;
   var btn = document.getElementById('ep-bias');
   if (btn) {
-    btn.textContent = biasOn ? 'TABLE COMP ON' : 'TABLE COMP';
+    btn.textContent = biasOn ? 'TABLE BIAS ON' : 'TABLE BIAS OFF';
     btn.classList.toggle('on', biasOn);
   }
   // Dim/undim the table comp section in the sliders panel
@@ -3154,7 +3154,7 @@ function toggleBias() {
 function toggleSnap(e) {
   snapOn = !snapOn;
   const btn = document.getElementById('ep-snap');
-  if (btn) { btn.classList.toggle('on', snapOn); btn.blur(); }
+  if (btn) { btn.classList.toggle('on', snapOn); btn.textContent = snapOn ? 'SNAP ON' : 'SNAP OFF'; btn.blur(); }
   document.activeElement && document.activeElement.blur();
 }
 
@@ -3466,6 +3466,15 @@ window.addEventListener('load', function(){
   const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
   const _ls = document.getElementById('ep-ls'); if(_ls){ _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
   const _pan = document.getElementById('ep-pan'); if(_pan) _pan.classList.toggle('on', panMode);
+  // Set initial button labels to reflect state
+  (function(){
+    var m = document.getElementById('btn-map');     if(m) m.textContent = mapOn ? 'GRID ON' : 'GRID OFF';
+    var s = document.getElementById('ep-snap');     if(s) s.textContent = snapOn ? 'SNAP ON' : 'SNAP OFF';
+    var b = document.getElementById('ep-bias');     if(b) b.textContent = biasOn ? 'TABLE BIAS ON' : 'TABLE BIAS OFF';
+    var c = document.getElementById('btn-cbpath');  if(c) c.textContent = cbPathOn ? 'CUE PATH ON' : 'CUE PATH OFF';
+    var a = document.getElementById('btn-angle');   if(a){ a.style.lineHeight='1.3'; a.innerHTML = angleOn ? 'BOUNCE<br>ANGLE ON' : 'BOUNCE<br>ANGLE OFF'; }
+  })();
+
   // Apply slider lock visually
   const sg = document.querySelector('.sgroup');
   if(sg) sg.style.opacity = lockSliders ? '0.4' : '1';
@@ -3497,16 +3506,7 @@ function swapPanels(){
   } else {
     parent.insertBefore(table, perc);
   }
-  // Update snap dock position after swap
-  var dock = document.getElementById('dock');
-  var ref  = document.getElementById('block-ball-wrap');
-  if(dock && ref) {
-    requestAnimationFrame(function(){
-      var r=ref.getBoundingClientRect();
-      dock.style.left=Math.max(4,r.left+r.width/2-(dock.offsetWidth||220)/2)+'px';
-      dock.style.top=Math.max(4,r.bottom-dock.offsetHeight-4)+'px';
-    });
-  }
+
 }
 </script>
 
@@ -3547,7 +3547,7 @@ function swapPanels(){
   function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
 
   function onDown(e){
-    // Don't pan if touching a ball
+    // Always pan when not touching a ball directly
     if(e.target.closest('circle, [data-ball]')) return;
     panPtr = e.pointerId;
     panStartX = e.clientX; panStartY = e.clientY;
@@ -3656,20 +3656,18 @@ function toggleAllLocks() {
     <!-- Compact tool grid -->
     <div id="tool-grid" style="display:flex;flex-direction:column;gap:4px;padding:8px;background:rgba(12,16,12,0.98);touch-action:manipulation;">
       <div style="display:flex;gap:4px;flex-wrap:wrap;">
-        <button class="tg-btn tg-green on" id="btn-map"    onclick="toggleMap()">GRID</button>
-        <button class="tg-btn tg-gold  on" id="ep-snap"   onclick="toggleSnap()">SNAP</button>
+        <button class="tg-btn tg-green on" id="btn-map"    onclick="toggleMap()">GRID ON/OFF</button>
+        <button class="tg-btn tg-gold  on" id="ep-snap"    onclick="toggleSnap()">SNAP ON/OFF</button>
         <button class="tg-btn tg-green"    id="btn-cbpath" onclick="toggleCbPath()">CUE PATH</button>
         <button class="tg-btn tg-brown"    id="btn-cp"     onclick="toggleContactDot()" style="line-height:1.3;">CONTACT<br>POINT</button>
-        <button class="tg-btn tg-brown"    id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
-        <button class="tg-btn tg-purple"   id="ep-bias"    onclick="toggleBias()">TABLE COMP</button>
+        <button class="tg-btn tg-brown"    id="btn-angle"  onclick="toggleAngle()" style="line-height:1.3;">BOUNCE<br>ANGLE</button>
+        <button class="tg-btn tg-purple"   id="ep-bias"    onclick="toggleBias()">TABLE BIAS ON/OFF</button>
         <button class="tg-btn tg-brown"    id="btn-cal"    onclick="toggleCal()">CAL</button>
-        <button class="tg-btn tg-teal"     id="btn-swap"   onclick="swapPanels()">SWAP</button>
       </div>
       <div style="display:flex;gap:4px;flex-wrap:wrap;">
         <button class="tg-btn tg-blue" onclick="edgeZoom(1.3)">ZOOM+</button>
         <button class="tg-btn tg-blue" onclick="edgeZoom(1/1.3)">ZOOM−</button>
         <button class="tg-btn tg-blue" onclick="edgeZoomReset()">RESET</button>
-        <button class="tg-btn tg-blue" id="ep-pan" onclick="togglePan()">DRAG</button>
         <button class="tg-btn tg-red"  id="ep-lt"  onclick="toggleLock('table')">TBL LOCK</button>
         <button class="tg-btn tg-red"  id="ep-lb"  onclick="toggleLock('balls')">GHO LOCK</button>
         <button class="tg-btn tg-red"  id="ep-ls"  onclick="toggleLock('sliders')">SLD LOCK</button>
@@ -3682,24 +3680,25 @@ function toggleAllLocks() {
 <script>
 var btbVisible = false;
 function toggleBtb(){
-  var grid = document.getElementById('tool-grid');
-  var arrow = document.getElementById('btb-arrow');
-  if (!grid) return;
-  var collapsed = grid.style.display === 'none';
-  grid.style.display = collapsed ? '' : 'none';
-  if (arrow) arrow.textContent = collapsed ? '▼' : '▲';
-  btbVisible = collapsed;
-  // Show panel if hidden
+  btbVisible = !btbVisible;
   var panel = document.getElementById('btb-panel');
-  if (panel && panel.style.display === 'none') {
-    panel.style.display = 'flex';
-    panel.style.transform = 'none';
-    requestAnimationFrame(function(){
-      var pw = panel.offsetWidth || 300;
-      panel.style.left = Math.max(4, Math.round(window.innerWidth/2 - pw/2)) + 'px';
-      panel.style.top  = '60px';
-    });
+  if (panel) {
+    panel.style.display = btbVisible ? 'flex' : 'none';
+    if (btbVisible) {
+      panel.style.transform = 'none';
+      panel.style.left = '0px'; panel.style.top = '0px'; // temp to force layout
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          var pw = panel.offsetWidth || 300;
+          var ph = panel.offsetHeight || 150;
+          panel.style.left = Math.max(4, Math.round(window.innerWidth/2  - pw/2)) + 'px';
+          panel.style.top  = Math.max(4, Math.round(window.innerHeight/2 - ph/2)) + 'px';
+        });
+      });
+    }
   }
+  var arrow = document.getElementById('btb-arrow');
+  if (arrow) arrow.textContent = btbVisible ? '▼' : '▲';
 }
 // Floating drag via TOOLS bar
 (function(){
@@ -4523,6 +4522,14 @@ function toggleSlidersPanel() {
         <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
       </div>
     </div>
+    <div class="dock-slot" id="dock-swap" title="Swap Table / Perception">
+      <div style="pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:2px;">
+        <svg width="18" height="14" viewBox="0 0 18 14" style="pointer-events:none;">
+          <path d="M2 4 L16 4 M12 1 L16 4 L12 7" stroke="#90f0f8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M16 10 L2 10 M6 7 L2 10 L6 13" stroke="#90f0f8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
     <div id="dock-minimize" title="Minimize dock"></div>
   </div>
 </div>
@@ -4560,6 +4567,7 @@ function toggleSlidersPanel() {
     bind('dock-sliders',  function(){ var on=!_open.sliders; toggleSlidersPanel(); setActive('sliders',on); });
     bind('dock-data',     function(){ var on=!_open.data;    toggleThrowPanel();   setActive('data',   on); });
     bind('dock-tools',    function(){ var on=!_open.tools; toggleBtb(); setActive('tools', on); });
+    bind('dock-swap',     function(){ swapPanels(); });
     bind('dock-minimize', function(){ dockCollapse(); });
     bind('dock-mini',     function(){ dockExpand(); });
 
@@ -4585,17 +4593,18 @@ function toggleSlidersPanel() {
     bar.addEventListener('pointerup',function(e){if(e.pointerId===ptr)ptr=null;});
     bar.addEventListener('pointercancel',function(){ptr=null;});
 
-    // Snap dock near bottom of app
-    requestAnimationFrame(function(){
-      var app=document.getElementById('app')||document.getElementById('outer-wrap');
-      if(app&&dock){
-        var r=app.getBoundingClientRect();
-        dock.style.transform='none';
-        dock.style.left=(r.left+r.width/2-(dock.offsetWidth||180)/2)+'px';
-        dock.style.top=Math.max(4,Math.min(window.innerHeight-80, r.top+r.height/2))+'px';
-        dock.style.bottom='auto';isXfm=false;
-      }
-    });
+    // Snap dock to center of table on load
+    function snapDockToTable() {
+      var table = document.getElementById('block-ball-wrap');
+      if (!table || !dock) return;
+      var r = table.getBoundingClientRect();
+      if (r.width === 0) { requestAnimationFrame(snapDockToTable); return; }
+      dock.style.transform = 'none';
+      dock.style.left = (r.left + r.width/2 - (dock.offsetWidth||180)/2) + 'px';
+      dock.style.top  = (r.top  + r.height/2 - (dock.offsetHeight||44)/2) + 'px';
+      dock.style.bottom = 'auto'; isXfm = false;
+    }
+    requestAnimationFrame(snapDockToTable);
   });
 })();
 
