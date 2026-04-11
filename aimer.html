@@ -18,7 +18,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 button{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;}
 svg,.diagram-wrap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
-html,body{background:#141414;font-family:'Lato',sans-serif;margin:0;padding:0;width:100%;min-height:100vh;display:flex;justify-content:center;}@media(max-aspect-ratio:1/1){}.outer-wrap{width:100%;}
+html,body{background:#141414;font-family:'Lato',sans-serif;margin:0;padding:0;width:100%;min-height:100vh;display:flex;justify-content:center;}@media(max-width:900px){.outer-wrap{max-width:100% !important;}}
 @media(orientation:landscape) and (max-height:430px){html,body{padding:2px;}.outer-wrap{max-width:100%!important;width:100%;border-radius:0;}}
 .outer-wrap{display:flex;flex-direction:row;align-items:flex-start;width:100%;max-width:900px;background:#1a361a;border-radius:0;box-shadow:none;border:none;overflow:hidden;min-height:100vh;}
 .card{flex:1;min-width:0;padding:14px 12px 16px 12px;}
@@ -458,7 +458,6 @@ body { padding-bottom: 80px !important; }
   flex-direction: column;
   overflow: hidden;
   max-height: 32vh;
-  overflow: hidden;
 }
 .float-panel-body {
   overflow-y: auto;
@@ -524,6 +523,7 @@ body { padding-bottom: 80px !important; }
   outline: none; -webkit-tap-highlight-color: transparent;
   white-space: nowrap; line-height: 1;
   transition: opacity 0.1s;
+  -webkit-user-select: none; user-select: none;
 }
 .tg-btn:active { opacity: 0.7; }
 .tg-btn.on { border-color: rgba(255,255,255,0.6); }
@@ -1823,6 +1823,7 @@ if ('serviceWorker' in navigator) {
       </svg>
     </div>
 
+<div id="perception-section">
     <div class="sep"></div>
     <div style="text-align:center;letter-spacing:0.18em;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);padding:3px 0 2px;text-transform:uppercase;">The Doors of Perception</div>
     <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr;gap:4px;margin:4px 0;height:36px;contain:layout style;width:100%;box-sizing:border-box;">
@@ -1996,6 +1997,7 @@ if ('serviceWorker' in navigator) {
     </div>
 
   </div><!-- diagram-wrap -->
+</div><!-- /perception-section -->
 
 
 
@@ -2034,98 +2036,6 @@ if ('serviceWorker' in navigator) {
   </div>
 
   <!-- SLIDERS FLOATING PANEL -->
-  <div id="sliders-block" class="float-panel" style="background:rgba(10,15,10,0.97) !important;border-color:rgba(200,144,240,0.4);">
-
-  <!-- Header -->
-  <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);">
-    <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#f0df70;pointer-events:none;">SLIDERS</span>
-    <div style="display:flex;gap:4px;align-items:center;">
-      <button class="min-btn" title="Minimize sliders" onclick="minimizePanel('sliders-block',document.getElementById('sliders-handle'))" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">—</button>
-      <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
-    </div>
-  </div>
-
-  <div class="float-panel-body">
-    <div id="sliders-scale-wrap" class="panel-scale-wrap" style="padding:8px 10px 10px;width:340px;">
-
-    <!-- BALL CONTROL group -->
-    <div id="sg-ball" style="background:rgba(176,144,240,0.08);border:1px solid rgba(176,144,240,0.2);border-radius:8px;padding:8px 10px;margin-bottom:8px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(176,144,240,0.9);text-transform:uppercase;">Ball Control</span>
-        <div style="display:flex;gap:4px;">
-          <button id="bc-freeze" onclick="sgFreeze('ball')" title="Freeze values" style="background:rgba(176,144,240,0.12);border:1px solid rgba(176,144,240,0.3);border-radius:4px;color:rgba(176,144,240,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
-          <button onclick="sgZero('ball')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
-          <button id="bc-on" onclick="sgToggle('ball')" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:4px;color:#80e080;font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ON</button>
-        </div>
-      </div>
-      <div class="srow">
-        <span class="slbl" style="color:#b090f0;">speed</span>
-        <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
-        <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
-        <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
-      </div>
-      <div class="srow" style="margin-top:6px;">
-        <span class="slbl">spin</span>
-        <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
-        <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
-        <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
-      </div>
-      <div class="srow" style="margin-top:6px;">
-        <span class="slbl">vert</span>
-        <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
-        <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
-        <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
-      </div>
-    </div>
-
-    <!-- GHOST BALL group -->
-    <div id="sg-ghost" style="background:rgba(232,112,48,0.08);border:1px solid rgba(232,112,48,0.2);border-radius:8px;padding:8px 10px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(232,112,48,0.9);text-transform:uppercase;">Ghost Ball</span>
-        <div style="display:flex;gap:4px;">
-          <button id="gb-freeze" onclick="sgFreeze('ghost')" title="Freeze values" style="background:rgba(232,112,48,0.12);border:1px solid rgba(232,112,48,0.3);border-radius:4px;color:rgba(232,112,48,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
-          <button onclick="sgZero('ghost')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
-          <button id="gb-on" onclick="sgToggle('ghost')" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:4px;color:#80e080;font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ON</button>
-        </div>
-      </div>
-      <div class="srow">
-        <span class="slbl" style="color:#e87030;font-size:9px;">T-LOW</span>
-        <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
-        <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
-      </div>
-      <div class="srow" style="margin-top:4px;">
-        <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
-        <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
-        <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
-      </div>
-      <div class="srow" style="margin-top:4px;">
-        <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
-        <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
-        <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
-      </div>
-    </div>
-
-  </div>
-    </div><!-- /sliders-scale-wrap -->
-  <!-- Bottom bar: SIZE scale + resize grip -->
-  <div style="display:flex;align-items:center;padding:3px 0 3px 8px;background:#0a0a0a;border-top:1px solid #1a1a1a;border-radius:0 0 10px 10px;">
-    <span style="font-size:7px;font-weight:900;color:rgba(255,255,255,0.4);font-family:Lato,sans-serif;flex-shrink:0;margin-right:5px;letter-spacing:0.5px;">SIZE</span>
-    <input type="range" id="sl-scale" min="50" max="100" value="100"
-      onclick="event.stopPropagation()"
-      oninput="scaleSliderPanel(this.value)"
-      style="flex:1;height:2px;-webkit-appearance:none;appearance:none;background:#333;border-radius:1px;cursor:pointer;outline:none;">
-    <div id="sliders-resize" style="width:28px;height:28px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:0 0 10px 0;">
-      <svg width="16" height="16" viewBox="0 0 16 16" style="pointer-events:none;opacity:0.4;">
-        <line x1="4" y1="14" x2="14" y2="4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="9" y1="14" x2="14" y2="9" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="14" y1="14" x2="14" y2="14" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
-  </div><!-- /sliders-block -->
 
   <!-- SHOT ATTRIBUTES -->
 
@@ -3226,10 +3136,8 @@ function toggleBias() {
   biasOn = !biasOn;
   var btn = document.getElementById('ep-bias');
   if (btn) {
-    btn.innerHTML = biasOn ? 'TABLE<br>COMP ON' : 'TABLE<br>COMP OFF';
-    btn.style.background = biasOn ? 'rgba(240,140,20,0.85)' : 'rgba(74,40,0,0.85)';
-    btn.style.borderColor = biasOn ? 'rgba(255,180,50,0.8)' : 'rgba(138,80,16,0.6)';
-    btn.style.color = biasOn ? '#fff' : '#e8c080';
+    btn.textContent = biasOn ? 'TABLE COMP ON' : 'TABLE COMP';
+    btn.classList.toggle('on', biasOn);
   }
   // Dim/undim the table comp section in the sliders panel
   var panel = document.getElementById('sliders-block');
@@ -3420,6 +3328,99 @@ function edgeZoomReset() {
 </script>
 <span id="r-throw" style="display:none"></span>
 </div><!-- /zoom-wrap -->
+
+  <div id="sliders-block" class="float-panel" style="background:rgba(10,15,10,0.97) !important;border-color:rgba(200,144,240,0.4);">
+
+  <!-- Header -->
+  <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);">
+    <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#f0df70;pointer-events:none;">SLIDERS</span>
+    <div style="display:flex;gap:4px;align-items:center;">
+      <button class="min-btn" title="Minimize sliders" onclick="event.stopPropagation();minimizePanel('sliders-block',document.getElementById('sliders-handle'))" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">—</button>
+      <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+    </div>
+  </div>
+
+  <div class="float-panel-body">
+    <div id="sliders-scale-wrap" class="panel-scale-wrap" style="padding:8px 10px 10px;width:340px;">
+
+    <!-- BALL CONTROL group -->
+    <div id="sg-ball" style="background:rgba(176,144,240,0.08);border:1px solid rgba(176,144,240,0.2);border-radius:8px;padding:8px 10px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(176,144,240,0.9);text-transform:uppercase;">Ball Control</span>
+        <div style="display:flex;gap:4px;">
+          <button id="bc-freeze" onclick="sgFreeze('ball')" title="Freeze values" style="background:rgba(176,144,240,0.12);border:1px solid rgba(176,144,240,0.3);border-radius:4px;color:rgba(176,144,240,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
+          <button onclick="sgZero('ball')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
+          <button id="bc-on" onclick="sgToggle('ball')" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:4px;color:#80e080;font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ON</button>
+        </div>
+      </div>
+      <div class="srow">
+        <span class="slbl" style="color:#b090f0;">speed</span>
+        <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
+        <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
+        <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
+      </div>
+      <div class="srow" style="margin-top:6px;">
+        <span class="slbl">spin</span>
+        <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
+        <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
+        <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
+      </div>
+      <div class="srow" style="margin-top:6px;">
+        <span class="slbl">vert</span>
+        <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
+        <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
+        <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
+      </div>
+    </div>
+
+    <!-- GHOST BALL group -->
+    <div id="sg-ghost" style="background:rgba(232,112,48,0.08);border:1px solid rgba(232,112,48,0.2);border-radius:8px;padding:8px 10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(232,112,48,0.9);text-transform:uppercase;">Ghost Ball</span>
+        <div style="display:flex;gap:4px;">
+          <button id="gb-freeze" onclick="sgFreeze('ghost')" title="Freeze values" style="background:rgba(232,112,48,0.12);border:1px solid rgba(232,112,48,0.3);border-radius:4px;color:rgba(232,112,48,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
+          <button onclick="sgZero('ghost')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
+          <button id="gb-on" onclick="sgToggle('ghost')" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:4px;color:#80e080;font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ON</button>
+        </div>
+      </div>
+      <div class="srow">
+        <span class="slbl" style="color:#e87030;font-size:9px;">T-LOW</span>
+        <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
+        <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
+      </div>
+      <div class="srow" style="margin-top:4px;">
+        <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
+        <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
+        <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
+      </div>
+      <div class="srow" style="margin-top:4px;">
+        <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
+        <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
+        <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
+      </div>
+    </div>
+
+  </div>
+    </div><!-- /sliders-scale-wrap -->
+  <!-- Bottom bar: SIZE scale + resize grip -->
+  <div style="display:flex;align-items:center;padding:3px 0 3px 8px;background:#0a0a0a;border-top:1px solid #1a1a1a;border-radius:0 0 10px 10px;">
+    <span style="font-size:7px;font-weight:900;color:rgba(255,255,255,0.4);font-family:Lato,sans-serif;flex-shrink:0;margin-right:5px;letter-spacing:0.5px;">SIZE</span>
+    <input type="range" id="sl-scale" min="50" max="100" value="100"
+      onclick="event.stopPropagation()"
+      oninput="scaleSliderPanel(this.value)"
+      style="flex:1;height:2px;-webkit-appearance:none;appearance:none;background:#333;border-radius:1px;cursor:pointer;outline:none;">
+    <div id="sliders-resize" style="width:28px;height:28px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:0 0 10px 0;">
+      <svg width="16" height="16" viewBox="0 0 16 16" style="pointer-events:none;opacity:0.4;">
+        <line x1="4" y1="14" x2="14" y2="4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="14" x2="14" y2="9" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="14" y1="14" x2="14" y2="14" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+  </div><!-- /sliders-block -->
 <script>
 // Button zoom only — no pinch
 const _pz = {
@@ -3428,7 +3429,6 @@ const _pz = {
     const w=document.getElementById('zoom-wrap');
     if(!w) return;
     w._zscale=this.scale;
-    if(this.scale<=1){this.tx=0;this.ty=0;}
     w.style.transform=`translate(${this.tx}px,${this.ty}px) scale(${this.scale})`;
     w.style.transformOrigin='top left';
   }
@@ -3488,18 +3488,26 @@ setTimeout(positionToolbar, 100); // fallback
 let panelsSwapped=false;
 function swapPanels(){
   panelsSwapped=!panelsSwapped;
-  const sliders  = document.getElementById('sliders-block');
-  const ballWrap = document.getElementById('block-ball-wrap');
-  const readouts = document.getElementById('readouts');
-  const card     = document.querySelector('.card');
+  const table = document.getElementById('block-ball-wrap');
+  const perc  = document.getElementById('perception-section');
+  if (!table || !perc) return;
+  const parent = table.parentNode;
   if(panelsSwapped){
-    card.insertBefore(sliders, ballWrap);
+    parent.insertBefore(perc, table);
   } else {
-    card.insertBefore(sliders, readouts);
+    parent.insertBefore(table, perc);
+  }
+  // Update snap dock position after swap
+  var dock = document.getElementById('dock');
+  var ref  = document.getElementById('block-ball-wrap');
+  if(dock && ref) {
+    requestAnimationFrame(function(){
+      var r=ref.getBoundingClientRect();
+      dock.style.left=Math.max(4,r.left+r.width/2-(dock.offsetWidth||220)/2)+'px';
+      dock.style.top=Math.max(4,r.bottom-dock.offsetHeight-4)+'px';
+    });
   }
 }
-// Default to sliders-on-top layout
-window.addEventListener('load', function(){ swapPanels(); });
 </script>
 
 </div><!-- /outer-wrap -->
@@ -3639,14 +3647,14 @@ function toggleAllLocks() {
 
 <div id="btb">
 
-  <div id="btb-panel" style="display:none;width:max-content;max-width:96vw;">
+  <div id="btb-panel" style="display:none;width:max-content;max-width:96vw;touch-action:auto;">
     <!-- Gold pill header — drag handle + close -->
     <div id="btb-tools-header" style="display:flex;align-items:center;justify-content:space-between;padding:2px 8px;background:#f0df70;border-radius:10px 10px 0 0;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
       <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">TOOLS</span>
       <button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:16px;font-weight:900;cursor:pointer;padding:0 0 0 10px;line-height:1;touch-action:manipulation;">✕</button>
     </div>
     <!-- Compact tool grid -->
-    <div id="tool-grid" style="display:flex;flex-direction:column;gap:4px;padding:8px;background:rgba(12,16,12,0.98);">
+    <div id="tool-grid" style="display:flex;flex-direction:column;gap:4px;padding:8px;background:rgba(12,16,12,0.98);touch-action:manipulation;">
       <div style="display:flex;gap:4px;flex-wrap:wrap;">
         <button class="tg-btn tg-green on" id="btn-map"    onclick="toggleMap()">GRID</button>
         <button class="tg-btn tg-gold  on" id="ep-snap"   onclick="toggleSnap()">SNAP</button>
@@ -3674,23 +3682,24 @@ function toggleAllLocks() {
 <script>
 var btbVisible = false;
 function toggleBtb(){
-  btbVisible = !btbVisible;
-  var panel = document.getElementById('btb-panel');
-  if (panel) {
-    panel.style.display = btbVisible ? 'flex' : 'none';
-    if (btbVisible) {
-      // Center in viewport
-      panel.style.transform = 'none';
-      requestAnimationFrame(function(){
-        var pw = panel.offsetWidth || 300;
-        var ph = panel.offsetHeight || 100;
-        panel.style.left = Math.max(4, Math.round(window.innerWidth/2 - pw/2)) + 'px';
-        panel.style.top  = Math.max(4, Math.round(window.innerHeight/2 - ph/2)) + 'px';
-      });
-    }
-  }
+  var grid = document.getElementById('tool-grid');
   var arrow = document.getElementById('btb-arrow');
-  if (arrow) arrow.textContent = btbVisible ? '▼' : '▲';
+  if (!grid) return;
+  var collapsed = grid.style.display === 'none';
+  grid.style.display = collapsed ? '' : 'none';
+  if (arrow) arrow.textContent = collapsed ? '▼' : '▲';
+  btbVisible = collapsed;
+  // Show panel if hidden
+  var panel = document.getElementById('btb-panel');
+  if (panel && panel.style.display === 'none') {
+    panel.style.display = 'flex';
+    panel.style.transform = 'none';
+    requestAnimationFrame(function(){
+      var pw = panel.offsetWidth || 300;
+      panel.style.left = Math.max(4, Math.round(window.innerWidth/2 - pw/2)) + 'px';
+      panel.style.top  = '60px';
+    });
+  }
 }
 // Floating drag via TOOLS bar
 (function(){
@@ -3787,7 +3796,7 @@ function biasStep(dir) {
     <input id="shot-name-input" type="text" placeholder="Name to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
       style="flex:2;min-width:0;background:#fff;border:1px solid #bbb;border-radius:4px;padding:3px 6px;color:#111;font-size:11px;outline:none;">
     <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:3px 8px;border-radius:4px;border:none;background:#1a5a1a;color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">SAVE</button>
-    <div id="learn-panel-resize" style="width:18px;height:18px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px;">⇲</div>
+
   </div>
 </div>
 
@@ -3988,7 +3997,7 @@ function biasStep(dir) {
     <input type="range" id="data-scale" min="50" max="100" value="100" oninput="scalePanel('throw-panel','data-scale','data-scale-lbl')" style="flex:1;height:3px;accent-color:rgba(240,223,112,0.8);">
     <button onclick="exportThrowData()" style="padding:2px 8px;border-radius:3px;border:1px solid #888;background:#fff;color:#111;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">CSV</button>
     <button onclick="clearThrowData()" style="padding:2px 8px;border-radius:3px;border:1px solid #cc3333;background:#fff;color:#cc3333;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">CLEAR</button>
-    <div id="throw-panel-resize" style="width:18px;height:18px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px;">⇲</div>
+
   </div>
 </div>
 
@@ -4391,6 +4400,7 @@ function toggleSlidersPanel() {
     if (!panel || !header) return;
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+      e.preventDefault();
       panel.style.transform = 'none';
       var r=panel.getBoundingClientRect();
       panel.style.left=r.left+'px'; panel.style.top=r.top+'px';
@@ -4633,36 +4643,70 @@ window.addEventListener('load', function(){
   snapDock();
 });
 
-// ── Resize handle wiring ──────────────────────────────────────
-function wireResizeHandle(handleId, panelId) {
-  var handle = document.getElementById(handleId);
-  var panel  = document.getElementById(panelId);
-  if (!handle || !panel) return;
-  var ptr=null, sx, sy, sw, sh;
-  handle.addEventListener('pointerdown', function(e){
-    e.stopPropagation();
+// ── Edge resize for all float panels ──────────────────────────
+function wireEdgeResize(panelId) {
+  var panel = document.getElementById(panelId);
+  if (!panel) return;
+  var EDGE = 18; // px threshold for edge detection
+  var ptr=null, sx, sy, sw, sh, edge={r:false,b:false};
+
+  panel.addEventListener('pointerdown', function(e){
+    // Only fire on non-interactive elements
+    if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT'||
+        e.target.tagName==='SPAN'||e.target.closest('button, input')) return;
+    var r = panel.getBoundingClientRect();
+    var onRight  = e.clientX > r.right  - EDGE;
+    var onBottom = e.clientY > r.bottom - EDGE;
+    if (!onRight && !onBottom) return;
+    e.stopPropagation(); e.preventDefault();
     ptr=e.pointerId; sx=e.clientX; sy=e.clientY;
     sw=panel.offsetWidth; sh=panel.offsetHeight;
-    try{ handle.setPointerCapture(ptr); }catch(x){}
-  });
-  handle.addEventListener('pointermove', function(e){
+    edge={r:onRight, b:onBottom};
+    try{ panel.setPointerCapture(ptr); }catch(x){}
+  }, {passive:false});
+
+  panel.addEventListener('pointermove', function(e){
     if(e.pointerId!==ptr) return;
-    var nw = Math.max(200, sw + (e.clientX-sx));
-    var nh = Math.max(80,  sh + (e.clientY-sy));
-    panel.style.width  = Math.min(nw, window.innerWidth-8)  + 'px';
-    panel.style.height = Math.min(nh, window.innerHeight-8) + 'px';
-    panel.style.maxHeight = 'none';
+    if(edge.r) panel.style.width  = Math.max(180, sw+(e.clientX-sx))+'px';
+    if(edge.b) { panel.style.height=Math.max(80, sh+(e.clientY-sy))+'px'; panel.style.maxHeight='none'; }
   });
-  handle.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr) ptr=null; });
-  handle.addEventListener('pointercancel', function(){ ptr=null; });
+  panel.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr) ptr=null; });
+  panel.addEventListener('pointercancel', function(){ ptr=null; });
+
+  // Show resize cursor near edges
+  panel.addEventListener('pointermove', function(e){
+    if (ptr) return;
+    var r = panel.getBoundingClientRect();
+    var onRight  = e.clientX > r.right  - EDGE;
+    var onBottom = e.clientY > r.bottom - EDGE;
+    panel.style.cursor = (onRight&&onBottom)?'se-resize':onRight?'e-resize':onBottom?'s-resize':'';
+  });
+  panel.addEventListener('pointerleave', function(){ if(!ptr) panel.style.cursor=''; });
 }
 
 window.addEventListener('load', function(){
-  wireResizeHandle('learn-panel-resize', 'shot-library-panel');
-  wireResizeHandle('throw-panel-resize',  'throw-panel');
-  wireResizeHandle('sliders-resize',      'sliders-block');
+  wireEdgeResize('shot-library-panel');
+  wireEdgeResize('throw-panel');
+  wireEdgeResize('sliders-block');
 });
 
 </script>
-</body>
+<script>
+// Fix minimize buttons for touch — pointerup fires reliably
+window.addEventListener('load', function(){
+  document.querySelectorAll('.min-btn').forEach(function(btn){
+    btn.addEventListener('pointerup', function(e){
+      e.stopPropagation();
+      var panelId = btn.closest('[id]') ? btn.closest('[id]').id : null;
+      // Find which panel this belongs to
+      var panel = btn.closest('.float-panel, #sliders-block, #shot-library-panel, #throw-panel');
+      var hdr   = btn.closest('.float-panel-header, #sliders-handle, #shot-lib-header, #throw-panel-header');
+      if (panel && hdr) {
+        if (panel.id === 'throw-panel') minimizeThrowPanel();
+        else minimizePanel(panel.id, hdr);
+      }
+    });
+  });
+});
+</script>
 </html>
