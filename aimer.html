@@ -2203,7 +2203,7 @@ function updatePanBtn() {
 function togglePan(){
   panMode = !panMode;
   const _pan = document.getElementById('ep-pan');
-  if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'PAN<br>MODE ON' : 'PAN<br>MODE OFF'; }
+  if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'DRAG<br>MODE ON' : 'DRAG<br>MODE OFF'; }
 }
 let lockTable = false;
 let lockBalls = false;
@@ -2370,7 +2370,7 @@ const svg = $('topsvg');
 svg.addEventListener('pointerdown', e => {
   const p = svgPt(e);
   if (calTapActual(p)) return;
-  if (lockTable || (panMode && isZoomed())) return;  // TABLE locked or panning while zoomed
+  if (lockTable || (isZoomed() && !e.target.closest("[data-ball], circle"))) return;
   if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
   if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
 });
@@ -2874,7 +2874,7 @@ function updateDiagCut(svgX) {
 }
 
 botsvg.addEventListener('pointerdown', e => {
-  if (lockBalls || (panMode && isZoomed())) return;  // locked or panning while zoomed
+  if (lockBalls || (isZoomed() && !e.target.closest("[data-ball], circle"))) return;
   const p2 = botSvgPt(e);
   // Dead zone: only respond within the ball's vertical extent (center 148 ± radius 82)
   if (p2.y < 66 || p2.y > 230) return;
@@ -3539,8 +3539,8 @@ window.addEventListener('load', function(){ swapPanels(); });
   function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
 
   function onDown(e){
-    if(!panMode) return;
-    if(_pz.scale <= 1) return;
+    // Don't pan if touching a ball
+    if(e.target.closest('circle, [data-ball]')) return;
     panPtr = e.pointerId;
     panStartX = e.clientX; panStartY = e.clientY;
     panInitTx = _pz.tx;    panInitTy = _pz.ty;
@@ -3551,9 +3551,8 @@ window.addEventListener('load', function(){ swapPanels(); });
   function onMove(e){
     if(panPtr === null || e.pointerId !== panPtr) return;
     var w = getWrap();
-    var ww = w.offsetWidth, wh = w.offsetHeight, sc = _pz.scale;
-    _pz.tx = Math.min(0, Math.max(ww*(1-sc), panInitTx + (e.clientX - panStartX)));
-    _pz.ty = Math.min(0, Math.max(wh*(1-sc), panInitTy + (e.clientY - panStartY)));
+    _pz.tx = panInitTx + (e.clientX - panStartX);
+    _pz.ty = panInitTy + (e.clientY - panStartY);
     _pz.apply();
     e.preventDefault();
   }
@@ -3652,7 +3651,7 @@ function toggleAllLocks() {
         <button class="tg-btn tg-green on" id="btn-map"    onclick="toggleMap()">GRID</button>
         <button class="tg-btn tg-gold  on" id="ep-snap"   onclick="toggleSnap()">SNAP</button>
         <button class="tg-btn tg-green"    id="btn-cbpath" onclick="toggleCbPath()">CUE PATH</button>
-        <button class="tg-btn tg-brown"    id="btn-cp"     onclick="toggleContactDot()">C·PT</button>
+        <button class="tg-btn tg-brown"    id="btn-cp"     onclick="toggleContactDot()" style="line-height:1.3;">CONTACT<br>POINT</button>
         <button class="tg-btn tg-brown"    id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
         <button class="tg-btn tg-purple"   id="ep-bias"    onclick="toggleBias()">TABLE COMP</button>
         <button class="tg-btn tg-brown"    id="btn-cal"    onclick="toggleCal()">CAL</button>
@@ -3662,7 +3661,7 @@ function toggleAllLocks() {
         <button class="tg-btn tg-blue" onclick="edgeZoom(1.3)">ZOOM+</button>
         <button class="tg-btn tg-blue" onclick="edgeZoom(1/1.3)">ZOOM−</button>
         <button class="tg-btn tg-blue" onclick="edgeZoomReset()">RESET</button>
-        <button class="tg-btn tg-blue" id="ep-pan" onclick="togglePan()">PAN</button>
+        <button class="tg-btn tg-blue" id="ep-pan" onclick="togglePan()">DRAG</button>
         <button class="tg-btn tg-red"  id="ep-lt"  onclick="toggleLock('table')">TBL LOCK</button>
         <button class="tg-btn tg-red"  id="ep-lb"  onclick="toggleLock('balls')">GHO LOCK</button>
         <button class="tg-btn tg-red"  id="ep-ls"  onclick="toggleLock('sliders')">SLD LOCK</button>
@@ -3832,8 +3831,8 @@ function biasStep(dir) {
         try{ header.setPointerCapture(e.pointerId); }catch(ex){}
       }
       if (!didDrag) return;
-      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
-      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
+      var nx=origLeft+dx;
+      var ny=origTop+dy;
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
     });
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
@@ -3855,8 +3854,8 @@ function biasStep(dir) {
         var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
         if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
         if (!didDrag) return;
-        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
-        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+        panel.style.left=origLeft+dx+'px';
+        panel.style.top=origTop+dy+'px';
       });
       footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
       footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
@@ -3879,8 +3878,8 @@ function biasStep(dir) {
         var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
         if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; list.setPointerCapture(e.pointerId); }
         if (!didDrag) return;
-        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
-        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+        panel.style.left=origLeft+dx+'px';
+        panel.style.top=origTop+dy+'px';
       });
       list.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
       list.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
@@ -4199,8 +4198,8 @@ window.render = function() {
       var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
       if (!didDrag && Math.hypot(dx,dy)>8) { didDrag=true; try{header.setPointerCapture(e.pointerId);}catch(ex){} }
       if (!didDrag) return;
-      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
-      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
+      var nx=origLeft+dx;
+      var ny=origTop+dy;
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
     });
     header.addEventListener('pointerup', function(e){ if(e.pointerId===activePtr) activePtr=null; });
@@ -4220,8 +4219,8 @@ window.render = function() {
         var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
         if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
         if (!didDrag) return;
-        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
-        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+        panel.style.left=origLeft+dx+'px';
+        panel.style.top=origTop+dy+'px';
       });
       footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
       footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
@@ -4245,8 +4244,8 @@ window.render = function() {
         var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
         if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
         if (!didDrag) return;
-        panel.style.left=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,origLeft+dx))+'px';
-        panel.style.top=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,origTop+dy))+'px';
+        panel.style.left=origLeft+dx+'px';
+        panel.style.top=origTop+dy+'px';
       });
       dataList.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
       dataList.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
