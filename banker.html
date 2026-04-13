@@ -571,7 +571,6 @@ body { padding-bottom: 80px !important; }
 .tg-orange { background:#7a3a06; color:#f0a060; border-color:#aa5a10; }
 .tg-orange.on { background:#c06010; border-color:#f0a060; }
 .tg-orange:not(.on) { filter: brightness(0.8); }
-
 </style>
   <script>
 function _setLockBtn(id, locked, label) {
@@ -1266,6 +1265,14 @@ function toggleShotLibrary() {
 function loadShot(idx) {
   const shot = SHOT_LIBRARY[idx];
   if (!shot) return;
+  // Reset perception slider to center
+  window._perceptionOffset = 0;
+  window._percBase = 0;
+  window._percCompFrac = undefined;
+  var t = document.getElementById('perc-thumb');
+  var f = document.getElementById('perc-fill');
+  if (t) t.setAttribute('cx', '80');
+  if (f) f.setAttribute('width', '74');
   S.ob = {...shot.ob}; S.cb = {...shot.cb};
   if (shot.pocket && POCKETS[shot.pocket]) {
     S.target = { x: POCKETS[shot.pocket].x, y: POCKETS[shot.pocket].y };
@@ -1879,7 +1886,64 @@ if ('serviceWorker' in navigator) {
     <!-- SHOT LIBRARY PANEL placeholder — actual panel is fixed/floating -->
 
     <!-- EYE-LEVEL DIAGRAM -->
-    <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;">
+<div id="perc-row" style="display:flex;align-items:center;gap:8px;padding:5px 12px;background:rgba(60,20,0,0.8);width:100%;box-sizing:border-box;">
+  <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:#ff8c00;white-space:nowrap;flex:1;">HOW I SEE THIS SHOT</span>
+  <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">L</span>
+  <svg id="perc-svg" width="160" height="28" style="flex-shrink:0;touch-action:none;cursor:grab;">
+    <rect x="6" y="10" width="148" height="8" rx="4" fill="rgba(255,140,0,0.25)" stroke="#ff8c00" stroke-width="1.5"/>
+    <rect id="perc-fill" x="6" y="10" width="74" height="8" rx="4" fill="rgba(255,140,0,0.6)"/>
+    <circle id="perc-thumb" cx="80" cy="14" r="12" fill="url(#pg)" stroke="none"/>
+    <defs>
+      <radialGradient id="pg" cx="35%" cy="28%" r="65%">
+        <stop offset="0%" stop-color="#ff9090"/>
+        <stop offset="35%" stop-color="#ee2020"/>
+        <stop offset="80%" stop-color="#aa0808"/>
+        <stop offset="100%" stop-color="#6a0808"/>
+      </radialGradient>
+    </defs>
+  </svg>
+  <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">R</span>
+  <button id="perc-zero-btn" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZERO</button>
+</div>
+<script>
+(function(){
+  var svg = document.getElementById('perc-svg');
+  var thumb = document.getElementById('perc-thumb');
+  var fill  = document.getElementById('perc-fill');
+  var X1=6, X2=154, CX=80, dragging=false;
+  window._percBase = 0;  // offset at slider center
+  function setX(x){
+    x = Math.max(X1, Math.min(X2, x));
+    thumb.setAttribute('cx', x);
+    fill.setAttribute('width', Math.max(0, x-X1));
+    window._perceptionOffset = window._percBase + (x-CX)/74;
+    if(typeof render==='function') render();
+  }
+  thumb.addEventListener('pointerdown', function(e){
+    if(e.detail>1) return;
+    dragging=true; thumb.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
+  });
+  svg.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    var r=svg.getBoundingClientRect();
+    setX(e.clientX - r.left);
+    e.preventDefault();
+  },{passive:false});
+  svg.addEventListener('pointerup',     function(){ dragging=false; });
+  svg.addEventListener('pointercancel', function(){ dragging=false; });
+  function zero(){
+    window._perceptionOffset=0;
+    window._percCompFrac=undefined;
+    var t=document.getElementById('perc-thumb');
+    var f=document.getElementById('perc-fill');
+    if(t) t.setAttribute('cx','80');
+    if(f) f.setAttribute('width','74');
+    if(typeof render==='function') render();
+  }
+  window.percZero = zero;
+})();
+</script>
+<div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;">
     <svg id="botsvg" viewBox="0 0 460 300" preserveAspectRatio="xMidYMid meet"
            style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;"
            xmlns="http://www.w3.org/2000/svg">
@@ -1995,7 +2059,9 @@ if ('serviceWorker' in navigator) {
           <rect x="418" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
           <text x="436" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">+</text>
         </g>
-      </svg>
+      
+</svg>
+  </div>
   </div><!-- aim-wrap -->
   </div><!-- section-aim -->
 </div><!-- diagram-wrap -->
@@ -2650,7 +2716,11 @@ function drawBot(d) {
   // Apply throw compensation to diagram contact point
   const _diagThrowDelta = getThrowComp(cutDeg);
   const aimF  = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _diagThrowDelta));
-  const ccx   = Math.max(4, Math.min(W-4, rh ? ocx - aimF*2*r : ocx + aimF*2*r));
+  const _pOff = (window._perceptionOffset||0)*2*r;
+  const ccx   = Math.max(4, Math.min(W-4, (rh ? ocx - aimF*2*r : ocx + aimF*2*r)+_pOff));
+  window._percCompFrac = Math.max(0, Math.min(1, Math.abs(ccx - ocx) / (2*r)));
+  // Perception-adjusted fraction for readouts
+  const percAimF = Math.max(0, Math.min(1, Math.abs(ccx - ocx) / (2*r)));
   const edgeX = Math.max(4, Math.min(W-4, rh ? ccx+r : ccx-r));
   const clipX = rh ? edgeX : (ocx-r);
   const revealW = Math.max(0, rh ? (ocx+r)-edgeX : edgeX-(ocx-r));
@@ -3028,7 +3098,7 @@ function render() {
   const displayGeoF   = displayCutDeg < 0.5 ? 0 : Math.sin(Math.min(displayCutDeg, 90) * RAD);
   // Readouts — use sol.aimFraction (perceptually corrected, 1.5x diagFraction) like Aimer
   // not raw sin(cutDeg), so diagram and readouts agree
-  const _compFrac = Math.max(0, Math.min(1, (sol.aimFraction || Math.abs(displayGeoF)) * 1.5));
+  const _compFrac = (window._percCompFrac !== undefined) ? window._percCompFrac : Math.max(0, Math.min(1, (sol.aimFraction || Math.abs(displayGeoF)) * 1.5));
   const _baimP = Math.round(_compFrac * 100);
   const _bdir = displayCutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
   const _raim = $('r-aim'); if(_raim) _raim.textContent = _baimP+'%';
@@ -3915,6 +3985,13 @@ function toggleLock(which){
   if(lt){lt.classList.toggle('locked',lockTable);lt.classList.toggle('on',!lockTable);}
   if(ls){ls.classList.toggle('locked',lockSliders);ls.classList.toggle('on',!lockSliders);}
   if(lb){lb.classList.toggle('locked',lockBalls);lb.classList.toggle('on',!lockBalls);}
+  // Sync perception slider with ball lock
+  var percSvg = document.getElementById('perc-svg');
+  var percZeroBtn = document.getElementById('perc-zero-btn');
+  if(percSvg) percSvg.style.pointerEvents = lockBalls ? 'none' : 'auto';
+  if(percSvg) percSvg.style.opacity = lockBalls ? '0.35' : '1';
+  if(percZeroBtn) percZeroBtn.style.opacity = lockBalls ? '0.35' : '1';
+  if(percZeroBtn) percZeroBtn.style.pointerEvents = lockBalls ? 'none' : 'auto';
   const topsvgEl=document.getElementById('topsvg');
   // touch-action managed per-drag
   const bs=document.getElementById('botsvg');
@@ -4120,34 +4197,7 @@ function swapPanels() {
     </div>
 
     <!-- PERSONAL ADJUSTMENT group -->
-    <div id="sg-ghost" style="background:rgba(232,112,48,0.08);border:1px solid rgba(232,112,48,0.2);border-radius:8px;padding:8px 10px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(232,112,48,0.9);text-transform:uppercase;">Personal Adjustment</span>
-        <div style="display:flex;gap:4px;">
-          <button id="gb-freeze" onclick="sgFreeze('ghost')" title="Freeze values" style="background:rgba(232,112,48,0.12);border:1px solid rgba(232,112,48,0.3);border-radius:4px;color:rgba(232,112,48,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
-          <button onclick="sgZero('ghost')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
-          <button id="gb-on" onclick="sgToggle('ghost')" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:4px;color:#80e080;font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ON</button>
-        </div>
-      </div>
-      <div class="srow">
-        <span class="slbl" style="color:#e87030;font-size:9px;">T-LOW</span>
-        <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
-        <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
-      </div>
-      <div class="srow" style="margin-top:4px;">
-        <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
-        <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
-        <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
-      </div>
-      <div class="srow" style="margin-top:4px;">
-        <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
-        <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
-        <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
-      </div>
-    </div>
+    <div id="sg-ghost"></div>
 
   </div>
     </div><!-- /sliders-scale-wrap -->
@@ -4232,6 +4282,8 @@ function swapPanels() {
   function onDown(e){
     // Always pan when not touching a ball directly
     if(e.target.closest('circle, [data-ball]')) return;
+    if(e.target.tagName==='BUTTON' || e.target.tagName==='INPUT' || e.target.tagName==='A') return;
+    if(e.target.closest('#perc-row, #btb, .float-panel')) return;
     panPtr = e.pointerId;
     panStartX = e.clientX; panStartY = e.clientY;
     panInitTx = _pz.tx;    panInitTy = _pz.ty;
@@ -5493,6 +5545,29 @@ function toggleCbPath() {
   render();
 }
 </script>
+
+
+<script>
+
+
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var btn = document.getElementById('perc-zero-btn');
+  if (!btn) { console.log('perc-zero-btn not found'); return; }
+  console.log('perc-zero-btn found, wiring...');
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    window._percBase = window._perceptionOffset || 0;
+    var t = document.getElementById('perc-thumb');
+    var f = document.getElementById('perc-fill');
+    if (t) t.setAttribute('cx', '80');
+    if (f) f.setAttribute('width', '74');
+  });
+});
+</script>
 </html><!-- section-aim -->
 </div><!-- diagram-wrap -->
 
@@ -5593,62 +5668,21 @@ function toggleCbPath() {
   <!-- /sliders-block -->
 
 
+
+
 <script>
-(function(){
-  window.addEventListener('load', function(){
-    var ow  = document.querySelector('.outer-wrap');
-    var hdr = document.querySelector('.hdr');
-    if (!ow || !hdr) return;
-
-    // Center on load
-    ow.style.left = Math.max(0, Math.round((window.innerWidth - ow.offsetWidth)/2)) + 'px';
-    ow.style.top = '0px';
-
-    // Make header visually a grab handle
-    hdr.style.cursor = 'grab';
-
-    var ptr=null, sx, sy, ox, oy;
-
-    hdr.addEventListener('pointerdown', function(e){
-      if (e.target.tagName==='BUTTON') return;
-      ptr = e.pointerId;
-      var r = ow.getBoundingClientRect();
-      ox = r.left; oy = r.top; sx = e.clientX; sy = e.clientY;
-      hdr.setPointerCapture(ptr);
-      hdr.style.cursor = 'grabbing';
-      e.preventDefault();
-    }, {passive:false});
-
-    hdr.addEventListener('pointermove', function(e){
-      if (e.pointerId!==ptr) return;
-      ow.style.left = Math.max(-ow.offsetWidth+80, Math.min(window.innerWidth-80,  ox+e.clientX-sx)) + 'px';
-      ow.style.top  = Math.max(-ow.offsetHeight+80,Math.min(window.innerHeight-80, oy+e.clientY-sy)) + 'px';
-      e.preventDefault();
-    }, {passive:false});
-
-    hdr.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr){ ptr=null; hdr.style.cursor='grab'; } });
-    hdr.addEventListener('pointercancel', function(){   ptr=null; hdr.style.cursor='grab'; });
+document.addEventListener('DOMContentLoaded', function(){
+  var btn = document.getElementById('perc-zero-btn');
+  if (!btn) { console.log('perc-zero-btn not found'); return; }
+  console.log('perc-zero-btn found, wiring...');
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    window._percBase = window._perceptionOffset || 0;
+    var t = document.getElementById('perc-thumb');
+    var f = document.getElementById('perc-fill');
+    if (t) t.setAttribute('cx', '80');
+    if (f) f.setAttribute('width', '74');
   });
-})();
-</script>
-<script>
-function toggleAngle() {
-  toggleBounce();
-  var btn = document.getElementById('btn-angle');
-  if (btn) btn.classList.toggle('on', bounceOn);
-}
-</script><script>
-function toggleCbPath() {
-  cbPathOn = !cbPathOn;
-  var btn = document.getElementById('btn-cbpath');
-  if (btn) btn.classList.toggle('on', cbPathOn);
-  const leg = document.getElementById('cb-path-legend');
-  if (leg) leg.setAttribute('opacity', cbPathOn ? '1' : '0');
-  if (!cbPathOn) {
-    ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
-      .forEach(function(id){ const el=document.getElementById(id); if(el) el.style.opacity='0'; });
-  }
-  render();
-}
+});
 </script>
 </html>

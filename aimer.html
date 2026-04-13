@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-title" content="LeStar Z Aimer">
   <link rel="apple-touch-icon" href="/icon-apple.png">
   <link rel="manifest" href="/manifest.json">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Aimer">
@@ -18,9 +18,9 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 button{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;}
 svg,.diagram-wrap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
-html,body{background:#141414;font-family:'Lato',sans-serif;margin:0;padding:0;width:100%;min-height:100vh;display:flex;justify-content:center;}@media(max-width:900px){.outer-wrap{max-width:100% !important;}}
+html,body{background:#141414;font-family:'Lato',sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px 8px 32px;}@media(max-aspect-ratio:1/1){}.outer-wrap{width:100%;}
 @media(orientation:landscape) and (max-height:430px){html,body{padding:2px;}.outer-wrap{max-width:100%!important;width:100%;border-radius:0;}}
-.outer-wrap{display:flex;flex-direction:row;align-items:flex-start;width:100%;max-width:900px;background:#1a361a;border-radius:0;box-shadow:none;border:none;overflow:hidden;min-height:100vh;}
+.outer-wrap{display:flex;flex-direction:row;align-items:flex-start;width:100%;max-width:762px;background:#1a361a;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);border:2px solid #2a4e2a;overflow:hidden;}
 .card{flex:1;min-width:0;padding:14px 12px 16px 12px;}
 .toolbar-col{display:none;}
 .hdr{text-align:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07);position:relative;}
@@ -51,66 +51,9 @@ h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-b
 input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
 .sliders-unlocked input[type=range]::-webkit-slider-thumb,
-#sliders-block input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
+#sliders-block.sliders-unlocked input[type=range]::-webkit-slider-thumb{width:40px;height:40px;box-shadow:0 2px 8px rgba(0,0,0,0.6);}
 .sliders-unlocked input[type=range],
-#sliders-block input[type=range]{height:8px;}
-/* ── MINIMIZED PANEL STYLES ── */
-.panel-minimized { overflow:hidden !important; }
-.panel-minimized .min-btn {
-  font-size:22px !important; font-weight:900 !important;
-  width:38px !important; height:38px !important;
-  display:flex !important; align-items:center !important; justify-content:center !important;
-  border-radius:6px !important; padding:0 !important;
-  touch-action:manipulation;
-}
-/* SLIDERS — purple */
-#sliders-block.panel-minimized {
-  background:#f5eeff !important; border:2px solid #c084fc !important;
-}
-#sliders-block.panel-minimized #sliders-handle {
-  background:#f5eeff; border-bottom:none; padding:6px 8px 6px 12px;
-}
-#sliders-block.panel-minimized #sliders-handle span {
-  color:#111111 !important; font-size:13px !important; font-weight:900 !important; letter-spacing:0.1em;
-}
-#sliders-block.panel-minimized .min-btn {
-  background:#c084fc !important; border-color:#c084fc !important; color:#fff !important;
-}
-#sliders-block.panel-minimized button:not(.min-btn) {
-  color:#7e22ce !important; border-color:#c084fc !important; background:rgba(192,132,252,0.15) !important;
-}
-/* LEARN — gold */
-#shot-library-panel.panel-minimized {
-  background:#fffbe6 !important; border:2px solid #f0df70 !important;
-}
-#shot-library-panel.panel-minimized #shot-lib-header {
-  background:#fffbe6; border-bottom:none; padding:6px 8px 6px 12px;
-}
-#shot-library-panel.panel-minimized #shot-lib-header > span {
-  color:#111111 !important; font-size:13px !important; font-weight:900 !important; letter-spacing:0.1em;
-}
-#shot-library-panel.panel-minimized .min-btn {
-  background:#f0df70 !important; border-color:#f0df70 !important; color:#1a1400 !important;
-}
-#shot-library-panel.panel-minimized button:not(.min-btn) {
-  color:#78610a !important; border-color:#c8a820 !important; background:rgba(240,223,112,0.2) !important;
-}
-/* DATA — brown */
-#throw-panel.panel-minimized {
-  background:#fff8f0 !important; border:2px solid #8a5010 !important;
-}
-#throw-panel.panel-minimized #throw-panel-header {
-  background:#fff8f0; border-bottom:none; padding:6px 8px 6px 12px;
-}
-#throw-panel.panel-minimized #throw-panel-header > span {
-  color:#111111 !important; font-size:13px !important; font-weight:900 !important; letter-spacing:0.1em;
-}
-#throw-panel.panel-minimized .min-btn {
-  background:#8a5010 !important; border-color:#8a5010 !important; color:#ffffff !important;
-}
-#throw-panel.panel-minimized button:not(.min-btn) {
-  color:#333333 !important; border-color:#aaaaaa !important; background:rgba(0,0,0,0.08) !important;
-}
+#sliders-block.sliders-unlocked input[type=range]{height:8px;}
 #cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
 #cal-panel.open{display:block;}
 #cal-instruction{font-size:11px;color:#fff;font-weight:700;margin-bottom:6px;line-height:1.5;}
@@ -380,196 +323,6 @@ body { padding-bottom: 80px !important; }
   pointer-events: auto;
   margin-right: 2px;
 }
-
-/* ── LONG-PRESS TOOLTIP ── */
-#lp-tooltip {
-  position: fixed; z-index: 9999;
-  background: rgba(20,20,20,0.92); color: #f0df70;
-  font-family: 'Lato', sans-serif; font-size: 12px; font-weight: 700;
-  padding: 5px 10px; border-radius: 6px; pointer-events: none;
-  white-space: nowrap; opacity: 0; transition: opacity 0.15s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-}
-/* ── DOCK ── */
-#dock {
-  position: fixed; bottom: max(18px, env(safe-area-inset-bottom, 18px)); left: 50%; transform: translateX(-50%);
-  z-index: 8900; display: flex; flex-direction: column; align-items: center;
-  gap: 6px; user-select: none; -webkit-user-select: none;
-}
-#dock-bar {
-  display: flex; flex-direction: row; align-items: center; gap: 10px;
-  background: rgba(10,15,10,0.88); border: 1px solid rgba(240,223,112,0.3);
-  border-radius: 28px; padding: 8px 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  touch-action: none; cursor: grab;
-}
-.dock-slot {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: rgba(20,30,20,0.9); border: 1.5px solid rgba(240,223,112,0.45);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; touch-action: manipulation;
-  flex-direction: column; gap: 3px;
-  transition: border-color 0.15s, transform 0.1s; flex-shrink: 0;
-}
-.dock-slot.active { border-color: rgba(255,255,255,0.85); transform: scale(1.12); }
-.dock-slot .dline { border-radius: 1px; pointer-events: none; display: block; }
-#dock-minimize { width: 36px; height: 5px; background: rgba(240,223,112,0.35); border-radius: 3px; cursor: pointer; touch-action: manipulation; }
-#dock-mini {
-  display: none; width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(10,15,10,0.88); border: 1.5px solid rgba(240,223,112,0.55);
-  cursor: pointer; touch-action: manipulation; box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  overflow: hidden; position: relative;
-}
-
-/* ── SCALEABLE PANEL ── */
-.panel-scale-wrap {
-  transform-origin: top left;
-  transition: transform 0.1s ease;
-}
-.panel-scale-control {
-  display:flex; align-items:center; gap:5px; padding: 3px 8px;
-  background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.05);
-}
-.panel-scale-control input[type=range] {
-  flex:1; height:2px; accent-color: #888;
-  background: #333; border-radius:1px; cursor:pointer;
-}
-.panel-scale-control input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance:none; width:8px; height:8px;
-  border-radius:50%; background:#888; cursor:pointer;
-}
-.panel-scale-label {
-  font-size:8px; font-weight:900; color:rgba(255,255,255,0.7);
-  font-family:'Lato',sans-serif; white-space:nowrap; min-width:28px; text-align:right;
-}
-
-
-/* ── SHARED FLOATING PANELS ── */
-.float-panel {
-  display: none;
-  position: fixed;
-  z-index: 8888;
-  width: min(92vw, 340px);
-  background: #ffffff;
-  border: 1px solid rgba(240,223,112,0.6);
-  border-radius: 10px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.35);
-  touch-action: none;
-  flex-direction: column;
-  overflow: hidden;
-  max-height: 32vh;
-}
-.float-panel-body {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  max-height: 26vh;
-  min-height: 0;
-  background: #ffffff;
-}
-.float-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 3px 8px;
-  background: #ffffff;
-  border-bottom: 1px solid #e8e8e8;
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-  flex-shrink: 0;
-  min-height: 0;
-}
-
-/* Minimized = only header visible */
-#sliders-block { background: rgba(10,15,10,0.97) !important; border-radius:10px !important; }
-#sliders-block * { background-color: inherit; }
-#sliders-block .float-panel-body { background: rgba(10,15,10,0.97) !important; }
-.float-panel.panel-minimized {
-  max-height: none;
-}
-.float-panel.panel-minimized > *:not(.float-panel-header):not(#sliders-handle):not(#shot-lib-header):not(#throw-panel-header) {
-  display: none !important;
-}
-
-
-
-
-#sliders-block.float-panel { background: rgba(10,15,10,0.97) !important; overflow: hidden !important; }
-#sliders-block.float-panel, #sliders-block.float-panel * { box-sizing: border-box; }
-
-#sl-scale { -webkit-appearance:none; appearance:none; cursor:pointer; }
-#sl-scale::-webkit-slider-thumb {
-  -webkit-appearance:none; width:10px; height:10px;
-  border-radius:2px; background:#888; cursor:pointer; border:none;
-}
-#sl-scale::-moz-range-thumb {
-  width:10px; height:10px; border-radius:2px;
-  background:#888; cursor:pointer; border:none;
-}
-
-#learn-scale::-webkit-slider-thumb {
-  -webkit-appearance:none; width:16px; height:16px;
-  border-radius:50%; background:#f0df70; cursor:pointer;
-  border:2px solid #fff; box-shadow:0 0 4px rgba(240,223,112,0.8);
-}
-#learn-scale::-moz-range-thumb {
-  width:16px; height:16px; border-radius:50%;
-  background:#f0df70; cursor:pointer; border:2px solid #fff;
-}
-
-/* SIZE slider in sliders panel - small thumb */
-#sl-scale::-webkit-slider-thumb {
-  -webkit-appearance:none; width:12px; height:12px;
-  border-radius:50%; background:#888; cursor:pointer; border:none;
-}
-#sl-scale::-moz-range-thumb {
-  width:12px; height:12px; border-radius:50%;
-  background:#888; cursor:pointer; border:none;
-}
-/* Black scrollbar channel */
-.float-panel-body::-webkit-scrollbar { width: 6px; }
-.float-panel-body::-webkit-scrollbar-track { background: #000; }
-.float-panel-body::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-.float-panel-body::-webkit-scrollbar-corner { background: #000; }
-
-/* ── COMPACT TOOL GRID ── */
-.tg-btn {
-  font-family: 'Lato', sans-serif;
-  font-size: 11px; font-weight: 900; letter-spacing: 0.04em;
-  padding: 7px 10px; border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.2);
-  cursor: pointer; touch-action: manipulation;
-  outline: none; -webkit-tap-highlight-color: transparent;
-  white-space: nowrap; line-height: 1.3;
-  transition: filter 0.15s, opacity 0.1s;
-  -webkit-user-select: none; user-select: none;
-  box-sizing: border-box;
-  min-height: 44px; height: 44px;
-  min-width: 80px;
-  overflow: hidden;
-}
-.tg-btn:active { opacity: 0.7; }
-.tg-btn.on { border-color: rgba(255,255,255,0.6); filter: none; }
-/* OFF state = subtle dimming only */
-.tg-green:not(.on)  { filter: brightness(0.8); }
-.tg-gold:not(.on)   { filter: brightness(0.8); }
-.tg-brown:not(.on)  { filter: brightness(0.8); }
-.tg-purple:not(.on) { filter: brightness(0.8); }
-.tg-green  { background:#1c5c08; color:#a8f060; border-color:#2a7a10; }
-.tg-green.on { background:#2e8c14; border-color:#60c030; }
-.tg-gold   { background:#7a6006; color:#f0df70; border-color:#9a7c0c; }
-.tg-gold.on { background:#c0a018; border-color:#f0df70; }
-.tg-brown  { background:#6a3606; color:#f0c060; border-color:#8a4e0e; }
-.tg-purple { background:#6a1e8e; color:#dea8ff; border-color:#8e3eae; }
-.tg-blue   { background:#1c3c8e; color:#a8ccff; border-color:#2c58ae; }
-.tg-red    { background:#7a0e0e; color:#ffaaaa; border-color:#a02424; }
-.tg-red.locked { background:#ae1c1c; border-color:#ff3c3c; }
-.tg-teal   { background:#0c5c6c; color:#90f0f8; border-color:#1c8a9a; }
-.tg-orange { background:#7a3a06; color:#f0a060; border-color:#aa5a10; }
-.tg-orange.on { background:#c06010; border-color:#f0a060; }
-.tg-orange:not(.on) { filter: brightness(0.8); }
-
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -712,6 +465,11 @@ const SHOT_LIBRARY = [
     cb:{x:405,y:205}, ob:{x:422,y:130}, cut:12.8, rh:false, pocket:'TR',
     desc: gridDesc({x:405,y:205}, {x:422,y:130}, 'TR'),
     cue:'Longer right rail version — identical angle to RS7.',
+    teaching:'', difficulty:3 },
+  { code:'RS6', category:'Rail Sequence One', name:'RS6 · 24/8g Rail',
+    cb:{x:405,y:155}, ob:{x:422,y:80}, cut:12.8, rh:false, pocket:'TR',
+    desc: gridDesc({x:405,y:155}, {x:422,y:80}, 'TR'),
+    cue:'Right rail, steeper angle — same compensation principle.',
     teaching:'', difficulty:3 },
 
   { code:'S1', category:'Straight Shots', name:'S1 · Straight Corner',
@@ -1099,127 +857,7 @@ const SHOT_LIBRARY = [
     category:'INSTINCT BUILDER', group:'diagonal',
     name:'CB 1f / OB 3d', code:'ib-1f-3d',
     desc:'CB 1f · OB 3d · P3', cue:'Same shot — different address.', difficulty:1
-  },
-
-  // ── CHAPTER 2: Shallow Angle (9.6°) — Same Shot Across the Table ────────────
-  { code:'C2A', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2A · Center-Top → TR', difficulty:2,
-    cb:{x:180,y:105}, ob:{x:280,y:88}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:180,y:105}, {x:280,y:88}, 'TR'),
-    teaching:'<b>Same angle as RS1.</b> The ball is no longer on the rail — but the angle to the pocket is identical. Set up exactly as you did on the rail and trust the geometry. This is the core lesson: the table position changes, the shot does not.' },
-
-  { code:'C2B', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2B · Center Table → TR', difficulty:2,
-    cb:{x:130,y:155}, ob:{x:230,y:138}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:130,y:155}, {x:230,y:138}, 'TR'),
-    teaching:'Moving further from the pocket makes the shot feel different. The geometry says otherwise. Same 9.6°, same aim point on the OB, same result.' },
-
-  { code:'C2C', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2C · Lower Center → TR', difficulty:3,
-    cb:{x:80,y:205}, ob:{x:180,y:188}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:80,y:205}, {x:180,y:188}, 'TR'),
-    teaching:'This feels like a completely different shot from RS1. It is not. Same angle, different address. If you made RS1 you can make this.' },
-
-  { code:'C2D', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2D · Left Side → TL', difficulty:2,
-    cb:{x:230,y:105}, ob:{x:130,y:88}, cut:9.6, rh:false, pocket:'TL',
-    desc: gridDesc({x:230,y:105}, {x:130,y:88}, 'TL'),
-    teaching:'Mirror image. The cut angle is exactly the same — 9.6° — but toward the left side. Your aim point on the OB moves to the opposite side. Everything else is identical.' },
-
-  { code:'C2E', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2E · Right Side → BR', difficulty:3,
-    cb:{x:380,y:155}, ob:{x:398,y:188}, cut:9.6, rh:false, pocket:'BR',
-    desc: gridDesc({x:380,y:155}, {x:398,y:188}, 'BR'),
-    teaching:'Same 9.6° angle, now shooting down the right rail toward the bottom pocket. The shot is the same. The address is different.' },
-
-  // ── CHAPTER 3: Medium Angle (22°) — Rail Sequence ─────────────────────────
-  { code:'RM1', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM1 · 5f Rail 22°', difficulty:2,
-    cb:{x:255,y:80}, ob:{x:380,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:255,y:80}, {x:380,y:30}, 'TR'),
-    teaching:'<b>Step up to 22°.</b> This is a noticeably steeper cut than the shallow rail sequence. You will feel the difference immediately. The contact point on the OB moves toward the outside edge. Start here and march it down the rail.' },
-
-  { code:'RM2', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM2 · 4f Rail 22°', difficulty:2,
-    cb:{x:205,y:80}, ob:{x:330,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:205,y:80}, {x:330,y:30}, 'TR'),
-    teaching:'Same 22°, one diamond further from the pocket. The shot travels further but the angle is unchanged.' },
-
-  { code:'RM3', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM3 · 3f Rail 22°', difficulty:3,
-    cb:{x:155,y:80}, ob:{x:280,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:155,y:80}, {x:280,y:30}, 'TR'),
-    teaching:'Halfway across the table. The distance makes it feel harder. Trust the aim point.' },
-
-  { code:'RM4', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM4 · 2f Rail 22°', difficulty:3,
-    cb:{x:105,y:80}, ob:{x:230,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:105,y:80}, {x:230,y:30}, 'TR'),
-    teaching:'Three-quarter table length. Still 22°. Still the same shot.' },
-
-  { code:'RM5', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM5 · 1f Rail 22°', difficulty:4,
-    cb:{x:55,y:80}, ob:{x:180,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:55,y:80}, {x:180,y:30}, 'TR'),
-    teaching:'Full table length. If you made RM1 you can make this. The angle is unchanged — only the distance is working against you now.' },
-
-  // ── CHAPTER 4: Medium Angle (22°) — Same Shot Across the Table ─────────────
-  { code:'M2A', category:'Same Shot — Whole Table (22°)', group:'medium-scatter',
-    name:'M2A · Center Top 22° → TR', difficulty:3,
-    cb:{x:155,y:130}, ob:{x:280,y:80}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:155,y:130}, {x:280,y:80}, 'TR'),
-    teaching:'<b>Same 22°, off the rail.</b> You have been making this shot on the rail for five reps. Now the OB is one diamond off the top cushion. The angle is identical.' },
-
-  { code:'M2B', category:'Same Shot — Whole Table (22°)', group:'medium-scatter',
-    name:'M2B · Center Table 22° → TR', difficulty:3,
-    cb:{x:105,y:180}, ob:{x:230,y:130}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:105,y:180}, {x:230,y:130}, 'TR'),
-    teaching:'Center table. The pocket feels far away. 22° is 22°.' },
-
-  { code:'M2C', category:'Same Shot — Whole Table (22°)', group:'medium-scatter',
-    name:'M2C · Left Side 22° → TL', difficulty:3,
-    cb:{x:255,y:130}, ob:{x:130,y:80}, cut:22.0, rh:false, pocket:'TL',
-    desc: gridDesc({x:255,y:130}, {x:130,y:80}, 'TL'),
-    teaching:'Mirror of M2A. Left side, left pocket, same 22° cut. The aim point is on the opposite side of the OB.' },
-
-  // ── CHAPTER 5: Steep Angle (35°) — Rail Sequence ──────────────────────────
-  { code:'RD1', category:'Rail Sequence — Steep (35°)', group:'steep-rail',
-    name:'RD1 · 5f Rail 35°', difficulty:3,
-    cb:{x:280,y:100}, ob:{x:380,y:30}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:280,y:100}, {x:380,y:30}, 'TR'),
-    teaching:'<b>35° — a genuine cut shot.</b> The contact point is now well toward the outside edge of the OB. You are hitting less ball. Start close and develop the feel before marching it down the rail.' },
-
-  { code:'RD2', category:'Rail Sequence — Steep (35°)', group:'steep-rail',
-    name:'RD2 · 4f Rail 35°', difficulty:3,
-    cb:{x:230,y:100}, ob:{x:330,y:30}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:230,y:100}, {x:330,y:30}, 'TR'),
-    teaching:'One diamond further. Same steep cut, more table to cover.' },
-
-  { code:'RD3', category:'Rail Sequence — Steep (35°)', group:'steep-rail',
-    name:'RD3 · 3f Rail 35°', difficulty:4,
-    cb:{x:180,y:100}, ob:{x:280,y:30}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:180,y:100}, {x:280,y:30}, 'TR'),
-    teaching:'Center table. 35° is getting real. Watch your stroke — it wants to push through the OB rather than across it.' },
-
-  { code:'RD4', category:'Rail Sequence — Steep (35°)', group:'steep-rail',
-    name:'RD4 · 2f Rail 35°', difficulty:4,
-    cb:{x:130,y:100}, ob:{x:230,y:30}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:130,y:100}, {x:230,y:30}, 'TR'),
-    teaching:'Three-quarter length at 35°. Slow the stroke, trust the angle.' },
-
-  // ── CHAPTER 6: Steep Angle (35°) — Same Shot Across the Table ──────────────
-  { code:'D2A', category:'Same Shot — Whole Table (35°)', group:'steep-scatter',
-    name:'D2A · Center Top 35° → TR', difficulty:4,
-    cb:{x:130,y:185}, ob:{x:280,y:80}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:130,y:185}, {x:280,y:80}, 'TR'),
-    teaching:'<b>Same 35°, off the rail.</b> You have been making this cut on the top cushion. Now the OB is in open table. The contact point has not moved. The angle has not changed.' },
-
-  { code:'D2B', category:'Same Shot — Whole Table (35°)', group:'steep-scatter',
-    name:'D2B · Center Table 35° → TR', difficulty:5,
-    cb:{x:80,y:235}, ob:{x:230,y:130}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:80,y:235}, {x:230,y:130}, 'TR'),
-    teaching:'Full table diagonal at 35°. This is a hard shot. But you know this angle. You have been making it from three positions on the rail and one off it. This is the same shot.' },
-
+  }
 ];
 
 // ── USER SHOT NOTES ───────────────────────────────────────────
@@ -1251,7 +889,7 @@ function saveCurrentShot() {
   const input = document.getElementById('shot-name-input');
   const name = (input ? input.value.trim() : '') || ('Shot ' + (userShots.length + 1));
   const cutDeg = S.diagCutDeg || 0;
-  const dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' L' : ' R');
+  const dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
   userShots.push({
     name,
     cb: {...S.cb}, ob: {...S.ob},
@@ -1273,16 +911,6 @@ function loadUserShot(idx) {
   S.pocket = shot.pocket || null;
   S._userAdjustedDiag = false;
   S._diagDragRh = shot.rh;
-  // Restore sliders if recorded
-  if (shot.sliders) {
-    var spd = document.getElementById('sl-spd'); if(spd) spd.value = shot.sliders.speed || 50;
-    var spn = document.getElementById('sl-spn'); if(spn) spn.value = shot.sliders.spin  || 0;
-    var vrt = document.getElementById('sl-vert'); if(vrt) vrt.value = shot.sliders.vert || 0;
-    var tlo = document.getElementById('sl-throw-lo'); if(tlo) tlo.value = shot.sliders.tlo || 0;
-    var tmi = document.getElementById('sl-throw-mi'); if(tmi) tmi.value = shot.sliders.tmi || 0;
-    var thi = document.getElementById('sl-throw-hi'); if(thi) thi.value = shot.sliders.thi || 0;
-  }
-  onSliders();
   render();
 }
 
@@ -1340,10 +968,10 @@ function buildShotList() {
   Object.entries(chapters).forEach(function([cat, data]) {
     const catId = 'cat-' + cat.replace(/[^a-z0-9]/gi,'_');
     const catOpen = !!_openCats[catId];
-    h += '<div style="background:#f0f0f0;border-bottom:1px solid #ccc;">';
-    h += '<div onclick="toggleCat(\'' + catId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:4px 10px;cursor:pointer;user-select:none;">';
-    h += '<span style="font-size:11px;font-weight:900;letter-spacing:0.5px;color:#1a3a1a;">▸ ' + cat + '</span>';
-    h += '<span id="' + catId + '-arrow" style="color:#1a3a1a;font-size:10px;">' + (catOpen?'▴':'▾') + '</span>';
+    h += '<div style="background:#1a3a1a;border-bottom:2px solid #0a2a0a;">';
+    h += '<div onclick="toggleCat(\'' + catId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;user-select:none;">';
+    h += '<span style="font-size:12px;font-weight:900;letter-spacing:1px;color:#4ade80;">' + cat + '</span>';
+    h += '<span id="' + catId + '-arrow" style="color:#4ade80;font-size:12px;">' + (catOpen?'▴':'▾') + '</span>';
     h += '</div>';
     h += '<div id="' + catId + '" style="display:' + (catOpen?'block':'none') + ';">';
     data.order.forEach(function(grp) {
@@ -1437,277 +1065,6 @@ function saveNote(code) {
 }
 
 
-
-// ── LEARN PANEL v2 ────────────────────────────────────────────
-
-var _learnTab = 'presets';
-
-function showLearnTab(tab) {
-  _learnTab = tab;
-  var pPresets  = document.getElementById('learn-pane-presets');
-  var pMyshots  = document.getElementById('learn-pane-myshots');
-  var tPresets  = document.getElementById('learn-tab-presets');
-  var tMyshots  = document.getElementById('learn-tab-myshots');
-  if (!pPresets) return;
-  var active   = 'border-bottom:2px solid #1a5a1a;background:#fff;color:#1a5a1a;';
-  var inactive = 'border-bottom:2px solid transparent;background:#f0f0f0;color:#666;';
-  if (tab === 'presets') {
-    pPresets.style.display = ''; pMyshots.style.display = 'none';
-    if (tPresets) tPresets.style.cssText += active;
-    if (tMyshots) tMyshots.style.cssText += inactive;
-    buildPresetList();
-  } else {
-    pPresets.style.display = 'none'; pMyshots.style.display = '';
-    if (tMyshots) tMyshots.style.cssText += active;
-    if (tPresets) tPresets.style.cssText += inactive;
-    buildMyShots();
-  }
-}
-
-// ── PRESET LIST with "How I Did This Shot" accordion ──────────
-function buildPresetList() {
-  var el = document.getElementById('learn-pane-presets');
-  if (!el) return;
-
-  const GROUP_NAMES = {
-    'rail-7e-f':   'OB 7e — along the rail',
-    'rail-7e-g':   'OB 7e — one step out',
-    'rail-7e-long':'OB 7e — from deeper',
-    'rail-6e-f':   'OB 6e — along the rail',
-    'rail-6e-g':   'OB 6e — one step out',
-    'rail-6e-long':'OB 6e — from deeper',
-    'diagonal':    'The Same Shot — Moving'
-  };
-
-  const chapters = {};
-  SHOT_LIBRARY.forEach(function(s, i) {
-    const cat = s.category || 'Classic Shots';
-    const grp = s.group || cat;
-    if (!chapters[cat]) chapters[cat] = { groups:{}, order:[] };
-    if (!chapters[cat].groups[grp]) { chapters[cat].groups[grp]=[]; chapters[cat].order.push(grp); }
-    chapters[cat].groups[grp].push({s,i});
-  });
-
-  let h = '';
-  Object.entries(chapters).forEach(function([cat, data]) {
-    const catId = 'cat-' + cat.replace(/[^a-z0-9]/gi,'_');
-    const catOpen = !!_openCats[catId];
-    h += '<div onclick="toggleCat(\'' + catId + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:4px 10px;cursor:pointer;user-select:none;">';
-    h += '<span style="font-size:11px;font-weight:900;letter-spacing:0.5px;color:#1a3a1a;">▸ ' + cat + '</span>';
-    h += '<span id="' + catId + '-arrow" style="color:#4ade80;font-size:12px;">' + (catOpen?'▴':'▾') + '</span>';
-    h += '</div>';
-    h += '<div id="' + catId + '" style="display:' + (catOpen?'block':'none') + ';">';
-    data.order.forEach(function(grp) {
-      const shots = data.groups[grp];
-      shots.forEach(function(obj) {
-        const s=obj.s, i=obj.i;
-        const note = shotNotes[s.code] || '';
-        // My versions of this shot
-        var myVersions = userShots.filter(function(u){ return u.presetCode === s.code; });
-        var shotCode = s.code || '';
-        var shotNum = shotCode;
-        var shotRest = (s.name||s.desc).replace(shotCode,'').replace(/^\s*[·\-]\s*/,'').trim();
-        h += '<div style="border-bottom:1px solid #eee;background:#fff;">';
-        h += '<div style="display:flex;align-items:center;">';
-        h += '<div onclick="loadShot(' + i + ')" style="flex:1;display:flex;align-items:baseline;gap:0;padding:5px 8px 5px 10px;cursor:pointer;text-decoration:none;">';
-        h += '<span style="font-size:12px;font-weight:900;color:#1a5a1a;min-width:44px;flex-shrink:0;">' + shotNum + '</span>';
-        h += '<div style="flex:1;">';
-        h += '<div style="font-size:11px;font-weight:700;color:#222;">' + shotRest + '</div>';
-        h += '<div style="font-size:10px;color:#777;margin-top:1px;">' + s.desc + '</div>';
-        h += '</div>';
-        h += '</div>';
-        // How I Did This Shot icon
-        var hid = 'how-' + s.code;
-        h += '<button onclick="event.stopPropagation();toggleHow(\'' + hid + '\',\'' + s.code + '\')" style="width:36px;background:#f0f8f0;border:none;border-left:2px solid #ccc;cursor:pointer;font-size:15px;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;" title="How I did this shot">';
-        h += (myVersions.length ? '<span style="position:relative;"><span style="color:#1a5a1a;">📋</span><span style="position:absolute;top:-4px;right:-6px;background:#e8c040;color:#1a1400;border-radius:50%;width:12px;height:12px;font-size:8px;font-weight:900;display:flex;align-items:center;justify-content:center;">' + myVersions.length + '</span></span>' : '<span style="color:#aaa;">📋</span>');
-        h += '</button>';
-        h += '<button onclick="event.stopPropagation();startRecord(\'' + s.code + '\')" style="width:36px;background:#1a1400;border:none;border-left:1px solid #ccc;cursor:pointer;font-size:9px;font-weight:900;color:#f0df70;display:flex;align-items:center;justify-content:center;padding:0;touch-action:manipulation;">REC</button>';
-        h += '</div>';
-        // How I Did This Shot panel
-        h += '<div id="' + hid + '" style="display:none;background:#f8fff8;border-top:1px solid #b0d8b0;padding:8px 12px;max-height:200px;overflow-y:auto;">';
-        h += '<div style="font-size:9px;font-weight:900;letter-spacing:1px;color:#1a5a1a;margin-bottom:6px;">HOW I DID THIS SHOT</div>';
-        if (myVersions.length === 0) {
-          h += '<div style="font-size:11px;color:#888;font-style:italic;">No versions recorded yet. Set your dials and hit RECORD.</div>';
-        } else {
-          myVersions.forEach(function(v, vi) {
-            var globalIdx = userShots.indexOf(v);
-            var d = new Date(v.ts);
-            var dt = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-            h += '<div style="border:1px solid #b0d8b0;border-radius:5px;padding:6px 8px;margin-bottom:5px;background:#fff;">';
-            h += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-
-            h += '<span style="font-size:9px;color:#888;">' + dt + '</span>';
-            h += '</div>';
-            if (v.note) h += '<div style="font-size:10px;color:#333;margin-top:3px;font-style:italic;">' + v.note.replace(/</g,'&lt;') + '</div>';
-            // Slider summary
-            h += '<div style="font-size:9px;color:#555;margin-top:4px;">';
-            if (v.sliders) {
-              h += 'Speed:'+v.sliders.speed+' Spin:'+v.sliders.spin+' Vert:'+v.sliders.vert;
-              if (v.sliders.tlo||v.sliders.tmi||v.sliders.thi) h += ' · T:'+v.sliders.tlo+'/'+v.sliders.tmi+'/'+v.sliders.thi;
-            }
-            h += '</div>';
-            h += '<div style="display:flex;gap:4px;margin-top:5px;">';
-            h += '<div onclick="loadUserShot('+globalIdx+')" style="font-size:11px;font-weight:900;color:#1a5a1a;cursor:pointer;text-decoration:underline dotted;margin-bottom:4px;">' + (v.title||('Version '+(vi+1))) + ' — tap to load</div>';
-            h += '<button onclick="deleteUserShot('+globalIdx+')" style="font-size:10px;padding:3px 8px;border-radius:3px;border:1px solid #e88;background:#fff;color:#c00;cursor:pointer;">✕</button>';
-            h += '</div>';
-            h += '</div>';
-          });
-        }
-        h += '</div>';
-        // Note
-        h += '<div style="padding:3px 12px 5px 20px;background:#f8f8f8;">';
-        h += '<div style="display:flex;align-items:center;gap:4px;">';
-        h += '<span style="font-size:9px;color:#888;font-weight:900;letter-spacing:1px;">NOTES</span>';
-        h += '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:9px;padding:1px 5px;border-radius:3px;border:1px solid #999;background:#fff;color:#333;cursor:pointer;">' + (note?'edit':'+') + '</button>';
-        h += '</div>';
-        if (note) h += '<div style="font-size:10px;color:#333;margin-top:2px;">' + note.replace(/</g,'&lt;') + '</div>';
-        h += '<div id="notebox-' + s.code + '" style="display:none;margin-top:4px;">';
-        h += '<textarea rows="2" style="width:100%;box-sizing:border-box;font-size:11px;border:1px solid #999;border-radius:3px;padding:4px;" placeholder="Your notes...">' + note.replace(/</g,'&lt;') + '</textarea>';
-        h += '<div style="display:flex;gap:4px;margin-top:3px;">';
-        h += '<button onclick="saveNote(\'' + s.code + '\')" style="font-size:10px;padding:2px 8px;border-radius:3px;border:none;background:#1a5a1a;color:#fff;cursor:pointer;font-weight:900;">SAVE</button>';
-        h += '<button onclick="toggleNoteBox(\'' + s.code + '\')" style="font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid #999;background:#fff;color:#333;cursor:pointer;">CANCEL</button>';
-        h += '</div></div>';
-        h += '</div>';
-        h += '</div>';
-      });
-    });
-    h += '</div></div>';
-  });
-
-  el.innerHTML = h;
-}
-
-function toggleHow(id, code) {
-  var el = document.getElementById(id);
-  if (!el) return;
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-// ── MY SHOT RECORD ─────────────────────────────────────────────
-function buildMyShots() {
-  var el = document.getElementById('learn-pane-myshots');
-  if (!el) return;
-  var myOwn = userShots.filter(function(s){ return !s.presetCode; });
-  var h = '';
-  h += '<div style="padding:8px;background:#1a1400;border-bottom:1px solid #333;">';
-  h += '<button onclick="startRecord(null,true)" style="width:100%;padding:6px;border-radius:5px;border:none;background:#c0a018;color:#1a1400;font-size:11px;font-weight:900;cursor:pointer;letter-spacing:1px;">⬤ RECORD MY SHOT</button>';
-  h += '</div>';
-  if (myOwn.length === 0) {
-    h += '<div style="padding:20px;text-align:center;color:#888;font-size:12px;font-style:italic;">No personal shots recorded yet.</div>';
-  } else {
-    myOwn.forEach(function(s) {
-      var globalIdx = userShots.indexOf(s);
-      var d = new Date(s.ts);
-      var dt = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-      h += '<div style="border-bottom:1px solid #ddd;background:#fff;padding:8px 10px;">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;">';
-      h += '<div style="flex:1;">';
-      h += '<div onclick="loadUserShot('+globalIdx+')" style="font-size:13px;font-weight:900;color:#0a4a0a;cursor:pointer;text-decoration:underline dotted;">' + (s.title||s.name||'My Shot') + '</div>';
-      h += '<div style="font-size:9px;color:#888;margin-top:1px;">' + dt + ' · ' + (s.desc||'') + '</div>';
-      if (s.note) h += '<div style="font-size:10px;color:#444;margin-top:3px;font-style:italic;">' + s.note.replace(/</g,'&lt;') + '</div>';
-      if (s.sliders) {
-        h += '<div style="font-size:9px;color:#666;margin-top:3px;">Speed:'+s.sliders.speed+' Spin:'+s.sliders.spin+' Vert:'+s.sliders.vert;
-        if (s.sliders.tlo||s.sliders.tmi||s.sliders.thi) h += ' · T:'+s.sliders.tlo+'/'+s.sliders.tmi+'/'+s.sliders.thi;
-        h += '</div>';
-      }
-      h += '</div>';
-      h += '</div>';
-      h += '<div style="display:flex;gap:4px;margin-top:6px;">';
-      h += '<button onclick="deleteUserShot('+globalIdx+')" style="font-size:10px;padding:4px 10px;border-radius:3px;border:1px solid #e88;background:#fff;color:#c00;cursor:pointer;">✕</button>';
-      h += '</div>';
-      h += '</div>';
-    });
-  }
-  el.innerHTML = h;
-}
-
-// ── RECORD FLOW ────────────────────────────────────────────────
-function startRecord(presetCode, isMyShot) {
-  // Show confirmation dialog with current values
-  var speed = document.getElementById('sl-speed') ? document.getElementById('sl-speed').value : 0;
-  var spin  = document.getElementById('sl-spin')  ? document.getElementById('sl-spin').value  : 0;
-  var vert  = document.getElementById('sl-vert')  ? document.getElementById('sl-vert').value  : 0;
-  var tlo   = document.getElementById('sl-throw-lo') ? document.getElementById('sl-throw-lo').value : 0;
-  var tmi   = document.getElementById('sl-throw-mi') ? document.getElementById('sl-throw-mi').value : 0;
-  var thi   = document.getElementById('sl-throw-hi') ? document.getElementById('sl-throw-hi').value : 0;
-
-  var overlay = document.getElementById('record-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'record-overlay';
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;';
-    document.body.appendChild(overlay);
-  }
-
-  // Build preset options
-  var presetOptions = '<option value="">-- My own shot --</option>';
-  SHOT_LIBRARY.forEach(function(s){ presetOptions += '<option value="'+s.code+'" '+(presetCode===s.code?'selected':'')+'>'+s.name+'</option>'; });
-
-  overlay.innerHTML = '<div style="background:#fff;border-radius:10px;padding:20px;max-width:320px;width:90%;font-family:Lato,sans-serif;">' +
-    '<div style="font-size:13px;font-weight:900;color:#1a1400;margin-bottom:4px;letter-spacing:1px;">⬤ RECORD THIS SHOT</div>' +
-    '<div style="font-size:11px;color:#666;margin-bottom:12px;line-height:1.5;">Make sure all sliders match what you actually did to make this shot.</div>' +
-    '<div style="background:#f0f8f0;border-radius:6px;padding:8px 10px;font-size:10px;color:#333;margin-bottom:12px;line-height:1.8;">' +
-    '<b>Speed:</b> '+speed+' &nbsp; <b>Spin:</b> '+spin+' &nbsp; <b>Vert:</b> '+vert+'<br>' +
-    '<b>T-Low:</b> '+tlo+' &nbsp; <b>T-Mid:</b> '+tmi+' &nbsp; <b>T-Hi:</b> '+thi +
-    '</div>' +
-    '<div style="margin-bottom:8px;">' +
-    '<div style="font-size:10px;font-weight:900;color:#555;margin-bottom:3px;">TITLE</div>' +
-    '<input id="rec-title" type="text" placeholder="Name this shot…" style="width:100%;box-sizing:border-box;padding:5px 8px;border:1px solid #bbb;border-radius:4px;font-size:12px;outline:none;">' +
-    '</div>' +
-    '<div style="margin-bottom:8px;">' +
-    '<div style="font-size:10px;font-weight:900;color:#555;margin-bottom:3px;">NOTE (optional)</div>' +
-    '<textarea id="rec-note" rows="2" placeholder="e.g. Goes long at speed 3, use softer stroke…" style="width:100%;box-sizing:border-box;padding:5px 8px;border:1px solid #bbb;border-radius:4px;font-size:11px;resize:none;outline:none;font-family:Lato,sans-serif;"></textarea>' +
-    '</div>' +
-    '<div style="margin-bottom:12px;">' +
-    '<div style="font-size:10px;font-weight:900;color:#555;margin-bottom:3px;">ATTACH TO PRESET (optional)</div>' +
-    '<select id="rec-preset" style="width:100%;padding:5px 8px;border:1px solid #bbb;border-radius:4px;font-size:11px;background:#fff;">' + presetOptions + '</select>' +
-    '</div>' +
-    '<div style="display:flex;gap:8px;">' +
-    '<button onclick="confirmRecord()" style="flex:1;padding:8px;border-radius:5px;border:none;background:#1a5a1a;color:#fff;font-size:12px;font-weight:900;cursor:pointer;letter-spacing:1px;">SAVE</button>' +
-    '<button onclick="document.getElementById(\'record-overlay\').style.display=\'none\'" style="flex:1;padding:8px;border-radius:5px;border:1px solid #bbb;background:#fff;color:#333;font-size:12px;cursor:pointer;">CANCEL</button>' +
-    '</div>' +
-    '</div>';
-  overlay.style.display = 'flex';
-  setTimeout(function(){ var t=document.getElementById('rec-title'); if(t) t.focus(); }, 100);
-}
-
-function confirmRecord() {
-  var title  = (document.getElementById('rec-title')||{}).value || '';
-  var note   = (document.getElementById('rec-note')||{}).value || '';
-  var preset = (document.getElementById('rec-preset')||{}).value || '';
-
-  var speed = document.getElementById('sl-speed') ? parseInt(document.getElementById('sl-speed').value)||0 : 0;
-  var spin  = document.getElementById('sl-spin')  ? parseInt(document.getElementById('sl-spin').value)||0  : 0;
-  var vert  = document.getElementById('sl-vert')  ? parseInt(document.getElementById('sl-vert').value)||0  : 0;
-  var tlo   = document.getElementById('sl-throw-lo') ? parseInt(document.getElementById('sl-throw-lo').value)||0 : 0;
-  var tmi   = document.getElementById('sl-throw-mi') ? parseInt(document.getElementById('sl-throw-mi').value)||0 : 0;
-  var thi   = document.getElementById('sl-throw-hi') ? parseInt(document.getElementById('sl-throw-hi').value)||0 : 0;
-
-  var cutDeg = S.diagCutDeg || 0;
-  var dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' L' : ' R');
-  var shot = {
-    title: title || ('My Shot ' + (userShots.length+1)),
-    note:  note,
-    presetCode: preset || null,
-    cb: {...S.cb}, ob: {...S.ob},
-    cut: cutDeg, rh: S._diagDragRh,
-    ts: Date.now(),
-    desc: Math.round(cutDeg) + '°' + dir,
-    sliders: { speed:speed, spin:spin, vert:vert, tlo:tlo, tmi:tmi, thi:thi },
-    biasOn: biasOn
-  };
-  userShots.push(shot);
-  saveUserShots();
-  var overlay = document.getElementById('record-overlay');
-  if (overlay) overlay.style.display = 'none';
-  // Refresh current tab
-  if (_learnTab === 'presets') buildPresetList();
-  else buildMyShots();
-}
-
-// Override buildShotList to use new system
-function buildShotList() { buildPresetList(); }
-
 let _shotListScale = 1.0;
 function shotListFontSize(dir) {
   _shotListScale = Math.max(0.7, Math.min(2.0, _shotListScale + dir * 0.1));
@@ -1727,31 +1084,11 @@ function _rebuildShotList() {
     el.style.fontSize = (orig * base) + 'px';
   });
 }
-// Generic panel minimize — hides all children except the header
-function minimizePanel(panelId, headerEl) {
-  const panel = document.getElementById(panelId);
-  if (!panel || !headerEl) return;
-  const isMin = panel.dataset.minimized === '1';
-  panel.dataset.minimized = isMin ? '0' : '1';
-  panel.classList.toggle('panel-minimized', !isMin);
-  const btn = headerEl.querySelector('.min-btn');
-  if (btn) btn.textContent = isMin ? '—' : '+';
-}
-
 function toggleShotLibrary() {
   libraryOpen = !libraryOpen;
   const panel = document.getElementById('shot-library-panel');
-  if (panel) {
-    panel.style.display = libraryOpen ? 'flex' : 'none';
-    if (libraryOpen) {
-      buildShotList();
-      bringToTop('shot-library-panel');
-      requestAnimationFrame(function(){
-        positionPanelAtDock(panel);
-        // open expanded
-      });
-    }
-  }
+  if (panel) panel.style.display = libraryOpen ? 'block' : 'none';
+  if (libraryOpen) { loadShotNotes(); buildShotList(); }
 }
 
 function loadShot(idx) {
@@ -1935,12 +1272,12 @@ if ('serviceWorker' in navigator) {
         <ellipse cx="230" cy="22" rx="20" ry="13" fill="#060a06"/>
         <ellipse cx="230" cy="238" rx="20" ry="13" fill="#060a06"/>
         <!-- Pocket numbers (BCA standard: 1=TL, 2=TM, 3=TR, 4=BR, 5=BM, 6=BL) -->
-        <text x="42"  y="42"  text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">1</text>
-        <text x="218" y="30"  text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">2</text>
-        <text x="418" y="42"  text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">3</text>
-        <text x="418" y="222" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">4</text>
-        <text x="218" y="235" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">5</text>
-        <text x="42"  y="222" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">6</text>
+        <text x="44"  y="44"  text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">1</text>
+        <text x="230" y="37"  text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">2</text>
+        <text x="416" y="44"  text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">3</text>
+        <text x="416" y="222" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">4</text>
+        <text x="230" y="224" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">5</text>
+        <text x="44"  y="222" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="700" fill="rgba(240,223,112,0.6)">6</text>
         <!-- Diamonds top (y=10-22, fully on rail above cushion at y=17-30) -->
         <polygon points="80,10 84,15 80,20 76,15"   fill="#c8a84b"/>
         <polygon points="130,10 134,15 130,20 126,15" fill="#c8a84b"/>
@@ -2016,7 +1353,7 @@ if ('serviceWorker' in navigator) {
           <line x1="50" y1="30" x2="50" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="55" y1="30" x2="55" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
           <text x="55" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
-          <text x="55" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
+          <text x="55" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">0.5</text>
           <line x1="60" y1="30" x2="60" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="65" y1="30" x2="65" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="70" y1="30" x2="70" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
@@ -2027,7 +1364,7 @@ if ('serviceWorker' in navigator) {
           <line x1="100" y1="30" x2="100" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="105" y1="30" x2="105" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
           <text x="105" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
-          <text x="105" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
+          <text x="105" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">1.5</text>
           <line x1="110" y1="30" x2="110" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="115" y1="30" x2="115" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="120" y1="30" x2="120" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
@@ -2038,7 +1375,7 @@ if ('serviceWorker' in navigator) {
           <line x1="150" y1="30" x2="150" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="155" y1="30" x2="155" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
           <text x="155" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
-          <text x="155" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
+          <text x="155" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">2.5</text>
           <line x1="160" y1="30" x2="160" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="165" y1="30" x2="165" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="170" y1="30" x2="170" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
@@ -2049,7 +1386,7 @@ if ('serviceWorker' in navigator) {
           <line x1="200" y1="30" x2="200" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="205" y1="30" x2="205" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
           <text x="205" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
-          <text x="205" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
+          <text x="205" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">3.5</text>
           <line x1="210" y1="30" x2="210" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="215" y1="30" x2="215" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="220" y1="30" x2="220" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
@@ -2060,7 +1397,7 @@ if ('serviceWorker' in navigator) {
           <line x1="250" y1="30" x2="250" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="255" y1="30" x2="255" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
           <text x="255" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">4.5</text>
-          <text x="255" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">4.5</text>
+          <text x="255" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">4.5</text>
           <line x1="260" y1="30" x2="260" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="265" y1="30" x2="265" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="270" y1="30" x2="270" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
@@ -2071,7 +1408,7 @@ if ('serviceWorker' in navigator) {
           <line x1="300" y1="30" x2="300" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="305" y1="30" x2="305" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
           <text x="305" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">5.5</text>
-          <text x="305" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">5.5</text>
+          <text x="305" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">5.5</text>
           <line x1="310" y1="30" x2="310" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="315" y1="30" x2="315" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="320" y1="30" x2="320" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
@@ -2082,7 +1419,7 @@ if ('serviceWorker' in navigator) {
           <line x1="350" y1="30" x2="350" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="355" y1="30" x2="355" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
           <text x="355" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">6.5</text>
-          <text x="355" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">6.5</text>
+          <text x="355" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">6.5</text>
           <line x1="360" y1="30" x2="360" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="365" y1="30" x2="365" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="370" y1="30" x2="370" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
@@ -2093,7 +1430,7 @@ if ('serviceWorker' in navigator) {
           <line x1="400" y1="30" x2="400" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="405" y1="30" x2="405" y2="230" stroke="#f0df70" stroke-width="0.5" opacity="0.45"/>
           <text x="405" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">7.5</text>
-          <text x="405" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">7.5</text>
+          <text x="405" y="256" text-anchor="middle" font-family="Lato,sans-serif" font-size="4.5" fill="#f0df70" opacity="0.7">7.5</text>
           <line x1="410" y1="30" x2="410" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="415" y1="30" x2="415" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="420" y1="30" x2="420" y2="230" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
@@ -2143,23 +1480,23 @@ if ('serviceWorker' in navigator) {
           <line x1="30" y1="220" x2="430" y2="220" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <line x1="30" y1="225" x2="430" y2="225" stroke="#f0df70" stroke-width="0.3" opacity="0.25"/>
           <text x="30" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
-          <text x="30" y="238" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
+          <text x="30" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
           <text x="80" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
-          <text x="80" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
+          <text x="80" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
           <text x="130" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
-          <text x="130" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
+          <text x="130" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">2</text>
           <text x="180" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
-          <text x="180" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
+          <text x="180" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">3</text>
           <text x="230" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
-          <text x="230" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
+          <text x="230" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">4</text>
           <text x="280" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">5</text>
-          <text x="280" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">5</text>
+          <text x="280" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">5</text>
           <text x="330" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">6</text>
-          <text x="330" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">6</text>
+          <text x="330" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">6</text>
           <text x="380" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">7</text>
-          <text x="380" y="237" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">7</text>
+          <text x="380" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">7</text>
           <text x="430" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">8</text>
-          <text x="430" y="238" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">8</text>
+          <text x="430" y="258" text-anchor="middle" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">8</text>
           <text x="26" y="32" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
           <text x="434" y="32" text-anchor="start" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">0</text>
           <text x="26" y="82" text-anchor="end" font-family="Lato,sans-serif" font-size="5.5" font-weight="700" fill="#f0df70" opacity="0.9">1</text>
@@ -2251,7 +1588,6 @@ if ('serviceWorker' in navigator) {
       </svg>
     </div>
 
-<div id="perception-section">
     <div class="sep"></div>
     <div style="text-align:center;letter-spacing:0.18em;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);padding:3px 0 2px;text-transform:uppercase;">The Doors of Perception</div>
     <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr;gap:4px;margin:4px 0;height:36px;contain:layout style;width:100%;box-sizing:border-box;">
@@ -2374,7 +1710,7 @@ if ('serviceWorker' in navigator) {
         <circle id="bot-ob-lit" cx="230" cy="148" r="82" fill="url(#OGB)" stroke="none" clip-path="url(#revClip)"/>
         <circle id="bot-ob-rim" cx="230" cy="148" r="82" fill="none" stroke="#8a1818" stroke-width="1.5" clip-path="url(#revClip)"/>
         <g id="frac-ticks"></g>
-        <text x="10" y="20" font-family="Lato,sans-serif" font-size="11" font-weight="900" fill="rgba(255,255,255,0.7)" letter-spacing="8"></text>
+        <text x="10" y="20" font-family="Lato,sans-serif" font-size="11" font-weight="900" fill="rgba(255,255,255,0.7)" letter-spacing="8">G H O S T</text>
         <!-- CB -->
         <circle id="bot-cb"   cx="230" cy="148" r="82" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5"/>
       
@@ -2387,7 +1723,7 @@ if ('serviceWorker' in navigator) {
         <line id="bot-ob-outer-l" x1="148" y1="54" x2="148" y2="242" stroke="#e87030" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
         <line id="bot-ob-outer-r" x1="312" y1="54" x2="312" y2="242" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
         <line   id="bot-edge-line" x1="230" y1="54" x2="230" y2="242" stroke="#e87030" stroke-width="2" stroke-linecap="round" stroke-dasharray="6,4" opacity="0"/>
-        <text   id="bot-edge-lbl"  x="230" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080" opacity="0">Inside Edge</text>
+        <text   id="bot-edge-lbl"  x="230" y="50" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080" opacity="0">inside edge</text>
         <text   id="bot-cb-outer-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#7dd3fc" opacity="0">Outside Edge</text>
         <!-- aim % badge -->
         <rect   id="bot-aim-bg"  x="190" y="240" width="80" height="30" rx="7" fill="#e87030" opacity="0"/>
@@ -2425,47 +1761,23 @@ if ('serviceWorker' in navigator) {
     </div>
 
   </div><!-- diagram-wrap -->
-</div><!-- /perception-section -->
 
 
 
   <!-- ANGLE PANEL -->
-  <div id="angle-panel" style="display:none;background:rgba(0,0,0,0.35);border-radius:4px;margin-bottom:6px;padding:6px 8px;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <!-- SVG bounce diagram -->
-      <svg id="angle-svg" width="140" height="90" viewBox="0 0 140 90" style="flex-shrink:0;">
-        <!-- Rail line -->
-        <line x1="0" y1="45" x2="140" y2="45" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-        <!-- Approach arrow (CB → contact) -->
-        <line id="angle-line-approach" x1="20" y1="20" x2="70" y2="45" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round"/>
-        <polygon id="angle-arr-approach" points="70,45 62,38 65,47" fill="#7dd3fc"/>
-        <!-- OB depart arrow -->
-        <line id="angle-line-depart" x1="70" y1="45" x2="120" y2="20" stroke="#4ade80" stroke-width="2" stroke-linecap="round"/>
-        <polygon id="angle-arr-depart" points="120,20 112,27 121,28" fill="#4ade80"/>
-        <!-- Contact point -->
-        <circle cx="70" cy="45" r="4" fill="rgba(255,255,255,0.6)"/>
-        <!-- Labels -->
-        <text id="angle-lbl-approach" x="12" y="16" fill="#7dd3fc" font-size="9" font-family="Lato,sans-serif" font-weight="900">—</text>
-        <text id="angle-lbl-depart"   x="100" y="16" fill="#4ade80" font-size="9" font-family="Lato,sans-serif" font-weight="900">—</text>
-        <text x="55" y="62" fill="rgba(255,255,255,0.4)" font-size="8" font-family="Lato,sans-serif">BOUNCE ANGLE</text>
-      </svg>
-      <!-- Number readouts -->
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#7dd3fc;display:inline-block;"></span>
-          <span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:900;letter-spacing:1px;">IN</span>
-          <span id="angle-approach" style="font-size:14px;font-weight:900;color:#7dd3fc;">—</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#4ade80;display:inline-block;"></span>
-          <span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:900;letter-spacing:1px;">OUT</span>
-          <span id="angle-depart" style="font-size:14px;font-weight:900;color:#4ade80;">—</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#f0df70;display:inline-block;"></span>
-          <span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:900;letter-spacing:1px;">CUT</span>
-          <span id="angle-cut" style="font-size:14px;font-weight:900;color:#f0df70;">—</span>
-        </div>
+  <div id="angle-panel" style="display:none;background:rgba(0,0,0,0.28);border-radius:4px;margin-bottom:6px;padding:8px 12px;">
+    <div style="display:flex;justify-content:space-around;align-items:center;">
+      <div style="text-align:center;">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:2px;">APPROACH</div>
+        <div id="angle-approach" style="font-size:18px;font-weight:900;color:#7dd3fc;">—</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:2px;">CUT</div>
+        <div id="angle-cut" style="font-size:18px;font-weight:900;color:#f0df70;">—</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:2px;">OB DEPART</div>
+        <div id="angle-depart" style="font-size:18px;font-weight:900;color:#4ade80;">—</div>
       </div>
     </div>
   </div>
@@ -2487,21 +1799,70 @@ if ('serviceWorker' in navigator) {
   </div>
 
   <!-- SLIDERS FLOATING PANEL -->
+  <div id="sliders-block" style="display:none;position:fixed;z-index:8000;width:min(360px,96vw);min-width:200px;min-height:100px;background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:auto;resize:both;touch-action:none;">
+  <div id="sliders-handle" style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 3px 10px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+  <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(200,144,240,0.6);">≡ SLIDERS</span>
+  <div style="display:flex;gap:4px;align-items:center;">
+    <button id="sliders-active-btn" onclick="toggleSlidersActive()" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:5px;color:#80e080;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ACTIVE</button>
+    <button onclick="zeroSliders()" style="background:rgba(240,223,112,0.15);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:9px;font-weight:900;letter-spacing:1px;padding:3px 8px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;">ZERO</button>
+    <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
+  </div>
+</div>
+<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Shot Compensation</div>
+<div class="sgroup">
+<div class="srow">
+      <span class="slbl" style="color:#b090f0;">speed</span>
+      <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
+      <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
+      <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
+    </div>
+<div class="srow" style="margin-top:6px">
+      <span class="slbl">spin</span>
+      <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
+      <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
+      <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
+    </div>
+<div class="srow" style="margin-top:6px">
+      <span class="slbl">vert</span>
+      <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
+      <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
+      <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
+    </div>
+</div>
+<div style="padding:2px 10px 4px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;border-top:1px solid rgba(255,255,255,0.07);margin-top:4px;">Table Compensation</div>
+<div class="sgroup">
+<div class="srow" style="margin-top:8px">
+      <span class="slbl" style="color:#e87030;font-size:9px;" title="Fine-tune around 50% baseline">T-LOW</span>
+      <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
+      <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
+    </div>
+<div class="srow" style="margin-top:4px">
+      <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
+      <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
+      <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
+    </div>
+<div class="srow" style="margin-top:4px">
+      <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
+      <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
+      <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
+    </div>
+</div>
+  </div><!-- /sliders-block -->
 
   <!-- SHOT ATTRIBUTES -->
 
 
 </div><!-- card -->
 
-
+<footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
 
 
 
 <script>
 const DEG = 180/Math.PI, RAD = Math.PI/180;
-// Declared at top so render() can reference them regardless of script load order
-let cbPathOn = false;
-let panMode  = false;
 const Rb = 82;
 const TL = {left:30, right:430, top:30, bottom:230};
 const BALL_R  = 8;   // CB/OB radius in SVG px
@@ -2543,6 +1904,7 @@ let drag = null;
 let diagDrag = false;
 let mapOn = true;
 let snapOn = true;
+let panMode = true;
 
 function isZoomed() {
   var w = document.getElementById('zoom-wrap');
@@ -2564,11 +1926,11 @@ function updatePanBtn() {
 function togglePan(){
   panMode = !panMode;
   const _pan = document.getElementById('ep-pan');
-  if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'DRAG<br>MODE ON' : 'DRAG<br>MODE OFF'; }
+  if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'PAN<br>LOCK OFF' : 'PAN<br>LOCK ON'; }
 }
 let lockTable = true;
 let lockBalls = true;
-let lockSliders = false;
+let lockSliders = true;
 let biasOn = false;
 let contactDotOn = false; // contact point dot off by default
 let throwLo = 0, throwMi = 0, throwHi = 0; // 0-100 each, segments 0-20°, 20-50°, 50-90°
@@ -2586,23 +1948,16 @@ function toggleContactDot() {
 function toggleAngle() {
   angleOn = !angleOn;
   const btn = document.getElementById('btn-angle');
-  if (btn) {
-    btn.classList.toggle('on', angleOn);
-    btn.style.lineHeight = '1.3';
-    btn.innerHTML = angleOn ? 'BOUNCE<br>ANGLE ON' : 'BOUNCE<br>ANGLE OFF';
-  }
+  if (btn) btn.classList.toggle('on', angleOn);
   const panel = document.getElementById('angle-panel');
   if (panel) panel.style.display = angleOn ? 'block' : 'none';
   render();
 }
+let cbPathOn = false;
 function toggleCbPath() {
   cbPathOn = !cbPathOn;
   const btn = document.getElementById('btn-cbpath');
-  if (btn) {
-    btn.classList.toggle('on', cbPathOn);
-    btn.style.lineHeight = '1.3';
-    btn.innerHTML = cbPathOn ? 'CUE PATH<br>ON' : 'CUE PATH<br>OFF';
-  }
+  if (btn) btn.classList.toggle('on', cbPathOn);
   const leg = document.getElementById('cb-path-legend');
   if (leg) leg.setAttribute('opacity', cbPathOn ? '1' : '0');
   render();
@@ -2739,7 +2094,7 @@ const svg = $('topsvg');
 svg.addEventListener('pointerdown', e => {
   const p = svgPt(e);
   if (calTapActual(p)) return;
-  if (lockTable) return;
+  if (lockTable || (panMode && isZoomed())) return;  // TABLE locked or panning while zoomed
   if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
   if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
 });
@@ -2827,13 +2182,11 @@ function render() {
   if (snapOn) {
     const svgEl = document.getElementById('topsvg');
     if (!window._snapPos) window._snapPos = {};
-    const _cbMoved = !window._snapPos.cb || window._snapPos.cb.x !== S.cb.x || window._snapPos.cb.y !== S.cb.y;
-    const _obMoved = !window._snapPos.ob || window._snapPos.ob.x !== S.ob.x || window._snapPos.ob.y !== S.ob.y;
-    if (_cbMoved || _obMoved) {
-      window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
-      window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
-      updateSnapLabels(svgEl);
-    }
+    if (!window._snapPos.cb) window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
+    if (!window._snapPos.ob) window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
+    window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
+    window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
+    updateSnapLabels(svgEl);
   } else {
     ['cb','ob'].forEach(id => { const e = document.getElementById('snap-lbl-'+id); if(e) e.remove(); });
   }
@@ -2843,20 +2196,18 @@ function render() {
   drawBot(d);
 
   // Readouts: contact/IE/fraction follow ghost ball (throw compensated); angle and distance stay pure
-  const Zdeg = cutDeg < 1.0 ? 0 : Math.round(cutDeg * 10)/10;
-  const _dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' R' : ' L');
+  const Zdeg = cutDeg < 0.5 ? 0 : Math.round(cutDeg * 10)/10;
+  const _dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? ' R' : ' L');
   // Throw compensation applied to fraction
-  const _throwDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
-  const _compFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _throwDelta)); // 1.5x perceptual correction — for ghost ball position only
-  const _displayFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) + _throwDelta));     // true ball fraction — for readouts
-  var aimP = Math.round(_displayFrac * 100);
-  const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
-  // Use _compFrac (1.5x corrected) — same source as the accurate bot-aim-pct
+  const _throwDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
+  const _compFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _throwDelta)); // 1.5x perceptual correction
+  const aimP = Math.round(_compFrac * 100);
+  const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%';
+  const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = Math.round((1 - _compFrac) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (S._diagDragRh ? ' R' : ' L')); }
-  const _raim = $('r-aim'); if (_raim) _raim.textContent = cutDeg < 1.0 ? '100%' : Math.round((1 - _compFrac) * 100) + '%';
-  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = cutDeg < 1.0 ? '0%'   : Math.round(_compFrac * 100) + '%';
-  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = cutDeg < 1.0 ? '100%' : Math.round((1 - _compFrac) * 100) + '%';
+  if (_cpEl) { const _cpPct = cutDeg < 0.5 ? 0 : Math.round(_compFrac * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R')); }
+  const _roe = $('r-oe'); if (_roe) _roe.textContent = cutDeg < 0.5 ? '0%' : aimP + '%';
+  const _rtw = $('r-twixt'); if (_rtw) _rtw.textContent = cutDeg < 0.5 ? '100%' : Math.max(0, 100 - aimP) + '%';
 
   // Distance readout
   const distEl = $('r-dist');
@@ -2882,8 +2233,8 @@ function render() {
   }
 
   // Shot attributes panel
-  const rocut  = $('ro-cut');  if (rocut)  rocut.textContent  = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
-  const rofrac = $('ro-frac'); if (rofrac) rofrac.textContent = fracStr(_displayFrac * (S._diagDragRh ? -1 : 1));
+  const rocut  = $('ro-cut');  if (rocut)  rocut.textContent  = (cutDeg < 0.5 ? '0' : Zdeg) + '°' + _dir;
+  const rofrac = $('ro-frac'); if (rofrac) rofrac.textContent = fracStr(_compFrac * (S._diagDragRh ? -1 : 1));
   const roaim  = $('ro-aim');  if (roaim)  roaim.textContent  = aimP + '%' + _dir;
   const rodist = $('ro-dist'); if (rodist) {
     const ft = d.distFt;
@@ -3033,27 +2384,6 @@ function renderTable(d) {
     if (ap) ap.textContent = _approachDeg.toFixed(1) + '°';
     if (ct) ct.textContent = _cutDisplay + '°';
     if (dp) dp.textContent = _obDepartDeg.toFixed(1) + '°';
-    // Update SVG diagram
-    (function(){
-      var cx=70, cy=45, len=45;
-      // Approach: coming from upper-left or upper-right
-      var aRad = _approachDeg * Math.PI / 180;
-      var ax = cx - Math.cos(aRad) * len * (rh ? 1 : -1);
-      var ay = cy - Math.sin(aRad) * len;
-      var la = document.getElementById('angle-line-approach');
-      var aa = document.getElementById('angle-arr-approach');
-      var la2 = document.getElementById('angle-lbl-approach');
-      if (la) la.setAttribute('x1', ax.toFixed(1)), la.setAttribute('y1', ay.toFixed(1));
-      if (la2) la2.textContent = _approachDeg.toFixed(1) + '°';
-      // Depart: going upper-right or upper-left (opposite side)
-      var dRad = _obDepartDeg * Math.PI / 180;
-      var dx = cx + Math.cos(dRad) * len * (rh ? 1 : -1);
-      var dy = cy - Math.sin(dRad) * len;
-      var ld = document.getElementById('angle-line-depart');
-      var ld2 = document.getElementById('angle-lbl-depart');
-      if (ld) ld.setAttribute('x2', dx.toFixed(1)), ld.setAttribute('y2', dy.toFixed(1));
-      if (ld2) ld2.textContent = _obDepartDeg.toFixed(1) + '°';
-    })();
   }
 
   // ── CB PATH RAYS ─────────────────────────────────────────────
@@ -3139,7 +2469,7 @@ function drawBot(d) {
   const edgeX = Math.max(4, Math.min(W-4, rh ? ccx+r : ccx-r));
   const clipX = rh ? edgeX : (ocx-r);
   const revealW = Math.max(0, rh ? (ocx+r)-edgeX : edgeX-(ocx-r));
-  const aimP  = Math.round(Math.abs(d.diagFraction) * 100);
+  const aimP  = Math.round(Math.abs(d.diagFraction) * 1.5 * 100);
 
   $('revClipRect').setAttribute('x', clipX);
   $('revClipRect').setAttribute('y', ocy-r);
@@ -3199,14 +2529,15 @@ function drawBot(d) {
     _obOutR.setAttribute('stroke', rh ? '#e87030' : '#7dd3fc');
     _obOutR.setAttribute('opacity', '1'); }
 
-  // Use aimF (same 1.5x source as bot-aim-pct) for top readouts
-  const _cpElB = $('r-cp'); if (_cpElB) { _cpElB.textContent = Math.round((1 - aimF) * 50) + '%' + (cutDeg < 1.0 ? '' : (rh ? ' R' : ' L')); }
-  const _raimB = $('r-aim'); if (_raimB) _raimB.textContent = cutDeg < 1.0 ? '100%' : Math.round((1 - aimF) * 100) + '%';
-  const _roeB  = $('r-oe');  if (_roeB)  _roeB.textContent  = cutDeg < 1.0 ? '0%'   : Math.round(aimF * 100) + '%';
-  const _rtwixtB = $('r-twixt'); if (_rtwixtB) _rtwixtB.textContent = cutDeg < 1.0 ? '100%' : Math.round((1 - aimF) * 100) + '%';
-  // "inside edge" floating label removed — fixed readout row shows all values
-  $('bot-edge-lbl').setAttribute('x', Math.max(60, Math.min(edgeX, W-60)).toString());
-  $('bot-edge-lbl').setAttribute('opacity', showMarker ? '1' : '0');
+  // Update flippable readout boxes
+  const _flipRow = $('diag-flip-row');
+  // boxes no longer flip
+  const _roe = $('r-oe');   if (_roe)   _roe.textContent   = showMarker ? aimP + '%' : '0%';
+  const _rtwixt = $('r-twixt'); if (_rtwixt) _rtwixt.textContent = showMarker ? Math.max(0, 100 - aimP) + '%' : '100%';
+  // "inside edge" label sits just above the pct labels row
+  $('bot-edge-lbl').setAttribute('x', Math.max(60, Math.min(edgeX, W-60)));
+  $('bot-edge-lbl').setAttribute('y', '22');
+  $('bot-edge-lbl').setAttribute('opacity', op);
   const bx = Math.max(44, Math.min(edgeX, W-44));
   $('bot-aim-bg').setAttribute('x',  bx-40);
   $('bot-aim-bg').setAttribute('y',  '262');
@@ -3215,7 +2546,7 @@ function drawBot(d) {
   $('bot-aim-pct').setAttribute('y', '282');
   $('bot-aim-pct').setAttribute('opacity', op);
   // Use compensated fraction for diagram percentage label
-  const _botThrowDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
+  const _botThrowDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
   const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) * 1.5 + _botThrowDelta) * 100);
   $('bot-aim-pct').textContent = Math.abs(_botAimP) + '%';
   $('bot-hint').setAttribute('opacity', '0');
@@ -3266,7 +2597,7 @@ function updateDiagCut(svgX) {
 }
 
 botsvg.addEventListener('pointerdown', e => {
-  if (lockBalls) return;
+  if (lockBalls || (panMode && isZoomed())) return;  // locked or panning while zoomed
   const p2 = botSvgPt(e);
   // Dead zone: only respond within the ball's vertical extent (center 148 ± radius 82)
   if (p2.y < 66 || p2.y > 230) return;
@@ -3303,7 +2634,6 @@ document.addEventListener('keydown', e => {
 
 // ── SLIDERS ────────────────────────────────────────────────────
 function onSliders() {
-  if(typeof _sgState!=="undefined") _syncBias();
   S.speed  = parseInt($('sl-spd').value)  / 100;
   S.spin   = parseInt($('sl-spn').value) / 25;  // -4..4 continuously
   S.vert   = parseInt($('sl-vert').value) / 25;  // -4..4 from -100..100
@@ -3319,7 +2649,7 @@ function onSliders() {
   } else {
     S.bias = 0;
   }
-  // Three-segment throw compensation — only active when PERSONAL ADJUSTMENT is ON
+  // Three-segment throw compensation — only active when TABLE COMP is ON
   throwLo = biasOn ? parseInt($('sl-throw-lo')?.value || '0') / 50 : 0;
   throwMi = biasOn ? parseInt($('sl-throw-mi')?.value || '0') / 50 : 0;
   throwHi = biasOn ? parseInt($('sl-throw-hi')?.value || '0') / 50 : 0;
@@ -3332,12 +2662,7 @@ function onSliders() {
     if(n) n.textContent = v;
     if(s) s.textContent = disp;
   });
-  if (!onSliders._raf) {
-    onSliders._raf = requestAnimationFrame(function() {
-      onSliders._raf = null;
-      render();
-    });
-  }
+  render();
 }
 
 function toggleCal() {
@@ -3346,11 +2671,6 @@ function toggleCal() {
   const isOpen = panel.classList.toggle('open');
   const btn = document.getElementById('btn-cal');
   if (btn) { btn.classList.toggle('on', isOpen); }
-  if (isOpen) {
-    positionPanelAtDock(panel);
-    const hdr = panel.querySelector('[id$="-header"],[id$="-handle"]') || panel.firstElementChild;
-    if (hdr) { panel.dataset.minimized='0'; panel.classList.remove('panel-minimized'); Array.from(panel.children).forEach(function(c){c.style.display='';}); minimizePanel(panel.id, hdr); }
-  }
 }
 
 function toggleCalLibrary() {
@@ -3419,7 +2739,7 @@ function toggleMap() {
     if (l) { l.style.transition='opacity 0.2s'; l.style.opacity = mapOn ? '1' : '0'; }
   });
   const mb = document.getElementById('btn-map');
-  if (mb) { mb.classList.toggle('on', mapOn); mb.textContent = mapOn ? 'GRID ON' : 'GRID OFF'; }
+  if (mb) mb.classList.toggle('dim', !mapOn);
 }
 
 function cycleTableSize() {
@@ -3546,7 +2866,8 @@ loadUserShots();
 buildShotList();
 const epSnap = document.getElementById('ep-snap');
 if (epSnap) epSnap.classList.add('active');
-// ep-bias initialized in load handler
+const epBias = document.getElementById('ep-bias');
+if (epBias) { epBias.classList.add('on'); epBias.textContent = 'ON'; }
 render();
 // ── GLOBAL TOUCH SAFETY RESET (iOS pointer capture bug) ──────
 document.addEventListener('touchend', () => {
@@ -3562,28 +2883,40 @@ document.addEventListener('touchcancel', () => {
 
 // ── SNAP SYSTEM ──────────────────────────────────────────────
 
-function _setLockBtn(id, locked, label) {
-  var btn = document.getElementById(id);
-  if (!btn) return;
-  btn.classList.toggle('locked', locked);
-  btn.innerHTML = locked ? label + '<br>LOCKED' : label + '<br>OPEN';
-}
-
 function toggleLock(which) {
-  if (which === 'table')   { lockTable   = !lockTable; }
-  if (which === 'balls')   { lockBalls   = !lockBalls; }
-  if (which === 'sliders') {
+  if (which === 'table')   lockTable   = !lockTable;
+  if (which === 'balls')   lockBalls   = !lockBalls;
+    if (which === 'sliders') {
     lockSliders = !lockSliders;
     var panel = document.getElementById('sliders-block');
+    var _ls = document.getElementById('ep-ls');
+    if (_ls) { _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
     if (panel) {
-      panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el){
+      panel.classList.toggle('sliders-unlocked', !lockSliders);
+      panel.querySelectorAll('.sgroup').forEach(function(sg) {
+        sg.style.opacity = lockSliders ? '0.35' : '1';
+      });
+      panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el) {
         el.disabled = lockSliders;
       });
+      // Update active button state
+      var activeBtn = document.getElementById('sliders-active-btn');
+      if (activeBtn) {
+        var isNowActive = !lockSliders;
+        activeBtn.textContent = isNowActive ? 'ACTIVE' : 'INACTIVE';
+        activeBtn.style.background = isNowActive ? 'rgba(80,200,80,0.2)' : 'rgba(200,80,80,0.15)';
+        activeBtn.style.borderColor = isNowActive ? 'rgba(80,200,80,0.4)' : 'rgba(200,80,80,0.3)';
+        activeBtn.style.color = isNowActive ? '#80e080' : '#e08080';
+      }
     }
   }
-  _setLockBtn('ep-lt', lockTable,   'TABLE');
-  _setLockBtn('ep-lb', lockBalls,   'GHOST');
-  _setLockBtn('ep-ls', lockSliders, 'SLIDERS');
+  const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
+
+  // Toggle touch-action on topsvg and botsvg so pinch/scroll pass through when locked
+  // touch-action managed per-drag on topsvg/botsvg
+
+  // Apply slider lock visually
+
   document.activeElement && document.activeElement.blur();
 }
 
@@ -3601,29 +2934,31 @@ function zeroSliders() {
   document.activeElement && document.activeElement.blur();
 }
 
-function _updateBiasBtn() {
-  var btn = document.getElementById('ep-bias');
-  if (!btn) return;
-  btn.style.background = biasOn ? '#c06010' : '#7a3a06';
-  btn.style.borderColor = biasOn ? '#f0a060' : '#aa5a10';
-  btn.innerHTML = biasOn ? 'PERSONAL ADJ ON<br>SLIDERS' : 'PERSONAL ADJ OFF<br>SLIDERS';
-}
 function toggleBias() {
   biasOn = !biasOn;
-  // Keep _sgState in sync so _syncBias() doesn't override
-  if (typeof _sgState !== 'undefined') {
-    _sgState.ghost.on = biasOn;
-    if (biasOn) _sgState.ghost.frozen = false;
-    _sgApply('ghost');
+  var btn = document.getElementById('ep-bias');
+  if (btn) {
+    btn.innerHTML = biasOn ? 'TABLE<br>COMP ON' : 'TABLE<br>COMP OFF';
+    btn.style.background = biasOn ? 'rgba(240,140,20,0.85)' : 'rgba(74,40,0,0.85)';
+    btn.style.borderColor = biasOn ? 'rgba(255,180,50,0.8)' : 'rgba(138,80,16,0.6)';
+    btn.style.color = biasOn ? '#fff' : '#e8c080';
   }
-  _updateBiasBtn();
+  // Dim/undim the table comp section in the sliders panel
+  var panel = document.getElementById('sliders-block');
+  if (panel) {
+    var sgroups = panel.querySelectorAll('.sgroup');
+    if (sgroups.length > 1) {
+      sgroups[1].style.opacity = biasOn ? '1' : '0.35';
+      sgroups[1].querySelectorAll('input[type=range]').forEach(function(el) { el.disabled = !biasOn; });
+    }
+  }
   onSliders();
 }
 
 function toggleSnap(e) {
   snapOn = !snapOn;
   const btn = document.getElementById('ep-snap');
-  if (btn) { btn.classList.toggle('on', snapOn); btn.textContent = snapOn ? 'SNAP ON' : 'SNAP OFF'; btn.blur(); }
+  if (btn) { btn.classList.toggle('on', snapOn); btn.blur(); }
   document.activeElement && document.activeElement.blur();
 }
 
@@ -3797,98 +3132,6 @@ function edgeZoomReset() {
 </script>
 <span id="r-throw" style="display:none"></span>
 </div><!-- /zoom-wrap -->
-
-  <div id="sliders-block" class="float-panel" style="background:rgba(10,15,10,0.97) !important;border-color:rgba(200,144,240,0.4);">
-
-  <!-- Header -->
-  <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);">
-    <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#f0df70;pointer-events:none;">SLIDERS</span>
-    <div style="display:flex;gap:4px;align-items:center;">
-      <button class="min-btn" title="Minimize sliders" onclick="event.stopPropagation();minimizePanel('sliders-block',document.getElementById('sliders-handle'))" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">—</button>
-      <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
-    </div>
-  </div>
-
-  <div class="float-panel-body">
-    <div id="sliders-scale-wrap" class="panel-scale-wrap" style="padding:8px 10px 10px;width:340px;">
-
-    <!-- BALL CONTROL group -->
-    <div id="sg-ball" style="background:rgba(176,144,240,0.08);border:1px solid rgba(176,144,240,0.2);border-radius:8px;padding:8px 10px;margin-bottom:8px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(176,144,240,0.9);text-transform:uppercase;">Ball Control</span>
-        <div style="display:flex;gap:4px;">
-          <button id="bc-freeze" onclick="sgFreeze('ball')" title="Freeze values" style="background:rgba(176,144,240,0.12);border:1px solid rgba(176,144,240,0.3);border-radius:4px;color:rgba(176,144,240,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
-          <button onclick="sgZero('ball')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
-          <button id="bc-on" onclick="sgToggle('ball')" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:4px;color:#80e080;font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ON</button>
-        </div>
-      </div>
-      <div class="srow">
-        <span class="slbl" style="color:#b090f0;">speed</span>
-        <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
-        <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
-        <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
-      </div>
-      <div class="srow" style="margin-top:6px;">
-        <span class="slbl">spin</span>
-        <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
-        <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
-        <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
-      </div>
-      <div class="srow" style="margin-top:6px;">
-        <span class="slbl">vert</span>
-        <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
-        <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
-        <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
-      </div>
-    </div>
-
-    <!-- PERSONAL ADJUSTMENT group -->
-    <div id="sg-ghost" style="background:rgba(232,112,48,0.08);border:1px solid rgba(232,112,48,0.2);border-radius:8px;padding:8px 10px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(232,112,48,0.9);text-transform:uppercase;">Personal Adjustment</span>
-        <div style="display:flex;gap:4px;">
-          <button id="gb-freeze" onclick="sgFreeze('ghost')" title="Freeze values" style="background:rgba(232,112,48,0.12);border:1px solid rgba(232,112,48,0.3);border-radius:4px;color:rgba(232,112,48,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
-          <button onclick="sgZero('ghost')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
-          <button id="gb-on" onclick="sgToggle('ghost')" style="background:rgba(80,200,80,0.2);border:1px solid rgba(80,200,80,0.4);border-radius:4px;color:#80e080;font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ON</button>
-        </div>
-      </div>
-      <div class="srow">
-        <span class="slbl" style="color:#e87030;font-size:9px;">T-LOW</span>
-        <input type="range" id="sl-throw-lo" min="-50" max="50" value="0" oninput="onSliders()">
-        <span id="sv-throw-lo-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('lo',-1)">−</button><span id="sv-throw-lo" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('lo',1)">+</button></span>
-      </div>
-      <div class="srow" style="margin-top:4px;">
-        <span class="slbl" style="color:#e87030;font-size:9px;">T-MID</span>
-        <input type="range" id="sl-throw-mi" min="-50" max="50" value="0" oninput="onSliders()">
-        <span id="sv-throw-mi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('mi',-1)">−</button><span id="sv-throw-mi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('mi',1)">+</button></span>
-      </div>
-      <div class="srow" style="margin-top:4px;">
-        <span class="slbl" style="color:#e87030;font-size:9px;">T-HI</span>
-        <input type="range" id="sl-throw-hi" min="-50" max="50" value="0" oninput="onSliders()">
-        <span id="sv-throw-hi-n" style="font-size:11px;font-weight:900;color:rgba(232,112,48,0.5);min-width:14px;text-align:center;">0</span>
-        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;"><button class="vbtn" onclick="throwStep('hi',-1)">−</button><span id="sv-throw-hi" style="color:#e87030;min-width:28px;text-align:center;display:inline-block;">0</span><button class="vbtn" onclick="throwStep('hi',1)">+</button></span>
-      </div>
-    </div>
-
-  </div>
-    </div><!-- /sliders-scale-wrap -->
-  <!-- Bottom bar: SIZE scale + resize grip -->
-  <div style="display:flex;align-items:center;padding:3px 0 3px 8px;background:#0a0a0a;border-top:1px solid #1a1a1a;border-radius:0 0 10px 10px;">
-    <span style="font-size:7px;font-weight:900;color:rgba(255,255,255,0.4);font-family:Lato,sans-serif;flex-shrink:0;margin-right:5px;letter-spacing:0.5px;">SIZE</span>
-    <input type="range" id="sl-scale" min="50" max="100" value="100"
-      onclick="event.stopPropagation()"
-      oninput="scaleSliderPanel(this.value)"
-      style="flex:1;height:2px;-webkit-appearance:none;appearance:none;background:#333;border-radius:1px;cursor:pointer;outline:none;">
-    <div id="sliders-resize" style="width:16px;height:16px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:flex-end;justify-content:flex-end;opacity:0.4;">
-      <svg width="10" height="10" viewBox="0 0 10 10" style="pointer-events:none;">
-        <line x1="2" y1="9" x2="9" y2="2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="6" y1="9" x2="9" y2="6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
-  </div><!-- /sliders-block -->
 <script>
 // Button zoom only — no pinch
 const _pz = {
@@ -3897,6 +3140,7 @@ const _pz = {
     const w=document.getElementById('zoom-wrap');
     if(!w) return;
     w._zscale=this.scale;
+    if(this.scale<=1){this.tx=0;this.ty=0;}
     w.style.transform=`translate(${this.tx}px,${this.ty}px) scale(${this.scale})`;
     w.style.transformOrigin='top left';
   }
@@ -3930,19 +3174,10 @@ window.addEventListener('load', function(){
     if (b.thin !== undefined) { const el = document.getElementById('sl-bias-thin'); if(el) el.value = b.thin; }
   } catch(e) {}
 
-  _setLockBtn('ep-lt', lockTable,   'TABLE');
-  _setLockBtn('ep-lb', lockBalls,   'GHOST');
-  _setLockBtn('ep-ls', lockSliders, 'SLIDERS');
+  const _lt = document.getElementById('ep-lt'); if(_lt){ _lt.classList.toggle('locked', lockTable); _lt.classList.toggle('on', !lockTable); }
+  const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
+  const _ls = document.getElementById('ep-ls'); if(_ls){ _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
   const _pan = document.getElementById('ep-pan'); if(_pan) _pan.classList.toggle('on', panMode);
-  // Set initial button labels to reflect state
-  (function(){
-    var m = document.getElementById('btn-map');     if(m){ m.textContent = mapOn ? 'GRID ON' : 'GRID OFF'; m.classList.toggle('on', mapOn); }
-    var s = document.getElementById('ep-snap');     if(s){ s.textContent = snapOn ? 'SNAP ON' : 'SNAP OFF'; s.classList.toggle('on', snapOn); }
-    _updateBiasBtn();
-    var c = document.getElementById('btn-cbpath');  if(c){ c.classList.toggle('on', cbPathOn); c.style.lineHeight='1.3'; c.innerHTML = cbPathOn ? 'CUE PATH<br>ON' : 'CUE PATH<br>OFF'; }
-    var a = document.getElementById('btn-angle');   if(a){ a.classList.toggle('on', angleOn); a.style.lineHeight='1.3'; a.innerHTML = angleOn ? 'BOUNCE<br>ANGLE ON' : 'BOUNCE<br>ANGLE OFF'; }
-  })();
-
   // Apply slider lock visually
   const sg = document.querySelector('.sgroup');
   if(sg) sg.style.opacity = lockSliders ? '0.4' : '1';
@@ -3950,7 +3185,8 @@ window.addEventListener('load', function(){
   const card = document.querySelector('.card');
   if(card) card.classList.toggle('sliders-unlocked', !lockSliders);
   // Apply bias
-  // biasBtn state managed by toggleBias()
+  const biasBtn = document.getElementById('ep-bias');
+  if(biasBtn){ biasBtn.classList.toggle('on', biasOn); }
 });
 window.addEventListener('resize', positionToolbar, {passive:true});
 window.addEventListener('resize', function(){ updateSnapLabels(document.getElementById('topsvg')); }, {passive:true});
@@ -3964,17 +3200,18 @@ setTimeout(positionToolbar, 100); // fallback
 let panelsSwapped=false;
 function swapPanels(){
   panelsSwapped=!panelsSwapped;
-  const table = document.getElementById('block-ball-wrap');
-  const perc  = document.getElementById('perception-section');
-  if (!table || !perc) return;
-  const parent = table.parentNode;
+  const sliders  = document.getElementById('sliders-block');
+  const ballWrap = document.getElementById('block-ball-wrap');
+  const readouts = document.getElementById('readouts');
+  const card     = document.querySelector('.card');
   if(panelsSwapped){
-    parent.insertBefore(perc, table);
+    card.insertBefore(sliders, ballWrap);
   } else {
-    parent.insertBefore(table, perc);
+    card.insertBefore(sliders, readouts);
   }
-
 }
+// Default to sliders-on-top layout
+window.addEventListener('load', function(){ swapPanels(); });
 </script>
 
 </div><!-- /outer-wrap -->
@@ -4014,8 +3251,8 @@ function swapPanels(){
   function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
 
   function onDown(e){
-    // Always pan when not touching a ball directly
-    if(e.target.closest('circle, [data-ball]')) return;
+    if(!panMode) return;
+    if(_pz.scale <= 1) return;
     panPtr = e.pointerId;
     panStartX = e.clientX; panStartY = e.clientY;
     panInitTx = _pz.tx;    panInitTy = _pz.ty;
@@ -4026,8 +3263,9 @@ function swapPanels(){
   function onMove(e){
     if(panPtr === null || e.pointerId !== panPtr) return;
     var w = getWrap();
-    _pz.tx = panInitTx + (e.clientX - panStartX);
-    _pz.ty = panInitTy + (e.clientY - panStartY);
+    var ww = w.offsetWidth, wh = w.offsetHeight, sc = _pz.scale;
+    _pz.tx = Math.min(0, Math.max(ww*(1-sc), panInitTx + (e.clientX - panStartX)));
+    _pz.ty = Math.min(0, Math.max(wh*(1-sc), panInitTy + (e.clientY - panStartY)));
     _pz.apply();
     e.preventDefault();
   }
@@ -4056,49 +3294,12 @@ function updateLockBtn() {
     if (lbl) lbl.textContent = allLocked ? 'LOCKED' : 'UNLOCKED';
   }
 }
-function btbCollapse() { /* pill stack removed — handled by dock */ }
-
-function btbExpand() { /* pill stack removed — handled by dock */ }
-
-const FLOAT_Z_A = 8800;
-const FLOAT_PANELS_A = ['sliders-block','shot-library-panel','throw-panel'];
-function bringToTop(id) {
-  FLOAT_PANELS_A.forEach(function(pid) {
-    const el = document.getElementById(pid);
-    if (el) el.style.zIndex = pid === id ? FLOAT_Z_A + 10 : FLOAT_Z_A;
-  });
-}
-
-// Position a panel at the top of the app, centered
-function positionPanelAtDock(panel) {
-  if (!panel) return;
-  panel.style.transform = 'none';
-  panel.style.bottom = 'auto';
-  // Wait for layout then center in pixels
-  requestAnimationFrame(function(){
-    var pw = panel.offsetWidth || 340;
-    var left = Math.max(4, Math.round(window.innerWidth/2 - pw/2));
-    panel.style.left = left + 'px';
-    panel.style.top  = '8px';
-  });
-}
-
-function forceMinimizePanel(panelId, headerId) {
-  const panel = document.getElementById(panelId);
-  const hdr   = document.getElementById(headerId);
-  if (!panel || !hdr) return;
-  // Always open minimized — show only header
-  panel.dataset.minimized = '1';
-  panel.classList.add('panel-minimized');
-  const btn = hdr.querySelector('.min-btn');
-  if (btn) btn.textContent = '+';
-}
 function toggleAllLocks() {
   const allLocked = lockTable && lockBalls && lockSliders;
   lockTable = lockBalls = lockSliders = !allLocked;
-  _setLockBtn('ep-lt', lockTable,   'TABLE');
-  _setLockBtn('ep-lb', lockBalls,   'GHOST');
-  _setLockBtn('ep-ls', lockSliders, 'SLIDERS');
+  const _lt = document.getElementById('ep-lt'); if(_lt){ _lt.classList.toggle('locked', lockTable); _lt.classList.toggle('on', !lockTable); }
+  const _lb = document.getElementById('ep-lb'); if(_lb){ _lb.classList.toggle('locked', lockBalls); _lb.classList.toggle('on', !lockBalls); }
+  const _ls = document.getElementById('ep-ls'); if(_ls){ _ls.classList.toggle('locked', lockSliders); _ls.classList.toggle('on', !lockSliders); }
   updateLockBtn();
   render();
   // Update floating sliders panel if open
@@ -4113,70 +3314,60 @@ function toggleAllLocks() {
 </script>
 
 <div id="btb">
-
-  <div id="btb-panel" style="display:none;width:max-content;max-width:96vw;touch-action:auto;">
-    <!-- Gold pill header — drag handle + close -->
-    <div id="btb-tools-header" style="display:flex;align-items:center;justify-content:space-between;padding:2px 8px;background:#f0df70;border-radius:10px 10px 0 0;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
-      <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">TOOLS</span>
-      <button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:16px;font-weight:900;cursor:pointer;padding:0 0 0 10px;line-height:1;touch-action:manipulation;">✕</button>
-    </div>
-    <!-- Compact tool grid -->
-    <div id="tool-grid" style="display:flex;flex-direction:column;gap:5px;padding:8px;background:rgba(12,16,12,0.98);touch-action:manipulation;">
-      <!-- Row 1: Zoom + Toggles -->
-      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;">
-        <button onclick="edgeZoom(1.3)" style="font-size:22px;font-weight:900;width:52px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;overflow:hidden;flex-shrink:0;"><span style="font-size:10px;font-weight:900;letter-spacing:1px;color:#a8ccff;line-height:1.4;">ZOOM</span><span style="font-size:22px;line-height:1;">+</span></button>
-        <button onclick="edgeZoom(1/1.3)" style="font-size:22px;font-weight:900;width:52px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;overflow:hidden;flex-shrink:0;"><span style="font-size:10px;font-weight:900;letter-spacing:1px;color:#a8ccff;line-height:1.4;">ZOOM</span><span style="font-size:22px;line-height:1;">−</span></button>
-        <button onclick="edgeZoomReset()" style="font-size:10px;font-weight:900;padding:0 10px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;box-sizing:border-box;overflow:hidden;flex-shrink:0;">ZOOM<br>RESET</button>
-        <button class="tg-btn tg-green on" id="btn-map"    onclick="toggleMap()">GRID OFF</button>
-        <button class="tg-btn tg-gold  on" id="ep-snap"    onclick="toggleSnap()">SNAP OFF</button>
-        <button class="tg-btn tg-green"    id="btn-cbpath" onclick="toggleCbPath()">CUE PATH OFF</button>
-        <button class="tg-btn tg-brown"    id="btn-angle"  onclick="toggleAngle()">BOUNCE ANGLE OFF</button>
-      </div>
-
-      <!-- Row 2: Locks + Adj -->
-      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;">
-        <button class="tg-btn tg-red" id="ep-lt" onclick="toggleLock('table')" style="height:44px;line-height:1.3;overflow:hidden;">TABLE<br>LOCKED</button>
-        <button class="tg-btn tg-red" id="ep-lb" onclick="toggleLock('balls')" style="height:44px;line-height:1.3;overflow:hidden;">GHOST<br>LOCKED</button>
-        <button class="tg-btn tg-red" id="ep-ls" onclick="toggleLock('sliders')" style="height:44px;line-height:1.3;overflow:hidden;">SLIDERS<br>LOCKED</button>
-        <button id="tb-shot-adj" onclick="tbToggleBallGroup()" style="font-size:10px;font-weight:900;padding:0;width:110px;height:44px;border-radius:8px;border:2px solid #8e3eae;background:#6a1e8e;color:#dea8ff;cursor:pointer;touch-action:manipulation;box-sizing:border-box;overflow:hidden;line-height:1.3;">SHOT ADJ OFF<br>SLIDERS</button>
-        <button id="ep-bias" onclick="toggleBias()" style="font-size:10px;font-weight:900;padding:0 12px;height:44px;border-radius:8px;border:2px solid #f0a060;background:#c06010;color:#f0c090;cursor:pointer;touch-action:manipulation;line-height:1.3;box-sizing:border-box;overflow:hidden;-webkit-user-select:none;user-select:none;">PERSONAL ADJ OFF<br>SLIDERS</button>
-      </div>
-    </div>
+  <div id="btb-tab">
+    <span class="btb-pill-clone" onclick="toggleAllLocks()" id="quick-lock" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">LOCK</span></span>
+    <span class="btb-pill-clone" onclick="toggleShotLibrary()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">LEARN</span></span>
+    <span class="btb-pill-clone" onclick="toggleThrowPanel()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">DATA</span></span>
+    <span class="btb-pill-clone" onclick="toggleSlidersPanel()" style="cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;"><span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding:0 8px 0 8px;">SLIDERS</span></span>
+    <span id="btb-pill"><button id="btb-arrow" onclick="toggleBtb()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 6px;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button><span id="btb-label" style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;padding-right:8px;">TOOLS</span></span>
   </div>
+  <div id="btb-panel" style="display:none;min-width:min(540px,96vw);">
+    <div class="btb-row2">
+      <button class="ep-btn g-tog on" id="btn-map"    onclick="toggleMap()">GRID</button>
+      <button class="ep-btn g-snap on" id="ep-snap"   onclick="toggleSnap()">SNAP<br>TO</button>
+      <button class="ep-btn g-brown"  id="btn-cal"    onclick="toggleCal()">CAL</button>
+      <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">LEARN</button>
+      <button class="ep-btn g-yel"    id="btn-cbpath" onclick="toggleCbPath()">CUE<br>PATH</button>
+      <button class="ep-btn g-brown"  id="btn-angle"  onclick="toggleAngle()">ANGLE</button>
+      <button class="ep-btn g-brown" id="btn-cp"     onclick="toggleContactDot()">C·PT</button>
+      <button class="ep-btn g-brown"  id="btn-throw"  onclick="toggleThrowPanel()">DATA</button>
+      <button class="ep-btn g-bias"   id="ep-bias"    onclick="toggleBias()">TABLE<br>COMP OFF</button>
+      <button class="ep-btn g-swap"   id="btn-swap"   onclick="swapPanels()">⇅</button>
+    </div>
+    <div class="btb-row2">
+      <button class="ep-btn g-zoom" onclick="edgeZoom(1.3)">ZOOM<br>IN</button>
+      <button class="ep-btn g-zoom" onclick="edgeZoom(1/1.3)">ZOOM<br>OUT</button>
+      <button class="ep-btn g-zoom" onclick="edgeZoomReset()">RESET<br>ZOOM</button>
+      <button class="ep-btn g-pan on" id="ep-pan" onclick="togglePan()">LOCK<br>ON</button>
+    </div>
+    <div class="btb-row2">
+      <button class="ep-btn g-lock" id="ep-lt" onclick="toggleLock('table')">TABLE<br>LOCK</button>
+      <button class="ep-btn g-lock" id="ep-lb" onclick="toggleLock('balls')">GHOST<br>LOCK</button>
+      <button class="ep-btn g-lock" id="ep-ls" onclick="toggleLock('sliders')">SLIDERS<br>LOCK</button>
+      <button class="ep-btn g-brown" onclick="zeroSliders()">ZERO<br>SLIDERS</button>
+    </div>
+    <div id="btb-drag-bottom" style="height:10px;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;"></div>
+
+  </div>
+  <div id="btb-drag-bottom" style="height:10px;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;display:none;"></div>
 </div>
 
 <script>
 var btbVisible = false;
 function toggleBtb(){
   btbVisible = !btbVisible;
-  var panel = document.getElementById('btb-panel');
-  if (panel) {
-    panel.style.display = btbVisible ? 'flex' : 'none';
-    if (btbVisible) {
-      panel.style.transform = 'none';
-      panel.style.left = '0px'; panel.style.top = '0px'; // temp to force layout
-      requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          var pw = panel.offsetWidth || 300;
-          var ph = panel.offsetHeight || 150;
-          panel.style.left = Math.max(4, Math.round(window.innerWidth/2  - pw/2)) + 'px';
-          panel.style.top  = Math.max(4, Math.round(window.innerHeight/2 - ph/2)) + 'px';
-        });
-      });
-    }
-  }
-  var arrow = document.getElementById('btb-arrow');
-  if (arrow) arrow.textContent = btbVisible ? '▼' : '▲';
+  document.getElementById('btb-panel').style.display = btbVisible ? 'flex' : 'none';
+  document.getElementById('btb-arrow').textContent = btbVisible ? '▼' : '▲';
+  var pill = document.getElementById('btb-pill');
+  if (pill) pill.classList.toggle('open', btbVisible);
 }
 // Floating drag via TOOLS bar
 (function(){
   var btb, tab, startX, startY, origLeft, origTop, didDrag;
   window.addEventListener('load', function(){
     btb = document.getElementById('btb');
-    if (!btb) return;
-    tab = document.getElementById('btb-tab'); // may be null - that's ok
-
-    // btbPanel drag handles whole panel including header
+    tab = document.getElementById('btb-tab');
+    if (!btb || !tab) return;
     // Position at middle-left of the table SVG on load
     (function positionAtTableLeft() {
       var tbl = document.querySelector('.svg-box.top-box') || document.querySelector('.svg-box');
@@ -4192,29 +3383,70 @@ function toggleBtb(){
       btb.style.transform = 'none';
       btb.style.left = lx + 'px';
       btb.style.top  = ly + 'px';
-      btbCollapse();
     })();
-    // Panel drag handled by btb-tools-header gold pill only
-    var hdr = document.getElementById('btb-tools-header');
-    var btb = document.getElementById('btb');
-    if (hdr && btb) {
-      var ptr=null, sx,sy,ox,oy;
-      hdr.addEventListener('pointerdown', function(e){
-        if (e.target.tagName==='BUTTON') return;
-        ptr=e.pointerId; var r=btb.getBoundingClientRect();
-        btb.style.left=r.left+'px'; btb.style.top=r.top+'px';
-        btb.style.bottom='auto'; btb.style.transform='none';
-        sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top;
-        try { hdr.setPointerCapture(ptr); } catch(x){}
+    var activePtr = null;
+    var btbPanel = document.getElementById('btb-panel');
+    if (btbPanel) {
+      btbPanel.addEventListener('pointerdown', function(e){
+        if (e.target.closest('.ep-btn') || e.target.closest('button') || e.target.closest('input')) return;
+        var rect = btb.getBoundingClientRect();
+        startX = e.clientX; startY = e.clientY;
+        origLeft = rect.left; origTop = rect.top;
+        didDrag = false; activePtr = e.pointerId;
+        btbPanel.setPointerCapture(e.pointerId);
       });
-      hdr.addEventListener('pointermove', function(e){
-        if (e.pointerId!==ptr) return;
-        btb.style.left=Math.max(0,Math.min(window.innerWidth-btb.offsetWidth,  ox+e.clientX-sx))+'px';
-        btb.style.top =Math.max(0,Math.min(window.innerHeight-btb.offsetHeight,oy+e.clientY-sy))+'px';
+      btbPanel.addEventListener('pointermove', function(e){
+        if (activePtr === null || e.pointerId !== activePtr) return;
+        var dx = e.clientX - startX, dy = e.clientY - startY;
+        if (!didDrag && Math.hypot(dx,dy) > 8) {
+          didDrag = true;
+          btb.style.bottom = 'auto'; btb.style.transform = 'none';
+          btb.style.left = origLeft + 'px'; btb.style.top = origTop + 'px';
+        }
+        if (didDrag) {
+          var lx = origLeft+dx, ly = origTop+dy;
+          lx = Math.max(0,Math.min(window.innerWidth-btb.offsetWidth-4,lx));
+          ly = Math.max(0,Math.min(window.innerHeight-btb.offsetHeight-4,ly));
+          btb.style.left = lx+'px'; btb.style.top = ly+'px';
+        }
       });
-      hdr.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr) ptr=null; });
-      hdr.addEventListener('pointercancel', function(){ ptr=null; });
+      btbPanel.addEventListener('pointerup', function(e){ activePtr=null; });
+      btbPanel.addEventListener('pointercancel', function(e){ activePtr=null; });
     }
+    tab.addEventListener('pointerdown', function(e){
+      if (e.target.id === 'btb-arrow') return;
+      var rect = btb.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      origLeft = rect.left; origTop = rect.top;
+      didDrag = false; activePtr = e.pointerId;
+    });
+    tab.addEventListener('pointermove', function(e){
+      if (activePtr === null || e.pointerId !== activePtr) return;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (!didDrag && Math.hypot(dx,dy) > 8) {
+        didDrag = true;
+        // Only NOW commit to pixel positioning (no jump — drag already started)
+        btb.style.transform = 'none';
+        btb.style.bottom = 'auto';
+        btb.style.left = origLeft + 'px';
+        btb.style.top  = origTop  + 'px';
+        try { tab.setPointerCapture(e.pointerId); } catch(ex){}
+      }
+      if (!didDrag) return;
+      var nx = origLeft + dx, ny = origTop + dy;
+      nx = Math.max(0, Math.min(window.innerWidth  - btb.offsetWidth,  nx));
+      ny = Math.max(0, Math.min(window.innerHeight - btb.offsetHeight, ny));
+      btb.style.left = nx + 'px';
+      btb.style.top  = ny + 'px';
+    });
+    tab.addEventListener('pointerup', function(e){
+      if (e.pointerId !== activePtr) return;
+      activePtr = null;
+      if (!didDrag && !e.target.closest('.btb-pill-clone') && !e.target.closest('#btb-panel')) toggleBtb();
+    });
+    tab.addEventListener('pointercancel', function(e){
+      activePtr = null;
+    });
   });
 })();
 </script>
@@ -4227,7 +3459,7 @@ function vernierAim(dir) {
   let signed = rh ? -cur : cur;
   signed += dir * oneDeg;
   signed = Math.max(-90, Math.min(90, signed));
-  if (Math.abs(signed) < oneDeg * 0.6) { signed = 0; }  // snap to zero when close
+  if (Math.abs(signed) < 0.001) signed = dir * oneDeg;
   S._diagDragRh = signed < 0;
   S.diagCutDeg  = Math.abs(signed);
   render();
@@ -4248,33 +3480,25 @@ function biasStep(dir) {
 }
 </script>
 <!-- SHOT LIBRARY — floating, draggable -->
-<div id="shot-library-panel" class="float-panel" style="border-color:rgba(240,223,112,0.5);min-width:300px;">
-  <!-- Header -->
-  <div id="shot-lib-header" class="float-panel-header" style="background:#1a1400;">
-    <span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">LEARN</span>
+<div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(500px,98vw);background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;touch-action:none;">
+  <!-- Drag header -->
+  <div id="shot-lib-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 7px;border-bottom:2px solid #cccccc;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;background:#f0f0f0;">
+    <span style="font-size:13px;font-weight:900;letter-spacing:1.5px;color:#111111;">≡ SHOT LIBRARY</span>
     <div style="display:flex;align-items:center;gap:6px;">
-      <button onclick="showLearnTab('myshots')" style="font-size:9px;font-weight:900;padding:2px 7px;border-radius:10px;border:1px solid rgba(240,223,112,0.5);background:rgba(240,223,112,0.15);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">MY SHOTS ↓</button>
-      <button class="min-btn" onclick="minimizePanel('shot-library-panel',this.closest('#shot-lib-header'))" style="background:none;border:1px solid #aaa;border-radius:4px;color:#aaa;font-size:13px;font-weight:900;padding:1px 7px;cursor:pointer;touch-action:manipulation;">—</button>
-      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:#aaa;font-size:22px;line-height:1;cursor:pointer;padding:0 4px;touch-action:manipulation;">✕</button>
+      <button onclick="shotListFontSize(-1)" style="width:28px;height:28px;border-radius:50%;border:1px solid #999;background:#fff;color:#111;font-size:18px;line-height:1;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;">−</button>
+      <button onclick="shotListFontSize(1)"  style="width:28px;height:28px;border-radius:50%;border:1px solid #999;background:#fff;color:#111;font-size:18px;line-height:1;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;">+</button>
+      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:#333333;font-size:22px;line-height:1;cursor:pointer;padding:0 4px;touch-action:manipulation;">✕</button>
     </div>
   </div>
-  <!-- Tab bar -->
-  <div style="display:flex;border-bottom:2px solid #e0e0e0;background:#f0f0f0;">
-    <button id="learn-tab-presets" onclick="showLearnTab('presets')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid #1a5a1a;background:#fff;color:#1a5a1a;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">SHOT LIBRARY</button>
-    <button id="learn-tab-myshots" onclick="showLearnTab('myshots')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">MY SHOT RECORD</button>
+  <div id="shot-library-list" style="max-height:min(70vh,600px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;"></div>
+  <div style="display:flex;gap:6px;padding:8px 12px;border-top:2px solid #cccccc;background:#f0f0f0;">
+    <input id="shot-name-input" type="text" placeholder="Name this setup to save…" autocomplete="off" autocorrect="off" autocapitalize="off"
+      style="flex:1;min-width:0;background:#ffffff;border:1px solid #999999;border-radius:4px;padding:6px 10px;color:#111111;font-size:14px;outline:none;-webkit-appearance:none;">
+    <button onclick="saveCurrentShot()" style="flex-shrink:0;padding:6px 14px;border-radius:4px;border:none;background:#1a5a1a;color:#ffffff;font-family:'Lato',sans-serif;font-size:13px;font-weight:900;cursor:pointer;">SAVE</button>
   </div>
-  <!-- Presets tab -->
-  <div id="learn-pane-presets" class="float-panel-body" style="cursor:grab;min-height:200px;"></div>
-  <!-- My Shots tab -->
-  <div id="learn-pane-myshots" class="float-panel-body" style="display:none;"></div>
-  <!-- Footer: record button + scale -->
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-top:2px solid #f0df70;background:#0a0a0a;">
-    <div style="display:flex;align-items:center;gap:6px;flex:1;">
-      <span style="font-size:9px;font-weight:900;color:#f0df70;letter-spacing:1px;">SIZE</span>
-      <input type="range" id="learn-scale" min="50" max="100" value="100" oninput="scalePanel('shot-library-panel','learn-scale','learn-scale-lbl')"
-        style="flex:1;height:4px;-webkit-appearance:none;appearance:none;background:#555;border-radius:2px;cursor:pointer;outline:none;accent-color:#f0df70;">
-    </div>
-    <button onclick="startRecord()" title="Record this shot" style="font-size:9px;font-weight:900;padding:3px 10px;border-radius:10px;border:1px solid #f0df70;background:rgba(192,160,24,0.2);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:1px;margin-left:10px;">⬤ REC</button>
+  <!-- Resize grip -->
+  <div id="shot-lib-resize" style="height:10px;cursor:ns-resize;display:flex;align-items:center;justify-content:center;touch-action:none;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05);">
+    <div style="width:32px;height:3px;border-radius:2px;background:rgba(240,223,112,0.25);pointer-events:none;"></div>
   </div>
 </div>
 
@@ -4303,97 +3527,47 @@ function biasStep(dir) {
 
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName === 'BUTTON') return;
-      e.preventDefault();
-      panel.style.transform = 'none';
       var r = panel.getBoundingClientRect();
-      panel.style.left = r.left + 'px'; panel.style.top = r.top + 'px';
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
       didDrag=false; activePtr=e.pointerId;
-      try{ header.setPointerCapture(e.pointerId); }catch(ex){}
     });
     header.addEventListener('pointermove', function(e){
       if (activePtr===null || e.pointerId!==activePtr) return;
-      var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
       if (!didDrag && Math.hypot(dx,dy)>8){
         didDrag=true;
         try{ header.setPointerCapture(e.pointerId); }catch(ex){}
       }
       if (!didDrag) return;
-      var nx=origLeft+dx;
-      var ny=origTop+dy;
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
+      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
     });
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
 
+    // ── Resize grip ──────────────────────────────────────────────────────────
+    var grip = document.getElementById('shot-lib-resize');
     var list = document.getElementById('shot-library-list');
-
-    // Bottom drag handle
-    var footer = document.getElementById('learn-panel-footer-drag');
-    if (footer) {
-      footer.addEventListener('pointerdown', function(e){
-        var r=panel.getBoundingClientRect();
-        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
-        didDrag=false; activePtr=e.pointerId;
-        footer.setPointerCapture(e.pointerId);
-      });
-      footer.addEventListener('pointermove', function(e){
-        if (activePtr===null||e.pointerId!==activePtr) return;
-        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
-        if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
-        if (!didDrag) return;
-        panel.style.left=origLeft+dx+'px';
-        panel.style.top=origTop+dy+'px';
-      });
-      footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
-      footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
-    }
-
-    // List drag at scroll edge
-    if (list) {
-      var listDragActive=false;
-      list.addEventListener('pointerdown', function(e){
-        if (e.target.tagName==='A'||e.target.closest('a')) return;
-        if (e.target.closest('[data-preset]')) return;
-        var atTop=list.scrollTop===0, atBottom=list.scrollTop+list.clientHeight>=list.scrollHeight-2;
-        if (!atTop&&!atBottom) return;
-        var r=panel.getBoundingClientRect();
-        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
-        didDrag=false; listDragActive=true; activePtr=e.pointerId;
-      });
-      list.addEventListener('pointermove', function(e){
-        if (!listDragActive||e.pointerId!==activePtr) return;
-        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
-        if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; list.setPointerCapture(e.pointerId); }
-        if (!didDrag) return;
-        panel.style.left=origLeft+dx+'px';
-        panel.style.top=origTop+dy+'px';
-      });
-      list.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
-      list.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
-    }
-
-    // SE resize handle
-    var resizeHandle = document.getElementById('learn-panel-resize');
-    if (resizeHandle) {
-      var resizing=false, resizeStartX, resizeStartY, resizeStartW, resizeStartH, resizePtr=null;
-      resizeHandle.addEventListener('pointerdown', function(e){
+    var rStartY, rStartH, rPtr=null;
+    if (grip && list) {
+      grip.addEventListener('pointerdown', function(e){
+        rStartY = e.clientY;
+        rStartH = list.offsetHeight;
+        rPtr = e.pointerId;
+        try{ grip.setPointerCapture(e.pointerId); }catch(x){}
         e.stopPropagation();
-        resizing=true; resizePtr=e.pointerId;
-        resizeStartX=e.clientX; resizeStartY=e.clientY;
-        resizeStartW=panel.offsetWidth; resizeStartH=panel.offsetHeight;
-        resizeHandle.setPointerCapture(e.pointerId);
       });
-      resizeHandle.addEventListener('pointermove', function(e){
-        if (!resizing||e.pointerId!==resizePtr) return;
-        var nw=Math.max(260,resizeStartW+(e.clientX-resizeStartX));
-        var nh=Math.max(150,resizeStartH+(e.clientY-resizeStartY));
-        panel.style.width=Math.min(nw,window.innerWidth-8)+'px';
-        if (list) { var hh=document.getElementById('shot-lib-header').offsetHeight||44; list.style.maxHeight=Math.max(60,nh-hh-80)+'px'; list.style.minHeight=Math.max(60,nh-hh-80)+'px'; }
+      grip.addEventListener('pointermove', function(e){
+        if(rPtr===null||e.pointerId!==rPtr) return;
+        var dy = e.clientY - rStartY;
+        var newH = Math.max(44, Math.min(window.innerHeight * 0.75, rStartH + dy));
+        list.style.maxHeight = newH + 'px';
+        list.style.height    = newH + 'px';
       });
-      resizeHandle.addEventListener('pointerup',     function(e){ resizing=false; resizePtr=null; });
-      resizeHandle.addEventListener('pointercancel', function(e){ resizing=false; resizePtr=null; });
+      grip.addEventListener('pointerup',     function(e){ if(e.pointerId===rPtr) rPtr=null; });
+      grip.addEventListener('pointercancel', function(e){ if(e.pointerId===rPtr) rPtr=null; });
     }
   });
 
@@ -4447,37 +3621,52 @@ function biasStep(dir) {
 })();
 </script>
 
-<!-- ── SHOT DATA RECORD PANEL ─────────────────────────────────── -->
-<div id="throw-panel" class="float-panel" style="border-color:rgba(200,112,48,0.4);">
-  <div id="throw-panel-header" class="float-panel-header"><span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">SHOT DATA RECORD</span>
+<!-- ── THROW COMP DATA PANEL ─────────────────────────────────── -->
+<div id="throw-panel" style="display:none;position:fixed;z-index:8888;width:min(420px,96vw);
+     background:#ffffff;border:1px solid #aaaaaa;border-radius:10px;
+     box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;touch-action:none;">
+  <div id="throw-panel-header" style="display:flex;justify-content:space-between;align-items:center;
+       padding:10px 12px;background:#f0f0f0;border-bottom:2px solid #cccccc;
+       cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+    <span style="font-size:13px;font-weight:900;letter-spacing:1px;color:#111111;">THROW COMP DATA</span>
     <div style="display:flex;gap:6px;align-items:center;">
-      <button class="min-btn" onclick="minimizeThrowPanel()" style="background:none;border:1px solid #aaa;border-radius:4px;color:#333;font-size:13px;font-weight:900;padding:2px 8px;cursor:pointer;touch-action:manipulation;" title="Minimize">—</button>
-      <button onclick="toggleThrowPanel()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;touch-action:manipulation;">✕</button>
+      <button onclick="minimizeThrowPanel()" style="background:none;border:1px solid #aaa;border-radius:4px;color:#333;font-size:13px;font-weight:900;padding:2px 8px;cursor:pointer;" title="Minimize">—</button>
+      <button onclick="toggleThrowPanel()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;">✕</button>
     </div>
   </div>
   <!-- Current shot info + record button -->
-  <div id="throw-panel-info" style="padding:4px 8px;border-bottom:1px solid #e8e8e8;background:#fff;">
+  <div style="padding:10px 12px;border-bottom:2px solid #dddddd;background:#ffffff;">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+      <div style="flex:1;font-size:13px;color:#111111;font-weight:700;">
+        <span style="color:#333333;">Cut:</span> <span id="td-cut" style="color:#000;">—</span>
+        &nbsp;&nbsp;<span style="color:#333333;">Geo%:</span> <span id="td-geo" style="color:#000;">—</span>
+        &nbsp;&nbsp;<span style="color:#333333;">Comp%:</span> <span id="td-comp" style="color:#000;font-weight:900;">—</span>
+      </div>
+    </div>
     <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-      <span style="font-size:10px;color:#333;font-weight:700;">Cut:</span> <span id="td-cut" style="font-size:10px;color:#000;font-weight:900;">—</span>
-      <span style="font-size:10px;color:#333;font-weight:700;">Geo:</span> <span id="td-geo" style="font-size:10px;color:#000;font-weight:900;">—</span>
-      <span style="font-size:10px;color:#333;font-weight:700;">Comp:</span> <span id="td-comp" style="font-size:10px;color:#000;font-weight:900;">—</span>
-      <label style="display:flex;align-items:center;gap:3px;font-size:10px;color:#111;cursor:pointer;font-weight:700;">
-        <input type="checkbox" id="td-rail" style="width:11px;height:11px;"> Rail
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#111111;cursor:pointer;font-weight:700;">
+        <input type="checkbox" id="td-rail" style="width:16px;height:16px;"> Rail shot
       </label>
-      <input id="td-note" type="text" placeholder="Note…" autocomplete="off"
-        style="flex:1;min-width:50px;background:#fff;border:1px solid #bbb;border-radius:3px;padding:2px 5px;color:#111;font-size:10px;outline:none;">
-      <button onclick="recordThrowShot()" style="padding:2px 8px;border-radius:3px;border:none;background:#1a4a1a;color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;white-space:nowrap;">REC</button>
+      <input id="td-note" type="text" placeholder="Note (optional)…" autocomplete="off"
+        style="flex:1;min-width:80px;background:#ffffff;border:1px solid #999999;
+               border-radius:4px;padding:5px 8px;color:#111111;font-size:13px;outline:none;">
+      <button onclick="recordThrowShot()" style="padding:6px 16px;border-radius:4px;border:none;
+              background:#1a4a1a;color:#ffffff;font-family:'Lato',sans-serif;font-size:13px;
+              font-weight:900;cursor:pointer;white-space:nowrap;">RECORD</button>
     </div>
   </div>
   <!-- Data log -->
-  <div id="throw-data-list" class="float-panel-body" style="cursor:grab;max-height:18vh;"></div>
-  <!-- Footer: scale + export + clear -->
-  <div id="throw-panel-footer" style="display:flex;gap:4px;padding:4px 8px;border-top:1px solid #e0e0e0;background:#f8f8f8;align-items:center;">
-    <span class="panel-scale-label" id="data-scale-lbl" style="font-size:8px;font-weight:900;color:rgba(0,0,0,0.35);font-family:'Lato',sans-serif;min-width:28px;text-align:right;">100%</span>
-    <input type="range" id="data-scale" min="50" max="100" value="100" oninput="scalePanel('throw-panel','data-scale','data-scale-lbl')" style="flex:1;height:3px;accent-color:rgba(240,223,112,0.8);">
-    <button onclick="exportThrowData()" style="padding:2px 8px;border-radius:3px;border:1px solid #888;background:#fff;color:#111;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">CSV</button>
-    <button onclick="clearThrowData()" style="padding:2px 8px;border-radius:3px;border:1px solid #cc3333;background:#fff;color:#cc3333;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">CLEAR</button>
-
+  <div id="throw-data-list" style="max-height:min(45vh,340px);overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;"></div>
+  <!-- Footer: export + clear -->
+  <div style="display:flex;gap:6px;padding:8px 12px;border-top:2px solid #cccccc;background:#f0f0f0;">
+    <button onclick="exportThrowData()" style="flex:1;padding:7px;border-radius:4px;border:1px solid #888888;
+            background:#ffffff;color:#111111;font-size:12px;font-weight:900;cursor:pointer;">
+      EXPORT CSV
+    </button>
+    <button onclick="clearThrowData()" style="padding:7px 14px;border-radius:4px;border:1px solid #cc3333;
+            background:#ffffff;color:#cc3333;font-size:12px;font-weight:900;cursor:pointer;">
+      CLEAR
+    </button>
   </div>
 </div>
 
@@ -4506,22 +3695,23 @@ function saveThrowData() {
 }
 
 function minimizeThrowPanel() {
-  minimizePanel('throw-panel', document.getElementById('throw-panel-header'));
+  const list = document.getElementById('throw-data-list');
+  const footer = document.querySelector('#throw-panel > div:last-child');
+  const info = document.getElementById('throw-panel').querySelector('div:nth-child(2)');
+  const minimized = list && list.style.display === 'none';
+  if (list) list.style.display = minimized ? '' : 'none';
+  if (info) info.style.display = minimized ? '' : 'none';
 }
 
 function toggleThrowPanel() {
   throwPanelOpen = !throwPanelOpen;
   const panel = document.getElementById('throw-panel');
   if (!panel) return;
-  panel.style.display = throwPanelOpen ? 'flex' : 'none';
+  panel.style.display = throwPanelOpen ? 'block' : 'none';
   if (throwPanelOpen) {
-    bringToTop('throw-panel');
     loadThrowData();
     updateThrowPanelCurrent();
     buildThrowList();
-    requestAnimationFrame(function(){
-      positionPanelAtDock(panel);
-    });
   }
 }
 
@@ -4529,10 +3719,10 @@ function updateThrowPanelCurrent() {
   const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
   const _d = compute(cutDeg);
   const geoPct = Math.round(Math.abs(_d.diagFraction) * 100);
-  const throwDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
+  const throwDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
   const compPct = Math.round(Math.min(1, Math.abs(_d.diagFraction) + throwDelta) * 100);
   const el = (id) => document.getElementById(id);
-  const dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? 'L' : 'R');
+  const dir = cutDeg < 0.5 ? '' : (S._diagDragRh ? 'L' : 'R');
   if(el('td-cut'))  el('td-cut').textContent  = cutDeg.toFixed(1) + '°' + dir;
   if(el('td-geo'))  el('td-geo').textContent  = geoPct + '%';
   if(el('td-comp')) el('td-comp').textContent = compPct + '%';
@@ -4540,7 +3730,7 @@ function updateThrowPanelCurrent() {
 
 function recordThrowShot() {
   const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
-  if (cutDeg < 1.0) { alert('Set a cut angle first.'); return; }
+  if (cutDeg < 0.5) { alert('Set a cut angle first.'); return; }
   const d = compute(cutDeg);
   const geoPct  = Math.round(Math.abs(d.diagFraction) * 100);
   const throwDelta = getThrowComp(cutDeg);
@@ -4675,95 +3865,22 @@ window.render = function() {
     panel.style.left = Math.max(4, window.innerWidth - 440) + 'px';
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName === 'BUTTON') return;
-      e.preventDefault();
-      panel.style.transform = 'none';
       var r = panel.getBoundingClientRect();
-      panel.style.left = r.left + 'px'; panel.style.top = r.top + 'px';
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
       didDrag=false; activePtr=e.pointerId;
-      try{ header.setPointerCapture(e.pointerId); }catch(ex){}
     });
     header.addEventListener('pointermove', function(e){
       if (activePtr===null || e.pointerId!==activePtr) return;
-      var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
       if (!didDrag && Math.hypot(dx,dy)>8) { didDrag=true; try{header.setPointerCapture(e.pointerId);}catch(ex){} }
       if (!didDrag) return;
-      var nx=origLeft+dx;
-      var ny=origTop+dy;
+      var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
+      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
     });
     header.addEventListener('pointerup', function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
-
-    // Bottom drag handle
-    var footer = document.getElementById('throw-panel-footer-drag');
-    if (footer) {
-      footer.addEventListener('pointerdown', function(e){
-        var r=panel.getBoundingClientRect();
-        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
-        didDrag=false; activePtr=e.pointerId;
-        footer.setPointerCapture(e.pointerId);
-      });
-      footer.addEventListener('pointermove', function(e){
-        if (activePtr===null||e.pointerId!==activePtr) return;
-        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
-        if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
-        if (!didDrag) return;
-        panel.style.left=origLeft+dx+'px';
-        panel.style.top=origTop+dy+'px';
-      });
-      footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
-      footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
-    }
-
-    // Data list drag at scroll edge
-    var dataList = document.getElementById('throw-data-list');
-    if (dataList) {
-      var listDragActive=false;
-      dataList.addEventListener('pointerdown', function(e){
-        var atTop=dataList.scrollTop===0, atBottom=dataList.scrollTop+dataList.clientHeight>=dataList.scrollHeight-2;
-        if (!atTop&&!atBottom) return;
-        var r=panel.getBoundingClientRect();
-        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
-        didDrag=false; listDragActive=true; activePtr=e.pointerId;
-        dataList.setPointerCapture(e.pointerId);
-        e.preventDefault();
-      });
-      dataList.addEventListener('pointermove', function(e){
-        if (!listDragActive||e.pointerId!==activePtr) return;
-        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
-        if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
-        if (!didDrag) return;
-        panel.style.left=origLeft+dx+'px';
-        panel.style.top=origTop+dy+'px';
-      });
-      dataList.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
-      dataList.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
-    }
-
-    // Resize handle
-    var resizeHandle = document.getElementById('throw-panel-resize');
-    if (resizeHandle) {
-      var resizing=false, resizeStartX, resizeStartY, resizeStartW, resizeStartH, resizePtr=null;
-      resizeHandle.addEventListener('pointerdown', function(e){
-        e.stopPropagation();
-        resizing=true; resizePtr=e.pointerId;
-        resizeStartX=e.clientX; resizeStartY=e.clientY;
-        resizeStartW=panel.offsetWidth; resizeStartH=panel.offsetHeight;
-        resizeHandle.setPointerCapture(e.pointerId);
-      });
-      resizeHandle.addEventListener('pointermove', function(e){
-        if (!resizing||e.pointerId!==resizePtr) return;
-        var nw=Math.max(260,resizeStartW+(e.clientX-resizeStartX));
-        var nh=Math.max(150,resizeStartH+(e.clientY-resizeStartY));
-        panel.style.width=Math.min(nw,window.innerWidth-8)+'px';
-        if (dataList) { dataList.style.maxHeight=Math.max(60,nh-180)+'px'; dataList.style.minHeight=Math.max(60,nh-180)+'px'; }
-      });
-      resizeHandle.addEventListener('pointerup',     function(e){ resizing=false; resizePtr=null; });
-      resizeHandle.addEventListener('pointercancel', function(e){ resizing=false; resizePtr=null; });
-    }
-
     loadThrowData();
   });
 })();
@@ -4774,135 +3891,44 @@ var _slidersPanelOpen = false;
 var _slidersPositioned = false;
 
 
-// ── Slider group state ───────────────────────────────────────
-var _sgState = {
-  ball:  { on:true, frozen:false },
-  ghost: { on:true, frozen:false }
-};
-
-
-function scaleSliderPanel(val) {
+function toggleSlidersActive() {
   var panel = document.getElementById('sliders-block');
   if (!panel) return;
-  var pct = parseInt(val) / 100;
-  var h = Math.round(150 + 350 * (pct - 0.5));
-  panel.style.height = h + 'px';
-  panel.style.maxHeight = h + 'px';
-}
-
-
-function scalePanel(panelId, sliderId, lblId) {
-  var val = document.getElementById(sliderId) ? parseInt(document.getElementById(sliderId).value) : 100;
-  var wrap = panelId === 'sliders-block'
-    ? document.getElementById('sliders-scale-wrap')
-    : document.getElementById(panelId) ? document.getElementById(panelId).querySelector('.float-panel-body') : null;
-  if (!wrap) return;
-  var scale = val / 100;
-  wrap.style.transformOrigin = 'top left';
-  wrap.style.transform = 'scale(' + scale + ')';
-  var h = Math.round(wrap.scrollHeight * scale);
-  wrap.parentElement.style.height = h + 'px';
-}
-
-
-// Toolbar toggle for Ball Control group (SHOT ADJ)
-var _tbBallOn = true;
-function tbToggleBallGroup() {
-  _tbBallOn = !_tbBallOn;
-  var btn = document.getElementById('tb-shot-adj');
+  var isActive = !panel.classList.contains('sliders-active');
+  panel.classList.toggle('sliders-active', isActive);
+  panel.classList.toggle('sliders-unlocked', isActive);
+  var btn = document.getElementById('sliders-active-btn');
   if (btn) {
-    btn.innerHTML = _tbBallOn ? 'SHOT ADJ ON<br>SLIDERS' : 'SHOT ADJ OFF<br>SLIDERS';
-    btn.style.background  = _tbBallOn ? '#9a2eae' : '#6a1e8e';
-    btn.style.borderColor = _tbBallOn ? '#e060ff' : '#8e3eae';
-    btn.style.color       = _tbBallOn ? '#f0c0ff' : '#dea8ff';
+    btn.textContent = isActive ? 'ACTIVE' : 'INACTIVE';
+    btn.style.background = isActive ? 'rgba(80,200,80,0.2)' : 'rgba(200,80,80,0.15)';
+    btn.style.borderColor = isActive ? 'rgba(80,200,80,0.4)' : 'rgba(200,80,80,0.3)';
+    btn.style.color = isActive ? '#80e080' : '#e08080';
   }
-  sgToggle('ball');
-}
-function sgToggle(group) {
-  _sgState[group].on = !_sgState[group].on;
-  _sgApply(group);
-  // Sync toolbar button if ball group changed
-  if (group === 'ball') {
-    _tbBallOn = _sgState.ball.on;
-    var tbBtn = document.getElementById('tb-shot-adj');
-    if (tbBtn) {
-      tbBtn.innerHTML = _tbBallOn ? 'SHOT ADJ ON<br>SLIDERS' : 'SHOT ADJ OFF<br>SLIDERS';
-      tbBtn.style.background  = _tbBallOn ? '#9a2eae' : '#6a1e8e';
-      tbBtn.style.borderColor = _tbBallOn ? '#e060ff' : '#8e3eae';
-      tbBtn.style.color       = _tbBallOn ? '#f0c0ff' : '#dea8ff';
-    }
-  }
-  onSliders();
-}
-
-function sgFreeze(group) {
-  _sgState[group].frozen = !_sgState[group].frozen;
-  _sgApply(group);
-}
-
-function sgZero(group) {
-  var ids = group === 'ball'
-    ? ['sl-spd','sl-spn','sl-vert']
-    : ['sl-throw-lo','sl-throw-mi','sl-throw-hi'];
-  ids.forEach(function(id){
-    var el = document.getElementById(id);
-    if (el) { el.value = id==='sl-spd' ? 50 : 0; }
+  panel.querySelectorAll('.sgroup').forEach(function(sg) {
+    sg.style.opacity = isActive ? '1' : '0.35';
   });
-  onSliders();
-}
-
-function _sgApply(group) {
-  var st  = _sgState[group];
-  var grp = document.getElementById(group==='ball' ? 'sg-ball' : 'sg-ghost');
-  var onBtn  = document.getElementById(group==='ball' ? 'bc-on' : 'gb-on');
-  var frzBtn = document.getElementById(group==='ball' ? 'bc-freeze' : 'gb-freeze');
-  var ids = group === 'ball'
-    ? ['sl-spd','sl-spn','sl-vert']
-    : ['sl-throw-lo','sl-throw-mi','sl-throw-hi'];
-
-  // ON/OFF button
-  if (onBtn) {
-    onBtn.textContent = st.on ? 'ON' : 'OFF';
-    onBtn.style.background = st.on ? 'rgba(80,200,80,0.2)' : 'rgba(200,80,80,0.2)';
-    onBtn.style.borderColor = st.on ? 'rgba(80,200,80,0.4)' : 'rgba(200,80,80,0.4)';
-    onBtn.style.color       = st.on ? '#80e080' : '#e08080';
-  }
-  // FREEZE button
-  if (frzBtn) {
-    frzBtn.style.background   = st.frozen ? 'rgba(125,211,252,0.25)' : '';
-    frzBtn.style.borderColor  = st.frozen ? 'rgba(125,211,252,0.6)'  : '';
-    frzBtn.style.color        = st.frozen ? '#7dd3fc' : '';
-  }
-  // Dim group and disable sliders when off or frozen
-  var disabled = !st.on || st.frozen;
-  if (grp) grp.style.opacity = st.on ? (st.frozen ? '0.6' : '1') : '0.35';
-  ids.forEach(function(id){
-    var el = document.getElementById(id);
-    if (el) el.disabled = disabled;
+  panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el) {
+    el.disabled = !isActive;
   });
 }
-
-// Keep biasOn in sync with ghost group for render()
-function _syncBias() {
-  biasOn = _sgState.ghost.on && !_sgState.ghost.frozen;
-  _updateBiasBtn();
-}
-
-// Override onSliders to respect group state
-var _origOnSliders = null;
-
-// toggleSlidersActive replaced by sgToggle
 
 function toggleSlidersPanel() {
   _slidersPanelOpen = !_slidersPanelOpen;
   var panel = document.getElementById('sliders-block');
   if (!panel) return;
-  panel.style.display = _slidersPanelOpen ? 'flex' : 'none';
-  if (_slidersPanelOpen) {
-    bringToTop('sliders-block');
-    requestAnimationFrame(function(){
-      positionPanelAtDock(panel);
-    });
+  // Apply current slider lock state to the panel
+  if (panel) panel.classList.toggle('sliders-unlocked', !lockSliders);
+  const _sg = panel.querySelector('.sgroup');
+  if (_sg) _sg.style.opacity = lockSliders ? '0.4' : '1';
+  panel.querySelectorAll('.sgroup input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
+  panel.style.display = _slidersPanelOpen ? 'block' : 'none';
+  if (_slidersPanelOpen && !_slidersPositioned) {
+    var btb = document.getElementById('btb');
+    var r = btb ? btb.getBoundingClientRect() : {top:200, left:10};
+    var ph = panel.offsetHeight || 200;
+    panel.style.top  = Math.max(10, r.top - ph - 8) + 'px';
+    panel.style.left = r.left + 'px';
+    _slidersPositioned = true;
   }
 }
 
@@ -4915,18 +3941,15 @@ function toggleSlidersPanel() {
     if (!panel || !header) return;
     header.addEventListener('pointerdown', function(e){
       if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
-      e.preventDefault();
-      panel.style.transform = 'none';
       var r=panel.getBoundingClientRect();
-      panel.style.left=r.left+'px'; panel.style.top=r.top+'px';
       startX=e.clientX; startY=e.clientY;
       origLeft=r.left; origTop=r.top;
       didDrag=false; activePtr=e.pointerId;
-      try{ header.setPointerCapture(e.pointerId); }catch(x){}
+      header.setPointerCapture(e.pointerId);
     });
     header.addEventListener('pointermove', function(e){
       if (activePtr===null||e.pointerId!==activePtr) return;
-      var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
       if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; panel.style.transition='none'; }
       if (didDrag){ panel.style.left=(origLeft+dx)+'px'; panel.style.top=(origTop+dy)+'px'; }
     });
@@ -4934,299 +3957,7 @@ function toggleSlidersPanel() {
     header.addEventListener('pointercancel', function(e){ activePtr=null; });
   });
 })();
-
-// ── PINCH ZOOM COMPENSATION ───────────────────────────────────
-// Keeps the BTB toolbar at constant visual size during pinch zoom.
-(function(){
-  if (!window.visualViewport) return;
-  function applyViewportScale() {
-    var s = window.visualViewport.scale;
-    var btb = document.getElementById('btb');
-    if (btb) {
-      btb.style.transform = 'scale(' + (1/s) + ')';
-      btb.style.transformOrigin = 'bottom left';
-    }
-    var dock = document.getElementById('dock');
-    if (dock) {
-      dock.style.transform = 'scale(' + (1/s) + ')';
-      dock.style.transformOrigin = 'bottom center';
-    }
-    window._vpScale = s;
-  }
-  window.visualViewport.addEventListener('resize', applyViewportScale);
-  window.visualViewport.addEventListener('scroll', applyViewportScale);
-  applyViewportScale();
-})();
-
-// Collapsed circle — drag moves BTB without expanding
-(function(){
-  window.addEventListener('load', function(){
-    var circle = document.getElementById('btb-collapsed');
-    var btb    = document.getElementById('btb');
-    if (!circle || !btb) return;
-    var startX, startY, origLeft, origTop, didDrag, ptr=null;
-    circle.addEventListener('pointerdown', function(e){
-      e.stopPropagation(); e.preventDefault();
-      var r = btb.getBoundingClientRect();
-      btb.style.left = r.left+'px'; btb.style.top = r.top+'px'; btb.style.bottom='auto';
-      startX=e.clientX; startY=e.clientY;
-      origLeft=r.left; origTop=r.top;
-      didDrag=false; ptr=e.pointerId;
-      circle.setPointerCapture(e.pointerId);
-    });
-    circle.addEventListener('pointermove', function(e){
-      if (ptr===null||e.pointerId!==ptr) return;
-      var dx=e.clientX-startX, dy=e.clientY-startY;
-      if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
-      if (!didDrag) return;
-      e.stopPropagation();
-      btb.style.left=Math.max(0,origLeft+dx)+'px';
-      btb.style.top =Math.max(0,origTop+dy)+'px';
-    });
-    circle.addEventListener('pointerup', function(e){
-      if (e.pointerId!==ptr) return;
-      e.stopPropagation(); ptr=null;
-      if (!didDrag) btbExpand();
-    });
-    circle.addEventListener('pointercancel', function(){ ptr=null; });
-    circle.addEventListener('click', function(e){ e.stopPropagation(); });
-  });
-})();
 </script>
 
-<!-- Long-press tooltip -->
-<div id="lp-tooltip"></div>
-
-<!-- ── DOCK ── -->
-<div id="dock">
-  <div id="dock-mini" title="Open dock">
-    <svg width="36" height="36" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none;">
-      <line x1="6"  y1="30" x2="30" y2="6"  stroke="#f0df70" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="12" y1="30" x2="30" y2="12" stroke="#f0df70" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-      <line x1="6"  y1="24" x2="24" y2="6"  stroke="#f0df70" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-    </svg>
-  </div>
-  <div id="dock-bar">
-    <div class="dock-slot" id="dock-lock" title="Lock / Unlock all">
-      <div style="display:flex;flex-direction:column;gap:3px;align-items:center;pointer-events:none;">
-        <div class="dline" style="width:14px;height:2px;background:#f0df70;"></div>
-        <div class="dline" style="width:10px;height:2px;background:#f0df70;"></div>
-        <div class="dline" style="width:14px;height:2px;background:#f0df70;"></div>
-      </div>
-    </div>
-    <div class="dock-slot" id="dock-learn" title="Learn">
-      <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
-      <div class="dline" style="width:12px;height:3px;background:#f0df70;"></div>
-      <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
-    </div>
-    <div class="dock-slot" id="dock-sliders" title="Sliders">
-      <div class="dline" style="width:16px;height:3px;background:#c084fc;"></div>
-      <div class="dline" style="width:16px;height:3px;background:#c084fc;"></div>
-      <div class="dline" style="width:16px;height:3px;background:#c084fc;"></div>
-    </div>
-
-    <div class="dock-slot" id="dock-tools" title="Tools panel">
-      <div style="display:flex;flex-direction:row;align-items:center;gap:2.5px;pointer-events:none;">
-        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
-        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
-        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
-        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
-        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
-      </div>
-    </div>
-    <div class="dock-slot" id="dock-swap" title="Swap Table / Perception">
-      <div style="pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:2px;">
-        <svg width="14" height="18" viewBox="0 0 14 18" style="pointer-events:none;">
-          <path d="M4 2 L4 16 M1 12 L4 16 L7 12" stroke="#90f0f8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <path d="M10 16 L10 2 M7 6 L10 2 L13 6" stroke="#90f0f8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        </svg>
-      </div>
-    </div>
-    <div id="dock-minimize" title="Minimize dock"></div>
-  </div>
-</div>
-
-<script>
-// ── DOCK ─────────────────────────────────────────────────────
-(function(){
-  var _open = { lock:false, learn:false, sliders:false, tools:false };
-
-  function setActive(key, on) {
-    _open[key] = on;
-    var el = document.getElementById('dock-' + key);
-    if (el) el.classList.toggle('active', on);
-  }
-
-  window.dockCollapse = function() {
-    var bar=document.getElementById('dock-bar'), mini=document.getElementById('dock-mini');
-    if (bar)  bar.style.display='none';
-    if (mini) mini.style.display='flex';
-  };
-  window.dockExpand = function() {
-    var bar=document.getElementById('dock-bar'), mini=document.getElementById('dock-mini');
-    if (bar)  bar.style.display='flex';
-    if (mini) mini.style.display='none';
-  };
-
-  window.addEventListener('load', function(){
-    function bind(id, fn) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
-    }
-    bind('dock-lock',     function(){ toggleAllLocks(); setActive('lock', !lockTable||!lockSliders); });
-    bind('dock-learn',    function(){ var on=!_open.learn;   toggleShotLibrary();  setActive('learn',  on); });
-    bind('dock-sliders',  function(){ var on=!_open.sliders; toggleSlidersPanel(); setActive('sliders',on); });
-    bind('dock-tools',    function(){ var on=!_open.tools; toggleBtb(); setActive('tools', on); });
-    bind('dock-swap',     function(){ swapPanels(); });
-    bind('dock-minimize', function(){ dockCollapse(); });
-    bind('dock-mini',     function(){ dockExpand(); });
-
-    var bar = document.getElementById('dock-bar');
-    var dock = document.getElementById('dock');
-    if (!bar || !dock) return;
-    var sx, sy, ox, oy, dragging=false, ptr=null, isXfm=true;
-    bar.addEventListener('pointerdown', function(e){
-      if (e.target.closest('.dock-slot')||e.target.id==='dock-minimize') return;
-      var r=dock.getBoundingClientRect();
-      if(isXfm){dock.style.transform='none';dock.style.left=r.left+'px';dock.style.top=r.top+'px';dock.style.bottom='auto';isXfm=false;}
-      sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;dragging=false;ptr=e.pointerId;
-      bar.setPointerCapture(e.pointerId);
-    });
-    bar.addEventListener('pointermove',function(e){
-      if(ptr===null||e.pointerId!==ptr)return;
-      var dx=e.clientX-sx,dy=e.clientY-sy;
-      if(!dragging&&Math.hypot(dx,dy)>6)dragging=true;
-      if(!dragging)return;
-      dock.style.left=Math.max(0,Math.min(window.innerWidth-dock.offsetWidth,ox+dx))+'px';
-      dock.style.top=Math.max(0,Math.min(window.innerHeight-dock.offsetHeight,oy+dy))+'px';
-    });
-    bar.addEventListener('pointerup',function(e){if(e.pointerId===ptr)ptr=null;});
-    bar.addEventListener('pointercancel',function(){ptr=null;});
-
-    // Snap dock to center of table on load
-    function snapDockToTable() {
-      var table = document.getElementById('block-ball-wrap');
-      if (!table || !dock) return;
-      var r = table.getBoundingClientRect();
-      if (r.width === 0) { requestAnimationFrame(snapDockToTable); return; }
-      dock.style.transform = 'none';
-      dock.style.left = (r.left + r.width/2 - (dock.offsetWidth||180)/2) + 'px';
-      dock.style.top  = (r.top  + r.height/2 - (dock.offsetHeight||44)/2) + 'px';
-      dock.style.bottom = 'auto'; isXfm = false;
-    }
-    requestAnimationFrame(snapDockToTable);
-  });
-})();
-
-// ── LONG-PRESS TOOLTIP ───────────────────────────────────────
-(function(){
-  var tip=document.getElementById('lp-tooltip');
-  if(!tip)return;
-  var timer=null;
-  function show(el,x,y){
-    var label=el.getAttribute('title')||el.getAttribute('data-tip');
-    if(!label)return;
-    tip.textContent=label;tip.style.opacity='0';tip.style.display='block';
-    var tw=tip.offsetWidth;
-    tip.style.left=Math.max(4,Math.min(window.innerWidth-tw-4,x-tw/2))+'px';
-    tip.style.top=Math.max(4,y-tip.offsetHeight-10)+'px';
-    tip.style.opacity='1';
-  }
-  function hide(){tip.style.opacity='0';clearTimeout(timer);timer=null;}
-  document.addEventListener('pointerdown',function(e){
-    var el=e.target.closest('[title],[data-tip]');if(!el)return;
-    timer=setTimeout(function(){show(el,e.clientX,e.clientY);},500);
-  },true);
-  document.addEventListener('pointerup',function(){hide();},true);
-  document.addEventListener('pointermove',function(){clearTimeout(timer);timer=null;},true);
-  document.addEventListener('pointercancel',function(){hide();},true);
-})();
-</script>
-
-
-<script>
-// Snap dock to bottom of Perception panel on load
-window.addEventListener('load', function(){
-  function snapDock() {
-    var dock = document.getElementById('dock');
-    var perc = document.getElementById('block-ball-wrap');
-    if (!dock || !perc) { requestAnimationFrame(snapDock); return; }
-    var r = perc.getBoundingClientRect();
-    if (r.width === 0) { requestAnimationFrame(snapDock); return; }
-    var dw = dock.offsetWidth || 220;
-    dock.style.transform = 'none';
-    dock.style.left   = Math.max(4, r.left + r.width/2 - dw/2) + 'px';
-    dock.style.top    = Math.max(4, r.bottom - dock.offsetHeight - 4) + 'px';
-    dock.style.bottom = 'auto';
-  }
-  snapDock();
-});
-
-// ── Edge resize for all float panels ──────────────────────────
-function wireEdgeResize(panelId) {
-  var panel = document.getElementById(panelId);
-  if (!panel) return;
-  var EDGE = 18; // px threshold for edge detection
-  var ptr=null, sx, sy, sw, sh, edge={r:false,b:false};
-
-  panel.addEventListener('pointerdown', function(e){
-    // Only fire on non-interactive elements
-    if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT'||
-        e.target.tagName==='SPAN'||e.target.closest('button, input')) return;
-    var r = panel.getBoundingClientRect();
-    var onRight  = e.clientX > r.right  - EDGE;
-    var onBottom = e.clientY > r.bottom - EDGE;
-    if (!onRight && !onBottom) return;
-    e.stopPropagation(); e.preventDefault();
-    ptr=e.pointerId; sx=e.clientX; sy=e.clientY;
-    sw=panel.offsetWidth; sh=panel.offsetHeight;
-    edge={r:onRight, b:onBottom};
-    try{ panel.setPointerCapture(ptr); }catch(x){}
-  }, {passive:false});
-
-  panel.addEventListener('pointermove', function(e){
-    if(e.pointerId!==ptr) return;
-    if(edge.r) panel.style.width  = Math.max(180, sw+(e.clientX-sx))+'px';
-    if(edge.b) { panel.style.height=Math.max(80, sh+(e.clientY-sy))+'px'; panel.style.maxHeight='none'; }
-  });
-  panel.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr) ptr=null; });
-  panel.addEventListener('pointercancel', function(){ ptr=null; });
-
-  // Show resize cursor near edges
-  panel.addEventListener('pointermove', function(e){
-    if (ptr) return;
-    var r = panel.getBoundingClientRect();
-    var onRight  = e.clientX > r.right  - EDGE;
-    var onBottom = e.clientY > r.bottom - EDGE;
-    panel.style.cursor = (onRight&&onBottom)?'se-resize':onRight?'e-resize':onBottom?'s-resize':'';
-  });
-  panel.addEventListener('pointerleave', function(){ if(!ptr) panel.style.cursor=''; });
-}
-
-window.addEventListener('load', function(){
-  wireEdgeResize('shot-library-panel');
-  wireEdgeResize('throw-panel');
-  wireEdgeResize('sliders-block');
-});
-
-</script>
-<script>
-// Fix minimize buttons for touch — pointerup fires reliably
-window.addEventListener('load', function(){
-  document.querySelectorAll('.min-btn').forEach(function(btn){
-    btn.addEventListener('pointerup', function(e){
-      e.stopPropagation();
-      var panelId = btn.closest('[id]') ? btn.closest('[id]').id : null;
-      // Find which panel this belongs to
-      var panel = btn.closest('.float-panel, #sliders-block, #shot-library-panel, #throw-panel');
-      var hdr   = btn.closest('.float-panel-header, #sliders-handle, #shot-lib-header, #throw-panel-header');
-      if (panel && hdr) {
-        if (panel.id === 'throw-panel') minimizeThrowPanel();
-        else minimizePanel(panel.id, hdr);
-      }
-    });
-  });
-});
-</script>
+</body>
 </html>

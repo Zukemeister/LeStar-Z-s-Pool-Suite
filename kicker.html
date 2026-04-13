@@ -166,6 +166,90 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.18);padding:
 
 #sl-bias-fat::-webkit-slider-thumb,#sl-bias-med::-webkit-slider-thumb,#sl-bias-thin::-webkit-slider-thumb{background:#c890f0;}
 #sl-bias-fat,#sl-bias-med,#sl-bias-thin{-webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;}
+/* ── DOCK ── */
+#dock {
+  position: fixed; bottom: max(18px, env(safe-area-inset-bottom, 18px)); left: 50%; transform: translateX(-50%);
+  z-index: 8900; display: flex; flex-direction: column; align-items: center;
+  gap: 6px; user-select: none; -webkit-user-select: none;
+}
+#dock-bar {
+  display: flex; flex-direction: row; align-items: center; gap: 10px;
+  background: rgba(10,15,10,0.88); border: 1px solid rgba(240,223,112,0.3);
+  border-radius: 28px; padding: 8px 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  touch-action: none; cursor: grab;
+}
+.dock-slot {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(20,30,20,0.9); border: 1.5px solid rgba(240,223,112,0.45);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; touch-action: manipulation;
+  flex-direction: column; gap: 3px;
+  transition: border-color 0.15s, transform 0.1s; flex-shrink: 0;
+}
+.dock-slot.active { border-color: rgba(255,255,255,0.85); transform: scale(1.12); }
+.dock-slot .dline { border-radius: 1px; pointer-events: none; display: block; }
+#dock-minimize { width: 36px; height: 5px; background: rgba(240,223,112,0.35); border-radius: 3px; cursor: pointer; touch-action: manipulation; }
+#dock-mini {
+  display: none; width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(10,15,10,0.88); border: 1.5px solid rgba(240,223,112,0.55);
+  cursor: pointer; touch-action: manipulation; box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  overflow: hidden; position: relative;
+}
+
+/* ── SCALEABLE PANEL ── */
+.panel-scale-wrap {
+  transform-origin: top left;
+  transition: transform 0.1s ease;
+}
+.panel-scale-control {
+  display:flex; align-items:center; gap:5px; padding: 3px 8px;
+  background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.05);
+}
+.panel-scale-control input[type=range] {
+  flex:1; height:2px; accent-color: #888;
+  background: #333; border-radius:1px; cursor:pointer;
+}
+.panel-scale-control input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:8px; height:8px;
+  border-radius:50%; background:#888; cursor:pointer;
+}
+.panel-scale-label {
+  font-size:8px; font-weight:900; color:rgba(255,255,255,0.7);
+  font-family:'Lato',sans-serif; white-space:nowrap; min-width:28px; text-align:right;
+}
+
+.tg-btn {
+  font-family: 'Lato', sans-serif;
+  font-size: 11px; font-weight: 900; letter-spacing: 0.04em;
+  padding: 7px 10px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer; touch-action: manipulation;
+  outline: none; -webkit-tap-highlight-color: transparent;
+  white-space: nowrap; line-height: 1.3;
+  transition: filter 0.15s, opacity 0.1s;
+  -webkit-user-select: none; user-select: none;
+  box-sizing: border-box;
+  min-height: 44px; height: 44px;
+  min-width: 80px;
+  overflow: hidden;
+}
+.tg-btn:active { opacity: 0.7; }
+.tg-btn.on { border-color: rgba(255,255,255,0.6); filter: none; }
+.tg-green:not(.on)  { filter: brightness(0.8); }
+.tg-gold:not(.on)   { filter: brightness(0.8); }
+.tg-brown:not(.on)  { filter: brightness(0.8); }
+.tg-green  { background:#1c5c08; color:#a8f060; border-color:#2a7a10; }
+.tg-green.on { background:#2e8c14; border-color:#60c030; }
+.tg-gold   { background:#7a6006; color:#f0df70; border-color:#9a7c0c; }
+.tg-gold.on { background:#c0a018; border-color:#f0df70; }
+.tg-brown  { background:#6a3606; color:#f0c060; border-color:#8a4e0e; }
+.tg-blue   { background:#1c3c8e; color:#a8ccff; border-color:#2c58ae; }
+.tg-red    { background:#7a0e0e; color:#ffaaaa; border-color:#a02424; }
+.tg-red.locked { background:#ae1c1c; border-color:#ff3c3c; }
+.tg-orange { background:#7a3a06; color:#f0a060; border-color:#aa5a10; }
+.tg-orange.on { background:#c06010; border-color:#f0a060; }
+.tg-orange:not(.on) { filter: brightness(0.8); }
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -459,7 +543,7 @@ function loadShot(idx) {
   </div>
 </div>
 
-<div id="block-sliders"><div class="sgroup">
+<div id="block-sliders" style="display:block;"><div class="sgroup">
   <div class="srow">
     <span class="slbl">speed</span>
     <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
@@ -472,16 +556,30 @@ function loadShot(idx) {
       <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
       <span class="sval" id="sv-spn">center</span>
   </div>
-  <div id="bias-sliders" style="display:none;">
-  <div class="srow" style="margin-top:6px">
-    <span class="slbl" style="color:#c890f0;">BIAS</span>
-    <input type="range" id="sl-bias" min="-12" max="12" value="0" oninput="onSliders()">
-    <span id="sv-bias-n" style="font-size:11px;font-weight:900;color:rgba(200,144,240,0.5);min-width:14px;text-align:center;">0</span>
-    <span class="sval" id="sv-bias" style="color:#c890f0;">0</span>
-    <button class="vbtn" onclick="biasStep(-1)">−</button>
-    <button class="vbtn" onclick="biasStep(1)">+</button>
+  <!-- /bias-sliders -->
+</div>
+<div id="bias-sliders" style="display:block;margin-top:4px;">
+  <div id="bias-row" style="display:flex;align-items:center;gap:8px;padding:5px 10px;background:transparent;opacity:0.3;pointer-events:none;">
+    <span style="font-size:9px;font-weight:900;letter-spacing:1px;color:#ff8c00;white-space:nowrap;flex:1;">HOW THIS SHOT REALLY GOES</span>
+    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">L</span>
+    <svg id="bias-svg" width="160" height="28" style="flex-shrink:0;touch-action:none;cursor:grab;">
+      <rect x="6" y="10" width="148" height="8" rx="4" fill="rgba(255,140,0,0.25)" stroke="#ff8c00" stroke-width="1.5"/>
+      <rect id="bias-fill" x="6" y="10" width="74" height="8" rx="4" fill="rgba(255,140,0,0.6)"/>
+      <circle id="bias-thumb" cx="80" cy="14" r="12" fill="url(#biasgrd)" stroke="none"
+        style="filter:drop-shadow(0 0 4px rgba(200,0,0,0.6));"/>
+      <line x1="80" y1="4" x2="80" y2="24" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <defs>
+        <radialGradient id="biasgrd" cx="35%" cy="28%" r="65%">
+          <stop offset="0%" stop-color="#ff9090"/>
+          <stop offset="35%" stop-color="#ee2020"/>
+          <stop offset="80%" stop-color="#aa0808"/>
+          <stop offset="100%" stop-color="#6a0808"/>
+        </radialGradient>
+      </defs>
+    </svg>
+    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">R</span>
+    <button id="bias-zero-btn" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZERO</button>
   </div>
-  </div><!-- /bias-sliders -->
 </div>
 </div><!-- /block-sliders -->
 
@@ -814,6 +912,17 @@ function loadShot(idx) {
   <!-- Cue ball -->
   <circle id="cb-shadow" cx="171" cy="131" r="10" fill="#000" opacity="0.32"/>
   <circle id="cb"        cx="170" cy="130" r="10" fill="url(#gBall)" stroke="#ccccbb" stroke-width="1" cursor="grab"/>
+      <!-- Blocker zones (dashed yellow circles) -->
+      <circle id="xb1-zone" cx="150" cy="170" r="30" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7" style="pointer-events:none;"/>
+      <circle id="xb2-zone" cx="310" cy="100" r="30" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7" style="pointer-events:none;"/>
+      <!-- Extra blocker ball 1 -->
+      <circle id="xb1-shadow" cx="150" cy="171" r="10" fill="#000" opacity="0.32"/>
+      <circle id="xb1"        cx="150" cy="170" r="10" fill="url(#gOB)"   stroke="#c04020" stroke-width="0.5" cursor="grab"/>
+      <circle id="xb1-hi"     cx="146" cy="166" r="3.5" fill="#ffb0a0" opacity="0.7"/>
+      <!-- Extra blocker ball 2 -->
+      <circle id="xb2-shadow" cx="310" cy="101" r="10" fill="#000" opacity="0.32"/>
+      <circle id="xb2"        cx="310" cy="100" r="10" fill="#4090f0"     stroke="#2060c0" stroke-width="0.5" cursor="grab"/>
+      <circle id="xb2-hi"     cx="306" cy="96"  r="3.5" fill="#c0e0ff" opacity="0.7"/>
   <circle id="cb-hi"     cx="166" cy="126" r="3.5" fill="#ffffff" opacity="0.55"/>
   <circle id="cb-dot"    cx="170" cy="130" r="1.5" fill="#999" opacity="0.4"/>
   <!-- Target OB — stationary, shown when a library shot is loaded -->
@@ -848,7 +957,7 @@ function loadShot(idx) {
 
 <!-- ── BUTTON ROW ── -->
 
-<div id="swap-container" style="display:flex;flex-direction:column;"> style="display:flex;flex-direction:column;">
+<div id="swap-container" style="display:flex;flex-direction:column;">
 <div id="block-ball">
 <div id="contact-pills"></div>
 <div id="contact-wrap">
@@ -859,7 +968,7 @@ function loadShot(idx) {
 </div><!-- /block-ball -->
 
 </div><!-- /swap-container -->
-<div id="personal-bias" style="display:none;text-align:center;font-size:10px;font-weight:900;letter-spacing:1px;color:rgba(240,223,112,0.6);padding:3px 0 2px;">PERSONAL BIAS: —</div>
+
   <!-- SHOT LIBRARY PANEL — floating, draggable -->
 </div><!-- /zoom-wrap -->
 <div id="shot-library-panel" style="display:none;position:fixed;z-index:8888;width:min(380px,96vw);background:rgba(10,15,10,0.97);border:1px solid rgba(240,223,112,0.35);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);overflow:hidden;touch-action:none;">
@@ -878,9 +987,8 @@ function loadShot(idx) {
       <div style="width:32px;height:3px;border-radius:2px;background:rgba(240,223,112,0.25);pointer-events:none;"></div>
     </div>
   </div>
-<div id="readouts"></div>
+<div id="readouts" style="display:none;"></div>
 </div><!-- /outer-wrap -->
-<footer>LeStar Z Pool Suite · Zukemeister · zukemeister.github.io</footer>
 </div>
 
 <script>
@@ -1097,6 +1205,37 @@ function sT(id,v){const e=$(id);if(e)e.textContent=v;}
 // ─────────────────────────────────────────────────────────────────────────────
 // RENDER
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ── BLOCKER BALL PATH CLIPPING ──
+function clipSegToBlockers(x1, y1, x2, y2) {
+  // Returns {x, y} of first blocker hit, or null if clear
+  // Blocking zone = 30px (3 ball radii = CB r + blocker r + some margin)
+  var BLOCK_R = 30;
+  var blockers = [];
+  ['xb1','xb2'].forEach(function(id){
+    var b = document.getElementById(id);
+    if (b) blockers.push({x: parseFloat(b.getAttribute('cx')), y: parseFloat(b.getAttribute('cy'))});
+  });
+
+  var dx = x2-x1, dy = y2-y1, len = Math.hypot(dx,dy);
+  if (len < 1) return null;
+  var ux = dx/len, uy = dy/len;
+  var best = null, bestT = len;
+
+  blockers.forEach(function(b){
+    // Project blocker onto ray
+    var tx = b.x-x1, ty = b.y-y1;
+    var t = tx*ux + ty*uy;
+    if (t < 0 || t > len) return;
+    var px = x1+t*ux, py = y1+t*uy;
+    var dist = Math.hypot(b.x-px, b.y-py);
+    if (dist < BLOCK_R && t < bestT) {
+      bestT = t - Math.sqrt(BLOCK_R*BLOCK_R - dist*dist);
+      best = {x: x1+bestT*ux, y: y1+bestT*uy};
+    }
+  });
+  return best;
+}
 function render(){
   const{cb,aimAngle,numRails}=S;
 
@@ -1123,14 +1262,20 @@ function render(){
   sC('s0-hdl',hx,hy);
   sV('seg0',true);
 
-  if (segs.length > 0) { sL('s0-stub',cb.x,cb.y,hx,hy); }
+  if (segs.length > 0) { var _clipStub = clipSegToBlockers(cb.x,cb.y,hx,hy);
+  sL('s0-stub',cb.x,cb.y,_clipStub?_clipStub.x:hx,_clipStub?_clipStub.y:hy); }
   else { sL('s0-stub',0,0,0,0); }
 
+  var _blocked = false;
   segs.forEach((seg,i)=>{
+    if (_blocked) { sL(`s${i}-line`,0,0,0,0); sV('seg'+i,false); return; }
     const fx=i===0?cb.x+Math.cos(aimAngle)*(BALL_R+2):seg.from.x;
     const fy=i===0?cb.y+Math.sin(aimAngle)*(BALL_R+2):seg.from.y;
-    sL(`s${i}-line`,fx,fy,seg.to.x,seg.to.y);
-    sC(`s${i}-dot`,seg.to.x,seg.to.y);
+    var _clip = clipSegToBlockers(fx,fy,seg.to.x,seg.to.y);
+    var _ex = _clip ? _clip.x : seg.to.x, _ey = _clip ? _clip.y : seg.to.y;
+    sL(`s${i}-line`,fx,fy,_ex,_ey);
+    if (_clip) { _blocked = true; sC(`s${i}-dot`,0,0); sV(`s${i}-dot`,false); sV('seg'+i,true); return; }
+    if (!_blocked) sC(`s${i}-dot`,seg.to.x,seg.to.y);
     sV('seg'+i,true);
 
     sT(`rd${i}-con`, RAIL_SHORT[seg.rail]+' ◆ '+toDiamond(seg.to.x,seg.to.y,seg.rail));
@@ -1148,13 +1293,15 @@ function render(){
     sT(`rd${i}-aim`,'—');sT(`rd${i}-con`,'—');sT(`rd${i}-nxt`,'—');sT(`rd${i}-reb`,'—');
   }
 
-  if(segs.length>0){
+  if(segs.length>0 && !_blocked){
     const last=segs[segs.length-1].to;
     sC('ep-ring',last.x,last.y);
     sC('ep-dot', last.x,last.y);
     $('ep-lbl').setAttribute('x',last.x);
     $('ep-lbl').setAttribute('y',last.y-15);
     sV('ep-ring',true);sV('ep-dot',true);sV('ep-lbl',true);
+  } else if (_blocked) {
+    sV('ep-ring',false);sV('ep-dot',false);sV('ep-lbl',false);
   }
   if (S.selectedContact >= segs.length) S.selectedContact = Math.max(0, segs.length-1);
   if (S.contactOn) drawContact(segs);
@@ -1803,7 +1950,7 @@ let panelsSwapped = false;
 
 function toggleFloatToolbar() {
   const panel = document.getElementById('ftb-panel');
-  const arrow = document.getElementById('ftb-toggle');
+  const arrow = document.getElementById('ftb-arrow');
   const tb    = document.getElementById('float-toolbar');
   if (!panel) return;
   const open = panel.style.display === 'none';
@@ -1885,13 +2032,16 @@ function toggleFloatToolbar() {
   });
 })();
 
+var _biasOn = false;
 function toggleBias() {
-  const el = document.getElementById('bias-sliders');
-  const btn = document.getElementById('btn-bias');
-  if (!el) return;
-  const on = el.style.display === 'none';
-  el.style.display = on ? 'block' : 'none';
-  if (btn) { btn.style.background = on ? '#4ade80' : '#f0df70'; btn.style.color = on ? '#001a00' : '#1a1400'; }
+  _biasOn = !_biasOn;
+  var svg = document.getElementById('bias-svg');
+  var zb  = document.getElementById('bias-zero-btn');
+  var btn = document.getElementById('btn-bias');
+  var row = document.getElementById('bias-row');
+  if (row) { row.style.opacity = _biasOn ? '1' : '0.3'; row.style.pointerEvents = _biasOn ? 'auto' : 'none'; }
+  if (!_biasOn && typeof biasZero === 'function') biasZero();
+  if (btn) { btn.style.background = _biasOn ? 'rgba(255,80,0,0.5)' : 'rgba(255,80,0,0.2)'; }
 }
 
 let panMode = false;
@@ -1910,16 +2060,16 @@ function togglePan() {
 
 function swapPanels() {
   panelsSwapped = !panelsSwapped;
-  const sliders   = document.getElementById('block-sliders');
-  const tableWrap = document.getElementById('table-wrap');
-  const swapCont  = document.getElementById('swap-container');
-  const lbl       = document.getElementById('swap-lbl');
+  var sliders  = document.getElementById('block-sliders');
+  var bias     = document.getElementById('bias-sliders');
+  var tableWrap= document.getElementById('table-wrap');
+  if (!sliders || !tableWrap) return;
+  var parent = tableWrap.parentNode;
   if (panelsSwapped) {
-    swapCont.appendChild(sliders);
-    if (lbl) lbl.innerHTML = 'SLIDERS<br>DOWN';
+    parent.insertBefore(tableWrap, sliders);
   } else {
-    tableWrap.parentNode.insertBefore(sliders, tableWrap);
-    if (lbl) lbl.innerHTML = 'SLIDERS<br>UP';
+    parent.insertBefore(sliders, tableWrap);
+    if (bias) parent.insertBefore(bias, tableWrap);
   }
 }
 
@@ -1970,20 +2120,32 @@ function showSnapLabel(svgEl,x,y,label,ballId){
   snapLabelTimer=setTimeout(()=>{lbl.style.opacity='0';setTimeout(()=>lbl.remove(),400);},2000);
 }
 function toggleSnap(){
-  snapOn=!snapOn;const btn=document.getElementById('ep-snap');
-  if(btn){btn.style.background=snapOn?'#f0df70':'#3a3010';btn.style.color=snapOn?'#1a1400':'#f0df70';btn.style.border=snapOn?'1px solid #f0df70':'1px solid #5a5020';btn.blur();}
+  snapOn=!snapOn;
+  var btn=document.getElementById('ep-snap');
+  if(btn){ btn.innerHTML=snapOn?'SNAP<br>ON':'SNAP<br>OFF'; btn.style.background=snapOn?'#f0df70':'#3a3010'; btn.style.color=snapOn?'#1a1400':'#f0df70'; btn.style.border=snapOn?'1px solid #f0df70':'1px solid #5a5020'; btn.blur(); }
   document.activeElement&&document.activeElement.blur();
 }
 // ── LOCK SYSTEM ──────────────────────────────────────────────
+function _syncLockButtons() {
+  var tbl = document.getElementById('ep-tbl') || document.getElementById('ep-lt');
+  var sl  = document.getElementById('ep-sl')  || document.getElementById('ep-ls');
+  if (tbl) { tbl.innerHTML = lockTable  ? 'TABLE<br>LOCKED'   : 'TABLE<br>OPEN';   tbl.classList.toggle('locked', lockTable); }
+  if (sl)  { sl.innerHTML  = lockSliders? 'SLIDERS<br>LOCKED' : 'SLIDERS<br>OPEN'; sl.classList.toggle('locked', lockSliders); }
+}
 function toggleLock(which){
   if(which==='table')   lockTable  =!lockTable;
   if(which==='sliders') lockSliders=!lockSliders;
-  const lt=$('ep-lt'),ls=$('ep-ls');
-  if(lt){ lt.classList.toggle('locked',lockTable); lt.style.background=''; lt.style.color=''; lt.style.border=''; }
-  if(ls){ ls.classList.toggle('locked',lockSliders); ls.style.background=''; ls.style.color=''; ls.style.border=''; }
+  // '_sync' just applies current state without toggling
+  _syncLockButtons();
   const tblEl=$('tbl');if(tblEl)tblEl.style.touchAction=lockTable?'auto':'none';
-  const sg=document.querySelector('.sgroup');if(sg)sg.style.opacity=lockSliders?'0.4':'1';
-  document.querySelectorAll('.sgroup input[type=range]').forEach(el=>{el.disabled=lockSliders;});
+  // Lock all sgroups EXCEPT bias-sliders (controlled only by REALITY CHECK)
+  document.querySelectorAll('#block-sliders .sgroup').forEach(function(sg){
+    sg.style.opacity = lockSliders ? '0.4' : '1';
+    sg.querySelectorAll('input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
+  });
+  // Sync bias row with slider lock
+  if (!lockSliders && !_biasOn) { _biasOn = true; var br=document.getElementById('bias-row'); if(br){br.style.opacity='1';br.style.pointerEvents='auto';} }
+  if (lockSliders)  { _biasOn = false; var br=document.getElementById('bias-row'); if(br){br.style.opacity='0.3';br.style.pointerEvents='none';} }
   document.activeElement&&document.activeElement.blur();
 }
 // ── ZERO ──────────────────────────────────────────────────────
@@ -2053,41 +2215,37 @@ function edgeZoomReset(){
 
 
 
-<div id="float-toolbar" style="position:fixed;bottom:16px;left:16px;z-index:9999;display:flex;flex-direction:column;align-items:stretch;gap:4px;touch-action:none;width:480px;font-size:13px;-webkit-text-size-adjust:none;">
-  <!-- TOOLS pill — always yellow, always brown text; tap=toggle, drag=move -->
-  <div id="ftb-tab" style="display:flex;align-items:center;background:transparent;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;width:100%;min-height:32px;padding:4px 0;">
-    <span id="ftb-pill" style="display:inline-flex;align-items:center;background:#f0df70;border-radius:7px;padding:2px 8px 2px 6px;pointer-events:auto;">
-      <button id="ftb-toggle" onclick="toggleFloatToolbar()" style="background:none;border:none;color:#1a1400;font-size:13px;font-weight:900;cursor:pointer;padding:0 4px 0 0;line-height:1;touch-action:manipulation;-webkit-user-select:none;user-select:none;">▲</button>
-      <span style="pointer-events:none;letter-spacing:0.1em;font-size:11px;font-weight:900;color:#1a1400;">TOOLS</span>
-    </span>
-  </div>
+<div id="float-toolbar" style="position:fixed;top:200px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:stretch;gap:4px;touch-action:none;width:max-content;max-width:96vw;font-size:13px;-webkit-text-size-adjust:none;">
   <!-- Panel -->
-  <div id="ftb-panel" style="display:none;background:transparent;border:none;padding:0;box-shadow:none;width:100%;">
-    <!-- Row 1: Kicker-specific -->
-    <div class="btb-row2">
-      <button class="ep-btn g-tog on" id="btn-map"     onclick="toggleMap()">GRID</button>
-      <button class="ep-btn g-yel"    id="ep-snap"     onclick="toggleSnap()">SNAP<br>TO</button>
-      <button class="ep-btn g-brown"  id="btn-cal"     onclick="toggleCal()">CAL</button>
-      <button class="ep-btn g-brown"  onclick="toggleShotLibrary()">SHOT<br>LIST</button>
-      <button class="ep-btn g-tog on" onclick="addRail()">+ RAIL</button>
-      <button class="ep-btn g-tog on" onclick="removeRail()">− RAIL</button>
-      <button class="ep-btn g-brown"  id="btn-metrics" onclick="toggleContact()">ANGLE</button>
-      <button class="ep-btn g-bias"   id="btn-bias"    onclick="toggleBias()">BIAS<br>OFF</button>
-      <button class="ep-btn g-swap"   id="btn-swap"    onclick="swapPanels()">⇅</button>
+  <div id="ftb-panel" style="display:none;width:max-content;max-width:96vw;touch-action:auto;">
+    <!-- Centered compact TOOLS tab -->
+    <div id="btb-tools-header" style="display:flex;align-items:center;justify-content:center;padding:3px 8px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;">
+      <span id="ftb-pill" onclick="toggleFloatToolbar()" style="display:inline-flex;align-items:center;gap:6px;background:#f0df70;border-radius:7px;padding:3px 10px;cursor:pointer;touch-action:manipulation;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;">TOOLS <span id="ftb-arrow" style="font-size:13px;line-height:1;">▲</span></span>
     </div>
-    <!-- Row 2: Zoom — matches Aimer/Banker -->
-    <div class="btb-row2">
-      <button class="ep-btn g-zoom"    onclick="edgeZoom(1.3)">ZOOM<br>IN</button>
-      <button class="ep-btn g-zoom"    onclick="edgeZoom(1/1.3)">ZOOM<br>OUT</button>
-      <button class="ep-btn g-zoom"    onclick="edgeZoomReset()">RESET<br>ZOOM</button>
-    </div>
-    <!-- Row 3: Locks — matches Aimer/Banker -->
-    <div class="btb-row2">
-      <button class="ep-btn g-lock"    id="ep-lt"       onclick="toggleLock('table')">TABLE<br>LOCK</button>
-      <button class="ep-btn g-lock"    id="ep-ls"       onclick="toggleLock('sliders')">SLIDERS<br>LOCK</button>
-      <button class="ep-btn g-brown"                    onclick="zeroSliders()">ZERO<br>SLIDERS</button>
+    <!-- Tool grid -->
+    <div id="tool-grid" style="display:flex;flex-direction:column;gap:5px;padding:8px;background:rgba(12,16,12,0.98);touch-action:manipulation;">
+      <!-- Row 1: Zoom + Toggles -->
+      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;">
+        <button onclick="edgeZoom(1.3)" style="font-size:22px;font-weight:900;width:52px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;overflow:hidden;flex-shrink:0;"><span style="font-size:10px;font-weight:900;letter-spacing:1px;color:#a8ccff;line-height:1.4;">ZOOM</span><span style="font-size:22px;line-height:1;">+</span></button>
+        <button onclick="edgeZoom(1/1.3)" style="font-size:22px;font-weight:900;width:52px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;overflow:hidden;flex-shrink:0;"><span style="font-size:10px;font-weight:900;letter-spacing:1px;color:#a8ccff;line-height:1.4;">ZOOM</span><span style="font-size:22px;line-height:1;">−</span></button>
+        <button onclick="edgeZoomReset()" style="font-size:10px;font-weight:900;padding:0 10px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;box-sizing:border-box;overflow:hidden;flex-shrink:0;">ZOOM<br>RESET</button>
+        <button class="tg-btn tg-green on" id="btn-map" onclick="toggleMap()" style="max-width:52px;">GRID<br>ON</button>
+        <button class="tg-btn tg-gold  on" id="ep-snap" onclick="toggleSnap()" style="max-width:52px;">SNAP<br>ON</button>
+        <button class="tg-btn tg-brown" id="btn-metrics" onclick="toggleContact()" style="max-width:52px;">ANGLE<br>OFF</button>
+        <button class="tg-btn tg-orange"   id="btn-bias" onclick="toggleBias()" style="background:rgba(255,80,0,0.3);border-color:#ff8c00;color:#ff8c00;">REALITY<br>CHECK</button>
+      </div>
+      <!-- Row 2: Rails + Locks -->
+      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;">
+        <button class="tg-btn tg-red" id="ep-tbl" onclick="toggleLock('table')">TABLE<br>LOCKED</button>
+        <button class="tg-btn tg-red" id="ep-sl"  onclick="toggleLock('sliders')">SLIDERS<br>LOCKED</button>
+        <button onclick="addRail()" style="font-size:10px;font-weight:900;padding:0 14px;height:44px;border-radius:8px;border:2px solid #4ade80;background:rgba(74,222,128,0.15);color:#4ade80;cursor:pointer;touch-action:manipulation;flex-shrink:0;">+ RAIL</button>
+        <button onclick="removeRail()" style="font-size:10px;font-weight:900;padding:0 14px;height:44px;border-radius:8px;border:2px solid #f87171;background:rgba(248,113,113,0.15);color:#f87171;cursor:pointer;touch-action:manipulation;flex-shrink:0;">− RAIL</button>
+        <button class="tg-btn tg-brown" onclick="zeroSliders()">ZERO<br>SLIDERS</button>
+        <button onclick="swapPanels()" style="font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:0 14px;height:44px;border-radius:8px;border:2px solid rgba(144,240,248,0.6);background:#000;color:rgba(144,240,248,0.65);cursor:pointer;touch-action:manipulation;flex-shrink:0;letter-spacing:1px;">SWAP</button>
+      </div>
     </div>
   </div>
+
 <script>
 // Shot list resize grip
 (function(){
@@ -2189,6 +2347,320 @@ function edgeZoomReset(){
         requestAnimationFrame(positionUnderTable);
       }
     };
+  });
+})();
+</script>
+
+<div id="dock">
+  <div id="dock-mini" title="Open dock">
+    <svg width="36" height="36" viewBox="0 0 36 36" style="position:absolute;top:0;left:0;pointer-events:none;">
+      <line x1="6"  y1="30" x2="30" y2="6"  stroke="#f0df70" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="12" y1="30" x2="30" y2="12" stroke="#f0df70" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+      <line x1="6"  y1="24" x2="24" y2="6"  stroke="#f0df70" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+    </svg>
+  </div>
+  <div id="dock-bar">
+    <div class="dock-slot" id="dock-lock" title="Lock / Unlock all">
+      <div style="display:flex;flex-direction:column;gap:3px;align-items:center;pointer-events:none;">
+        <div class="dline" style="width:14px;height:2px;background:#f0df70;"></div>
+        <div class="dline" style="width:10px;height:2px;background:#f0df70;"></div>
+        <div class="dline" style="width:14px;height:2px;background:#f0df70;"></div>
+      </div>
+    </div>
+    <div class="dock-slot" id="dock-learn" title="Learn">
+      <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
+      <div class="dline" style="width:12px;height:3px;background:#f0df70;"></div>
+      <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
+    </div>
+    <div class="dock-slot" id="dock-rail-add" title="Add rail">
+      <span style="font-size:13px;font-weight:900;color:#4ade80;pointer-events:none;line-height:1;">+</span>
+    </div>
+    <div class="dock-slot" id="dock-rail-rem" title="Remove rail">
+      <span style="font-size:13px;font-weight:900;color:#f87171;pointer-events:none;line-height:1;">−</span>
+    </div>
+    <div class="dock-slot" id="dock-tools" title="Tools panel">
+      <div style="display:flex;flex-direction:row;align-items:center;gap:2.5px;pointer-events:none;">
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+        <div class="dline" style="width:2px;height:16px;background:#f0df70;"></div>
+      </div>
+    </div>
+    <div class="dock-slot" id="dock-swap" title="Swap Table / Sliders">
+      <div style="pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:2px;">
+        <svg width="14" height="18" viewBox="0 0 14 18" style="pointer-events:none;">
+          <path d="M4 2 L4 16 M1 12 L4 16 L7 12" stroke="#90f0f8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M10 16 L10 2 M7 6 L10 2 L13 6" stroke="#90f0f8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
+    <div id="dock-minimize" title="Minimize dock"></div>
+  </div>
+</div>
+
+<script>
+// ── DOCK ─────────────────────────────────────────────────────
+(function(){
+  var _open = { lock:false, learn:false, sliders:false, tools:false };
+
+  function setActive(key, on) {
+    _open[key] = on;
+    var el = document.getElementById('dock-' + key);
+    if (el) el.classList.toggle('active', on);
+  }
+
+  window.dockCollapse = function() {
+    var bar=document.getElementById('dock-bar'), mini=document.getElementById('dock-mini');
+    if (bar)  bar.style.display='none';
+    if (mini) mini.style.display='flex';
+  };
+  window.dockExpand = function() {
+    var bar=document.getElementById('dock-bar'), mini=document.getElementById('dock-mini');
+    if (bar)  bar.style.display='flex';
+    if (mini) mini.style.display='none';
+  };
+
+  window.addEventListener('load', function(){
+    function bind(id, fn) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
+    }
+    bind('dock-lock',     function(){ var allLocked=lockTable&&lockSliders; lockTable=lockSliders=!allLocked; toggleLock('_sync'); setActive('lock', lockTable); });
+    bind('dock-learn',    function(){ toggleShotLibrary(); setActive('learn', typeof libraryOpen!=='undefined'?libraryOpen:false); });
+    bind('dock-rail-add', function(){ addRail(); });
+    bind('dock-rail-rem', function(){ removeRail(); });
+    bind('dock-tools',    function(){ var on=!_open.tools; var tab=document.getElementById('ftb-tab'); if(tab) tab.style.display=on?'flex':'none'; if(on) { var panel=document.getElementById('ftb-panel'); if(panel) panel.style.display='block'; } else { var panel=document.getElementById('ftb-panel'); if(panel) panel.style.display='none'; } setActive('tools', on); });
+    bind('dock-swap',     function(){ swapPanels(); });
+    bind('dock-minimize', function(){ dockCollapse(); });
+    bind('dock-mini',     function(){ dockExpand(); });
+
+    var bar = document.getElementById('dock-bar');
+    var dock = document.getElementById('dock');
+    if (!bar || !dock) return;
+    var sx, sy, ox, oy, dragging=false, ptr=null, isXfm=true;
+    bar.addEventListener('pointerdown', function(e){
+      if (e.target.closest('.dock-slot')||e.target.id==='dock-minimize') return;
+      var r=dock.getBoundingClientRect();
+      if(isXfm){dock.style.transform='none';dock.style.left=r.left+'px';dock.style.top=r.top+'px';dock.style.bottom='auto';isXfm=false;}
+      sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;dragging=false;ptr=e.pointerId;
+      bar.setPointerCapture(e.pointerId);
+    });
+    bar.addEventListener('pointermove',function(e){
+      if(ptr===null||e.pointerId!==ptr)return;
+      var dx=e.clientX-sx,dy=e.clientY-sy;
+      if(!dragging&&Math.hypot(dx,dy)>6)dragging=true;
+      if(!dragging)return;
+      dock.style.left=Math.max(0,Math.min(window.innerWidth-dock.offsetWidth,ox+dx))+'px';
+      dock.style.top=Math.max(0,Math.min(window.innerHeight-dock.offsetHeight,oy+dy))+'px';
+    });
+    bar.addEventListener('pointerup',function(e){if(e.pointerId===ptr)ptr=null;});
+    bar.addEventListener('pointercancel',function(){ptr=null;});
+
+    // Snap dock to center of table on load
+    function snapDockToTable() {
+      var tbl = document.getElementById('table-wrap');
+      if (!tbl || !dock) return;
+      var r = tbl.getBoundingClientRect();
+      var dw = dock.offsetWidth || 300;
+      dock.style.transform = 'none';
+      dock.style.left = Math.max(4, r.left + (r.width - dw)/2) + 'px';
+      dock.style.top  = Math.max(4, r.top + (r.height - dock.offsetHeight)/2) + 'px';
+      dock.style.bottom = 'auto';
+    }
+    requestAnimationFrame(snapDockToTable);
+  });
+})();
+
+// ── LONG-PRESS TOOLTIP ───────────────────────────────────────
+(function(){
+  var tip=document.getElementById('lp-tooltip');
+  if(!tip)return;
+  var timer=null;
+  function show(el,x,y){
+    var label=el.getAttribute('title')||el.getAttribute('data-tip');
+    if(!label)return;
+    tip.textContent=label;tip.style.opacity='0';tip.style.display='block';
+    var tw=tip.offsetWidth;
+    tip.style.left=Math.max(4,Math.min(window.innerWidth-tw-4,x-tw/2))+'px';
+    tip.style.top=Math.max(4,y-tip.offsetHeight-10)+'px';
+    tip.style.opacity='1';
+  }
+  function hide(){tip.style.opacity='0';clearTimeout(timer);timer=null;}
+  document.addEventListener('pointerdown',function(e){
+    var el=e.target.closest('[title],[data-tip]');if(!el)return;
+    timer=setTimeout(function(){show(el,e.clientX,e.clientY);},500);
+  },true);
+  document.addEventListener('pointerup',function(){hide();},true);
+  document.addEventListener('pointermove',function(){clearTimeout(timer);timer=null;},true);
+  document.addEventListener('pointercancel',function(){hide();},true);
+})();
+</script>
+
+<script>
+window.addEventListener('load', function(){
+  // Position toolbar (TOOLS tab) left of table
+  var tb = document.getElementById('float-toolbar');
+  var tbl = document.getElementById('table-wrap');
+  if (tb && tbl) {
+    requestAnimationFrame(function(){
+      var r = tbl.getBoundingClientRect();
+      var tw = tb.offsetWidth || 100;
+      tb.style.transform = 'none';
+      tb.style.left = Math.max(4, r.left) + 'px';
+      tb.style.top  = (r.top + 4) + 'px';
+    });
+  }
+});
+</script>
+
+<script>
+// Float toolbar drag
+(function(){
+  var tb, ptr=null, sx, sy, ox, oy, didDrag=false;
+  window.addEventListener('load', function(){
+    tb = document.getElementById('float-toolbar');
+    if (!tb) return;
+    tb.addEventListener('pointerdown', function(e){
+      if (e.target.tagName==='BUTTON') return;
+      if (e.target.closest('#tool-grid')) return;
+      ptr=e.pointerId; didDrag=false;
+      var r=tb.getBoundingClientRect();
+      tb.style.transform='none';
+      ox=r.left; oy=r.top; sx=e.clientX; sy=e.clientY;
+    });
+    document.addEventListener('pointermove', function(e){
+      if(ptr===null||e.pointerId!==ptr) return;
+      var dx=e.clientX-sx, dy=e.clientY-sy;
+      if(!didDrag && Math.hypot(dx,dy)>6) didDrag=true;
+      if(!didDrag) return;
+      tb.style.left=Math.max(0,Math.min(window.innerWidth -tb.offsetWidth, ox+dx))+'px';
+      tb.style.top =Math.max(0,Math.min(window.innerHeight-tb.offsetHeight,oy+dy))+'px';
+      e.preventDefault();
+    },{passive:false});
+    document.addEventListener('pointerup', function(e){
+      if(e.pointerId===ptr){
+        if(didDrag){
+          // Suppress next click to stop pill from toggling after drag
+          tb.addEventListener('click', function stopClick(ev){
+            ev.stopPropagation(); ev.preventDefault();
+            tb.removeEventListener('click', stopClick, true);
+          }, true);
+        }
+        ptr=null;
+      }
+    });
+    document.addEventListener('pointercancel', function(){ptr=null;});
+  });
+})();
+</script>
+
+<script>
+// ── HOW THIS SHOT REALLY GOES — bias SVG slider ──
+(function(){
+  var svg, thumb, fill, dragging=false;
+  var X1=6, X2=154, CX=80;
+  var _biasBase = 0;
+
+  function setBiasX(x) {
+    x = Math.max(X1, Math.min(X2, x));
+    thumb.setAttribute('cx', x);
+    fill.setAttribute('width', Math.max(0, x - X1));
+    var v = (x - CX) / 74;  // -1 to +1
+    var bVal = Math.round(v * 12);  // map to -12..12
+    S.bias = bVal * 0.025;
+    S.biasFat = S.biasMed = S.biasThin = S.bias;
+    if (typeof render === 'function') render();
+  }
+
+  function biasZero() {
+    _biasBase = 0;
+    S.bias = 0; S.biasFat = 0; S.biasMed = 0; S.biasThin = 0;
+    if (thumb) thumb.setAttribute('cx', CX);
+    if (fill)  fill.setAttribute('width', 74);
+    if (typeof render === 'function') render();
+  }
+  window.biasZero = biasZero;
+
+  window.addEventListener('load', function(){
+    svg   = document.getElementById('bias-svg');
+    thumb = document.getElementById('bias-thumb');
+    fill  = document.getElementById('bias-fill');
+    var zb = document.getElementById('bias-zero-btn');
+    if (!svg || !thumb) return;
+
+    thumb.addEventListener('pointerdown', function(e){
+      dragging = true;
+      thumb.setPointerCapture(e.pointerId);
+      e.stopPropagation(); e.preventDefault();
+    });
+    svg.addEventListener('pointermove', function(e){
+      if (!dragging) return;
+      var r = svg.getBoundingClientRect();
+      setBiasX(e.clientX - r.left);
+      e.preventDefault();
+    }, {passive:false});
+    svg.addEventListener('pointerup',     function(){ dragging=false; });
+    svg.addEventListener('pointercancel', function(){ dragging=false; });
+    if (zb) zb.addEventListener('click', function(e){ e.stopPropagation(); biasZero(); });
+
+  });
+})();
+</script>
+
+<script>
+// Extra blocker balls drag
+(function(){
+  var svg, balls = ['xb1','xb2'];
+  var dragging = null, ptr = null;
+
+  function svgPtFromEvent(e) {
+    var pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+
+  function moveBall(id, x, y) {
+    x = clamp(x, 40, 420); y = clamp(y, 40, 220);
+    var ball   = document.getElementById(id);
+    var shadow = document.getElementById(id+'-shadow');
+    var hi     = document.getElementById(id+'-hi');
+    if (ball)   { ball.setAttribute('cx', x);   ball.setAttribute('cy', y); }
+    if (shadow) { shadow.setAttribute('cx', x);  shadow.setAttribute('cy', y+1); }
+    if (hi)     { hi.setAttribute('cx', x-4);    hi.setAttribute('cy', y-4); }
+    var zone = document.getElementById(id+'-zone');
+    if (zone) { zone.setAttribute('cx', x); zone.setAttribute('cy', y); }
+    // Check if any shot path needs clipping — just re-render
+    if (typeof render === 'function') render();
+  }
+
+  window.addEventListener('load', function(){
+    svg = document.getElementById('tbl');
+    if (!svg) return;
+
+    balls.forEach(function(id){
+      var ball = document.getElementById(id);
+      if (!ball) return;
+      ball.addEventListener('pointerdown', function(e){
+        if (lockTable) return;
+        dragging = id; ptr = e.pointerId;
+        ball.setPointerCapture(e.pointerId);
+        e.stopPropagation(); e.preventDefault();
+      });
+    });
+
+    svg.addEventListener('pointermove', function(e){
+      if (!dragging || e.pointerId !== ptr) return;
+      var p = svgPtFromEvent(e);
+      moveBall(dragging, p.x, p.y);
+      e.preventDefault();
+    }, {passive:false});
+
+    svg.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr){ dragging=null; ptr=null; } });
+    svg.addEventListener('pointercancel', function(){ dragging=null; ptr=null; });
   });
 })();
 </script>
