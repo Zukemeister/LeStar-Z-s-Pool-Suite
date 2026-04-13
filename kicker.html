@@ -250,6 +250,8 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.18);padding:
 .tg-orange { background:#7a3a06; color:#f0a060; border-color:#aa5a10; }
 .tg-orange.on { background:#c06010; border-color:#f0a060; }
 .tg-orange:not(.on) { filter: brightness(0.8); }
+body,#zoom-wrap{touch-action:pan-x pan-y;}
+#zoom-wrap{touch-action:pan-x pan-y;}
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -2511,6 +2513,12 @@ function edgeZoomReset(){
         </svg>
       </div>
     </div>
+    <div class="dock-slot" id="dock-table-lock" title="Lock / Unlock table">
+      <svg width="16" height="18" viewBox="0 0 16 18" style="pointer-events:none;">
+        <rect x="3" y="8" width="10" height="9" rx="2" fill="none" stroke="#f0df70" stroke-width="1.5"/>
+        <path id="dock-lock-shackle" d="M5 8 V5 a3 3 0 0 1 6 0 V8" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
     <div id="dock-minimize" title="Minimize dock"></div>
   </div>
 </div>
@@ -2549,6 +2557,16 @@ function edgeZoomReset(){
     bind('dock-rail-rem', function(){ removeRail(); });
     bind('dock-tools',    function(){ var on=!_open.tools; var tab=document.getElementById('ftb-tab'); if(tab) tab.style.display=on?'flex':'none'; if(on) { var panel=document.getElementById('ftb-panel'); if(panel) panel.style.display='block'; } else { var panel=document.getElementById('ftb-panel'); if(panel) panel.style.display='none'; } setActive('tools', on); });
     bind('dock-swap',     function(){ swapPanels(); });
+    bind('dock-table-lock', function(){
+      lockTable = !lockTable;
+      var shackle = document.getElementById('dock-lock-shackle');
+      var slot = document.getElementById('dock-table-lock');
+      if (shackle) shackle.setAttribute('d', lockTable
+        ? 'M5 8 V5 a3 3 0 0 1 6 0 V8'
+        : 'M5 8 V5 a3 3 0 0 1 6 0 V3');
+      if (slot) slot.classList.toggle('active', lockTable);
+      _syncLockButtons();
+    });
     bind('dock-minimize', function(){ dockCollapse(); });
     bind('dock-mini',     function(){ dockExpand(); });
 
