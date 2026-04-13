@@ -16,7 +16,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,900&family=Playfair+Display:ital,wght@1,700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
 button{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;outline:none;}
-html,body{background:#141414;font-family:'Lato',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:12px 8px 32px;min-height:100vh;box-sizing:border-box;}
+html,body{background:#0d1f0d;font-family:'Lato',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:12px 8px 32px;min-height:100vh;box-sizing:border-box;}
 #app{background:#1a361a;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.7);width:100%;padding:14px 12px 16px 12px;border:2px solid #2a4e2a;display:flex;flex-direction:column;}
 
 /* ── HEADER / LOGO ── */
@@ -497,7 +497,7 @@ function loadShot(idx) {
 </head>
 <body>
 <div id="outer-wrap" style="width:100%;max-width:700px;display:flex;flex-direction:column;">
-<div id="zoom-wrap" style="width:100%;transform-origin:top left;"><div id="app">
+<div id="zoom-wrap" style="width:100%;transform-origin:top left;min-height:100vh;background:#0d1f0d;"><div id="app">
 
 <header>
 <div class="hdr">
@@ -992,6 +992,116 @@ function loadShot(idx) {
 </div>
 
 <script>
+// Extra blocker balls drag
+(function(){
+  var svg, balls = ['xb1','xb2'];
+  var dragging = null, ptr = null;
+
+  function svgPtFromEvent(e) {
+    var pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+
+  function moveBall(id, x, y) {
+    x = clamp(x, 40, 420); y = clamp(y, 40, 220);
+    var ball   = document.getElementById(id);
+    var shadow = document.getElementById(id+'-shadow');
+    var hi     = document.getElementById(id+'-hi');
+    if (ball)   { ball.setAttribute('cx', x);   ball.setAttribute('cy', y); }
+    if (shadow) { shadow.setAttribute('cx', x);  shadow.setAttribute('cy', y+1); }
+    if (hi)     { hi.setAttribute('cx', x-4);    hi.setAttribute('cy', y-4); }
+    var zone = document.getElementById(id+'-zone');
+    if (zone) { zone.setAttribute('cx', x); zone.setAttribute('cy', y); }
+    // Check if any shot path needs clipping — just re-render
+    if (typeof render === 'function') render();
+  }
+
+  window.addEventListener('load', function(){
+    svg = document.getElementById('tbl');
+    if (!svg) return;
+
+    balls.forEach(function(id){
+      var ball = document.getElementById(id);
+      if (!ball) return;
+      ball.addEventListener('pointerdown', function(e){
+        if (lockTable) return;
+        dragging = id; ptr = e.pointerId;
+        ball.setPointerCapture(e.pointerId);
+        e.stopPropagation(); e.preventDefault();
+      });
+    });
+
+    svg.addEventListener('pointermove', function(e){
+      if (!dragging || e.pointerId !== ptr) return;
+      var p = svgPtFromEvent(e);
+      moveBall(dragging, p.x, p.y);
+      e.preventDefault();
+    }, {passive:false});
+
+    svg.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr){ dragging=null; ptr=null; } });
+    svg.addEventListener('pointercancel', function(){ dragging=null; ptr=null; });
+  });
+})();
+</script>
+<script>
+const _pz = {
+  scale:1, tx:0, ty:0,
+  apply:function(){
+    const w=document.getElementById('zoom-wrap');
+    if(!w) return;
+    w._zscale=this.scale;
+    w.style.transform=`translate(${this.tx}px,${this.ty}px) scale(${this.scale})`;
+    w.style.transformOrigin='top left';
+  }
+};
+// ── PAN VIA POINTER EVENTS ON ZOOM-WRAP ──────────────────────
+// Uses pointerId to avoid conflict with SVG ball drags which use setPointerCapture
+(function(){
+  var wrap = null;
+  var panPtr = null;
+  var panStartX=0, panStartY=0, panInitTx=0, panInitTy=0;
+
+  function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
+
+  function onDown(e){
+    // Always pan when not touching a ball directly
+    if(e.target.closest('circle, [data-ball]')) return;
+    if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+    if(e.target.closest('#btb, .float-panel, #float-toolbar, #dock')) return;
+    panPtr = e.pointerId;
+    panStartX = e.clientX; panStartY = e.clientY;
+    panInitTx = _pz.tx;    panInitTy = _pz.ty;
+    getWrap().setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }
+
+  function onMove(e){
+    if(panPtr === null || e.pointerId !== panPtr) return;
+    var w = getWrap();
+    _pz.tx = panInitTx + (e.clientX - panStartX);
+    _pz.ty = panInitTy + (e.clientY - panStartY);
+    _pz.apply();
+    e.preventDefault();
+  }
+
+  function onUp(e){
+    if(e.pointerId === panPtr) panPtr = null;
+  }
+
+  window.addEventListener('load', function(){
+    var w = getWrap();
+    if(!w) return;
+    w.addEventListener('pointerdown',   onDown,  {passive:false});
+    w.addEventListener('pointermove',   onMove,  {passive:false});
+    w.addEventListener('pointerup',     onUp);
+    w.addEventListener('pointercancel', onUp);
+  });
+})();
+</script>
+<script>
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1030,7 +1140,8 @@ let snapOn = true;
 let snapLabelTimer = null;
 let SNAP_POINTS = [];
 const SNAP_RADIUS = 14;
-let lockTable = true;
+let lockTable = true;   // locks aim angle
+let lockBalls = true;    // locks CB/OB/blocker ball movement
 let lockSliders = true;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1524,11 +1635,10 @@ function toggleContact() {
 const svg=$('tbl');
 
 function svgPt(e){
-  const src=e.touches?e.touches[0]:e;
-  const svgEl=$('tbl');
-  const rect=svgEl.getBoundingClientRect();
-  const vb=svgEl.viewBox.baseVal;
-  // getBoundingClientRect accounts for CSS zoom transform on iOS
+  const src = e.touches ? e.touches[0] : e;
+  const svgEl = document.getElementById('tbl');
+  const rect = svgEl.getBoundingClientRect();
+  const vb = svgEl.viewBox.baseVal;
   return {
     x: (src.clientX - rect.left) / rect.width  * vb.width,
     y: (src.clientY - rect.top)  / rect.height * vb.height
@@ -1538,7 +1648,7 @@ function clampBall(x,y){return{x:Math.max(TL.left+BALL_R,Math.min(TL.right-BALL_
 
 svg.addEventListener('pointerdown',e=>{
   e.preventDefault();
-  if(lockTable)return;
+  if(lockBalls)return;
   const p=svgPt(e);
   if(S.obVisible && Math.hypot(p.x-S.ob.x,p.y-S.ob.y)<36){drag='kick-ob';svg.setPointerCapture(e.pointerId);return;}
   const cb=S.cb;
@@ -2127,13 +2237,16 @@ function toggleSnap(){
 }
 // ── LOCK SYSTEM ──────────────────────────────────────────────
 function _syncLockButtons() {
-  var tbl = document.getElementById('ep-tbl') || document.getElementById('ep-lt');
-  var sl  = document.getElementById('ep-sl')  || document.getElementById('ep-ls');
-  if (tbl) { tbl.innerHTML = lockTable  ? 'TABLE<br>LOCKED'   : 'TABLE<br>OPEN';   tbl.classList.toggle('locked', lockTable); }
+  var tbl = document.getElementById('ep-tbl');
+  var bl  = document.getElementById('ep-bl');
+  var sl  = document.getElementById('ep-sl') || document.getElementById('ep-ls');
+  if (tbl) { tbl.innerHTML = lockTable  ? 'ANGLE<br>LOCKED'   : 'ANGLE<br>OPEN';   tbl.classList.toggle('locked', lockTable); }
+  if (bl)  { bl.innerHTML  = lockBalls  ? 'BALLS<br>LOCKED'   : 'BALLS<br>OPEN';   bl.classList.toggle('locked', lockBalls); }
   if (sl)  { sl.innerHTML  = lockSliders? 'SLIDERS<br>LOCKED' : 'SLIDERS<br>OPEN'; sl.classList.toggle('locked', lockSliders); }
 }
 function toggleLock(which){
   if(which==='table')   lockTable  =!lockTable;
+  if(which==='balls')   lockBalls  =!lockBalls;
   if(which==='sliders') lockSliders=!lockSliders;
   // '_sync' just applies current state without toggling
   _syncLockButtons();
@@ -2166,13 +2279,15 @@ function zeroSliders(){
 }
 // ── EDGE ZOOM ────────────────────────────────────────────────
 function edgeZoom(factor){
-  const w=document.getElementById('zoom-wrap');if(!w)return;
-  const cur=w._zscale||1,next=Math.max(0.1,Math.min(3,cur*factor));
-  w._zscale=next;w.style.transform='scale('+next+')';w.style.transformOrigin='top left';
+  if (typeof _pz !== 'undefined') {
+    _pz.scale = Math.max(0.3, Math.min(3, _pz.scale * factor));
+    _pz.apply();
+  }
 }
 function edgeZoomReset(){
-  const w=document.getElementById('zoom-wrap');if(!w)return;
-  w._zscale=1;w.style.transform='scale(1)';
+  if (typeof _pz !== 'undefined') {
+    _pz.scale=1; _pz.tx=0; _pz.ty=0; _pz.apply();
+  }
 }
 
 </script>
@@ -2226,22 +2341,23 @@ function edgeZoomReset(){
     <div id="tool-grid" style="display:flex;flex-direction:column;gap:5px;padding:8px;background:rgba(12,16,12,0.98);touch-action:manipulation;">
       <!-- Row 1: Zoom + Toggles -->
       <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;">
-        <button onclick="edgeZoom(1.3)" style="font-size:22px;font-weight:900;width:52px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;overflow:hidden;flex-shrink:0;"><span style="font-size:10px;font-weight:900;letter-spacing:1px;color:#a8ccff;line-height:1.4;">ZOOM</span><span style="font-size:22px;line-height:1;">+</span></button>
-        <button onclick="edgeZoom(1/1.3)" style="font-size:22px;font-weight:900;width:52px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;overflow:hidden;flex-shrink:0;"><span style="font-size:10px;font-weight:900;letter-spacing:1px;color:#a8ccff;line-height:1.4;">ZOOM</span><span style="font-size:22px;line-height:1;">−</span></button>
-        <button onclick="edgeZoomReset()" style="font-size:10px;font-weight:900;padding:0 10px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;box-sizing:border-box;overflow:hidden;flex-shrink:0;">ZOOM<br>RESET</button>
-        <button class="tg-btn tg-green on" id="btn-map" onclick="toggleMap()" style="max-width:52px;">GRID<br>ON</button>
-        <button class="tg-btn tg-gold  on" id="ep-snap" onclick="toggleSnap()" style="max-width:52px;">SNAP<br>ON</button>
-        <button class="tg-btn tg-brown" id="btn-metrics" onclick="toggleContact()" style="max-width:52px;">ANGLE<br>OFF</button>
-        <button class="tg-btn tg-orange"   id="btn-bias" onclick="toggleBias()" style="background:rgba(255,80,0,0.3);border-color:#ff8c00;color:#ff8c00;">REALITY<br>CHECK</button>
+        <button onclick="edgeZoom(1.3)" style="width:44px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;flex-shrink:0;"><span style="font-size:9px;font-weight:900;color:#a8ccff;">ZOOM</span><span style="font-size:18px;line-height:1;">+</span></button>
+        <button onclick="edgeZoom(1/1.3)" style="width:44px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;flex-shrink:0;"><span style="font-size:9px;font-weight:900;color:#a8ccff;">ZOOM</span><span style="font-size:18px;line-height:1;">−</span></button>
+        <button onclick="edgeZoomReset()" style="font-size:9px;font-weight:900;padding:0 8px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZOOM<br>RESET</button>
+        <button class="tg-btn tg-green on" id="btn-map"     onclick="toggleMap()">GRID<br>ON</button>
+        <button class="tg-btn tg-gold  on" id="ep-snap"     onclick="toggleSnap()">SNAP<br>ON</button>
+        <button class="tg-btn tg-brown"    id="btn-metrics" onclick="toggleContact()">ANGLE<br>OFF</button>
+        <button class="tg-btn tg-orange"   id="btn-bias"    onclick="toggleBias()" style="background:rgba(255,80,0,0.3);border-color:#ff8c00;color:#ff8c00;">REALITY<br>CHECK</button>
       </div>
-      <!-- Row 2: Rails + Locks -->
+      <!-- Row 2: Locks + Rails + Actions -->
       <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;">
-        <button class="tg-btn tg-red" id="ep-tbl" onclick="toggleLock('table')">TABLE<br>LOCKED</button>
+        <button class="tg-btn tg-red" id="ep-tbl" onclick="toggleLock('table')">ANGLE<br>LOCKED</button>
+        <button class="tg-btn tg-red" id="ep-bl"  onclick="toggleLock('balls')">BALLS<br>LOCKED</button>
         <button class="tg-btn tg-red" id="ep-sl"  onclick="toggleLock('sliders')">SLIDERS<br>LOCKED</button>
-        <button onclick="addRail()" style="font-size:10px;font-weight:900;padding:0 14px;height:44px;border-radius:8px;border:2px solid #4ade80;background:rgba(74,222,128,0.15);color:#4ade80;cursor:pointer;touch-action:manipulation;flex-shrink:0;">+ RAIL</button>
-        <button onclick="removeRail()" style="font-size:10px;font-weight:900;padding:0 14px;height:44px;border-radius:8px;border:2px solid #f87171;background:rgba(248,113,113,0.15);color:#f87171;cursor:pointer;touch-action:manipulation;flex-shrink:0;">− RAIL</button>
+        <button onclick="addRail()" style="font-size:10px;font-weight:900;padding:0 12px;height:44px;border-radius:8px;border:2px solid #4ade80;background:rgba(74,222,128,0.15);color:#4ade80;cursor:pointer;touch-action:manipulation;flex-shrink:0;">+ RAIL</button>
+        <button onclick="removeRail()" style="font-size:10px;font-weight:900;padding:0 12px;height:44px;border-radius:8px;border:2px solid #f87171;background:rgba(248,113,113,0.15);color:#f87171;cursor:pointer;touch-action:manipulation;flex-shrink:0;">− RAIL</button>
         <button class="tg-btn tg-brown" onclick="zeroSliders()">ZERO<br>SLIDERS</button>
-        <button onclick="swapPanels()" style="font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:0 14px;height:44px;border-radius:8px;border:2px solid rgba(144,240,248,0.6);background:#000;color:rgba(144,240,248,0.65);cursor:pointer;touch-action:manipulation;flex-shrink:0;letter-spacing:1px;">SWAP</button>
+        <button onclick="swapPanels()" style="font-size:10px;font-weight:900;padding:0 12px;height:44px;border-radius:8px;border:2px solid rgba(144,240,248,0.6);background:#000;color:rgba(144,240,248,0.65);cursor:pointer;touch-action:manipulation;flex-shrink:0;">SWAP</button>
       </div>
     </div>
   </div>
@@ -2427,7 +2543,7 @@ function edgeZoomReset(){
       if (!el) return;
       el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
     }
-    bind('dock-lock',     function(){ var allLocked=lockTable&&lockSliders; lockTable=lockSliders=!allLocked; toggleLock('_sync'); setActive('lock', lockTable); });
+    bind('dock-lock',     function(){ var allLocked=lockTable&&lockBalls&&lockSliders; lockTable=lockBalls=lockSliders=!allLocked; _syncLockButtons(); setActive('lock', lockTable); });
     bind('dock-learn',    function(){ toggleShotLibrary(); setActive('learn', typeof libraryOpen!=='undefined'?libraryOpen:false); });
     bind('dock-rail-add', function(){ addRail(); });
     bind('dock-rail-rem', function(){ removeRail(); });
@@ -2609,60 +2725,6 @@ window.addEventListener('load', function(){
 })();
 </script>
 
-<script>
-// Extra blocker balls drag
-(function(){
-  var svg, balls = ['xb1','xb2'];
-  var dragging = null, ptr = null;
 
-  function svgPtFromEvent(e) {
-    var pt = svg.createSVGPoint();
-    pt.x = e.clientX; pt.y = e.clientY;
-    return pt.matrixTransform(svg.getScreenCTM().inverse());
-  }
-
-  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
-
-  function moveBall(id, x, y) {
-    x = clamp(x, 40, 420); y = clamp(y, 40, 220);
-    var ball   = document.getElementById(id);
-    var shadow = document.getElementById(id+'-shadow');
-    var hi     = document.getElementById(id+'-hi');
-    if (ball)   { ball.setAttribute('cx', x);   ball.setAttribute('cy', y); }
-    if (shadow) { shadow.setAttribute('cx', x);  shadow.setAttribute('cy', y+1); }
-    if (hi)     { hi.setAttribute('cx', x-4);    hi.setAttribute('cy', y-4); }
-    var zone = document.getElementById(id+'-zone');
-    if (zone) { zone.setAttribute('cx', x); zone.setAttribute('cy', y); }
-    // Check if any shot path needs clipping — just re-render
-    if (typeof render === 'function') render();
-  }
-
-  window.addEventListener('load', function(){
-    svg = document.getElementById('tbl');
-    if (!svg) return;
-
-    balls.forEach(function(id){
-      var ball = document.getElementById(id);
-      if (!ball) return;
-      ball.addEventListener('pointerdown', function(e){
-        if (lockTable) return;
-        dragging = id; ptr = e.pointerId;
-        ball.setPointerCapture(e.pointerId);
-        e.stopPropagation(); e.preventDefault();
-      });
-    });
-
-    svg.addEventListener('pointermove', function(e){
-      if (!dragging || e.pointerId !== ptr) return;
-      var p = svgPtFromEvent(e);
-      moveBall(dragging, p.x, p.y);
-      e.preventDefault();
-    }, {passive:false});
-
-    svg.addEventListener('pointerup',     function(e){ if(e.pointerId===ptr){ dragging=null; ptr=null; } });
-    svg.addEventListener('pointercancel', function(){ dragging=null; ptr=null; });
-  });
-})();
-</script>
 </body>
 </html>
