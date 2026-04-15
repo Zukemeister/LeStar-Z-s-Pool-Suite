@@ -2134,7 +2134,7 @@ function toggleFloatToolbar() {
       }
       if (!didDrag) return;
       var nx = Math.max(0, Math.min(window.innerWidth  - tb.offsetWidth,  origLeft + dx));
-      var ny = Math.max(0, Math.min(window.innerHeight - tb.offsetHeight, origTop  + dy));
+      var ny = tbStartY + dy;
       tb.style.left = nx + 'px';
       tb.style.top  = ny + 'px';
     });
@@ -2434,7 +2434,7 @@ function edgeZoomReset(){
       }
       if (!didDrag) return;
       var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
-      var ny=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight, origTop+dy));
+      var ny=tbStartY + dy;
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
     });
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
@@ -2624,8 +2624,8 @@ function edgeZoomReset(){
       var dx=e.clientX-sx,dy=e.clientY-sy;
       if(!dragging&&Math.hypot(dx,dy)>6)dragging=true;
       if(!dragging)return;
-      dock.style.left=Math.max(0,Math.min(window.innerWidth-dock.offsetWidth,ox+dx))+'px';
-      dock.style.top=Math.max(0,Math.min(window.innerHeight-dock.offsetHeight,oy+dy))+'px';
+      dock.style.left=(ox+dx)+'px';
+      dock.style.top=(oy+dy)+'px';
     });
     bar.addEventListener('pointerup',function(e){if(e.pointerId===ptr)ptr=null;});
     bar.addEventListener('pointercancel',function(){ptr=null;});
@@ -2708,7 +2708,7 @@ window.addEventListener('load', function(){
       if(!didDrag && Math.hypot(dx,dy)>6) didDrag=true;
       if(!didDrag) return;
       tb.style.left=Math.max(0,Math.min(window.innerWidth -tb.offsetWidth, ox+dx))+'px';
-      tb.style.top =Math.max(0,Math.min(window.innerHeight-tb.offsetHeight,oy+dy))+'px';
+      tb.style.top =tbStartY + dy+'px';
       e.preventDefault();
     },{passive:false});
     document.addEventListener('pointerup', function(e){
