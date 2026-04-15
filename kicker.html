@@ -922,10 +922,12 @@ function loadShot(idx) {
       <circle id="xb1-shadow" cx="150" cy="171" r="10" fill="#000" opacity="0.32"/>
       <circle id="xb1"        cx="150" cy="170" r="10" fill="url(#gOB)"   stroke="#c04020" stroke-width="0.5" cursor="grab"/>
       <circle id="xb1-hi"     cx="146" cy="166" r="3.5" fill="#ffb0a0" opacity="0.7"/>
+      <circle id="xb1-ring"   cx="150" cy="170" r="10" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="3,2"/>
       <!-- Extra blocker ball 2 -->
       <circle id="xb2-shadow" cx="310" cy="101" r="10" fill="#000" opacity="0.32"/>
       <circle id="xb2"        cx="310" cy="100" r="10" fill="#4090f0"     stroke="#2060c0" stroke-width="0.5" cursor="grab"/>
       <circle id="xb2-hi"     cx="306" cy="96"  r="3.5" fill="#c0e0ff" opacity="0.7"/>
+      <circle id="xb2-ring"   cx="310" cy="100" r="10" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="3,2"/>
   <circle id="cb-hi"     cx="166" cy="126" r="3.5" fill="#ffffff" opacity="0.55"/>
   <circle id="cb-dot"    cx="170" cy="130" r="1.5" fill="#999" opacity="0.4"/>
   <!-- Target OB — stationary, shown when a library shot is loaded -->
@@ -1652,7 +1654,7 @@ function clampBall(x,y){return{x:Math.max(TL.left+BALL_R,Math.min(TL.right-BALL_
 
 svg.addEventListener('pointerdown',e=>{
   e.preventDefault();
-  if(lockBalls)return;
+  if(lockBalls){e.stopPropagation();return;}
   const p=svgPt(e);
   if(S.obVisible && Math.hypot(p.x-S.ob.x,p.y-S.ob.y)<36){drag='kick-ob';svg.setPointerCapture(e.pointerId);return;}
   const cb=S.cb;
@@ -2134,7 +2136,7 @@ function toggleFloatToolbar() {
       }
       if (!didDrag) return;
       var nx = Math.max(0, Math.min(window.innerWidth  - tb.offsetWidth,  origLeft + dx));
-      var ny = tbStartY + dy;
+      var ny = origTop + dy;
       tb.style.left = nx + 'px';
       tb.style.top  = ny + 'px';
     });
@@ -2434,7 +2436,7 @@ function edgeZoomReset(){
       }
       if (!didDrag) return;
       var nx=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth, origLeft+dx));
-      var ny=tbStartY + dy;
+      var ny=panelStartY + dy;
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
     });
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
@@ -2708,7 +2710,7 @@ window.addEventListener('load', function(){
       if(!didDrag && Math.hypot(dx,dy)>6) didDrag=true;
       if(!didDrag) return;
       tb.style.left=Math.max(0,Math.min(window.innerWidth -tb.offsetWidth, ox+dx))+'px';
-      tb.style.top =tbStartY + dy+'px';
+      tb.style.top = (startY2 + dy)+'px';
       e.preventDefault();
     },{passive:false});
     document.addEventListener('pointerup', function(e){
