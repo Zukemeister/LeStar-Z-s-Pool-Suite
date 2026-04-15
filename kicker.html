@@ -251,7 +251,6 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.18);padding:
 .tg-orange.on { background:#c06010; border-color:#f0a060; }
 .tg-orange:not(.on) { filter: brightness(0.8); }
 body,#zoom-wrap{touch-action:pan-x pan-y;}
-#zoom-wrap{touch-action:pan-x pan-y;}
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -499,7 +498,7 @@ function loadShot(idx) {
 </head>
 <body>
 <div id="outer-wrap" style="width:100%;max-width:700px;display:flex;flex-direction:column;">
-<div id="zoom-wrap" style="width:100%;transform-origin:top left;min-height:100vh;background:#0d1f0d;"><div id="app">
+<div id="zoom-wrap" style="width:100%;transform-origin:top left;background:#0d1f0d;"><div id="app">
 
 <header>
 <div class="hdr">
@@ -561,10 +560,11 @@ function loadShot(idx) {
   <!-- /bias-sliders -->
 </div>
 <div id="bias-sliders" style="display:block;margin-top:4px;">
-  <div id="bias-row" style="display:flex;align-items:center;gap:8px;padding:5px 10px;background:transparent;opacity:0.3;pointer-events:none;">
+  <div style="text-align:center;font-size:9px;font-weight:900;font-style:italic;letter-spacing:1.5px;color:#ff8c00;padding:3px 0 1px;">Reality Check</div>
+  <div id="bias-row" style="display:flex;align-items:center;gap:8px;padding:5px 10px;background:transparent;opacity:0.4;">
     <span style="font-size:9px;font-weight:900;letter-spacing:1px;color:#ff8c00;white-space:nowrap;flex:1;">HOW THIS SHOT REALLY GOES</span>
-    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">L</span>
-    <svg id="bias-svg" width="160" height="28" style="flex-shrink:0;touch-action:none;cursor:grab;">
+    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">1</span>
+    <svg id="bias-svg" width="160" height="28" style="flex-shrink:0;touch-action:none;cursor:grab;pointer-events:none;">
       <rect x="6" y="10" width="148" height="8" rx="4" fill="rgba(255,140,0,0.25)" stroke="#ff8c00" stroke-width="1.5"/>
       <rect id="bias-fill" x="6" y="10" width="74" height="8" rx="4" fill="rgba(255,140,0,0.6)"/>
       <circle id="bias-thumb" cx="80" cy="14" r="12" fill="url(#biasgrd)" stroke="none"
@@ -579,10 +579,11 @@ function loadShot(idx) {
         </radialGradient>
       </defs>
     </svg>
-    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">R</span>
+    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">10</span>
     <button id="bias-zero-btn" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZERO</button>
   </div>
 </div>
+
 </div><!-- /block-sliders -->
 
 <div id="table-wrap">
@@ -1103,6 +1104,7 @@ const _pz = {
   });
 })();
 </script>
+
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
@@ -1661,9 +1663,10 @@ svg.addEventListener('pointerdown',e=>{
   const epCx=parseFloat($('ep-dot').getAttribute('cx'));
   const epCy=parseFloat($('ep-dot').getAttribute('cy'));
   const epVis=parseFloat($('ep-dot').style.opacity||'0');
-  if(epVis>0&&Math.hypot(p.x-epCx,p.y-epCy)<22){
+  if(epVis>0&&Math.hypot(p.x-epCx,p.y-epCy)<22&&!lockTable){
     drag='endpoint';svg.setPointerCapture(e.pointerId);return;
   }
+  if(lockTable) return;
   drag='handle';svg.setPointerCapture(e.pointerId);
   S.aimAngle=Math.atan2(p.y-cb.y,p.x-cb.x);
   render();
@@ -2154,6 +2157,8 @@ function toggleBias() {
   if (row) { row.style.opacity = _biasOn ? '1' : '0.3'; row.style.pointerEvents = _biasOn ? 'auto' : 'none'; }
   if (!_biasOn && typeof biasZero === 'function') biasZero();
   if (btn) { btn.style.background = _biasOn ? 'rgba(255,80,0,0.5)' : 'rgba(255,80,0,0.2)'; }
+  var ob = document.getElementById('bias-on-btn');
+  if (ob) { ob.textContent = _biasOn ? 'OFF' : 'ON'; ob.style.background = _biasOn ? 'rgba(255,80,0,0.5)' : 'rgba(255,140,0,0.2)'; }
 }
 
 let panMode = false;
@@ -2253,14 +2258,19 @@ function toggleLock(which){
   // '_sync' just applies current state without toggling
   _syncLockButtons();
   const tblEl=$('tbl');if(tblEl)tblEl.style.touchAction=lockTable?'auto':'none';
-  // Lock all sgroups EXCEPT bias-sliders (controlled only by REALITY CHECK)
   document.querySelectorAll('#block-sliders .sgroup').forEach(function(sg){
     sg.style.opacity = lockSliders ? '0.4' : '1';
     sg.querySelectorAll('input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
   });
+  // Bias row dims with sliders but stays draggable
+  var br = document.getElementById('bias-row');
+  if (br) br.style.opacity = lockSliders ? '0.4' : '1';
+  var bsvg = document.getElementById('bias-svg');
+  if (bsvg) bsvg.style.pointerEvents = lockSliders ? 'none' : 'auto';
+  var bzb = document.getElementById('bias-zero-btn');
+  if (bzb) bzb.style.pointerEvents = lockSliders ? 'none' : 'auto';
   // Sync bias row with slider lock
-  if (!lockSliders && !_biasOn) { _biasOn = true; var br=document.getElementById('bias-row'); if(br){br.style.opacity='1';br.style.pointerEvents='auto';} }
-  if (lockSliders)  { _biasOn = false; var br=document.getElementById('bias-row'); if(br){br.style.opacity='0.3';br.style.pointerEvents='none';} }
+
   document.activeElement&&document.activeElement.blur();
 }
 // ── ZERO ──────────────────────────────────────────────────────
@@ -2332,7 +2342,7 @@ function edgeZoomReset(){
 
 
 
-<div id="float-toolbar" style="position:fixed;top:200px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:stretch;gap:4px;touch-action:none;width:max-content;max-width:96vw;font-size:13px;-webkit-text-size-adjust:none;">
+<div id="float-toolbar" style="max-width:min(520px,96vw);width:max-content;-webkit-text-size-adjust:none;position:fixed;top:200px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:stretch;gap:4px;touch-action:none;width:max-content;max-width:96vw;font-size:13px;-webkit-text-size-adjust:none;">
   <!-- Panel -->
   <div id="ftb-panel" style="display:none;width:max-content;max-width:96vw;touch-action:auto;">
     <!-- Centered compact TOOLS tab -->
@@ -2340,19 +2350,18 @@ function edgeZoomReset(){
       <span id="ftb-pill" onclick="toggleFloatToolbar()" style="display:inline-flex;align-items:center;gap:6px;background:#f0df70;border-radius:7px;padding:3px 10px;cursor:pointer;touch-action:manipulation;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;">TOOLS <span id="ftb-arrow" style="font-size:13px;line-height:1;">▲</span></span>
     </div>
     <!-- Tool grid -->
-    <div id="tool-grid" style="display:flex;flex-direction:column;gap:5px;padding:8px;background:rgba(12,16,12,0.98);touch-action:manipulation;">
+    <div id="tool-grid" style="display:flex;flex-direction:column;gap:5px;padding:8px;background:rgba(12,16,12,0.98);touch-action:manipulation;width:100%;box-sizing:border-box;">
       <!-- Row 1: Zoom + Toggles -->
-      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;">
+      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;max-width:min(520px,96vw);">
         <button onclick="edgeZoom(1.3)" style="width:44px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;flex-shrink:0;"><span style="font-size:9px;font-weight:900;color:#a8ccff;">ZOOM</span><span style="font-size:18px;line-height:1;">+</span></button>
         <button onclick="edgeZoom(1/1.3)" style="width:44px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;flex-shrink:0;"><span style="font-size:9px;font-weight:900;color:#a8ccff;">ZOOM</span><span style="font-size:18px;line-height:1;">−</span></button>
         <button onclick="edgeZoomReset()" style="font-size:9px;font-weight:900;padding:0 8px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZOOM<br>RESET</button>
         <button class="tg-btn tg-green on" id="btn-map"     onclick="toggleMap()">GRID<br>ON</button>
         <button class="tg-btn tg-gold  on" id="ep-snap"     onclick="toggleSnap()">SNAP<br>ON</button>
         <button class="tg-btn tg-brown"    id="btn-metrics" onclick="toggleContact()">ANGLE<br>OFF</button>
-        <button class="tg-btn tg-orange"   id="btn-bias"    onclick="toggleBias()" style="background:rgba(255,80,0,0.3);border-color:#ff8c00;color:#ff8c00;">REALITY<br>CHECK</button>
       </div>
       <!-- Row 2: Locks + Rails + Actions -->
-      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;">
+      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;max-width:min(520px,96vw);">
         <button class="tg-btn tg-red" id="ep-tbl" onclick="toggleLock('table')">ANGLE<br>LOCKED</button>
         <button class="tg-btn tg-red" id="ep-bl"  onclick="toggleLock('balls')">BALLS<br>LOCKED</button>
         <button class="tg-btn tg-red" id="ep-sl"  onclick="toggleLock('sliders')">SLIDERS<br>LOCKED</button>
@@ -2513,6 +2522,19 @@ function edgeZoomReset(){
         </svg>
       </div>
     </div>
+    <div class="dock-slot" id="dock-zoom-in" title="Zoom in">
+      <div style="display:flex;flex-direction:column;align-items:center;pointer-events:none;gap:0;"><span style="font-size:16px;font-weight:900;color:#a8ccff;line-height:1;">+</span><span style="font-size:11px;font-weight:900;color:#a8ccff;line-height:1;">Z</span></div>
+    </div>
+    <div class="dock-slot" id="dock-zoom-out" title="Zoom out">
+      <div style="display:flex;flex-direction:column;align-items:center;pointer-events:none;gap:0;"><span style="font-size:16px;font-weight:900;color:#a8ccff;line-height:1;">−</span><span style="font-size:11px;font-weight:900;color:#a8ccff;line-height:1;">Z</span></div>
+    </div>
+    <div class="dock-slot" id="dock-angle" title="Toggle angle display">
+      <svg width="18" height="16" viewBox="0 0 18 16" style="pointer-events:none;">
+        <line x1="2" y1="14" x2="16" y2="14" stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="2" y1="14" x2="10" y2="3"  stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M6 14 A4 4 0 0 1 4.8 10.5" fill="none" stroke="#f0df70" stroke-width="1.2"/>
+      </svg>
+    </div>
     <div class="dock-slot" id="dock-table-lock" title="Lock / Unlock table">
       <svg width="16" height="18" viewBox="0 0 16 18" style="pointer-events:none;">
         <rect x="3" y="8" width="10" height="9" rx="2" fill="none" stroke="#f0df70" stroke-width="1.5"/>
@@ -2551,12 +2573,28 @@ function edgeZoomReset(){
       if (!el) return;
       el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
     }
-    bind('dock-lock',     function(){ var allLocked=lockTable&&lockBalls&&lockSliders; lockTable=lockBalls=lockSliders=!allLocked; _syncLockButtons(); setActive('lock', lockTable); });
+    bind('dock-lock',     function(){
+      var allLocked=lockTable&&lockBalls&&lockSliders;
+      var newState = !allLocked;
+      lockTable=lockBalls=lockSliders=newState;
+      _syncLockButtons();
+      document.querySelectorAll('#block-sliders .sgroup').forEach(function(sg){
+        sg.style.opacity = lockSliders ? '0.4' : '1';
+        sg.querySelectorAll('input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
+      });
+      var br=document.getElementById('bias-row'); if(br) br.style.opacity = lockSliders ? '0.4' : '1';
+      var bsvg=document.getElementById('bias-svg'); if(bsvg) bsvg.style.pointerEvents = lockSliders ? 'none' : 'auto';
+      var bzb=document.getElementById('bias-zero-btn'); if(bzb) bzb.style.pointerEvents = lockSliders ? 'none' : 'auto';
+      setActive('lock', !lockTable);
+    });
     bind('dock-learn',    function(){ toggleShotLibrary(); setActive('learn', typeof libraryOpen!=='undefined'?libraryOpen:false); });
     bind('dock-rail-add', function(){ addRail(); });
     bind('dock-rail-rem', function(){ removeRail(); });
     bind('dock-tools',    function(){ var on=!_open.tools; var tab=document.getElementById('ftb-tab'); if(tab) tab.style.display=on?'flex':'none'; if(on) { var panel=document.getElementById('ftb-panel'); if(panel) panel.style.display='block'; } else { var panel=document.getElementById('ftb-panel'); if(panel) panel.style.display='none'; } setActive('tools', on); });
     bind('dock-swap',     function(){ swapPanels(); });
+    bind('dock-zoom-in',  function(){ edgeZoom(1.3); });
+    bind('dock-zoom-out', function(){ edgeZoom(1/1.3); });
+    bind('dock-angle',    function(){ toggleContact(); setActive('angle', typeof contactOn!=='undefined'?contactOn:false); });
     bind('dock-table-lock', function(){
       lockTable = !lockTable;
       var shackle = document.getElementById('dock-lock-shackle');
@@ -2738,11 +2776,66 @@ window.addEventListener('load', function(){
     svg.addEventListener('pointerup',     function(){ dragging=false; });
     svg.addEventListener('pointercancel', function(){ dragging=false; });
     if (zb) zb.addEventListener('click', function(e){ e.stopPropagation(); biasZero(); });
+    var ob = document.getElementById('bias-on-btn');
+    if (ob) ob.addEventListener('click', function(e){ e.stopPropagation(); toggleBias(); });
 
   });
 })();
 </script>
 
 
+
+<script>
+// Block pinch zoom — button zoom only
+document.addEventListener('touchstart', function(e){
+  if (e.touches.length > 1) e.preventDefault();
+}, {passive: false});
+document.addEventListener('touchmove', function(e){
+  if (e.touches.length > 1) e.preventDefault();
+}, {passive: false});
+document.addEventListener('gesturestart', function(e){ e.preventDefault(); });
+</script>
+<script>
+// ── PAN VIA POINTER EVENTS ON ZOOM-WRAP ──────────────────────
+(function(){
+  var wrap = null;
+  var panPtr = null;
+  var panStartX=0, panStartY=0, panInitTx=0, panInitTy=0;
+
+  function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
+
+  function onDown(e){
+    if(e.target.closest('circle, [data-ball]')) return;
+    if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+    if(e.target.closest('#btb, .float-panel, #float-toolbar, #dock')) return;
+    panPtr = e.pointerId;
+    panStartX = e.clientX; panStartY = e.clientY;
+    panInitTx = _pz.tx;    panInitTy = _pz.ty;
+    getWrap().setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }
+
+  function onMove(e){
+    if(panPtr === null || e.pointerId !== panPtr) return;
+    _pz.tx = panInitTx + (e.clientX - panStartX);
+    _pz.ty = panInitTy + (e.clientY - panStartY);
+    _pz.apply();
+    e.preventDefault();
+  }
+
+  function onUp(e){
+    if(e.pointerId === panPtr) panPtr = null;
+  }
+
+  window.addEventListener('load', function(){
+    var w = getWrap();
+    if(!w) return;
+    w.addEventListener('pointerdown',   onDown,  {passive:false});
+    w.addEventListener('pointermove',   onMove,  {passive:false});
+    w.addEventListener('pointerup',     onUp);
+    w.addEventListener('pointercancel', onUp);
+  });
+})();
+</script>
 </body>
 </html>
