@@ -1865,11 +1865,10 @@ if ('serviceWorker' in navigator) {
     <!-- SHOT LIBRARY PANEL placeholder — actual panel is fixed/floating -->
 
     <!-- EYE-LEVEL DIAGRAM -->
-<div id="perc-row" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:5px 12px;background:transparent;width:100%;box-sizing:border-box;opacity:0.35;pointer-events:none;">
-  <span style="font-size:9px;font-weight:900;font-style:italic;color:#ff8c00;white-space:nowrap;">Reality Check—</span>
-  <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;"> How I See This Shot</span>
-  <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">L</span>
-  <svg id="perc-svg" width="160" height="28" style="flex-shrink:0;touch-action:none;cursor:grab;">
+<div id="perc-row" style="display:none;align-items:center;justify-content:center;gap:6px;padding:4px 8px;width:100%;box-sizing:border-box;">
+  <span style="font-size:9px;font-weight:900;font-style:italic;color:#ff8c00;white-space:nowrap;flex-shrink:0;">Reality Check—</span>
+  <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;flex-shrink:0;">L</span>
+  <svg id="perc-svg" height="28" viewBox="-12 0 184 28" style="flex:1;min-width:60px;max-width:180px;touch-action:none;cursor:grab;">
     <rect x="6" y="10" width="148" height="8" rx="4" fill="rgba(255,140,0,0.25)" stroke="#ff8c00" stroke-width="1.5"/>
     <rect id="perc-fill" x="6" y="10" width="74" height="8" rx="4" fill="rgba(255,140,0,0.6)"/>
     <circle id="perc-thumb" cx="80" cy="14" r="12" fill="url(#pg)" stroke="none"/>
@@ -1882,8 +1881,8 @@ if ('serviceWorker' in navigator) {
       </radialGradient>
     </defs>
   </svg>
-  <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">R</span>
-  <button id="perc-zero-btn" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZERO</button>
+  <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;flex-shrink:0;">R</span>
+  <button id="perc-zero-btn" onclick="percZero()" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZERO</button>
 </div>
 <script>
 (function(){
@@ -4640,39 +4639,33 @@ function biasStep(zone, dir) {
 </script>
 
 <script>
-// ── Pinch zoom (two-finger) on zoom-wrap only ────────────────────────────────
+// ── Pinch zoom ────────────────────────────────────────────────
 (function(){
-  let scale=1, initDist=0, initScale=1, active=false;
-  window.addEventListener('load', function(){
-    var zw = document.getElementById('zoom-wrap');
-    if (!zw) return;
-    zw.addEventListener('touchstart', function(e) {
-      if (e.touches.length === 2) {
-        active = true;
-        initDist = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-        initScale = scale;
-        e.preventDefault();
-      }
-    }, {passive: false});
-    zw.addEventListener('touchmove', function(e) {
-      if (!active || e.touches.length !== 2) return;
+  var initDist=0, initScale=1, initTx=0, initTy=0, active=false, midX=0, midY=0;
+  document.addEventListener('touchstart',function(e){
+    if(e.touches.length===2){
+      if(window._panLocked===true){e.preventDefault();return;}
+      active=true;
+      initDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      initScale=_pz.scale; initTx=_pz.tx; initTy=_pz.ty;
+      midX=(e.touches[0].clientX+e.touches[1].clientX)/2;
+      midY=(e.touches[0].clientY+e.touches[1].clientY)/2;
       e.preventDefault();
-      const d = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      scale = Math.max(0.5, Math.min(4, initScale * d / initDist));
-      if (typeof _pz !== 'undefined') {
-        _pz.scale = scale; _pz.apply();
-      } else {
-        document.getElementById('zoom-wrap').style.transform = 'scale(' + scale + ')';
-      }
-    }, {passive: false});
-    zw.addEventListener('touchend', function(e) { if (e.touches.length < 2) active = false; });
-  });
+    }
+  },{passive:false});
+  document.addEventListener('touchmove',function(e){
+    if(!active||e.touches.length!==2)return;
+    if(window._panLocked===true){active=false;return;}
+    e.preventDefault();
+    var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    var newScale=Math.max(0.5,Math.min(4,initScale*d/initDist));
+    var ratio=newScale/initScale;
+    _pz.scale=newScale;
+    _pz.tx=midX-(midX-initTx)*ratio;
+    _pz.ty=midY-(midY-initTy)*ratio;
+    _pz.apply();
+  },{passive:false});
+  document.addEventListener('touchend',function(e){if(e.touches.length<2)active=false;});
 })();
 </script>
 
@@ -5254,9 +5247,16 @@ function toggleSlidersPanel() {
       <line x1="6"  y1="24" x2="24" y2="6"  stroke="#f0df70" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
     </svg>
   </div>
-  <div id="dock-bar">
+  <div id="dock-bar" class="vertical">
     <div class="dock-orient-dot" id="dock-dot-start" style="pointer-events:auto;touch-action:manipulation;"></div>
 
+    <div class="dock-slot" id="dock-rc" title="Reality Check">
+      <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
+        <line x1="3" y1="14" x2="17" y2="14" stroke="#ff8c00" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="10" cy="14" r="2.5" fill="#1a1a1a" stroke="#ff8c00" stroke-width="1.4"/>
+        <text x="10" y="9" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="900" fill="#ff8c00" dominant-baseline="central">RC</text>
+      </svg>
+    </div>
     <div class="dock-slot active" id="dock-hand" title="Pan mode">
       <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
         <!-- Up arrow -->
@@ -5416,6 +5416,13 @@ function toggleSlidersPanel() {
       if(d1) d1.addEventListener('click',function(e){e.stopPropagation();tog();});
       if(d2) d2.addEventListener('click',function(e){e.stopPropagation();tog();});
     })();
+    bind('dock-rc', function(){
+      var row=document.getElementById('perc-row');
+      if(!row) return;
+      var on=row.style.display==='none'||row.style.display==='';
+      row.style.display=on?'flex':'none';
+      setActive('rc', on);
+    });
     bind('dock-hand', function(){ window._panLocked=false; document.getElementById('dock-hand').classList.add('active'); document.getElementById('dock-ball').classList.remove('active'); });
     bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); document.getElementById('dock-hand').classList.remove('active'); });
     bind('dock-learn',    function(){ toggleShotLibrary(); var on=libraryOpen; setActive('learn',  on); });
