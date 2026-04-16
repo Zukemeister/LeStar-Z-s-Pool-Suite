@@ -568,7 +568,7 @@ function loadShot(idx) {
 </div><!-- /block-sliders -->
 
 <div id="bias-sliders" style="display:block;margin-top:4px;">
-  <div id="bias-row" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:4px 8px;background:transparent;width:100%;box-sizing:border-box;">
+  <div id="bias-row" style="display:flex;align-items:center;justify-content:center;gap:4px;padding:4px 6px;background:transparent;width:100%;box-sizing:border-box;overflow:hidden;">
     <span style="font-size:9px;font-weight:900;font-style:italic;color:#ff8c00;white-space:nowrap;flex-shrink:0;">Reality Check—</span>
     <span style="font-size:9px;font-weight:900;letter-spacing:1px;color:#ff8c00;white-space:nowrap;flex:1;">HOW THIS SHOT REALLY GOES</span>
     <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">1</span>
@@ -1030,7 +1030,7 @@ function loadShot(idx) {
         dragging = id; ptr = e.pointerId;
         ball.setPointerCapture(e.pointerId);
         e.stopPropagation(); e.preventDefault();
-      });
+      }, {capture: true});
     });
 
     svg.addEventListener('pointermove', function(e){
@@ -1691,7 +1691,7 @@ svg.addEventListener('pointerdown',e=>{
   e.preventDefault();
   if(window._panLocked!==true){e.stopPropagation();return;}
   const p=svgPt(e);
-  if(S.obVisible && Math.hypot(p.x-S.ob.x,p.y-S.ob.y)<36){drag='kick-ob';svg.setPointerCapture(e.pointerId);return;}
+  if(S.obVisible && Math.hypot(p.x-S.ob.x,p.y-S.ob.y)<36){drag='kick-ob';svg.setPointerCapture(e.pointerId);return;return;}
   const cb=S.cb;
   if (calTapActual(p)) return;
   if(Math.hypot(p.x-cb.x,p.y-cb.y)<22){drag='cb';svg.setPointerCapture(e.pointerId);return;}
@@ -1701,6 +1701,10 @@ svg.addEventListener('pointerdown',e=>{
     drag='endpoint';svg.setPointerCapture(e.pointerId);return;
   }
   if(window._panLocked!==true) return;
+  // Don't steal from blocker balls
+  var _xb1=document.getElementById('xb1'), _xb2=document.getElementById('xb2');
+  if(_xb1){var _bx1=parseFloat(_xb1.getAttribute('cx')),_by1=parseFloat(_xb1.getAttribute('cy'));if(Math.hypot(p.x-_bx1,p.y-_by1)<24)return;}
+  if(_xb2){var _bx2=parseFloat(_xb2.getAttribute('cx')),_by2=parseFloat(_xb2.getAttribute('cy'));if(Math.hypot(p.x-_bx2,p.y-_by2)<24)return;}
   drag='handle';svg.setPointerCapture(e.pointerId);
   S.aimAngle=Math.atan2(p.y-cb.y,p.x-cb.x);
   render();
