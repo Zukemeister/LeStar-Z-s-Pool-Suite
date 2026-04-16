@@ -5240,7 +5240,25 @@ function toggleSlidersPanel() {
     // Orient toggle
     (function(){
       var _v = false;
-      function tog(){ _v=!_v; var b=document.getElementById('dock-bar'); if(b) b.classList.toggle('vertical',_v); }
+      function tog(){
+        _v=!_v;
+        var dock=document.getElementById('dock');
+        var bar=document.getElementById('dock-bar');
+        if(!dock||!bar) return;
+        bar.classList.toggle('vertical',_v);
+        // Snap to safe position
+        dock.style.transform='none';
+        dock.style.bottom='auto';
+        if(_v){
+          // Vertical: right edge, middle height
+          dock.style.left=(window.innerWidth - dock.offsetWidth - 8)+'px';
+          dock.style.top=Math.round(window.innerHeight/2 - 100)+'px';
+        } else {
+          // Horizontal: bottom center
+          dock.style.left=Math.round(window.innerWidth/2 - dock.offsetWidth/2)+'px';
+          dock.style.top=(window.innerHeight - dock.offsetHeight - 24)+'px';
+        }
+      }
       var d1=document.getElementById('dock-dot-start');
       var d2=document.getElementById('dock-dot-end');
       if(d1) d1.addEventListener('click', function(e){ e.stopPropagation(); tog(); });
@@ -5470,4 +5488,18 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 });
 </script>
+
+<div id="dock-recovery" title="Recover dock" onclick="(function(){
+  var dock=document.getElementById('dock');
+  var bar=document.getElementById('dock-bar');
+  if(!dock) return;
+  dock.style.transform='none';
+  dock.style.bottom='auto';
+  dock.style.left=Math.round(window.innerWidth/2 - (dock.offsetWidth||200)/2)+'px';
+  dock.style.top=(window.innerHeight - (dock.offsetHeight||60) - 24)+'px';
+})()" style="position:fixed;bottom:6px;right:6px;z-index:9999;
+  background:rgba(10,15,10,0.7);border:1px solid rgba(240,223,112,0.4);
+  border-radius:12px;padding:4px 8px;cursor:pointer;touch-action:manipulation;
+  font-size:9px;font-weight:900;letter-spacing:1px;color:rgba(240,223,112,0.6);
+  user-select:none;">DOCK</div>
 </html>
