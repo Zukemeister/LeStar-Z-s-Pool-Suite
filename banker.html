@@ -3185,7 +3185,7 @@ function botSvgPt(e) {
  // S._diagDragRh at drag start
 
 botsvg.addEventListener('pointerdown', e => {
-  if (lockBalls || panMode) return;
+  if (window._panLocked !== true) return;  // ball mode required
   const _p = botSvgPt(e);
   if (_p.y < 66 || _p.y > 230) return;  // dead zone above/below ball
   e.preventDefault();

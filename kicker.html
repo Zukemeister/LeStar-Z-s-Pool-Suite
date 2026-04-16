@@ -1081,7 +1081,7 @@ const _pz = {
   function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
 
   function onDown(e){
-    if(window._panLocked) return;  // view locked
+    if(window._panLocked===true){ e.preventDefault(); return; }  // ball mode — block pan
     if(e.target.closest('circle, [data-ball]')) return;
     if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
     if(e.target.closest('#btb, .float-panel, #float-toolbar, #dock')) return;
@@ -1094,6 +1094,7 @@ const _pz = {
 
   function onMove(e){
     if(panPtr === null || e.pointerId !== panPtr) return;
+    if(window._panLocked===true){ panPtr=null; return; }
     var w = getWrap();
     _pz.tx = panInitTx + (e.clientX - panStartX);
     _pz.ty = panInitTy + (e.clientY - panStartY);
@@ -2356,6 +2357,7 @@ function edgeZoomReset(){
   let scale=1,initDist=0,initScale=1,active=false;
   document.addEventListener('touchstart',e=>{
     if(e.touches.length===2){
+      if(window._panLocked===true){e.preventDefault();return;}
       // Cancel any active pan so pinch doesn't jump
       if(typeof panPtr !== 'undefined' && panPtr !== null) {
         panPtr = null;
