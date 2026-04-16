@@ -2353,26 +2353,33 @@ function edgeZoomReset(){
 
 </script>
 <script>
+// ── Pinch zoom — uses _pz so translate is preserved ──────────
 (function(){
-  let scale=1,initDist=0,initScale=1,active=false;
+  var initDist=0, initScale=1, initTx=0, initTy=0, active=false;
+  var midX=0, midY=0;
   document.addEventListener('touchstart',e=>{
     if(e.touches.length===2){
       if(window._panLocked===true){e.preventDefault();return;}
-      // Cancel any active pan so pinch doesn't jump
-      if(typeof panPtr !== 'undefined' && panPtr !== null) {
-        panPtr = null;
-        try { getWrap().releasePointerCapture(panPtr); } catch(ex){}
-      }
       active=true;
       initDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      initScale=scale;e.preventDefault();}
+      initScale=_pz.scale; initTx=_pz.tx; initTy=_pz.ty;
+      midX=(e.touches[0].clientX+e.touches[1].clientX)/2;
+      midY=(e.touches[0].clientY+e.touches[1].clientY)/2;
+      e.preventDefault();
+    }
   },{passive:false});
   document.addEventListener('touchmove',e=>{
     if(!active||e.touches.length!==2)return;
-    if(typeof window._panLocked!=='undefined'&&window._panLocked)return;e.preventDefault();
-    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-    scale=Math.max(0.1,Math.min(3,initScale*d/initDist));
-    document.getElementById('zoom-wrap').style.transform='scale('+scale+')';
+    if(window._panLocked===true){active=false;return;}
+    e.preventDefault();
+    var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    var newScale=Math.max(0.5,Math.min(4,initScale*d/initDist));
+    // Scale around pinch midpoint
+    var ratio=newScale/initScale;
+    _pz.scale=newScale;
+    _pz.tx=midX-(midX-initTx)*ratio;
+    _pz.ty=midY-(midY-initTy)*ratio;
+    _pz.apply();
   },{passive:false});
   document.addEventListener('touchend',e=>{if(e.touches.length<2)active=false;});
 })();
@@ -2881,4 +2888,17 @@ document.addEventListener('gesturestart', function(e){ e.preventDefault(); });
 </script>
 
 </body>
+<script>
+// Double-tap to reset zoom/pan
+(function(){
+  var last=0;
+  document.addEventListener('touchend',function(e){
+    var now=Date.now();
+    if(now-last<300&&e.target.closest('#zoom-wrap')&&!e.target.closest('#dock')){
+      _pz.scale=1;_pz.tx=0;_pz.ty=0;_pz.apply();
+    }
+    last=now;
+  });
+})();
+</script>
 </html>
