@@ -568,15 +568,13 @@ function loadShot(idx) {
 </div><!-- /block-sliders -->
 
 <div id="bias-sliders" style="display:block;margin-top:4px;">
-  <div id="bias-row" style="display:flex;align-items:center;justify-content:center;gap:4px;padding:4px 6px;background:transparent;width:100%;box-sizing:border-box;overflow:hidden;">
+  <div id="bias-row" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:4px 8px;width:100%;box-sizing:border-box;">
     <span style="font-size:9px;font-weight:900;font-style:italic;color:#ff8c00;white-space:nowrap;flex-shrink:0;">Reality Check—</span>
-    <span style="font-size:9px;font-weight:900;letter-spacing:1px;color:#ff8c00;white-space:nowrap;flex:1;">HOW THIS SHOT REALLY GOES</span>
-    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">1</span>
-    <svg id="bias-svg" width="160" height="28" style="flex-shrink:0;touch-action:none;cursor:grab;pointer-events:none;">
+    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;flex-shrink:0;">1</span>
+    <svg id="bias-svg" height="28" viewBox="-12 0 184 28" style="flex:1;min-width:60px;max-width:180px;touch-action:none;cursor:grab;">
       <rect x="6" y="10" width="148" height="8" rx="4" fill="rgba(255,140,0,0.25)" stroke="#ff8c00" stroke-width="1.5"/>
       <rect id="bias-fill" x="6" y="10" width="74" height="8" rx="4" fill="rgba(255,140,0,0.6)"/>
-      <circle id="bias-thumb" cx="80" cy="14" r="12" fill="url(#biasgrd)" stroke="none"
-        style="filter:drop-shadow(0 0 4px rgba(200,0,0,0.6));"/>
+      <circle id="bias-thumb" cx="80" cy="14" r="12" fill="url(#biasgrd)" stroke="none" style="filter:drop-shadow(0 0 4px rgba(200,0,0,0.6));"/>
       <line x1="80" y1="4" x2="80" y2="24" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
       <defs>
         <radialGradient id="biasgrd" cx="35%" cy="28%" r="65%">
@@ -587,7 +585,7 @@ function loadShot(idx) {
         </radialGradient>
       </defs>
     </svg>
-    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">10</span>
+    <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;flex-shrink:0;">10</span>
     <button id="bias-lock-btn" onclick="(function(){window._biasLocked=!window._biasLocked;var btn=document.getElementById('bias-lock-btn');if(btn)btn.style.background=window._biasLocked?'rgba(255,140,0,0.5)':'rgba(255,140,0,0.2)';var br=document.getElementById('bias-row');if(br)br.style.opacity=window._biasLocked?'0.4':'1';var bs=document.getElementById('bias-svg');if(bs)bs.style.pointerEvents=window._biasLocked?'none':'auto';var bz=document.getElementById('bias-zero-btn');if(bz)bz.style.pointerEvents=window._biasLocked?'none':'auto';})()" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">LOCK</button>
     <button id="bias-zero-btn" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZERO</button>
   </div>
@@ -1691,10 +1689,12 @@ svg.addEventListener('pointerdown',e=>{
   e.preventDefault();
   if(window._panLocked!==true){e.stopPropagation();return;}
   const p=svgPt(e);
-  if(S.obVisible && Math.hypot(p.x-S.ob.x,p.y-S.ob.y)<36){drag='kick-ob';svg.setPointerCapture(e.pointerId);return;return;}
+  var _zr = 36 / (_pz.scale||1);
+  if(S.obVisible && Math.hypot(p.x-S.ob.x,p.y-S.ob.y)<_zr){drag='kick-ob';svg.setPointerCapture(e.pointerId);return;return;}
   const cb=S.cb;
   if (calTapActual(p)) return;
-  if(Math.hypot(p.x-cb.x,p.y-cb.y)<22){drag='cb';svg.setPointerCapture(e.pointerId);return;}
+  var _cbr = 22 / (_pz.scale||1);
+  if(Math.hypot(p.x-cb.x,p.y-cb.y)<_cbr){drag='cb';svg.setPointerCapture(e.pointerId);return;}
 
   // Check last arrowhead — drag endpoint to solve aim angle
   if(window._epVis && Math.hypot(p.x-window._epX, p.y-window._epY)<24){
