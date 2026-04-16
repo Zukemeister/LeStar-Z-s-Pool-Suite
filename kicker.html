@@ -168,7 +168,7 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.18);padding:
 #sl-bias-fat,#sl-bias-med,#sl-bias-thin{-webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;}
 /* ── DOCK ── */
 #dock {
-  position: fixed; bottom: max(18px, env(safe-area-inset-bottom, 18px)); left: 50%; transform: translateX(-50%);
+  position: fixed; left: 50%; top: 50%;
   z-index: 8900; display: flex; flex-direction: column; align-items: center;
   gap: 6px; user-select: none; -webkit-user-select: none;
 }
@@ -251,6 +251,10 @@ footer{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.18);padding:
 .tg-orange.on { background:#c06010; border-color:#f0a060; }
 .tg-orange:not(.on) { filter: brightness(0.8); }
 body,#zoom-wrap{touch-action:pan-x pan-y;}
+
+#dock-bar.vertical { flex-direction: column; border-radius: 28px; padding: 14px 8px; }
+.dock-orient-dot { width: 14px; height: 14px; border-radius: 50%; background: rgba(240,223,112,0.35); cursor: pointer; flex-shrink: 0; touch-action: manipulation; }
+.dock-orient-dot:active { background: rgba(240,223,112,0.8); }
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -508,7 +512,8 @@ function loadShot(idx) {
     <p class="sub">place the cue ball · aim for a rail · see where it ends up</p>
   </div>
   <div style="display:flex;gap:3px;align-items:center;flex-shrink:0;">
-    <button id="size-btn" onclick="cycleTableSize()" style="padding:2px 6px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;">9ft</button>
+<button onclick="(function(){var dock=document.getElementById('dock');var bar=document.getElementById('dock-bar');if(!dock||!bar)return;bar.classList.remove('vertical');dock.style.transform='none';dock.style.bottom='auto';var tbl=document.getElementById('table-wrap')||document.getElementById('zoom-wrap');var tr=tbl?tbl.getBoundingClientRect():{left:0,top:0,width:window.innerWidth,height:window.innerHeight};dock.style.left=Math.round(tr.left+tr.width/2-(dock.offsetWidth||180)/2)+'px';dock.style.top=Math.round(tr.top+tr.height/2-(dock.offsetHeight||50))+'px';})()" style="padding:2px 6px;border-radius:8px;border:1px solid rgba(240,223,112,0.3);background:rgba(240,223,112,0.08);color:rgba(240,223,112,0.6);font-size:9px;font-weight:900;letter-spacing:1px;cursor:pointer;touch-action:manipulation;flex-shrink:0;">DOCK</button>
+        <button id="size-btn" onclick="cycleTableSize()" style="padding:2px 6px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;">9ft</button>
     <button id="unit-btn" onclick="toggleUnits()" style="padding:2px 6px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;">FT</button>
     <button id="table-btn" onclick="toggleTable()" style="padding:2px 7px;border-radius:10px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:9px;font-weight:900;cursor:pointer;white-space:nowrap;">POOL</button>
   </div>
@@ -544,7 +549,7 @@ function loadShot(idx) {
   </div>
 </div>
 
-<div id="block-sliders" style="display:block;"><div class="sgroup">
+<div id="block-sliders" style="display:none;"><div style="display:flex;align-items:center;justify-content:space-between;padding:2px 8px 0;"><span style="font-size:9px;font-weight:900;letter-spacing:1px;color:rgba(240,223,112,0.5);">SLIDERS</span><button id="sliders-lock-btn" onclick="(function(){window._slidersLocked=!window._slidersLocked;var sh=document.getElementById('sliders-lock-shackle');if(sh)sh.setAttribute('d',window._slidersLocked?'M3 6 V3.5 a3 3 0 0 1 6 0 V6':'M3 6 V2 a3 3 0 0 1 6 0 V4');document.querySelectorAll('#block-sliders input[type=range]').forEach(function(el){el.disabled=window._slidersLocked;});document.querySelectorAll('#block-sliders .sgroup').forEach(function(sg){sg.style.opacity=window._slidersLocked?'0.4':'1';});})()" style="background:rgba(0,0,0,0.4);border:1px solid rgba(240,223,112,0.4);border-radius:6px;padding:3px 6px;cursor:pointer;touch-action:manipulation;line-height:1;"><svg width="12" height="14" viewBox="0 0 12 14" style="pointer-events:none;"><rect x="1" y="6" width="10" height="8" rx="2" fill="none" stroke="#f0df70" stroke-width="1.4"/><path id="sliders-lock-shackle" d="M3 6 V2 a3 3 0 0 1 6 0 V4" fill="none" stroke="#f0df70" stroke-width="1.4" stroke-linecap="round"/></svg></button></div><div class="sgroup">
   <div class="srow">
     <span class="slbl">speed</span>
     <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
@@ -559,6 +564,8 @@ function loadShot(idx) {
   </div>
   <!-- /bias-sliders -->
 </div>
+</div><!-- /block-sliders -->
+
 <div id="bias-sliders" style="display:block;margin-top:4px;">
   <div style="text-align:center;font-size:9px;font-weight:900;font-style:italic;letter-spacing:1.5px;color:#ff8c00;padding:3px 0 1px;">Reality Check</div>
   <div id="bias-row" style="display:flex;align-items:center;gap:8px;padding:5px 10px;background:transparent;opacity:0.4;">
@@ -580,12 +587,12 @@ function loadShot(idx) {
       </defs>
     </svg>
     <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">10</span>
+    <button id="bias-lock-btn" onclick="(function(){window._biasLocked=!window._biasLocked;var btn=document.getElementById('bias-lock-btn');if(btn)btn.style.background=window._biasLocked?'rgba(255,140,0,0.5)':'rgba(255,140,0,0.2)';var br=document.getElementById('bias-row');if(br)br.style.opacity=window._biasLocked?'0.4':'1';var bs=document.getElementById('bias-svg');if(bs)bs.style.pointerEvents=window._biasLocked?'none':'auto';var bz=document.getElementById('bias-zero-btn');if(bz)bz.style.pointerEvents=window._biasLocked?'none':'auto';})()" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">LOCK</button>
     <button id="bias-zero-btn" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZERO</button>
   </div>
 </div>
 
 </div><!-- /block-sliders -->
-
 <div id="table-wrap">
 <svg id="tbl" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg">
 <defs>
@@ -881,25 +888,25 @@ function loadShot(idx) {
   <!-- 5 bounce segments: gold, blue, red, green, violet -->
   <g id="seg0" opacity="0">
     <line   id="s0-stub" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1" stroke-dasharray="3,3"/>
-    <line   id="s0-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="2.2" marker-end="url(#arr0)"/>
-    <circle id="s0-dot"  cx="0" cy="0" r="5.5" fill="none" stroke="#f0df70" stroke-width="1.8"/>
-    <circle id="s0-hdl"  cx="0" cy="0" r="10"  fill="#f0df70" stroke="#fff4" stroke-width="1.5" cursor="grab"/>
+    <line   id="s0-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="2.2" marker-end="url(#arr0)"stroke-dasharray="8,5"/>
+    <circle id="s0-dot"  cx="0" cy="0" r="5.5" fill="none" stroke="#f0df70" stroke-width="1.8" opacity="0"/>
+    <g id="s0-hdl" cursor="grab"><polygon id="s0-arrow" points="0,0" fill="#f0df70"/><circle r="18" fill="transparent" stroke="none"/></g>
   </g>
   <g id="seg1" opacity="0">
     <line   id="s1-line" x1="0" y1="0" x2="0" y2="0" stroke="#7dd3fc" stroke-width="1.9" stroke-dasharray="7,4" marker-end="url(#arr1)"/>
-    <circle id="s1-dot"  cx="0" cy="0" r="5"   fill="none" stroke="#7dd3fc" stroke-width="1.6"/>
+    <g id="s1-dot" opacity="0"><polygon id="s1-arrow" points="0,0" fill="#7dd3fc"/><circle r="18" fill="transparent" stroke="none"/></g>
   </g>
   <g id="seg2" opacity="0">
     <line   id="s2-line" x1="0" y1="0" x2="0" y2="0" stroke="#f87171" stroke-width="1.7" stroke-dasharray="7,4" marker-end="url(#arr2)"/>
-    <circle id="s2-dot"  cx="0" cy="0" r="5"   fill="none" stroke="#f87171" stroke-width="1.6"/>
+    <g id="s2-dot" opacity="0"><polygon id="s2-arrow" points="0,0" fill="#f87171"/><circle r="18" fill="transparent" stroke="none"/></g>
   </g>
   <g id="seg3" opacity="0">
     <line   id="s3-line" x1="0" y1="0" x2="0" y2="0" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="7,4" marker-end="url(#arr3)"/>
-    <circle id="s3-dot"  cx="0" cy="0" r="5"   fill="none" stroke="#4ade80" stroke-width="1.5"/>
+    <g id="s3-dot" opacity="0"><polygon id="s3-arrow" points="0,0" fill="#4ade80"/><circle r="18" fill="transparent" stroke="none"/></g>
   </g>
   <g id="seg4" opacity="0">
     <line   id="s4-line" x1="0" y1="0" x2="0" y2="0" stroke="#e879f9" stroke-width="1.3" stroke-dasharray="7,4" marker-end="url(#arr4)"/>
-    <circle id="s4-dot"  cx="0" cy="0" r="5"   fill="none" stroke="#e879f9" stroke-width="1.4"/>
+    <g id="s4-dot" opacity="0"><polygon id="s4-arrow" points="0,0" fill="#e879f9"/><circle r="18" fill="transparent" stroke="none"/></g>
   </g>
 
   <!-- Endpoint handle — white ring + dot at terminal point of last segment; draggable -->
@@ -1020,6 +1027,8 @@ function loadShot(idx) {
     if (hi)     { hi.setAttribute('cx', x-4);    hi.setAttribute('cy', y-4); }
     var zone = document.getElementById(id+'-zone');
     if (zone) { zone.setAttribute('cx', x); zone.setAttribute('cy', y); }
+    var ring = document.getElementById(id+'-ring');
+    if (ring) { ring.setAttribute('cx', x); ring.setAttribute('cy', y); }
     // Check if any shot path needs clipping — just re-render
     if (typeof render === 'function') render();
   }
@@ -1032,7 +1041,7 @@ function loadShot(idx) {
       var ball = document.getElementById(id);
       if (!ball) return;
       ball.addEventListener('pointerdown', function(e){
-        if (lockTable) return;
+        if (window._panLocked !== true) return;
         dragging = id; ptr = e.pointerId;
         ball.setPointerCapture(e.pointerId);
         e.stopPropagation(); e.preventDefault();
@@ -1072,7 +1081,7 @@ const _pz = {
   function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
 
   function onDown(e){
-    // Always pan when not touching a ball directly
+    if(window._panLocked) return;  // view locked
     if(e.target.closest('circle, [data-ball]')) return;
     if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
     if(e.target.closest('#btb, .float-panel, #float-toolbar, #dock')) return;
@@ -1146,9 +1155,10 @@ let snapOn = true;
 let snapLabelTimer = null;
 let SNAP_POINTS = [];
 const SNAP_RADIUS = 14;
+window._panLocked = false;
 let lockTable = true;   // locks aim angle
 let lockBalls = true;    // locks CB/OB/blocker ball movement
-let lockSliders = true;
+let lockSliders = false;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PHYSICS
@@ -1162,7 +1172,7 @@ function kFactor() {
   if (angleDeg < 20)      zoneBias = S.biasFat || 0;
   else if (angleDeg > 50) zoneBias = S.biasThin || 0;
   else                    zoneBias = S.biasMed || 0;
-  return Math.max(0.45, Math.min(0.99, (base - S.speed*0.22) + zoneBias + (typeof tableK !== 'undefined' ? tableK : 0)));
+  return Math.max(0.30, Math.min(1.15, (base - S.speed*0.22) + zoneBias + (typeof tableK !== 'undefined' ? tableK : 0)));
 }
 
 function rayHit(px, py, dx, dy, excludeRail) {
@@ -1315,7 +1325,7 @@ function buildReadouts(){
 // ─────────────────────────────────────────────────────────────────────────────
 const $=id=>document.getElementById(id);
 function sL(id,x1,y1,x2,y2){const e=$(id);if(!e)return;e.setAttribute('x1',x1);e.setAttribute('y1',y1);e.setAttribute('x2',x2);e.setAttribute('y2',y2);}
-function sC(id,cx,cy){const e=$(id);if(!e)return;e.setAttribute('cx',cx);e.setAttribute('cy',cy);}
+function sC(id,cx,cy){const e=$(id);if(!e)return;if(e.tagName==='g'||e.tagName==='G'){e.setAttribute('transform','translate('+cx+','+cy+')');}else{e.setAttribute('cx',cx);e.setAttribute('cy',cy);}}
 function sV(id,v){const e=$(id);if(e)e.style.opacity=v?'1':'0';}
 function sT(id,v){const e=$(id);if(e)e.textContent=v;}
 
@@ -1376,7 +1386,25 @@ function render(){
   // Aim handle (always gold / seg0)
   const hx=cb.x+HDL_D*Math.cos(aimAngle);
   const hy=cb.y+HDL_D*Math.sin(aimAngle);
-  sC('s0-hdl',hx,hy);
+  // Arrowhead at rail contact, pointing along aim direction
+  var _hdl = document.getElementById('s0-hdl');
+  var _arr = document.getElementById('s0-arrow');
+  if (segs.length > 0 && _hdl && _arr) {
+    // Pull back 6px from rail
+    var _rx=segs[0].to.x - Math.cos(aimAngle)*6;
+    var _ry=segs[0].to.y - Math.sin(aimAngle)*6;
+    var _ang=aimAngle*180/Math.PI;
+    _hdl.setAttribute('transform','translate('+_rx+','+_ry+')');
+    // Arrowhead pointing along aim angle
+    // Arrow points back toward CB (away from rail) — tip at 0,0 on rail surface
+    var _a=aimAngle+Math.PI, _s=14;
+    var _p1x=Math.cos(_a)*_s,   _p1y=Math.sin(_a)*_s;
+    var _p2x=Math.cos(_a+0.5)*_s*0.5, _p2y=Math.sin(_a+0.5)*_s*0.5;
+    var _p3x=Math.cos(_a-0.5)*_s*0.5, _p3y=Math.sin(_a-0.5)*_s*0.5;
+    _arr.setAttribute('points','0,0 '+_p2x+','+_p2y+' '+_p1x+','+_p1y+' '+_p3x+','+_p3y);
+  } else if (_hdl) {
+    _hdl.setAttribute('transform','translate('+hx+','+hy+')');
+  }
   sV('seg0',true);
 
   if (segs.length > 0) { var _clipStub = clipSegToBlockers(cb.x,cb.y,hx,hy);
@@ -1390,9 +1418,28 @@ function render(){
     const fy=i===0?cb.y+Math.sin(aimAngle)*(BALL_R+2):seg.from.y;
     var _clip = clipSegToBlockers(fx,fy,seg.to.x,seg.to.y);
     var _ex = _clip ? _clip.x : seg.to.x, _ey = _clip ? _clip.y : seg.to.y;
-    sL(`s${i}-line`,fx,fy,_ex,_ey);
+    var _lx=_ex, _ly=_ey;
+    if(i===0){ _lx=_ex-Math.cos(aimAngle)*6; _ly=_ey-Math.sin(aimAngle)*6; }
+    sL(`s${i}-line`,fx,fy,_lx,_ly);
     if (_clip) { _blocked = true; sC(`s${i}-dot`,0,0); sV(`s${i}-dot`,false); sV('seg'+i,true); return; }
-    if (!_blocked) sC(`s${i}-dot`,seg.to.x,seg.to.y);
+    if (!_blocked) {
+      var _seg_ang = Math.atan2(seg.to.y - (i===0?S.cb.y:segs[i-1].to.y), seg.to.x - (i===0?S.cb.x:segs[i-1].to.x));
+      var _arr_el = document.getElementById('s'+i+'-dot');
+      var _arr_poly = document.getElementById('s'+i+'-arrow');
+      if (_arr_el && _arr_poly && i > 0) {
+        var _brx = seg.to.x - Math.cos(_seg_ang)*6;
+        var _bry = seg.to.y - Math.sin(_seg_ang)*6;
+        _arr_el.setAttribute('transform','translate('+_brx+','+_bry+')');
+        var _ba = _seg_ang+Math.PI, _bs=14;
+        var _bp1x=Math.cos(_ba)*_bs, _bp1y=Math.sin(_ba)*_bs;
+        var _bp2x=Math.cos(_ba+0.5)*_bs*0.5, _bp2y=Math.sin(_ba+0.5)*_bs*0.5;
+        var _bp3x=Math.cos(_ba-0.5)*_bs*0.5, _bp3y=Math.sin(_ba-0.5)*_bs*0.5;
+        _arr_poly.setAttribute('points','0,0 '+_bp2x+','+_bp2y+' '+_bp1x+','+_bp1y+' '+_bp3x+','+_bp3y);
+        sV('s'+i+'-dot', true);
+      } else {
+        sC('s'+i+'-dot',seg.to.x,seg.to.y);
+      }
+    }
     sV('seg'+i,true);
 
     sT(`rd${i}-con`, RAIL_SHORT[seg.rail]+' ◆ '+toDiamond(seg.to.x,seg.to.y,seg.rail));
@@ -1416,9 +1463,11 @@ function render(){
     sC('ep-dot', last.x,last.y);
     $('ep-lbl').setAttribute('x',last.x);
     $('ep-lbl').setAttribute('y',last.y-15);
-    sV('ep-ring',true);sV('ep-dot',true);sV('ep-lbl',true);
+    sV('ep-ring',false);sV('ep-dot',false);sV('ep-lbl',true);
+    window._epX=last.x; window._epY=last.y; window._epVis=true;
   } else if (_blocked) {
     sV('ep-ring',false);sV('ep-dot',false);sV('ep-lbl',false);
+    window._epVis=false;
   }
   if (S.selectedContact >= segs.length) S.selectedContact = Math.max(0, segs.length-1);
   if (S.contactOn) drawContact(segs);
@@ -1501,10 +1550,10 @@ function drawContact(segs) {
   let out = `<rect width="${W}" height="${H}" fill="rgba(0,0,0,0.35)"/>`;
   out += `<rect x="0" y="0" width="${W}" height="${cy}" fill="rgba(26,80,40,0.5)"/>`;
   out += `<rect x="0" y="${cy}" width="${W}" height="${H-cy}" fill="#1a6830"/>`;
-  out += `<circle cx="${cx}" cy="${cy+8}" r="10" fill="none" stroke="#ffffff" stroke-width="2.5"/>`;
-  out += `<circle cx="${cx}" cy="${cy+8}" r="3" fill="#ffffff"/>`;
+
+
   out += `<line x1="${ax}" y1="${ay}" x2="${cx}" y2="${cy}" stroke="${inCol}" stroke-width="3" stroke-dasharray="8,4"/>`;
-  out += `<circle cx="${ax}" cy="${ay}" r="7" fill="${inCol}"/>`;
+
   const rebOp=isLast?'0.40':'0.9', rebStr=isLast?'#888888':outCol;
   out += `<line x1="${cx}" y1="${cy}" x2="${rx}" y2="${ry}" stroke="${rebStr}" stroke-width="${isLast?2:3}" stroke-dasharray="8,4" opacity="${rebOp}"/>`;
 
@@ -1654,21 +1703,18 @@ function clampBall(x,y){return{x:Math.max(TL.left+BALL_R,Math.min(TL.right-BALL_
 
 svg.addEventListener('pointerdown',e=>{
   e.preventDefault();
-  if(lockBalls){e.stopPropagation();return;}
+  if(window._panLocked!==true){e.stopPropagation();return;}
   const p=svgPt(e);
   if(S.obVisible && Math.hypot(p.x-S.ob.x,p.y-S.ob.y)<36){drag='kick-ob';svg.setPointerCapture(e.pointerId);return;}
   const cb=S.cb;
   if (calTapActual(p)) return;
   if(Math.hypot(p.x-cb.x,p.y-cb.y)<22){drag='cb';svg.setPointerCapture(e.pointerId);return;}
 
-  // Check endpoint handle
-  const epCx=parseFloat($('ep-dot').getAttribute('cx'));
-  const epCy=parseFloat($('ep-dot').getAttribute('cy'));
-  const epVis=parseFloat($('ep-dot').style.opacity||'0');
-  if(epVis>0&&Math.hypot(p.x-epCx,p.y-epCy)<22&&!lockTable){
+  // Check last arrowhead — drag endpoint to solve aim angle
+  if(window._epVis && Math.hypot(p.x-window._epX, p.y-window._epY)<24){
     drag='endpoint';svg.setPointerCapture(e.pointerId);return;
   }
-  if(lockTable) return;
+  if(window._panLocked!==true) return;
   drag='handle';svg.setPointerCapture(e.pointerId);
   S.aimAngle=Math.atan2(p.y-cb.y,p.x-cb.x);
   render();
@@ -1716,7 +1762,7 @@ function onSliders(){
   S.spin = sv / 4;
   // Single bias
   const _bVal = parseInt($('sl-bias')?.value || '0');
-  S.bias = _bVal * 0.025;
+  S.bias = _bVal * 0.015;
   S.biasFat = S.bias; S.biasMed = S.bias; S.biasThin = S.bias;
   const _bn = document.getElementById('sv-bias-n');
   const _bs = document.getElementById('sv-bias');
@@ -2309,12 +2355,19 @@ function edgeZoomReset(){
 (function(){
   let scale=1,initDist=0,initScale=1,active=false;
   document.addEventListener('touchstart',e=>{
-    if(e.touches.length===2){active=true;
+    if(e.touches.length===2){
+      // Cancel any active pan so pinch doesn't jump
+      if(typeof panPtr !== 'undefined' && panPtr !== null) {
+        panPtr = null;
+        try { getWrap().releasePointerCapture(panPtr); } catch(ex){}
+      }
+      active=true;
       initDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
       initScale=scale;e.preventDefault();}
   },{passive:false});
   document.addEventListener('touchmove',e=>{
-    if(!active||e.touches.length!==2)return;e.preventDefault();
+    if(!active||e.touches.length!==2)return;
+    if(typeof window._panLocked!=='undefined'&&window._panLocked)return;e.preventDefault();
     const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
     scale=Math.max(0.1,Math.min(3,initScale*d/initDist));
     document.getElementById('zoom-wrap').style.transform='scale('+scale+')';
@@ -2489,23 +2542,55 @@ function edgeZoomReset(){
     </svg>
   </div>
   <div id="dock-bar">
-    <div class="dock-slot" id="dock-lock" title="Lock / Unlock all">
-      <div style="display:flex;flex-direction:column;gap:3px;align-items:center;pointer-events:none;">
-        <div class="dline" style="width:14px;height:2px;background:#f0df70;"></div>
-        <div class="dline" style="width:10px;height:2px;background:#f0df70;"></div>
-        <div class="dline" style="width:14px;height:2px;background:#f0df70;"></div>
-      </div>
+    <div class="dock-orient-dot" id="dock-dot-start" style="pointer-events:auto;touch-action:manipulation;"></div>
+
+    <div class="dock-slot active" id="dock-hand" title="Pan mode">
+      <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
+        <line x1="10" y1="2" x2="10" y2="9" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
+        <polyline points="7.5,4.5 10,2 12.5,4.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="10" y1="11" x2="10" y2="18" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
+        <polyline points="7.5,15.5 10,18 12.5,15.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="2" y1="10" x2="9" y2="10" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
+        <polyline points="4.5,7.5 2,10 4.5,12.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="11" y1="10" x2="18" y2="10" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
+        <polyline points="15.5,7.5 18,10 15.5,12.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="10" cy="10" r="1.5" fill="#f0df70"/>
+      </svg>
+    </div>
+    <div class="dock-slot" id="dock-ball" title="Ball mode">
+      <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
+        <defs>
+          <radialGradient id="kicker-ob-g" cx="35%" cy="28%" r="65%">
+            <stop offset="0%" stop-color="#ff9090"/>
+            <stop offset="35%" stop-color="#ee2020"/>
+            <stop offset="80%" stop-color="#aa0808"/>
+            <stop offset="100%" stop-color="#6a0808"/>
+          </radialGradient>
+        </defs>
+        <circle cx="10" cy="10" r="9" fill="url(#kicker-ob-g)"/>
+        <circle cx="7" cy="7" r="2.5" fill="rgba(255,255,255,0.35)"/>
+      </svg>
     </div>
     <div class="dock-slot" id="dock-learn" title="Learn">
       <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
       <div class="dline" style="width:12px;height:3px;background:#f0df70;"></div>
       <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
     </div>
+    <div class="dock-slot" id="dock-sliders" title="Sliders">
+      <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
+        <line x1="3" y1="5"  x2="17" y2="5"  stroke="#f0df70" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="8"  cy="5"  r="2.5" fill="#1a1a1a" stroke="#f0df70" stroke-width="1.4"/>
+        <line x1="3" y1="10" x2="17" y2="10" stroke="#f0df70" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="13" cy="10" r="2.5" fill="#1a1a1a" stroke="#f0df70" stroke-width="1.4"/>
+        <line x1="3" y1="15" x2="17" y2="15" stroke="#f0df70" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="7"  cy="15" r="2.5" fill="#1a1a1a" stroke="#f0df70" stroke-width="1.4"/>
+      </svg>
+    </div>
     <div class="dock-slot" id="dock-rail-add" title="Add rail">
-      <span style="font-size:13px;font-weight:900;color:#4ade80;pointer-events:none;line-height:1;">+</span>
+      <div style="display:flex;flex-direction:column;align-items:center;pointer-events:none;gap:1px;"><span style="font-size:13px;font-weight:900;color:#4ade80;line-height:1;">+</span><svg width="14" height="11" viewBox="0 0 14 11"><line x1="1" y1="10" x2="13" y2="10" stroke="#4ade80" stroke-width="1.4" stroke-linecap="round"/><line x1="1" y1="10" x2="7" y2="1" stroke="#4ade80" stroke-width="1.4" stroke-linecap="round"/><path d="M4.5 10 A3.5 3.5 0 0 1 3.8 7" fill="none" stroke="#4ade80" stroke-width="1.1"/></svg></div>
     </div>
     <div class="dock-slot" id="dock-rail-rem" title="Remove rail">
-      <span style="font-size:13px;font-weight:900;color:#f87171;pointer-events:none;line-height:1;">−</span>
+      <div style="display:flex;flex-direction:column;align-items:center;pointer-events:none;gap:1px;"><span style="font-size:13px;font-weight:900;color:#f87171;line-height:1;">−</span><svg width="14" height="11" viewBox="0 0 14 11"><line x1="1" y1="10" x2="13" y2="10" stroke="#f87171" stroke-width="1.4" stroke-linecap="round"/><line x1="1" y1="10" x2="7" y2="1" stroke="#f87171" stroke-width="1.4" stroke-linecap="round"/><path d="M4.5 10 A3.5 3.5 0 0 1 3.8 7" fill="none" stroke="#f87171" stroke-width="1.1"/></svg></div>
     </div>
     <div class="dock-slot" id="dock-tools" title="Tools panel">
       <div style="display:flex;flex-direction:row;align-items:center;gap:2.5px;pointer-events:none;">
@@ -2537,12 +2622,8 @@ function edgeZoomReset(){
         <path d="M6 14 A4 4 0 0 1 4.8 10.5" fill="none" stroke="#f0df70" stroke-width="1.2"/>
       </svg>
     </div>
-    <div class="dock-slot" id="dock-table-lock" title="Lock / Unlock table">
-      <svg width="16" height="18" viewBox="0 0 16 18" style="pointer-events:none;">
-        <rect x="3" y="8" width="10" height="9" rx="2" fill="none" stroke="#f0df70" stroke-width="1.5"/>
-        <path id="dock-lock-shackle" d="M5 8 V5 a3 3 0 0 1 6 0 V8" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </div>
+
+    <div class="dock-orient-dot" id="dock-dot-end" style="pointer-events:auto;touch-action:manipulation;"></div>
     <div id="dock-minimize" title="Minimize dock"></div>
   </div>
 </div>
@@ -2550,7 +2631,7 @@ function edgeZoomReset(){
 <script>
 // ── DOCK ─────────────────────────────────────────────────────
 (function(){
-  var _open = { lock:false, learn:false, sliders:false, tools:false };
+  var _open = { learn:false, sliders:false, tools:false };
 
   function setActive(key, on) {
     _open[key] = on;
@@ -2558,93 +2639,92 @@ function edgeZoomReset(){
     if (el) el.classList.toggle('active', on);
   }
 
-  window.dockCollapse = function() {
-    var bar=document.getElementById('dock-bar'), mini=document.getElementById('dock-mini');
-    if (bar)  bar.style.display='none';
-    if (mini) mini.style.display='flex';
-  };
-  window.dockExpand = function() {
-    var bar=document.getElementById('dock-bar'), mini=document.getElementById('dock-mini');
-    if (bar)  bar.style.display='flex';
-    if (mini) mini.style.display='none';
-  };
+  function bind(id, fn) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
+  }
 
-  window.addEventListener('load', function(){
-    function bind(id, fn) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
+  // Orient toggle
+  (function(){
+    var _v=false;
+    function tog(){
+      _v=!_v;
+      var dock=document.getElementById('dock');
+      var bar=document.getElementById('dock-bar');
+      if(!dock||!bar) return;
+      bar.classList.toggle('vertical',_v);
+      dock.style.transform='none'; dock.style.bottom='auto';
+      setTimeout(function(){
+        var tbl=document.getElementById('table-wrap')||document.getElementById('zoom-wrap');
+        var tr=tbl?tbl.getBoundingClientRect():{left:0,top:0,width:window.innerWidth,height:window.innerHeight};
+        var dw=dock.offsetWidth||180, dh=dock.offsetHeight||50;
+        dock.style.left=Math.round(tr.left+tr.width/2-dw/2)+'px';
+        dock.style.top=Math.round(tr.top+tr.height/2-dh/2)+'px';
+      },50);
     }
-    bind('dock-lock',     function(){
-      var allLocked=lockTable&&lockBalls&&lockSliders;
-      var newState = !allLocked;
-      lockTable=lockBalls=lockSliders=newState;
-      _syncLockButtons();
-      document.querySelectorAll('#block-sliders .sgroup').forEach(function(sg){
-        sg.style.opacity = lockSliders ? '0.4' : '1';
-        sg.querySelectorAll('input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
-      });
-      var br=document.getElementById('bias-row'); if(br) br.style.opacity = lockSliders ? '0.4' : '1';
-      var bsvg=document.getElementById('bias-svg'); if(bsvg) bsvg.style.pointerEvents = lockSliders ? 'none' : 'auto';
-      var bzb=document.getElementById('bias-zero-btn'); if(bzb) bzb.style.pointerEvents = lockSliders ? 'none' : 'auto';
-      setActive('lock', !lockTable);
-    });
-    bind('dock-learn',    function(){ toggleShotLibrary(); setActive('learn', typeof libraryOpen!=='undefined'?libraryOpen:false); });
-    bind('dock-rail-add', function(){ addRail(); });
-    bind('dock-rail-rem', function(){ removeRail(); });
-    bind('dock-tools',    function(){ var on=!_open.tools; var tab=document.getElementById('ftb-tab'); if(tab) tab.style.display=on?'flex':'none'; if(on) { var panel=document.getElementById('ftb-panel'); if(panel) panel.style.display='block'; } else { var panel=document.getElementById('ftb-panel'); if(panel) panel.style.display='none'; } setActive('tools', on); });
-    bind('dock-swap',     function(){ swapPanels(); });
-    bind('dock-zoom-in',  function(){ edgeZoom(1.3); });
-    bind('dock-zoom-out', function(){ edgeZoom(1/1.3); });
-    bind('dock-angle',    function(){ toggleContact(); setActive('angle', typeof contactOn!=='undefined'?contactOn:false); });
-    bind('dock-table-lock', function(){
-      lockTable = !lockTable;
-      var shackle = document.getElementById('dock-lock-shackle');
-      var slot = document.getElementById('dock-table-lock');
-      if (shackle) shackle.setAttribute('d', lockTable
-        ? 'M5 8 V5 a3 3 0 0 1 6 0 V8'
-        : 'M5 8 V5 a3 3 0 0 1 6 0 V3');
-      if (slot) slot.classList.toggle('active', lockTable);
-      _syncLockButtons();
-    });
-    bind('dock-minimize', function(){ dockCollapse(); });
-    bind('dock-mini',     function(){ dockExpand(); });
+    var d1=document.getElementById('dock-dot-start'), d2=document.getElementById('dock-dot-end');
+    if(d1) d1.addEventListener('click',function(e){e.stopPropagation();tog();});
+    if(d2) d2.addEventListener('click',function(e){e.stopPropagation();tog();});
+  })();
 
-    var bar = document.getElementById('dock-bar');
-    var dock = document.getElementById('dock');
-    if (!bar || !dock) return;
-    var sx, sy, ox, oy, dragging=false, ptr=null, isXfm=true;
-    bar.addEventListener('pointerdown', function(e){
-      if (e.target.closest('.dock-slot')||e.target.id==='dock-minimize') return;
-      var r=dock.getBoundingClientRect();
-      if(isXfm){dock.style.transform='none';dock.style.left=r.left+'px';dock.style.top=r.top+'px';dock.style.bottom='auto';isXfm=false;}
-      sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;dragging=false;ptr=e.pointerId;
-      bar.setPointerCapture(e.pointerId);
-    });
-    bar.addEventListener('pointermove',function(e){
-      if(ptr===null||e.pointerId!==ptr)return;
-      var dx=e.clientX-sx,dy=e.clientY-sy;
-      if(!dragging&&Math.hypot(dx,dy)>6)dragging=true;
-      if(!dragging)return;
-      dock.style.left=(ox+dx)+'px';
-      dock.style.top=(oy+dy)+'px';
-    });
-    bar.addEventListener('pointerup',function(e){if(e.pointerId===ptr)ptr=null;});
-    bar.addEventListener('pointercancel',function(){ptr=null;});
+  bind('dock-hand', function(){ window._panLocked=false; document.getElementById('dock-hand').classList.add('active'); document.getElementById('dock-ball').classList.remove('active'); });
+  bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); document.getElementById('dock-hand').classList.remove('active'); });
+  bind('dock-learn',    function(){ toggleShotLibrary(); setActive('learn', typeof libraryOpen!=='undefined'?libraryOpen:false); });
+  bind('dock-sliders',  function(){ var bs=document.getElementById('block-sliders'); if(!bs) return; var on=bs.style.display==='none'; bs.style.display=on?'block':'none'; setActive('sliders',on); });
+  bind('dock-rail-add', function(){ addRail(); });
+  bind('dock-rail-rem', function(){ removeRail(); });
+  bind('dock-tools',    function(){ var on=!_open.tools; var tab=document.getElementById('ftb-tab'); if(tab){ tab.style.display=on?'block':'none'; } _open.tools=on; setActive('tools',on); });
+  bind('dock-swap',     function(){ swapPanels(); });
+  bind('dock-zoom-in',  function(){ edgeZoom(1.3); });
+  bind('dock-zoom-out', function(){ edgeZoom(1/1.3); });
+  bind('dock-angle',    function(){ toggleContact(); setActive('angle', typeof contactOn!=='undefined'?contactOn:false); });
+  bind('dock-minimize', function(){ dockCollapse(); });
+  bind('dock-mini',     function(){ dockExpand(); });
 
-    // Snap dock to center of table on load
-    function snapDockToTable() {
-      var tbl = document.getElementById('table-wrap');
-      if (!tbl || !dock) return;
-      var r = tbl.getBoundingClientRect();
-      var dw = dock.offsetWidth || 300;
-      dock.style.transform = 'none';
-      dock.style.left = Math.max(4, r.left + (r.width - dw)/2) + 'px';
-      dock.style.top  = Math.max(4, r.top + (r.height - dock.offsetHeight)/2) + 'px';
-      dock.style.bottom = 'auto';
-    }
-    requestAnimationFrame(snapDockToTable);
+  // Sync lock buttons
+  var br=document.getElementById('bias-row'); if(br) br.style.opacity = lockSliders ? '0.4' : '1';
+  var bsvg=document.getElementById('bias-svg'); if(bsvg) bsvg.style.pointerEvents = lockSliders ? 'none' : 'auto';
+  var bzb=document.getElementById('bias-zero-btn'); if(bzb) bzb.style.pointerEvents = lockSliders ? 'none' : 'auto';
+
+  var bar = document.getElementById('dock-bar');
+  var dock = document.getElementById('dock');
+  if (!bar || !dock) return;
+  var sx, sy, ox, oy, dragging=false, ptr=null, isXfm=false;
+  bar.addEventListener('pointerdown', function(e){
+    if (e.target.closest('.dock-orient-dot')) return;
+    if (e.target.closest('.dock-slot')||e.target.id==='dock-minimize') return;
+    var r=dock.getBoundingClientRect();
+    sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;dragging=false;ptr=e.pointerId;
+    bar.setPointerCapture(e.pointerId);
   });
+  bar.addEventListener('pointermove',function(e){
+    if(ptr===null||e.pointerId!==ptr)return;
+    var dx=e.clientX-sx,dy=e.clientY-sy;
+    if(!dragging&&Math.hypot(dx,dy)>6)dragging=true;
+    if(!dragging)return;
+    dock.style.left=(ox+dx)+'px';
+    dock.style.top=(oy+dy)+'px';
+  });
+  bar.addEventListener('pointerup',function(e){if(e.pointerId===ptr)ptr=null;});
+  bar.addEventListener('pointercancel',function(){ptr=null;});
+
+  // Snap dock to center of table on load
+  function snapDockToTable() {
+    var tbl = document.getElementById('table-wrap') || document.getElementById('zoom-wrap');
+    if (!tbl || !dock) return;
+    var r = tbl.getBoundingClientRect();
+    if (r.width === 0) { requestAnimationFrame(snapDockToTable); return; }
+    var dw = dock.offsetWidth || 180;
+    var dh = dock.offsetHeight || 50;
+    dock.style.transform = 'none';
+    dock.style.bottom = 'auto';
+    dock.style.left = Math.round(r.left + r.width/2 - dw/2) + 'px';
+    dock.style.top  = Math.round(r.top  + r.height * 0.4) + 'px';
+  }
+  requestAnimationFrame(snapDockToTable);
+  window.addEventListener('load', function(){ setTimeout(snapDockToTable, 100); });
+
 })();
 
 // ── LONG-PRESS TOOLTIP ───────────────────────────────────────
@@ -2676,7 +2756,7 @@ function edgeZoomReset(){
 window.addEventListener('load', function(){
   // Position toolbar (TOOLS tab) left of table
   var tb = document.getElementById('float-toolbar');
-  var tbl = document.getElementById('table-wrap');
+  var tbl = document.getElementById('table-wrap') || document.getElementById('zoom-wrap');
   if (tb && tbl) {
     requestAnimationFrame(function(){
       var r = tbl.getBoundingClientRect();
@@ -2710,7 +2790,7 @@ window.addEventListener('load', function(){
       if(!didDrag && Math.hypot(dx,dy)>6) didDrag=true;
       if(!didDrag) return;
       tb.style.left=Math.max(0,Math.min(window.innerWidth -tb.offsetWidth, ox+dx))+'px';
-      tb.style.top = (startY2 + dy)+'px';
+      tb.style.top = (oy + dy)+'px';
       e.preventDefault();
     },{passive:false});
     document.addEventListener('pointerup', function(e){
@@ -2743,7 +2823,7 @@ window.addEventListener('load', function(){
     fill.setAttribute('width', Math.max(0, x - X1));
     var v = (x - CX) / 74;  // -1 to +1
     var bVal = Math.round(v * 12);  // map to -12..12
-    S.bias = bVal * 0.025;
+    S.bias = bVal * 0.015;
     S.biasFat = S.biasMed = S.biasThin = S.bias;
     if (typeof render === 'function') render();
   }
@@ -2797,47 +2877,6 @@ document.addEventListener('touchmove', function(e){
 }, {passive: false});
 document.addEventListener('gesturestart', function(e){ e.preventDefault(); });
 </script>
-<script>
-// ── PAN VIA POINTER EVENTS ON ZOOM-WRAP ──────────────────────
-(function(){
-  var wrap = null;
-  var panPtr = null;
-  var panStartX=0, panStartY=0, panInitTx=0, panInitTy=0;
 
-  function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
-
-  function onDown(e){
-    if(e.target.closest('circle, [data-ball]')) return;
-    if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
-    if(e.target.closest('#btb, .float-panel, #float-toolbar, #dock')) return;
-    panPtr = e.pointerId;
-    panStartX = e.clientX; panStartY = e.clientY;
-    panInitTx = _pz.tx;    panInitTy = _pz.ty;
-    getWrap().setPointerCapture(e.pointerId);
-    e.preventDefault();
-  }
-
-  function onMove(e){
-    if(panPtr === null || e.pointerId !== panPtr) return;
-    _pz.tx = panInitTx + (e.clientX - panStartX);
-    _pz.ty = panInitTy + (e.clientY - panStartY);
-    _pz.apply();
-    e.preventDefault();
-  }
-
-  function onUp(e){
-    if(e.pointerId === panPtr) panPtr = null;
-  }
-
-  window.addEventListener('load', function(){
-    var w = getWrap();
-    if(!w) return;
-    w.addEventListener('pointerdown',   onDown,  {passive:false});
-    w.addEventListener('pointermove',   onMove,  {passive:false});
-    w.addEventListener('pointerup',     onUp);
-    w.addEventListener('pointercancel', onUp);
-  });
-})();
-</script>
 </body>
 </html>
