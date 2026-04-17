@@ -573,7 +573,8 @@ body { padding-bottom: 80px !important; }
 .tg-orange:not(.on) { filter: brightness(0.8); }
 
 
-#dock-bar.vertical { flex-direction: column; border-radius: 28px; padding: 14px 8px; }
+#dock-bar.vertical { flex-direction: column; border-radius: 28px; padding: 14px 8px; max-height: 80vh; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+#dock-bar.vertical::-webkit-scrollbar { display: none; }
 .dock-orient-dot {
   width: 14px; height: 14px; border-radius: 50%;
   background: rgba(240,223,112,0.35); cursor: pointer;
@@ -2314,7 +2315,7 @@ if ('serviceWorker' in navigator) {
     <!-- SHOT LIBRARY PANEL placeholder — actual panel is fixed/floating -->
 
     <!-- EYE-LEVEL DIAGRAM -->
-    <div id="perc-row" style="display:flex;align-items:center;justify-content:center;gap:4px;padding:4px 8px;background:transparent;width:100%;box-sizing:border-box;overflow:hidden;">
+    <div id="perc-row" style="display:none;align-items:center;justify-content:center;gap:4px;padding:4px 8px;background:transparent;width:100%;box-sizing:border-box;overflow:hidden;">
   <span style="font-size:9px;font-weight:900;font-style:italic;color:#ff8c00;white-space:nowrap;flex-shrink:1;">Reality Check—</span>
   <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">L</span>
   <svg id="perc-svg" height="28" style="flex:1;min-width:80px;max-width:160px;touch-action:none;cursor:grab;">
@@ -2712,60 +2713,73 @@ function fracStr(hf){
 }
 
 function compute(cutDeg) {
-  // ── CALIBRATED AIM CORRECTION ──────────────────────────────
-  // Based on table data: at shallow-moderate cuts (< 47°), pure geometry
-  // undershoots the required aim point due to induced spin / contact effects.
-  // Model: aimFraction = sin(cut) + 0.706 * (cos(cut) - cos(47°))^0.592
-  // This correction is zero at 47°, peaks at shallow cuts, gone by 47°+.
-  // Bell curve and throw corrections removed — they overcorrected.
+  // ── CLEAN PIPELINE ──────────────────────────────────────────
+  // θ_geo is pure geometry (from shot setup).
+  // Three sliders modify angle: CIT (friction, always on, speed-scaled),
+  // spin throw, and personal bias. Squirt shifts the aim fraction.
+  // RC (perception offset) is NOT applied here — it's a display-only
+  // shift applied downstream in displayFrac().
 
-  const COS_ZERO = Math.cos(47 * RAD);  // cos(47°) = 0.6820
+  const θgeo_deg = cutDeg >= 90 ? 90 : Math.max(0, cutDeg);
+  const θgeo = θgeo_deg * RAD;
+  const geoFrac = Math.sin(θgeo);
 
-  const cutRaw = cutDeg >= 90 ? 1.0 : Math.sin(cutDeg * RAD);
-  const Z_des  = cutRaw >= 1.0 ? Math.PI/2 : Math.asin(cutRaw);
-  const biasRad = S.bias;
+  // ── CUT-INDUCED THROW (70% of physics curve, speed-dependent) ──
+  // Peak ~5° at slow (speed=0), ~1.5° at firm (speed=1).
+  // Shape sin(θ)·cos(θ)³ peaks near 30°, zero at 0° and 90°.
+  // Normalized so peak value = 1.0 at the peak angle.
+  const peakDeg = 5 - 3.5 * S.speed;                        // S.speed ∈ [0,1]
+  const cit_shape = Math.sin(θgeo) * Math.pow(Math.cos(θgeo), 3) / 0.325;
+  const cit_deg = 0.7 * peakDeg * cit_shape;
 
-  // ── CALIBRATED CORRECTION (replaces bell + throw) ──────────
-  let aimFrac;
-  if (cutDeg < 47) {
-    const cosDiff = Math.cos(cutDeg * RAD) - COS_ZERO;
-    const correction = cosDiff > 0 ? 0.706 * Math.pow(cosDiff, 0.592) : 0;
-    aimFrac = Math.min(1, cutRaw + correction);
-  } else {
-    aimFrac = cutRaw;  // pure geometry at 47°+
-  }
-
-  // Apply bias
-  const Z_aim = Math.max(0, Math.min(Math.PI/2, Math.asin(aimFrac) + biasRad));
-
-  // ── SPIN THROW (kept — measurable effect with spin) ──────────
+  // ── SPIN THROW (existing formula — slow/med/fast bands) ────────
   const spinThrowDeg = S.spin * (S.speed < 0.28 ? 1.5 : S.speed < 0.72 ? 0.5 : 0.1);
-  const spinThrow = -spinThrowDeg * RAD;
-  const Z_aim_final = Math.max(0, Math.min(Math.PI/2, Z_aim + spinThrow));
 
-  // ── DISTANCE ────────────────────────────────────────────────
-  const svgDist  = Math.hypot(S.ob.x - S.cb.x, S.ob.y - S.cb.y);
-  const distFt   = svgDist / 400 * S.tableSize;
-  const distIn   = Math.min(distFt * 12, 84);
+  // ── PERSONAL BIAS (degrees, when bias panel is on) ─────────────
+  const biasDeg = (S.bias || 0) / RAD;
 
-  // ── SQUIRT ───────────────────────────────────────────────────
-  const squirtDeg      = S.spin * 0.3;
-  const squirtIn       = distIn * Math.tan(squirtDeg * RAD);
-  const squirtFrac     = squirtIn / 2.25;
-  const squirtFade     = Math.max(0, Math.min(1, 1 - (cutRaw - 0.7) / 0.25));
+  // ── AIM ANGLE ──────────────────────────────────────────────────
+  // Friction and spin throw push OB the same way cut does, so we
+  // must aim slightly thinner to compensate: add to θ.
+  const θaim_deg = Math.max(0, Math.min(90, θgeo_deg + cit_deg + spinThrowDeg + biasDeg));
+  const θaim = θaim_deg * RAD;
+
+  // ── DISTANCE ──────────────────────────────────────────────────
+  const svgDist = Math.hypot(S.ob.x - S.cb.x, S.ob.y - S.cb.y);
+  const distFt  = svgDist / 400 * S.tableSize;
+  const distIn  = Math.min(distFt * 12, 84);
+
+  // ── SQUIRT (fraction shift, faded near grazing) ───────────────
+  const squirtDeg  = S.spin * 0.3;
+  const squirtIn   = distIn * Math.tan(squirtDeg * RAD);
+  const squirtFrac = squirtIn / 2.25;
+  const squirtFade = Math.max(0, Math.min(1, 1 - (geoFrac - 0.7) / 0.25));
   const squirtFraction = Math.max(-0.15, Math.min(0.15, squirtFrac * squirtFade));
 
-  const atExtreme    = cutRaw > 0.97;
-  const geoFrac      = cutRaw; // pure geometry
-  const diagFraction = atExtreme ? geoFrac : Math.max(-0.5, Math.min(1, geoFrac)); // pure geometry
-  const aimFraction  = atExtreme ? geoFrac
-                     : Math.max(-0.5, Math.min(1, Math.sin(Z_aim_final) - squirtFraction));
+  // ── SINGLE-SOURCE FRACTIONS ───────────────────────────────────
+  // aimFraction = where you must aim (all angle-affecting sliders + squirt)
+  // diagFraction = what the diagram shows (same source, clamped for display)
+  const f_aim = Math.sin(θaim) - squirtFraction;
+  const aimFraction  = Math.max(-0.5, Math.min(1, f_aim));
+  const diagFraction = aimFraction;   // same source — no drift possible
 
-  const throwDiff = atExtreme ? 0
-                  : Math.round(Math.sin(Z_aim_final) * 100) - Math.round(geoFrac * 100);
+  const throwDiff = Math.round((Math.sin(θaim) - geoFrac) * 100);
 
-  return { Z_des, Z_aim: Z_aim_final, geoFrac, aimFraction, diagFraction, cutDeg, distFt,
-           throwDiff, squirtFraction };
+  return { Z_des: θgeo, Z_aim: θaim, geoFrac, aimFraction, diagFraction,
+           cutDeg: θgeo_deg, distFt, throwDiff, squirtFraction };
+}
+
+// ── DISPLAY FRACTION (single source of truth for ALL readouts & diagram) ──
+// Takes compute()'s output and applies RC offset (perception + personal throw
+// zones). This is what every readout and every ghost-ball position must use.
+// RC shifts the displayed contact point; it does NOT touch the angle.
+function displayFrac(d) {
+  const cutDeg = d.cutDeg || 0;
+  if (cutDeg < 1.0) return 0;
+  const rc_perc = window._perceptionOffset || 0;   // drag slider, fraction ±1
+  const rc_zone = getThrowComp(cutDeg);             // personal throw zones
+  const f = Math.abs(d.aimFraction) + rc_perc + rc_zone;
+  return Math.max(0, Math.min(1, f));
 }
 
 // ── TABLE SVG ─────────────────────────────────────────────────
@@ -2909,22 +2923,17 @@ function render() {
   renderTable(d);
   drawBot(d);
 
-  // Readouts: contact/IE/fraction follow ghost ball (throw compensated); angle and distance stay pure
+  // Readouts: all from single-source displayFrac(d). Angle and distance stay pure.
   const Zdeg = cutDeg < 1.0 ? 0 : Math.round(cutDeg * 10)/10;
   const _dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' R' : ' L');
-  // Throw compensation applied to fraction
-  const _throwDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
-  const _compFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _throwDelta)); // 1.5x perceptual correction — for ghost ball position only
-  const _displayFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) + _throwDelta));     // true ball fraction — for readouts
-  var aimP = Math.round(_displayFrac * 100);
+  const _f = displayFrac(d);
+  var aimP = Math.round(_f * 100);
   const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
-  // Use _compFrac (1.5x corrected) — same source as the accurate bot-aim-pct
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = Math.round((1 - _compFrac) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (S._diagDragRh ? ' R' : ' L')); }
-  const _aimP = Math.round(_compFrac * 100);
-  const _raim = $('r-aim'); if (_raim) _raim.textContent = _aimP + '%';
-  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = _aimP + '%';
-  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = Math.max(0,100-_aimP) + '%';
+  if (_cpEl) { const _cpPct = Math.round((1 - _f) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (S._diagDragRh ? ' R' : ' L')); }
+  const _raim = $('r-aim'); if (_raim) _raim.textContent = aimP + '%';
+  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = aimP + '%';
+  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = Math.max(0,100-aimP) + '%';
 
   // Distance readout
   const distEl = $('r-dist');
@@ -2951,7 +2960,7 @@ function render() {
 
   // Shot attributes panel
   const rocut  = $('ro-cut');  if (rocut)  rocut.textContent  = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
-  const rofrac = $('ro-frac'); if (rofrac) rofrac.textContent = fracStr(_displayFrac * (S._diagDragRh ? -1 : 1));
+  const rofrac = $('ro-frac'); if (rofrac) rofrac.textContent = fracStr(_f * (S._diagDragRh ? -1 : 1));
   const roaim  = $('ro-aim');  if (roaim)  roaim.textContent  = aimP + '%' + _dir;
   const rodist = $('ro-dist'); if (rodist) {
     const ft = d.distFt;
@@ -3201,18 +3210,16 @@ function drawBot(d) {
   const cbx = S.ob.x - S.cb.x, cby = S.ob.y - S.cb.y;
   const rh = (S._diagDragRh !== undefined) ? S._diagDragRh : (cby < 0);
   const cutDeg = d.cutDeg || 0;
-  // Apply throw compensation to diagram contact point
-  const _diagThrowDelta = getThrowComp(cutDeg);
-  const aimF  = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _diagThrowDelta));
-  const _pOff = (window._perceptionOffset||0)*2*r;
-  const ccx   = Math.max(4, Math.min(W-4, rh ? (ocx - aimF*2*r)+_pOff : (ocx + aimF*2*r)+_pOff));
-  window._percCompFrac = Math.max(0, Math.min(1, Math.abs(ccx - ocx) / (2*r)));
+  // Single source of truth — same fraction readouts use
+  const aimF = displayFrac(d);
+  const ccx  = Math.max(4, Math.min(W-4, rh ? (ocx - aimF*2*r) : (ocx + aimF*2*r)));
+  window._percCompFrac = aimF;
   // ── OVERHEAD VIEW ──────────────────────────────────────────────────
   {
     var W2=460, H2=180, R=22;
     var obCx=W2*0.5, obCy=H2*0.5;
     // Contact point on OB (fraction along diameter)
-    var frac = (window._percCompFrac !== undefined) ? window._percCompFrac : Math.max(0, Math.min(1, _compFrac));
+    var frac = aimF;  // single source — same as readouts and main diagram
     var contactX = rh ? obCx + frac*2*R - R : obCx - frac*2*R + R;
     var ghostCx = rh ? contactX - R : contactX + R;
     // CB position (further back on aim line)
@@ -3304,12 +3311,8 @@ function drawBot(d) {
     _obOutR.setAttribute('stroke', rh ? '#e87030' : '#7dd3fc');
     _obOutR.setAttribute('opacity', '1'); }
 
-  // Use aimF (same 1.5x source as bot-aim-pct) for top readouts
-  const _cpElB = $('r-cp'); if (_cpElB) { _cpElB.textContent = Math.round((1 - aimF) * 50) + '%' + (cutDeg < 1.0 ? '' : (rh ? ' R' : ' L')); }
-  const _aimPB = Math.round(aimF * 100);
-  const _raimB = $('r-aim'); if (_raimB) _raimB.textContent = _aimPB + '%';
-  const _roeB  = $('r-oe');  if (_roeB)  _roeB.textContent  = _aimPB + '%';
-  const _rtwixtB = $('r-twixt'); if (_rtwixtB) _rtwixtB.textContent = Math.max(0,100-_aimPB) + '%';
+  // Readouts (r-cp, r-aim, r-oe, r-twixt) are set in render() via displayFrac().
+  // No second write here — single source of truth.
   // "inside edge" floating label removed — fixed readout row shows all values
   $('bot-edge-lbl').setAttribute('x', Math.max(60, Math.min(edgeX, W-60)).toString());
   $('bot-edge-lbl').setAttribute('opacity', showMarker ? '1' : '0');
@@ -3320,10 +3323,8 @@ function drawBot(d) {
   $('bot-aim-pct').setAttribute('x', bx);
   $('bot-aim-pct').setAttribute('y', '282');
   $('bot-aim-pct').setAttribute('opacity', 0);
-  // Use compensated fraction for diagram percentage label
-  const _botThrowDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
-  const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) * 1.5 + _botThrowDelta) * 100);
-  $('bot-aim-pct').textContent = Math.abs(_botAimP) + '%';
+  // Single-source percentage label
+  $('bot-aim-pct').textContent = Math.round(aimF * 100) + '%';
   $('bot-hint').setAttribute('opacity', '0');
   $('bot-hint').setAttribute('x', rh ? ocx-r-70 : ocx+r+24);
   $('bot-hint').setAttribute('text-anchor', rh ? 'end' : 'start');
@@ -5111,7 +5112,7 @@ function toggleSlidersPanel() {
       <line x1="6"  y1="24" x2="24" y2="6"  stroke="#f0df70" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
     </svg>
   </div>
-  <div id="dock-bar">
+  <div id="dock-bar" class="vertical">
     <div class="dock-orient-dot" id="dock-dot-start" style="pointer-events:auto;touch-action:manipulation;"></div>
 
     <div class="dock-slot active" id="dock-hand" title="Pan mode">
@@ -5149,6 +5150,13 @@ function toggleSlidersPanel() {
         <circle cx="7" cy="7" r="2.5" fill="rgba(255,255,255,0.35)"/>
       </svg>
     
+    </div>
+    <div class="dock-slot" id="dock-rc" title="Reality Check">
+      <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
+        <line x1="3" y1="14" x2="17" y2="14" stroke="#ff8c00" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="10" cy="14" r="2.5" fill="#0a0f0a" stroke="#ff8c00" stroke-width="1.4"/>
+        <text x="10" y="8" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="900" fill="#ff8c00" dominant-baseline="central">RC</text>
+      </svg>
     </div>
     <div class="dock-slot" id="dock-learn" title="Learn">
       <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
@@ -5196,6 +5204,14 @@ function toggleSlidersPanel() {
         <line x1="2" y1="14" x2="16" y2="14" stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
         <line x1="2" y1="14" x2="10" y2="3"  stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
         <path d="M6 14 A4 4 0 0 1 4.8 10.5" fill="none" stroke="#f0df70" stroke-width="1.2"/>
+      </svg>
+    </div>
+
+        <div class="dock-slot" id="dock-cuepath" title="Toggle cue path">
+      <svg width="18" height="18" viewBox="0 0 18 18" style="pointer-events:none;">
+        <circle cx="9" cy="9" r="5" fill="none" stroke="#f0df70" stroke-width="1.5"/>
+        <line x1="9" y1="1" x2="9" y2="4" stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="14" x2="9" y2="17" stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
     </div>
 
@@ -5272,6 +5288,13 @@ function toggleSlidersPanel() {
       if(d2) d2.addEventListener('click', function(e){ e.stopPropagation(); tog(); });
     })();
     bind('dock-hand', function(){ window._panLocked=false; document.getElementById('dock-hand').classList.add('active'); document.getElementById('dock-ball').classList.remove('active'); });
+    bind('dock-rc', function(){
+      var row=document.getElementById('perc-row');
+      if(!row) return;
+      var on=row.style.display==='none'||row.style.display==='';
+      row.style.display=on?'flex':'none';
+      setActive('rc',on);
+    });
     bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); document.getElementById('dock-hand').classList.remove('active'); });
     bind('dock-learn',    function(){ var on=!_open.learn;   toggleShotLibrary();  setActive('learn',  on); });
     bind('dock-sliders',  function(){ var on=!_open.sliders; toggleSlidersPanel(); setActive('sliders',on); });
@@ -5279,7 +5302,9 @@ function toggleSlidersPanel() {
     bind('dock-swap',     function(){ swapPanels(); });
     bind('dock-zoom-in',  function(){ edgeZoom(1.3); });
     bind('dock-zoom-out', function(){ edgeZoom(1/1.3); });
+    bind('dock-cuepath', function(){ toggleCbPath(); setActive('cuepath', cbPathOn); });
     bind('dock-angle',    function(){ toggleAngle(); setActive('angle', typeof angleOn!=='undefined'?angleOn:false); });
+    bind('dock-cuepath', function(){ toggleCbPath(); setActive('cuepath', cbPathOn); });
     bind('dock-angle',    function(){ toggleAngle(); setActive('angle', angleOn); });
 
 
