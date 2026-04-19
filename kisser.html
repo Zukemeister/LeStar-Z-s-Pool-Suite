@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="LeStar Z Aimer">
+  <meta name="apple-mobile-web-app-title" content="LeStar Z Kisser">
   <link rel="apple-touch-icon" href="/icon-apple.png">
   <link rel="manifest" href="/manifest.json">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Aimer">
+<meta name="apple-mobile-web-app-title" content="Kisser">
 <meta name="theme-color" content="#1a361a">
-<title>LeStar Z's Aimer</title>
+<title>LeStar Z's Kisser</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,900&family=Playfair+Display:ital,wght@1,700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -1238,11 +1238,11 @@ const SHOT_LIBRARY = [
 // Separate from userShots (saved shots) — these annotate the preset library.
 let shotNotes = {};
 function loadShotNotes() {
-  try { shotNotes = JSON.parse(localStorage.getItem('lz-aimer-notes') || '{}'); } catch(e) { shotNotes={}; }
+  try { shotNotes = JSON.parse(localStorage.getItem('lz-kisser-notes') || '{}'); } catch(e) { shotNotes={}; }
 }
 function saveShotNote(code, text) {
   shotNotes[code] = text;
-  try { localStorage.setItem('lz-aimer-notes', JSON.stringify(shotNotes)); } catch(e) {}
+  try { localStorage.setItem('lz-kisser-notes', JSON.stringify(shotNotes)); } catch(e) {}
 }
 loadShotNotes();
 
@@ -1252,10 +1252,10 @@ let libraryOpen = false;
 let userShots = [];
 
 function loadUserShots() {
-  try { userShots = JSON.parse(localStorage.getItem('lz-aimer-shots') || '[]'); } catch(e) { userShots=[]; }
+  try { userShots = JSON.parse(localStorage.getItem('lz-kisser-shots') || '[]'); } catch(e) { userShots=[]; }
 }
 function saveUserShots() {
-  try { localStorage.setItem('lz-aimer-shots', JSON.stringify(userShots)); } catch(e) {}
+  try { localStorage.setItem('lz-kisser-shots', JSON.stringify(userShots)); } catch(e) {}
 }
 
 function saveCurrentShot() {
@@ -1887,7 +1887,7 @@ if ('serviceWorker' in navigator) {
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
       <button id="help-btn" onclick="toggleInfo()" style="width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;flex-shrink:0;">?</button>
       <div style="text-align:center;flex:1;padding:0 8px;">
-        <h1><span class="t-lestar">LeStar&nbsp;</span><span class="t-z">Z</span><span class="t-rest">'s Aimer</span></h1>
+        <h1><span class="t-lestar">LeStar&nbsp;</span><span class="t-z">Z</span><span class="t-rest">'s Kisser</span></h1>
         <p class="sub">place the balls · set the angle · find the aim point</p>
       </div>
       <div style="display:flex;gap:3px;align-items:center;flex-shrink:0;">
@@ -2574,7 +2574,7 @@ if ('serviceWorker' in navigator) {
 <script>
 const DEG = 180/Math.PI, RAD = Math.PI/180;
 // Declared at top so render() can reference them regardless of script load order
-let cbPathOn = false;
+let cbPathOn = true;  // Kisser default: always show CB path
 let panMode  = false;
 const Rb = 82;
 const TL = {left:30, right:430, top:30, bottom:230};
@@ -3672,14 +3672,14 @@ function cycleRotation() { rotateRight(); }
 
 function loadAimProfile() {
   try {
-    const p = JSON.parse(localStorage.getItem('lz-aimer-profile') || '{}');
+    const p = JSON.parse(localStorage.getItem('lz-kisser-profile') || '{}');
     if (typeof p.bias === 'number' && $('sl-bias')) $('sl-bias').value = p.bias;
     if (Array.isArray(p.shots)) calShots = p.shots;
   } catch(e) {}
 }
 function saveAimProfile() {
   try {
-    localStorage.setItem('lz-aimer-profile', JSON.stringify({
+    localStorage.setItem('lz-kisser-profile', JSON.stringify({
       bias: parseInt($('sl-bias')?.value || '0'),
       shots: calShots.slice(-50)
     }));
@@ -4065,7 +4065,7 @@ window.addEventListener('load', positionToolbar);
 // Apply initial lock state
 window.addEventListener('load', function(){
   try {
-    const b = JSON.parse(localStorage.getItem('lz-aimer-bias') || '{}');
+    const b = JSON.parse(localStorage.getItem('lz-kisser-bias') || '{}');
     if (b.fat !== undefined) { const el = document.getElementById('sl-bias-fat'); if(el) el.value = b.fat; }
     if (b.med !== undefined) { const el = document.getElementById('sl-bias-med'); if(el) el.value = b.med; }
     if (b.thin !== undefined) { const el = document.getElementById('sl-bias-thin'); if(el) el.value = b.thin; }
@@ -4125,7 +4125,7 @@ function swapPanels(){
 <div id="info-overlay">
   <div id="info-inner">
     <button id="info-close" onclick="toggleInfo()">✕</button>
-    <h2>LeStar Z's Aimer</h2>
+    <h2>LeStar Z's Kisser</h2>
     <p><strong>THE TABLE:</strong> Drag the red (object ball) and white (cue ball) to match your real shot. The app immediately calculates the cut angle and aim point from their positions.</p>
     <p><strong>THE DIAGRAM:</strong> Eye-level view showing where to aim on the OB. The orange dashed line is your aim point — where the inside edge of the CB must contact the OB. Drag the CB in the diagram to fine-tune, or use arrow keys (1% per press).</p>
     <p><strong>SPEED:</strong> Faster shots reduce throw. Slower shots increase it.</p>

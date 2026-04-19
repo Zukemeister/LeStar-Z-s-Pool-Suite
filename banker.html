@@ -1450,11 +1450,11 @@ if ('serviceWorker' in navigator) {
         <stop offset="0%" stop-color="#ff9060"/><stop offset="40%" stop-color="#e04010"/><stop offset="100%" stop-color="#601808"/>
       </radialGradient>
       <marker id="arr-ob" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#7dd3fc"/></marker>
-      <marker id="arr-bk" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#4ade80"/></marker>
+      <marker id="arr-bk" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#7dd3fc"/></marker>
       <marker id="arr-ai" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#f0df70" opacity=".7"/></marker>
       <marker id="arr-stun"   markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#e6e6e6"/></marker>
       <marker id="arr-follow" markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#f97316"/></marker>
-      <marker id="arr-draw"   markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#60a5fa"/></marker>
+      <marker id="arr-draw"   markerWidth="7" markerHeight="5" refX="4" refY="2.5" orient="auto" markerUnits="strokeWidth"><polygon points="0 0,7 2.5,0 5" fill="#3b82f6"/></marker>
     </defs>
 
     <g id="tbl-content">
@@ -1750,22 +1750,22 @@ if ('serviceWorker' in navigator) {
       <circle id="ob2-hi" style="display:none"     cx="396" cy="206" r="3.5" fill="#fff" opacity="0.35"/>
 
       <!-- Shot lines -->
-      <line id="ob-path"  x1="0" y1="0" x2="0" y2="0" stroke="#7dd3fc" stroke-width="1.8" marker-end="url(#arr-ob)" opacity="0"/>
-      <line id="bk-path"  x1="0" y1="0" x2="0" y2="0" stroke="#4ade80" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr-bk)" opacity="0"/>
-      <!-- 2nd cushion path (violet) -->
-      <line id="bk-path2" x1="0" y1="0" x2="0" y2="0" stroke="#a78bfa" stroke-width="1.2" stroke-dasharray="6,4" opacity="0"/>
-      <!-- Rail contact dots — contact-dot is draggable -->
-      <circle id="contact-dot"  cx="0" cy="0" r="9" fill="rgba(255,255,255,0.15)" stroke="#ffffff" stroke-width="2" opacity="0"/>
-      <circle id="contact-dot2" cx="0" cy="0" r="5" fill="none" stroke="#a78bfa" stroke-width="1.6" opacity="0"/>
+      <line id="ob-path"  x1="0" y1="0" x2="0" y2="0" stroke="#7dd3fc" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#arr-ob)" opacity="0"/>
+      <line id="bk-path"  x1="0" y1="0" x2="0" y2="0" stroke="#7dd3fc" stroke-width="1.4" stroke-dasharray="6,4" marker-end="url(#arr-bk)" opacity="0"/>
+      <!-- 2nd cushion path (red — only shown when +ANGLE activates 2-cushion mode) -->
+      <line id="bk-path2" x1="0" y1="0" x2="0" y2="0" stroke="#ef4444" stroke-width="1.4" stroke-dasharray="6,4" opacity="0"/>
+      <!-- Rail contact dots — kept as zero-size elements to avoid breaking refs -->
+      <circle id="contact-dot"  cx="0" cy="0" r="0" fill="none" stroke="none" opacity="0"/>
+      <circle id="contact-dot2" cx="0" cy="0" r="0" fill="none" stroke="none" opacity="0"/>
       <!-- Invisible hit zone for contact dot — always receives pointer events -->
 
       <!-- Ghost ball (toggleable) -->
       <line id="cb-ghost-line" x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="5,4" opacity="0"/>
       <circle id="ghost-ball" cx="0" cy="0" r="10" fill="rgba(255,255,255,.06)" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3,3" opacity="0"/>
       <!-- CB path rays: stun (white) / follow (orange) / draw (blue) -->
-      <line id="cb-stun"   x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-stun)"  opacity="0"/>
-      <line id="cb-follow" x1="0" y1="0" x2="0" y2="0" stroke="#f97316"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-follow)" opacity="0"/>
-      <line id="cb-draw"   x1="0" y1="0" x2="0" y2="0" stroke="#60a5fa"               stroke-width="1.8" stroke-dasharray="7,4" marker-end="url(#arr-draw)"   opacity="0"/>
+      <line id="cb-stun"   x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="7,4" opacity="0"/>
+      <line id="cb-follow" x1="0" y1="0" x2="0" y2="0" stroke="#f97316"               stroke-width="1.8" stroke-dasharray="7,4" opacity="0"/>
+      <line id="cb-draw"   x1="0" y1="0" x2="0" y2="0" stroke="#3b82f6"               stroke-width="1.8" stroke-dasharray="7,4" opacity="0"/>
       <!-- CB path scratch-threat dots at rail -->
       <circle id="cb-stun-dot"   cx="0" cy="0" r="5" opacity="0"/>
       <circle id="cb-follow-dot" cx="0" cy="0" r="5" opacity="0"/>
@@ -1777,8 +1777,8 @@ if ('serviceWorker' in navigator) {
         <text x="374" y="192" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">HIGH</text>
         <line x1="353" y1="201" x2="370" y2="201" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
         <text x="374" y="204" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">MIDDLE</text>
-        <line x1="353" y1="213" x2="370" y2="213" stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="5,3"/>
-        <text x="374" y="216" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#60a5fa">LOW</text>
+        <line x1="353" y1="213" x2="370" y2="213" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text x="374" y="216" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#3b82f6">LOW</text>
       </g>
 
       <!-- Object ball -->
@@ -1815,10 +1815,10 @@ if ('serviceWorker' in navigator) {
   <div class="sep"></div>
     <div style="text-align:center;letter-spacing:0.18em;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);padding:3px 0 2px;text-transform:uppercase;">The Doors of Perception</div>
     <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr;gap:4px;margin:4px 0;height:36px;contain:layout style;width:100%;box-sizing:border-box;">
-      <!-- CONTACT — fixed left anchor -->
-      <div style="display:flex;flex-direction:column;align-items:center;">
+      <!-- CONTACT — fixed left anchor, tappable to toggle target -->
+      <div style="display:flex;flex-direction:column;align-items:center;" onclick="toggleContactDot()" title="Tap to toggle contact target in diagram">
         <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#4ade80;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Contact</div>
-        <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+        <div id="r-cp-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
           <div id="r-cp" style="color:#4ade80;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
         </div>
       </div>
@@ -1839,10 +1839,10 @@ if ('serviceWorker' in navigator) {
             <div id="r-oe" style="color:#7dd3fc;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
-          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#f0df70;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Twixt</div>
-          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
-            <div id="r-twixt" style="color:#f0df70;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" id="twixt-toggle-wrap" onclick="toggleTwixtStripes()" title="Tap to toggle Twixt stripes in diagram">
+          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#c9b8ff;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;text-shadow:0 0 4px rgba(167,139,250,0.6);">Twixt</div>
+          <div id="r-twixt-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
+            <div id="r-twixt" style="color:#e2d6ff;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;text-shadow:0 0 6px rgba(167,139,250,0.7);">—</div>
           </div>
         </div>
       </div>
@@ -1890,12 +1890,13 @@ if ('serviceWorker' in navigator) {
   var thumb = document.getElementById('perc-thumb');
   var fill  = document.getElementById('perc-fill');
   var X1=6, X2=154, CX=80, dragging=false;
-  window._percBase = 0;  // offset at slider center
+  // RC slider spans from -0.25 to +0.25 of contact fraction (quarter-ball each way).
+  var RC_SCALE = 296;
   function setX(x){
     x = Math.max(X1, Math.min(X2, x));
     thumb.setAttribute('cx', x);
     fill.setAttribute('width', Math.max(0, x-X1));
-    window._perceptionOffset = window._percBase + (x-CX)/74;
+    window._perceptionOffset = (x-CX)/RC_SCALE;
     if(typeof render==='function') render();
   }
   thumb.addEventListener('pointerdown', function(e){
@@ -2027,7 +2028,12 @@ if ('serviceWorker' in navigator) {
         <!-- Contact point line — always on top -->
         <line id="bot-contact-line" x1="230" y1="54" x2="230" y2="242" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0"/>
         <!-- Contact point dot on ball diagram -->
-        <circle id="cp-dot-diag" cx="230" cy="148" r="7" fill="#ffffff" stroke="#ff6600" stroke-width="2" opacity="0"/>
+        <!-- Three-ring target at contact point (ball equator on contact line) -->
+        <g id="cp-dot-diag" opacity="0">
+          <circle cx="230" cy="148" r="6"   fill="#d62828"/>
+          <circle cx="230" cy="148" r="4"   fill="#ffffff"/>
+          <circle cx="230" cy="148" r="2"   fill="#d62828"/>
+        </g>
         <!-- Opacity +/- buttons bottom-right -->
         <g onclick="ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
           <rect x="340" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
@@ -2038,6 +2044,8 @@ if ('serviceWorker' in navigator) {
           <rect x="418" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
           <text x="436" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">+</text>
         </g>
+        <!-- Twixt stripes — on top of everything including balls -->
+        <g id="twixt-stripes" opacity="0" pointer-events="none"></g>
       
 </svg>
   </div>
@@ -2118,7 +2126,7 @@ if ('serviceWorker' in navigator) {
   </div>
   <div class="ro-row" id="ro-contact2-row" style="display:none">
     <span class="ro-lbl">2ND CONTACT RAIL ◆ DIAMOND</span>
-    <span class="ro-val" id="ro-contact2" style="color:#a78bfa">—</span>
+    <span class="ro-val" id="ro-contact2" style="color:#c89820">—</span>
   </div>
   <div class="ro-row">
     <span class="ro-lbl">REBOUND ANGLE AT RAIL</span>
@@ -2298,6 +2306,39 @@ function snapToPocket(pt, threshold) {
   return best ? {x:best.x, y:best.y} : pt;
 }
 
+// clipAtPocket — Kicker-style blocker clip.
+// Returns {x,y} of the first point where the line enters a pocket, or null if the line is clear.
+// The target pocket (the endpoint) is not treated as a blocker.
+function clipAtPocket(x1, y1, x2, y2) {
+  const POCKET_LIST = [
+    {x:30, y:30,  r:17}, {x:230,y:30,  r:14}, {x:430,y:30,  r:17},
+    {x:30, y:230, r:17}, {x:230,y:230, r:14}, {x:430,y:230, r:17}
+  ];
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
+  if (len < 1) return null;
+  const ux = dx/len, uy = dy/len;
+  let best = null, bestT = len;
+  for (const p of POCKET_LIST) {
+    // Skip the target pocket (the line's intended endpoint)
+    if (Math.hypot(x2 - p.x, y2 - p.y) < p.r + 1) continue;
+    // Project pocket center onto ray
+    const tx = p.x - x1, ty = p.y - y1;
+    const t = tx*ux + ty*uy;
+    if (t < 0 || t > len) continue;
+    const px = x1 + t*ux, py = y1 + t*uy;
+    const dist = Math.hypot(p.x - px, p.y - py);
+    if (dist < p.r && t < bestT) {
+      // Enter point: back off from closest approach by chord half-length
+      const entryT = t - Math.sqrt(p.r*p.r - dist*dist);
+      if (entryT > 0 && entryT < bestT) {
+        bestT = entryT;
+        best = {x: x1 + entryT*ux, y: y1 + entryT*uy};
+      }
+    }
+  }
+  return best;
+}
+
 // Compute display shot from table geometry.
 // Table geometry (sol.contact) is always authoritative.
 // Forward solve: derive all lines from CB/OB positions and cut angle.
@@ -2354,7 +2395,9 @@ function computeDiagShot(sol) {
   const crossZ  = cbx * sdy - cby * sdx;
   const tableRh = crossZ > 0;
 
-  if (S.diagCutDeg === null) S.diagCutDeg = 0;  // always start at center
+  // If the user hasn't overridden the diagram, use the table-computed cut angle
+  // (from CB/OB/pocket positions). Otherwise use their manual override.
+  if (S.diagCutDeg === null) S.diagCutDeg = tableCutDeg;
   const cutDeg = Math.min(90, S.diagCutDeg);
 
   const rh = (diagDrag && S._diagDragRh !== undefined) ? S._diagDragRh : tableRh;
@@ -2669,6 +2712,15 @@ function clipToBox(ox,oy,tx,ty,W,H,m){
 
 // Stubs for aimer diagram variables not in banker
 var contactDotOn = false;
+function toggleContactDot() {
+  contactDotOn = !contactDotOn;
+  const box = document.getElementById('r-cp-box');
+  if (box) {
+    box.style.background = contactDotOn ? 'rgba(74,222,128,0.18)' : 'rgba(0,0,0,0.3)';
+    box.style.borderColor = contactDotOn ? 'rgba(74,222,128,0.55)' : 'rgba(255,255,255,0.07)';
+  }
+  if (typeof render === 'function') render();
+}
 // Stub for aimer's throw comp — banker uses its own model
 function getThrowComp(cutDeg) {
   if (cutDeg <= 0) return 0;
@@ -2692,18 +2744,21 @@ function drawBot(d) {
   const cbx = S.ob.x - S.cb.x, cby = S.ob.y - S.cb.y;
   const rh = (S._diagDragRh !== undefined) ? S._diagDragRh : (cby < 0);
   const cutDeg = d.cutDeg || 0;
-  // Apply throw compensation to diagram contact point
+  // Apply throw compensation and RC perception bias to diagram contact point.
+  // RC shifts fraction space (matches readouts). Right on screen = positive
+  // shift regardless of cut side; sign flipped for right-hand cuts.
   const _diagThrowDelta = getThrowComp(cutDeg);
-  const aimF  = Math.max(0, Math.min(1, Math.abs(d.diagFraction) * 1.5 + _diagThrowDelta));
-  const _pOff = (window._perceptionOffset||0)*2*r;
-  const ccx   = Math.max(4, Math.min(W-4, (rh ? ocx - aimF*2*r : ocx + aimF*2*r)+_pOff));
+  const _diagRcBias = window._perceptionOffset || 0;
+  const _diagRcSigned = (rh ? -_diagRcBias : _diagRcBias);
+  const aimF = Math.max(0, Math.min(1, Math.abs(d.diagFraction) + _diagThrowDelta + _diagRcSigned));
+  const ccx = Math.max(4, Math.min(W-4, rh ? ocx - aimF*2*r : ocx + aimF*2*r));
   window._percCompFrac = Math.max(0, Math.min(1, Math.abs(ccx - ocx) / (2*r)));
   // Perception-adjusted fraction for readouts
   const percAimF = Math.max(0, Math.min(1, Math.abs(ccx - ocx) / (2*r)));
   const edgeX = Math.max(4, Math.min(W-4, rh ? ccx+r : ccx-r));
   const clipX = rh ? edgeX : (ocx-r);
   const revealW = Math.max(0, rh ? (ocx+r)-edgeX : edgeX-(ocx-r));
-  const aimP  = Math.round(Math.abs(d.diagFraction) * 1.5 * 100);
+  const aimP  = Math.round(Math.abs(d.diagFraction) * 100);
 
   $('revClipRect').setAttribute('x', clipX);
   $('revClipRect').setAttribute('y', ocy-r);
@@ -2734,7 +2789,7 @@ function drawBot(d) {
   const _contactX = (ocx + ccx) / 2;
   if (_cLine) { _cLine.setAttribute('x1',_contactX); _cLine.setAttribute('x2',_contactX); _cLine.setAttribute('y1',ocy-r-12); _cLine.setAttribute('y2',ocy+r+12); _cLine.setAttribute('opacity','1'); }
   const _cpDiag = $('cp-dot-diag');
-  if (_cpDiag) { _cpDiag.setAttribute('cx', _contactX); _cpDiag.setAttribute('cy', ocy); _cpDiag.setAttribute('opacity', contactDotOn && showContact ? '1' : '0'); }
+  if (_cpDiag) { _cpDiag.setAttribute('transform', 'translate(' + (_contactX - 230) + ',' + (ocy - 148) + ')'); _cpDiag.setAttribute('opacity', (!!window._twixtStripes && showContact) ? '1' : '0'); }
   const _cLbl = $('bot-contact-lbl');
   if (_cLbl) { _cLbl.setAttribute('x',_contactX); _cLbl.setAttribute('opacity','1'); }
   const _gbg = $('bot-cb-gold');
@@ -2763,6 +2818,34 @@ function drawBot(d) {
     _obOutR.setAttribute('stroke', rh ? '#e87030' : '#7dd3fc');
     _obOutR.setAttribute('opacity', '1'); }
 
+  // ── TWIXT STRIPES — horizontal purple lines in the ball-overlap lens ──
+  // Toggle via window._twixtStripes (bound to tap on Twixt readout box).
+  // Venn intersection of the two ball silhouettes — widest when the balls
+  // overlap most, disappears when they don't overlap.
+  const _twixtG = document.getElementById('twixt-stripes');
+  if (_twixtG) {
+    const twixtOn = !!window._twixtStripes;
+    if (twixtOn) {
+      const Lx = Math.min(ccx, ocx);
+      const Rx = Math.max(ccx, ocx);
+      let stripeHtml = '';
+      const STRIPE_SPACING = 4;
+      for (let y = ocy - r; y <= ocy + r; y += STRIPE_SPACING) {
+        const dy = y - ocy;
+        const bulge = Math.sqrt(Math.max(0, r*r - dy*dy));
+        const leftBallRight = Lx + bulge;
+        const rightBallLeft = Rx - bulge;
+        if (leftBallRight > rightBallLeft + 0.5) {
+          stripeHtml += `<line x1="${rightBallLeft.toFixed(1)}" y1="${y.toFixed(1)}" x2="${leftBallRight.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#a78bfa" stroke-width="1.8" opacity="0.56"/>`;
+        }
+      }
+      _twixtG.innerHTML = stripeHtml;
+      _twixtG.setAttribute('opacity', '1');
+    } else {
+      _twixtG.setAttribute('opacity', '0');
+    }
+  }
+
   // Update flippable readout boxes
   const _flipRow = $('diag-flip-row');
   // boxes no longer flip
@@ -2781,7 +2864,7 @@ function drawBot(d) {
   $('bot-aim-pct').setAttribute('opacity', op);
   // Use compensated fraction for diagram percentage label
   const _botThrowDelta = cutDeg < 0.5 ? 0 : getThrowComp(cutDeg);
-  const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) * 1.5 + _botThrowDelta) * 100);
+  const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) + _botThrowDelta) * 100);
   $('bot-aim-pct').textContent = Math.abs(_botAimP) + '%';
   $('bot-hint').setAttribute('opacity', '0');
   $('bot-hint').setAttribute('x', rh ? ocx-r-70 : ocx+r+24);
@@ -2983,12 +3066,14 @@ function render() {
       const end = _rayToRail(gx, gy, angle);
       const scratch = _isScratch(end);
       const el = $(lineId), dot = $(dotId);
+      // Line turns red on scratch; otherwise its own base color.
+      // Terminator dots removed — lines just end as dashes.
       if (el) { sL(lineId, gx, gy, end.x, end.y); el.style.opacity='1'; el.setAttribute('stroke', scratch ? '#ef4444' : baseColor); }
-      if (dot) { dot.setAttribute('cx', end.x); dot.setAttribute('cy', end.y); dot.setAttribute('fill', scratch ? '#ef4444' : '#22c55e'); dot.style.opacity='1'; }
+      if (dot) dot.style.opacity = '0';
     };
     _drawRay('cb-stun',   'cb-stun-dot',   _stunAngle,   'rgba(255,255,255,0.85)');
     _drawRay('cb-follow', 'cb-follow-dot', _followAngle, '#f97316');
-    _drawRay('cb-draw',   'cb-draw-dot',   _drawAngle,   '#60a5fa');
+    _drawRay('cb-draw',   'cb-draw-dot',   _drawAngle,   '#3b82f6');
   } else if (!cbPathOn) {
     ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
       .forEach(function(id){ const el=$(id); if(el) el.style.opacity='0'; });
@@ -3000,7 +3085,11 @@ function render() {
   const obLen = Math.hypot(obDx, obDy);
   if (obLen > 1) {
     const nox = obDx/obLen, noy = obDy/obLen;
-    sL('ob-path', ob.x + nox*startOff, ob.y + noy*startOff, sol.contact.x, sol.contact.y);
+    const _obX1 = ob.x + nox*startOff, _obY1 = ob.y + noy*startOff;
+    const _obClip = clipAtPocket(_obX1, _obY1, sol.contact.x, sol.contact.y);
+    const _obX2 = _obClip ? _obClip.x : sol.contact.x;
+    const _obY2 = _obClip ? _obClip.y : sol.contact.y;
+    sL('ob-path', _obX1, _obY1, _obX2, _obY2);
     sV('ob-path', true);
   }
 
@@ -3032,14 +3121,20 @@ function render() {
   const _biasActive = biasOn && (throwLo !== 0 || throwMi !== 0 || throwHi !== 0);
   const bkTarget = _biasActive ? pocket : (sol._reboundEnd || pocket);
   if (sol.contact2) {
-    sL('bk-path',  sol.contact.x, sol.contact.y, sol.contact2.x, sol.contact2.y);
-    sL('bk-path2', sol.contact2.x, sol.contact2.y, bkTarget.x, bkTarget.y);
+    const _c1 = clipAtPocket(sol.contact.x, sol.contact.y, sol.contact2.x, sol.contact2.y);
+    const _p1x = _c1 ? _c1.x : sol.contact2.x, _p1y = _c1 ? _c1.y : sol.contact2.y;
+    sL('bk-path', sol.contact.x, sol.contact.y, _p1x, _p1y);
+    const _c2 = clipAtPocket(sol.contact2.x, sol.contact2.y, bkTarget.x, bkTarget.y);
+    const _p2x = _c2 ? _c2.x : bkTarget.x, _p2y = _c2 ? _c2.y : bkTarget.y;
+    sL('bk-path2', sol.contact2.x, sol.contact2.y, _p2x, _p2y);
     sV('bk-path',  true);
     sV('bk-path2', true);
     sC('contact-dot2', sol.contact2.x, sol.contact2.y);
     sV('contact-dot2', true);
   } else {
-    sL('bk-path', sol.contact.x, sol.contact.y, bkTarget.x, bkTarget.y);
+    const _c = clipAtPocket(sol.contact.x, sol.contact.y, bkTarget.x, bkTarget.y);
+    const _px = _c ? _c.x : bkTarget.x, _py = _c ? _c.y : bkTarget.y;
+    sL('bk-path', sol.contact.x, sol.contact.y, _px, _py);
     sV('bk-path', true);
     sV('bk-path2', false);
     sV('contact-dot2', false);
@@ -3057,7 +3152,12 @@ function render() {
 
   // ── AIMING DIAGRAM ──
   try {
-    const _botSol = Object.assign({}, sol, {diagFraction: sol.aimFraction || 0});
+    // Diagram uses pure geometry sin(cutDeg) — NOT sol.aimFraction, which has
+    // a non-monotonic legacy calibration curve that would cause the ball to
+    // briefly reverse direction between 40° and 47° of cut. CIT and RC bias
+    // are added downstream in drawBot so the ball stays honest to geometry.
+    const _pureGeo = Math.sin(Math.min(sol.cutDeg || 0, 90) * RAD);
+    const _botSol = Object.assign({}, sol, {diagFraction: _pureGeo});
     drawBot(_botSol);
   } catch(e) {
     console.error('drawBot error:', e);
@@ -3077,7 +3177,7 @@ function render() {
   const displayGeoF   = displayCutDeg < 0.5 ? 0 : Math.sin(Math.min(displayCutDeg, 90) * RAD);
   // Readouts — use sol.aimFraction (perceptually corrected, 1.5x diagFraction) like Aimer
   // not raw sin(cutDeg), so diagram and readouts agree
-  const _compFrac = (window._percCompFrac !== undefined) ? window._percCompFrac : Math.max(0, Math.min(1, (sol.aimFraction || Math.abs(displayGeoF)) * 1.5));
+  const _compFrac = (window._percCompFrac !== undefined) ? window._percCompFrac : Math.max(0, Math.min(1, sol.aimFraction || Math.abs(displayGeoF)));
   const _baimP = Math.round(_compFrac * 100);
   const _bdir = displayCutDeg < 0.5 ? '' : (S._diagDragRh ? ' L' : ' R');
   const _raim = $('r-aim'); if(_raim) _raim.textContent = _baimP+'%';
@@ -3382,13 +3482,26 @@ function angleFromRail(dx, dy, rail) {
 let bounceRailIdx = 0;  // 0 = 1st rail, 1 = 2nd rail
 
 function addBankerAngle() {
-  bounceRailIdx = (bounceRailIdx === 1) ? 0 : 1;
-  if (!bounceOn) toggleBounce();
+  // Toggle between 1-cushion and 2-cushion bank
+  S.cushions = S.cushions === 1 ? 2 : 1;
+  S.activeSol = 0;
+  bounceRailIdx = 0;
+  if (!bounceOn && S.cushions === 2) toggleBounce();
   render();
   var btn = document.getElementById('btn-add-angle');
-  if (btn) btn.style.background = bounceRailIdx === 1 ? '#2c6e2c' : '#1c3c8e';
+  if (btn) {
+    btn.style.background = S.cushions === 2 ? '#2c6e2c' : '#1c3c8e';
+    // Update label between "+ ANGLE" and "− ANGLE"
+    var lbl = btn.querySelector('span');
+    if (lbl) lbl.textContent = S.cushions === 2 ? '− ANGLE' : '+ ANGLE';
+  }
   var dbtn = document.getElementById('dock-add-angle');
-  if (dbtn) dbtn.classList.toggle('active', bounceRailIdx === 1);
+  if (dbtn) {
+    dbtn.classList.toggle('active', S.cushions === 2);
+    // Update the dock's "+" / "−" character
+    var dsign = dbtn.querySelector('span');
+    if (dsign) dsign.textContent = S.cushions === 2 ? '−' : '+';
+  }
 }
 
 function buildBouncePills(sol) {
@@ -3480,9 +3593,9 @@ function drawBankerBounce(sol) {
   const outAnch = inOnRight ? 'start' : 'end';
 
   // Colors match table diagram paths exactly
-  // ob-path=#7dd3fc, bk-path=#4ade80, bk-path2=#a78bfa
+  // ob-path=#7dd3fc, bk-path=#4ade80, bk-path2=#c89820
   const inCol  = useSecond ? '#4ade80' : '#7dd3fc';
-  const outCol = useSecond ? '#a78bfa' : '#4ade80';
+  const outCol = useSecond ? '#c89820' : '#4ade80';
 
   let out = `<rect width="${TW}" height="${H}" fill="rgba(0,0,0,0.35)"/>`;
   out += `<rect x="0" y="0" width="${TW}" height="${cy}" fill="rgba(26,80,40,0.5)"/>`;
@@ -3551,6 +3664,18 @@ const vertLabels = {
 //   These shift the ball diagram contact point in drawBot().
 //   They are DATA — record what you had to do to make the shot go.
 //   S.bias is NOT driven from these sliders. It is driven by the aiming diagram drag.
+// Twixt stripes toggle — tap the Twixt readout box to enable/disable
+window._twixtStripes = false;
+function toggleTwixtStripes() {
+  window._twixtStripes = !window._twixtStripes;
+  var box = document.getElementById('r-twixt-box');
+  if (box) {
+    box.style.background = window._twixtStripes ? 'rgba(167,139,250,0.22)' : 'rgba(0,0,0,0.3)';
+    box.style.borderColor = window._twixtStripes ? 'rgba(167,139,250,0.55)' : 'rgba(255,255,255,0.07)';
+  }
+  if (typeof render === 'function') render();
+}
+
 function onSliders() {
   S.speed  = parseInt($('sl-spd').value)  / 100;
   S.spin   = parseInt($('sl-spn').value) / 25;  // -4..4 continuously
@@ -5661,11 +5786,7 @@ document.addEventListener('DOMContentLoaded', function(){
   console.log('perc-zero-btn found, wiring...');
   btn.addEventListener('click', function(e){
     e.stopPropagation();
-    window._percBase = window._perceptionOffset || 0;
-    var t = document.getElementById('perc-thumb');
-    var f = document.getElementById('perc-fill');
-    if (t) t.setAttribute('cx', '80');
-    if (f) f.setAttribute('width', '74');
+    if (typeof window.percZero === 'function') window.percZero();
   });
 });
 </script>
@@ -5746,7 +5867,7 @@ document.addEventListener('DOMContentLoaded', function(){
   </div>
   <div class="ro-row" id="ro-contact2-row" style="display:none">
     <span class="ro-lbl">2ND CONTACT RAIL ◆ DIAMOND</span>
-    <span class="ro-val" id="ro-contact2" style="color:#a78bfa">—</span>
+    <span class="ro-val" id="ro-contact2" style="color:#c89820">—</span>
   </div>
   <div class="ro-row">
     <span class="ro-lbl">REBOUND ANGLE AT RAIL</span>
@@ -5779,11 +5900,7 @@ document.addEventListener('DOMContentLoaded', function(){
   console.log('perc-zero-btn found, wiring...');
   btn.addEventListener('click', function(e){
     e.stopPropagation();
-    window._percBase = window._perceptionOffset || 0;
-    var t = document.getElementById('perc-thumb');
-    var f = document.getElementById('perc-fill');
-    if (t) t.setAttribute('cx', '80');
-    if (f) f.setAttribute('width', '74');
+    if (typeof window.percZero === 'function') window.percZero();
   });
 });
 </script>
