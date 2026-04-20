@@ -776,50 +776,30 @@ function gridDesc(cb, ob, pocket) {
 }
 
 const SHOT_LIBRARY = [
-  // ── S-SERIES: STRAIGHT-IN BANKS (zero cut, mirror geometry) ──
-  // All use x=230 column (aligned with BM/TM side pockets).
-  // OB, CB, bank point, and target pocket are all collinear on x=230.
-  // No cut angle to complicate the geometry — pure bank physics, throw, and rail response.
-  { name:'S1', cb:{x:230,y:130}, ob:{x:230,y:80},  pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB near top rail, CB close',
-    cbLabel:'12g', obLabel:'4g', pocketLabel:'5',
-    text:'Straight-in cross-side bank off the top rail to pocket 5. OB is 50 units from the top rail, CB is 50 behind the OB. Zero cut — CB, OB, bank point, and pocket are all in a vertical line. Shoot at medium speed, no English. See where the OB actually goes. If it misses, by how much and in which direction? That delta is the combination of throw, rail bias, and any aim error. Adjust the Reality Check slider to match. Now try with left spin, then right spin. Which spin helps? That reveals the dominant throw direction on this table today.' },
-  { name:'S2', cb:{x:230,y:205}, ob:{x:230,y:80},  pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB near top rail, CB far',
-    cbLabel:'28f', obLabel:'4g', pocketLabel:'5',
-    text:'Same zero-cut geometry as S1, but now the CB is 125 units behind the OB instead of 50. Longer CB travel before contact means more chance for stroke irregularity to show up. Compare your result to S1 — does the longer stroke introduce new error? This isolates CB-travel effects from bank effects.' },
-  { name:'S3', cb:{x:230,y:155}, ob:{x:230,y:105}, pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB mid-table, CB close',
-    cbLabel:'20f', obLabel:'12f', pocketLabel:'5',
-    text:'OB is 75 from the top rail now — a longer bank distance. OB-to-cushion travel is longer, which means more cloth friction before rebound. Compare to S1 — does the rebound angle open up or close down with the longer travel? Most tables have some sensitivity here.' },
-  { name:'S4', cb:{x:230,y:205}, ob:{x:230,y:105}, pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB mid-table, CB far',
-    cbLabel:'28f', obLabel:'12f', pocketLabel:'5',
-    text:'OB mid-table, CB at bottom. Longer stroke plus longer bank. All the variables from S2 and S3 combined. If S2 and S3 drifted in the same direction, S4 will drift farther.' },
-  { name:'S5', cb:{x:230,y:205}, ob:{x:230,y:155}, pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB far from top rail, CB close',
-    cbLabel:'28f', obLabel:'20f', pocketLabel:'5',
-    text:'OB 125 from the top rail — a long bank. Longest cloth travel before the rail contact. If your bank was trending short on S3 and S4, it will trend even shorter here. This is where cloth condition and ball speed start mattering a lot.' },
-  { name:'S6', cb:{x:230,y:130}, ob:{x:230,y:180}, pocket:'TM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB near bottom rail, CB close',
-    cbLabel:'20e', obLabel:'28e', pocketLabel:'2',
-    text:'The mirror of S1 — banking off the bottom rail into pocket 2 (TM). Same geometry upside down. Compare your results to S1: does the bottom rail play the same as the top rail? On many tables they differ — one is tighter, one is livelier. This shot isolates the rail-to-rail difference.' },
-  { name:'S7', cb:{x:230,y:80},  ob:{x:230,y:180}, pocket:'TM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB near bottom rail, CB far',
-    cbLabel:'4g', obLabel:'28e', pocketLabel:'2',
-    text:'Mirror of S2. Long stroke to a short bank. Same diagnostic purpose — isolates stroke-length effects on the bottom-to-top bank.' },
-  { name:'S8', cb:{x:230,y:105}, ob:{x:230,y:155}, pocket:'TM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB mid-table, CB close',
-    cbLabel:'12f', obLabel:'20f', pocketLabel:'2',
-    text:'Mirror of S3. Medium bank off bottom rail to TM. Compare rail behavior with S3.' },
-  { name:'S9', cb:{x:230,y:55},  ob:{x:230,y:155}, pocket:'TM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB mid-table, CB far',
-    cbLabel:'4f',  obLabel:'20f', pocketLabel:'2',
-    text:'Mirror of S4. CB at top, OB in middle, banking off bottom rail to TM. Long stroke, medium bank. The CB travels nearly the full length of the table before contact.' },
-  { name:'S10', cb:{x:230,y:55}, ob:{x:230,y:105}, pocket:'TM', sol:0, cut:0, rh:false,
-    desc:'Straight cross-side · OB far from bottom rail, CB close',
-    cbLabel:'4f',  obLabel:'12f', pocketLabel:'2',
-    text:'Mirror of S5. Long bank off bottom rail to TM. The hardest of the straight-in banks — most cloth travel, most chance for friction to pull the OB off its intended path. If you can make this one consistently, you have a calibrated bank.' },
+  // ── S-SERIES: STRAIGHT-IN BANKS (zero cut, snap-grid geometry) ──
+  // Ball positions fall exactly on snap points so the student can reproduce the setup
+  // reliably. CB and OB are collinear along the aim line that banks to the target pocket.
+  // Variations along the same line back the CB farther away to test stroke-distance effect.
+  { name:'S1', cb:{x:155,y:105}, ob:{x:130,y:80},  pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight bank · CB close',
+    cbLabel:'10',  obLabel:'2g', pocketLabel:'5',
+    text:'The baseline straight-in bank. OB at 2g, CB at 10, both on snap points. The CB-OB line extends through the OB to a bank point on the top rail that mirror-reflects to pocket 5. Zero cut — the line of centers goes straight at the bank point. Shoot at medium speed, no English. See where the OB actually lands. The delta between prediction and reality is throw plus rail bias plus any aim error. Adjust Reality Check to match. Now try with left spin, then right. One of them should make the shot easier — that direction tells you the dominant throw on this table.' },
+  { name:'S1a', cb:{x:180,y:130}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight bank · CB 1 cell back',
+    cbLabel:'11g', obLabel:'2g', pocketLabel:'5',
+    text:'Same bank as S1 but the CB is one cell farther from the OB, still on the same aim line. Longer stroke, same geometry. Compare your make rate to S1 — longer strokes reveal stroke-consistency issues.' },
+  { name:'S1b', cb:{x:205,y:155}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight bank · CB 2 cells back',
+    cbLabel:'20',  obLabel:'2g', pocketLabel:'5',
+    text:'Same S1 bank, CB two cells back. Medium stroke length. This is often the sweet spot — far enough to stroke through the ball confidently, close enough to control the hit.' },
+  { name:'S1c', cb:{x:230,y:180}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight bank · CB 3 cells back',
+    cbLabel:'20g', obLabel:'2g', pocketLabel:'5',
+    text:'Same S1 bank, CB three cells back. Long stroke. Any inconsistency in your stroke will show up here more than on S1.' },
+  { name:'S1d', cb:{x:255,y:205}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight bank · CB 4 cells back',
+    cbLabel:'29',  obLabel:'2g', pocketLabel:'5',
+    text:'Same S1 bank, longest CB distance. If you can make this one consistently, your stroke is repeating well. This is where a bad stroke habit (steering, body movement, cue deflection) becomes obvious.' },
 
   // ── B-SERIES: ORIGINAL PRESETS ──
   { name:'B1',  cb:{x:130,y:155}, ob:{x:155,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side', cbLabel:'18f', obLabel:'3h',  pocketLabel:'5', manualAnchor:'b1', text:'This shot, B1, attempts to set up the easiest shot, that theoretically has no spin, no cut. Set it up, shoot with moderate speed. See where it goes. What is the correction that makes it go? Make it go and set it on the sliders. Now what is the REAL angle that makes the shot go? Remember it, and remember how much from ideal you had to correct it. Then shoot it hard. Then shoot it easy. What happened? What do you have to do to make that shot go with those changes? Now, go back to your first, correct shot again. Do it with left spin and with right. What happened? What correction of aiming do you have to make?' },
@@ -1929,6 +1909,7 @@ if ('serviceWorker' in navigator) {
   </svg>
   <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;flex-shrink:0;">R</span>
   <button id="perc-zero-btn" onclick="percZero()" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZERO</button>
+  <button id="perc-lock-btn" onclick="percLock()" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(100,160,255,0.15);border:1px solid #64a0ff;color:#64a0ff;cursor:pointer;touch-action:manipulation;flex-shrink:0;">LOCK</button>
 </div>
 <script>
 (function(){
@@ -1947,10 +1928,12 @@ if ('serviceWorker' in navigator) {
   }
   thumb.addEventListener('pointerdown', function(e){
     if(e.detail>1) return;
+    if(window._rcSliderLocked) return;
     dragging=true; thumb.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   });
   svg.addEventListener('pointermove', function(e){
     if(!dragging) return;
+    if(window._rcSliderLocked) { dragging=false; return; }
     var r=svg.getBoundingClientRect();
     setX(e.clientX - r.left);
     e.preventDefault();
@@ -1967,6 +1950,24 @@ if ('serviceWorker' in navigator) {
     if(typeof render==='function') render();
   }
   window.percZero = zero;
+  // RC slider lock: prevents dragging the Reality Check slider
+  window._rcSliderLocked = false;
+  function rcLock(){
+    window._rcSliderLocked = !window._rcSliderLocked;
+    var btn = document.getElementById('perc-lock-btn');
+    if (btn) {
+      if (window._rcSliderLocked) {
+        btn.textContent = 'LOCKED';
+        btn.style.background = 'rgba(100,160,255,0.4)';
+        btn.style.color = '#fff';
+      } else {
+        btn.textContent = 'LOCK';
+        btn.style.background = 'rgba(100,160,255,0.15)';
+        btn.style.color = '#64a0ff';
+      }
+    }
+  }
+  window.percLock = rcLock;
 })();
 </script>
 <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;">
@@ -3386,12 +3387,16 @@ svg.addEventListener('pointermove', e => {
   e.preventDefault();
   e.stopPropagation();
   const p = svgPt(e);
+  // When RC slider is locked, preserve the diagram cut state so perception balls don't jump
+  const _preserveDiag = (window._rcSliderLocked === true);
   if (drag==='ob') {
     const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
-    S.ob={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
+    S.ob={x:sn.x,y:sn.y};
+    if (!_preserveDiag) { S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false; }
   } else if (drag==='cb') {
     const c=clampBall(p.x,p.y), sn=applySnap(c.x,c.y);
-    S.cb={x:sn.x,y:sn.y}; S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false;
+    S.cb={x:sn.x,y:sn.y};
+    if (!_preserveDiag) { S.diagCutDeg=null; S._diagDragRh=undefined; shotLocked=false; }
   } else if (drag==='ob2') { S.ob2=clampBall(p.x,p.y); }
   render();
 });
