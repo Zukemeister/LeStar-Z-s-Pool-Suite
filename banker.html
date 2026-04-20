@@ -776,6 +776,52 @@ function gridDesc(cb, ob, pocket) {
 }
 
 const SHOT_LIBRARY = [
+  // ── S-SERIES: STRAIGHT-IN BANKS (zero cut, mirror geometry) ──
+  // All use x=230 column (aligned with BM/TM side pockets).
+  // OB, CB, bank point, and target pocket are all collinear on x=230.
+  // No cut angle to complicate the geometry — pure bank physics, throw, and rail response.
+  { name:'S1', cb:{x:230,y:130}, ob:{x:230,y:80},  pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB near top rail, CB close',
+    cbLabel:'12g', obLabel:'4g', pocketLabel:'5',
+    text:'Straight-in cross-side bank off the top rail to pocket 5. OB is 50 units from the top rail, CB is 50 behind the OB. Zero cut — CB, OB, bank point, and pocket are all in a vertical line. Shoot at medium speed, no English. See where the OB actually goes. If it misses, by how much and in which direction? That delta is the combination of throw, rail bias, and any aim error. Adjust the Reality Check slider to match. Now try with left spin, then right spin. Which spin helps? That reveals the dominant throw direction on this table today.' },
+  { name:'S2', cb:{x:230,y:205}, ob:{x:230,y:80},  pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB near top rail, CB far',
+    cbLabel:'28f', obLabel:'4g', pocketLabel:'5',
+    text:'Same zero-cut geometry as S1, but now the CB is 125 units behind the OB instead of 50. Longer CB travel before contact means more chance for stroke irregularity to show up. Compare your result to S1 — does the longer stroke introduce new error? This isolates CB-travel effects from bank effects.' },
+  { name:'S3', cb:{x:230,y:155}, ob:{x:230,y:105}, pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB mid-table, CB close',
+    cbLabel:'20f', obLabel:'12f', pocketLabel:'5',
+    text:'OB is 75 from the top rail now — a longer bank distance. OB-to-cushion travel is longer, which means more cloth friction before rebound. Compare to S1 — does the rebound angle open up or close down with the longer travel? Most tables have some sensitivity here.' },
+  { name:'S4', cb:{x:230,y:205}, ob:{x:230,y:105}, pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB mid-table, CB far',
+    cbLabel:'28f', obLabel:'12f', pocketLabel:'5',
+    text:'OB mid-table, CB at bottom. Longer stroke plus longer bank. All the variables from S2 and S3 combined. If S2 and S3 drifted in the same direction, S4 will drift farther.' },
+  { name:'S5', cb:{x:230,y:205}, ob:{x:230,y:155}, pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB far from top rail, CB close',
+    cbLabel:'28f', obLabel:'20f', pocketLabel:'5',
+    text:'OB 125 from the top rail — a long bank. Longest cloth travel before the rail contact. If your bank was trending short on S3 and S4, it will trend even shorter here. This is where cloth condition and ball speed start mattering a lot.' },
+  { name:'S6', cb:{x:230,y:130}, ob:{x:230,y:180}, pocket:'TM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB near bottom rail, CB close',
+    cbLabel:'20e', obLabel:'28e', pocketLabel:'2',
+    text:'The mirror of S1 — banking off the bottom rail into pocket 2 (TM). Same geometry upside down. Compare your results to S1: does the bottom rail play the same as the top rail? On many tables they differ — one is tighter, one is livelier. This shot isolates the rail-to-rail difference.' },
+  { name:'S7', cb:{x:230,y:80},  ob:{x:230,y:180}, pocket:'TM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB near bottom rail, CB far',
+    cbLabel:'4g', obLabel:'28e', pocketLabel:'2',
+    text:'Mirror of S2. Long stroke to a short bank. Same diagnostic purpose — isolates stroke-length effects on the bottom-to-top bank.' },
+  { name:'S8', cb:{x:230,y:105}, ob:{x:230,y:155}, pocket:'TM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB mid-table, CB close',
+    cbLabel:'12f', obLabel:'20f', pocketLabel:'2',
+    text:'Mirror of S3. Medium bank off bottom rail to TM. Compare rail behavior with S3.' },
+  { name:'S9', cb:{x:230,y:55},  ob:{x:230,y:155}, pocket:'TM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB mid-table, CB far',
+    cbLabel:'4f',  obLabel:'20f', pocketLabel:'2',
+    text:'Mirror of S4. CB at top, OB in middle, banking off bottom rail to TM. Long stroke, medium bank. The CB travels nearly the full length of the table before contact.' },
+  { name:'S10', cb:{x:230,y:55}, ob:{x:230,y:105}, pocket:'TM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB far from bottom rail, CB close',
+    cbLabel:'4f',  obLabel:'12f', pocketLabel:'2',
+    text:'Mirror of S5. Long bank off bottom rail to TM. The hardest of the straight-in banks — most cloth travel, most chance for friction to pull the OB off its intended path. If you can make this one consistently, you have a calibrated bank.' },
+
+  // ── B-SERIES: ORIGINAL PRESETS ──
   { name:'B1',  cb:{x:130,y:155}, ob:{x:155,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side', cbLabel:'18f', obLabel:'3h',  pocketLabel:'5', manualAnchor:'b1', text:'This shot, B1, attempts to set up the easiest shot, that theoretically has no spin, no cut. Set it up, shoot with moderate speed. See where it goes. What is the correction that makes it go? Make it go and set it on the sliders. Now what is the REAL angle that makes the shot go? Remember it, and remember how much from ideal you had to correct it. Then shoot it hard. Then shoot it easy. What happened? What do you have to do to make that shot go with those changes? Now, go back to your first, correct shot again. Do it with left spin and with right. What happened? What correction of aiming do you have to make?' },
   { name:'B1a', cb:{x:105,y:155}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side · ½ diamond left',  cbLabel:'18',  obLabel:'3a', pocketLabel:'5', manualAnchor:'b1', subshot:true },
   { name:'B1b', cb:{x:155,y:155}, ob:{x:180,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side · ½ diamond right', cbLabel:'19',  obLabel:'3g', pocketLabel:'5', manualAnchor:'b1', subshot:true },
