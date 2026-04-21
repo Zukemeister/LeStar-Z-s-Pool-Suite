@@ -776,33 +776,34 @@ function gridDesc(cb, ob, pocket) {
 }
 
 const SHOT_LIBRARY = [
-  // ── S-SERIES: STRAIGHT-IN BANKS (zero cut, snap-grid geometry) ──
-  // Ball positions fall exactly on snap points so the student can reproduce the setup
-  // reliably. CB and OB are collinear along the aim line that banks to the target pocket.
-  // Variations along the same line back the CB farther away to test stroke-distance effect.
-  { name:'S1', cb:{x:155,y:105}, ob:{x:130,y:80},  pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight bank · CB close',
-    cbLabel:'10',  obLabel:'2g', pocketLabel:'5',
-    text:'The baseline straight-in bank. OB at 2g, CB at 10, both on snap points. The CB-OB line extends through the OB to a bank point on the top rail that mirror-reflects to pocket 5. Zero cut — the line of centers goes straight at the bank point. Shoot at medium speed, no English. See where the OB actually lands. The delta between prediction and reality is throw plus rail bias plus any aim error. Adjust Reality Check to match. Now try with left spin, then right. One of them should make the shot easier — that direction tells you the dominant throw on this table.' },
-  { name:'S1a', cb:{x:180,y:130}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight bank · CB 1 cell back',
-    cbLabel:'11g', obLabel:'2g', pocketLabel:'5',
-    text:'Same bank as S1 but the CB is one cell farther from the OB, still on the same aim line. Longer stroke, same geometry. Compare your make rate to S1 — longer strokes reveal stroke-consistency issues.' },
-  { name:'S1b', cb:{x:205,y:155}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight bank · CB 2 cells back',
-    cbLabel:'20',  obLabel:'2g', pocketLabel:'5',
-    text:'Same S1 bank, CB two cells back. Medium stroke length. This is often the sweet spot — far enough to stroke through the ball confidently, close enough to control the hit.' },
-  { name:'S1c', cb:{x:230,y:180}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight bank · CB 3 cells back',
-    cbLabel:'20g', obLabel:'2g', pocketLabel:'5',
-    text:'Same S1 bank, CB three cells back. Long stroke. Any inconsistency in your stroke will show up here more than on S1.' },
-  { name:'S1d', cb:{x:255,y:205}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false,
-    desc:'Straight bank · CB 4 cells back',
-    cbLabel:'29',  obLabel:'2g', pocketLabel:'5',
-    text:'Same S1 bank, longest CB distance. If you can make this one consistently, your stroke is repeating well. This is where a bad stroke habit (steering, body movement, cue deflection) becomes obvious.' },
+  // ── S-SERIES: STRAIGHT-IN BANKS (zero cut, verified geometry) ──
+  // Each shot has CB, OB, and the mirror-of-the-target-pocket exactly collinear.
+  // OB struck along the line of centers will travel to the bank point on the indicated
+  // rail and rebound (per mirror reflection) directly to the target pocket.
+  // Both balls sit on snap-grid points.
+  { name:'S1', cb:{x:80,y:130},  ob:{x:105,y:80},  pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · short, upper-left',
+    cbLabel:'9g',  obLabel:'2h', pocketLabel:'5',
+    text:'Baseline straight-in bank. CB at 9g, OB at 2h. The CB-OB line, extended past the OB, hits the top rail at the bank point that mirror-reflects to pocket 5. Zero cut. Shoot at medium speed, no English. Note where the OB actually lands. The delta between prediction and reality is throw plus rail bias plus aim error. Try with outside English, then inside. Outside should make the shot easier.' },
+  { name:'S2', cb:{x:80,y:205},  ob:{x:130,y:80},  pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · long stroke, upper-left',
+    cbLabel:'25f', obLabel:'2g', pocketLabel:'5',
+    text:'Same general bank as S1 but with a much longer CB stroke. CB is at 25f, OB at 2g. The longer stroke gives stroke imperfections more chance to show. Compare your make rate with S1 — if it drops, your stroke needs work; if it stays the same, your stroke is solid and you can focus on bank physics.' },
+  { name:'S3', cb:{x:130,y:130}, ob:{x:155,y:55},  pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · OB near top rail',
+    cbLabel:'10g', obLabel:'3',  pocketLabel:'5',
+    text:'OB only 25 units from the top rail (a short bank). The OB has minimal cloth travel before contact, so cushion behavior dominates over cloth friction. Compare to S1 where the OB had farther to travel before reaching the rail.' },
+  { name:'S4', cb:{x:105,y:205}, ob:{x:155,y:55},  pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · short bank, long stroke',
+    cbLabel:'26',  obLabel:'3',  pocketLabel:'5',
+    text:'Same OB as S3 but with the CB much farther back (at 26 in the bottom-left area). Tests whether your stroke quality at long distance matches your bank prediction at the rail. If S3 makes consistently and S4 doesn\u2019t, the difference is stroke, not bank.' },
+  { name:'S5', cb:{x:405,y:180}, ob:{x:355,y:80}, pocket:'BM', sol:0, cut:0, rh:false,
+    desc:'Straight cross-side · short, upper-right (mirror of S1)',
+    cbLabel:'24h', obLabel:'7h', pocketLabel:'5',
+    text:'Mirror image of S1 on the right side of the table. Same bank geometry, opposite direction of travel. If S1 makes and S5 doesn\u2019t (or vice versa), there\u2019s either a stroke bias (you favor one direction) or a table asymmetry (one side of the cloth or rail plays differently).' },
 
   // ── B-SERIES: ORIGINAL PRESETS ──
-  { name:'B1',  cb:{x:130,y:155}, ob:{x:155,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side', cbLabel:'18f', obLabel:'3h',  pocketLabel:'5', manualAnchor:'b1', text:'This shot, B1, attempts to set up the easiest shot, that theoretically has no spin, no cut. Set it up, shoot with moderate speed. See where it goes. What is the correction that makes it go? Make it go and set it on the sliders. Now what is the REAL angle that makes the shot go? Remember it, and remember how much from ideal you had to correct it. Then shoot it hard. Then shoot it easy. What happened? What do you have to do to make that shot go with those changes? Now, go back to your first, correct shot again. Do it with left spin and with right. What happened? What correction of aiming do you have to make?' },
+  { name:'B1',  cb:{x:130,y:155}, ob:{x:155,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side', cbLabel:'18f', obLabel:'3h',  pocketLabel:'5', manualAnchor:'b1', text:'This shot, B1, attempts to set up the easiest shot, that theoretically has no spin, no cut. Set it up, shoot with moderate speed. See where it goes. What is the correction that makes it go? Make it go and set it on the sliders. Now what is the REAL angle that makes the shot go? Remember it, and remember how much from ideal you had to correct it. Then shoot it hard. Then shoot it easy. What happened? What do you have to do to make that shot go with those changes? Now, go back to your first, correct shot again. Do it with outside English, then inside. What happened? What correction of aiming do you have to make?' },
   { name:'B1a', cb:{x:105,y:155}, ob:{x:130,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side · ½ diamond left',  cbLabel:'18',  obLabel:'3a', pocketLabel:'5', manualAnchor:'b1', subshot:true },
   { name:'B1b', cb:{x:155,y:155}, ob:{x:180,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side · ½ diamond right', cbLabel:'19',  obLabel:'3g', pocketLabel:'5', manualAnchor:'b1', subshot:true },
   { name:'B1c', cb:{x:80, y:155}, ob:{x:105,y:80}, pocket:'BM', sol:0, cut:0, rh:false, desc:'Cross-side · 1 diamond left',  cbLabel:'17f', obLabel:'2h', pocketLabel:'5', manualAnchor:'b1', subshot:true },
@@ -2272,28 +2273,16 @@ function profileStr() {
 }
 
 function kFactor(cushionNum, obToRailDist) {
-  // cushionNum: 1 = first rail, 2 = second rail
-  const base   = S.snooker ? 0.90 : 0.88;
-  const tbl    = cushionNum === 2 ? tableK2 : tableK1;
-  const player = 0;  // bias applied to Z_aim in buildSol1, not kFactor
-
-  // OB rolling topspin effect (Alciatore: fully rolling OB plays ~1 diamond longer)
-  // OB starts sliding after CB contact, develops topspin over distance from cloth friction
-  // Full roll develops over ~100px at medium speed; faster shots need more distance
-  const rollDist = 100 * (0.5 + S.speed * 0.8);  // px needed for full roll
-  const rollFactor = obToRailDist
-    ? Math.min(1, obToRailDist / rollDist)
-    : 0.5;  // default assume half-rolled if distance unknown
-  // Full roll adds ~0.09 to k (plays longer); stun adds 0
-  const rollingBonus = rollFactor * 0.09;
-
-  // Vertical spin (follow/draw) — modifies rolling bonus
-  // Follow adds more topspin on top of natural roll; draw subtracts
-  const vertBonus = S.vert * 0.020;
-
-  // Speed range: slow plays long (high k), fast plays short (low k)
-  // 0.40 factor gives noticeable arrow movement across the speed range
-  return Math.max(0.40, Math.min(0.99, base - S.speed * 0.40 + tbl + player + rollingBonus + vertBonus));
+  // Pure-mirror baseline (k=1) when sliders are at neutral.
+  // Sliders push k away from 1 so their effect is visible in the bank arrow:
+  //   - speed slider: hard plays shorter (k drops below 1), soft plays longer (k rises above 1)
+  //   - vert slider (follow/draw): follow lengthens, draw shortens
+  //   - bias slider (table calibration): tableK1 / tableK2 shifts the rebound
+  // With every slider at zero, k = 1.0 (pure mirror geometry).
+  const tbl = cushionNum === 2 ? tableK2 : tableK1;
+  const speedDelta = (S.speed - 0.5) * -0.40; // -0.20 at full speed, +0.20 at zero speed
+  const vertBonus  = S.vert * 0.020;
+  return Math.max(0.40, Math.min(1.20, 1.0 + speedDelta + vertBonus + tbl));
 }
 
 // Forward ray from (px,py) in direction (dx,dy), finds nearest rail
@@ -3141,6 +3130,9 @@ function render() {
   }
 
   // ── SPIN + BIAS: rotate _reboundEnd around contact point ──
+  // With sliders at zero, no rotation (pure mirror).
+  // Spin slider rotates the rebound (CB-induced sidespin transferred to OB at contact).
+  // Bias slider rotates the rebound (player's recorded table calibration).
   if (sol.contact && sol._reboundEnd) {
     const cx = sol.contact.x, cy = sol.contact.y;
     const ex = sol._reboundEnd.x - cx, ey = sol._reboundEnd.y - cy;
@@ -3156,7 +3148,6 @@ function render() {
       const c = Math.cos(totalAngle), s = Math.sin(totalAngle);
       const nx = ex*c - ey*s, ny = ex*s + ey*c;
       const len = Math.hypot(nx, ny);
-      // Cast ray from contact in rotated direction — always lands on a rail
       const hit = rayHit(cx, cy, nx/len, ny/len, rail);
       sol._reboundEnd = snapToPocket(hit ? {x:hit.x, y:hit.y} : {x:cx+nx/len*400, y:cy+ny/len*400});
     }
