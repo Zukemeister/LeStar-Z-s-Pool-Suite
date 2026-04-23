@@ -95,46 +95,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 #shot-library-panel.panel-minimized button:not(.min-btn) {
   color:#78610a !important; border-color:#c8a820 !important; background:rgba(240,223,112,0.2) !important;
 }
-/* DATA — brown */
-#throw-panel.panel-minimized {
-  background:#fff8f0 !important; border:2px solid #8a5010 !important;
-}
-#throw-panel.panel-minimized #throw-panel-header {
-  background:#fff8f0; border-bottom:none; padding:6px 8px 6px 12px;
-}
-#throw-panel.panel-minimized #throw-panel-header > span {
-  color:#111111 !important; font-size:13px !important; font-weight:900 !important; letter-spacing:0.1em;
-}
-#throw-panel.panel-minimized .min-btn {
-  background:#8a5010 !important; border-color:#8a5010 !important; color:#ffffff !important;
-}
-#throw-panel.panel-minimized button:not(.min-btn) {
-  color:#333333 !important; border-color:#aaaaaa !important; background:rgba(0,0,0,0.08) !important;
-}
-#cal-panel{display:none;background:rgba(0,0,0,0.25);border:1px solid #4ade80;border-radius:7px;padding:10px 12px;margin-bottom:8px;}
-#cal-panel.open{display:block;}
-#cal-instruction{font-size:11px;color:#fff;font-weight:700;margin-bottom:6px;line-height:1.5;}
-#cal-status{font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
 .cal-shots{display:flex;gap:8px;margin-bottom:8px;}
 .cal-shot-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);}
 .cal-shot-dot.done{background:#4ade80;border-color:#4ade80;}
 .cal-actions{display:flex;gap:6px;margin-bottom:6px;}
-.cal-action-btn{flex:1;padding:7px 4px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;letter-spacing:0.08em;cursor:pointer;text-transform:uppercase;}
-.cal-action-btn.primary{background:rgba(74,222,128,0.15);border-color:#4ade80;color:#4ade80;}
-.cal-action-btn.danger{background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.4);color:#ff8080;}
-#cal-result{font-size:11px;color:#88ee88;margin-top:4px;display:none;line-height:1.6;}
 #sl-spd::-webkit-slider-thumb{background:#b090f0;}
 #sl-spn::-webkit-slider-thumb{background:#e870b0;}
 #sl-vert::-webkit-slider-thumb{background:#7dd3fc;}
 #sl-dist::-webkit-slider-thumb{background:#a0d0a0;}
-#sl-bias::-webkit-slider-thumb{background:#c890f0;}
-#sl-throw-lo::-webkit-slider-thumb{background:#e87030;}
-#sl-throw-mi::-webkit-slider-thumb{background:#e87030;}
-#sl-throw-hi::-webkit-slider-thumb{background:#e87030;}
-
-#sl-bias {
-  -webkit-appearance:none;height:5px;background:rgba(200,144,240,0.2);border-radius:3px;outline:none;touch-action:none;flex:1;
-}
 /* Readouts */
 .readout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;}
 .ri{background:rgba(0,0,0,0.3);border-radius:6px;padding:10px 6px;text-align:center;border:1px solid rgba(255,255,255,0.08);height:72px;min-height:72px;max-height:72px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;contain:layout style;}.ri{background:rgba(0,0,0,0.3);border-radius:6px;padding:10px 6px;text-align:center;border:1px solid rgba(255,255,255,0.08);height:72px;min-height:72px;max-height:72px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
@@ -490,7 +458,7 @@ body { padding-bottom: 80px !important; }
 .float-panel.panel-minimized {
   max-height: none;
 }
-.float-panel.panel-minimized > *:not(.float-panel-header):not(#sliders-handle):not(#shot-lib-header):not(#throw-panel-header) {
+.float-panel.panel-minimized > *:not(.float-panel-header):not(#sliders-handle):not(#shot-lib-header) {
   display: none !important;
 }
 
@@ -681,557 +649,7 @@ function gridDesc(cb, ob, pocket) {
   return 'CB '+xyToGrid(cb.x,cb.y)+' · OB '+xyToGrid(ob.x,ob.y)+pStr;
 }
 
-const SHOT_LIBRARY = [
-  { code:'RS1', category:'Rail Sequence One', name:'RS1 · 5f/7e Rail',
-    cb:{x:280,y:55}, ob:{x:380,y:38}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:280,y:55}, {x:380,y:38}, 'TR'),
-    cue:'Rail ball, shallow angle — aim fuller than geometry says.',
-    teaching:'', difficulty:2 },
-
-  { code:'RS2', category:'Rail Sequence One', name:'RS2 · 4f/7e Rail',
-    cb:{x:230,y:55}, ob:{x:380,y:38}, cut:6.5, rh:true, pocket:'TR',
-    desc: gridDesc({x:230,y:55}, {x:380,y:38}, 'TR'),
-    cue:'Slightly shallower — longer CB to OB distance.',
-    teaching:'', difficulty:2 },
-
-  { code:'RS3', category:'Rail Sequence One', name:'RS3 · 4f/6e Rail',
-    cb:{x:230,y:55}, ob:{x:330,y:38}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:230,y:55}, {x:330,y:38}, 'TR'),
-    cue:'Same angle as RS1, one diamond closer to corner.',
-    teaching:'', difficulty:2 },
-
-  { code:'RS4', category:'Rail Sequence One', name:'RS4 · 3f/5e Rail',
-    cb:{x:180,y:55}, ob:{x:280,y:38}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:180,y:55}, {x:280,y:38}, 'TR'),
-    cue:'Same shot, moved two diamonds left — identical geometry.',
-    teaching:'', difficulty:2 },
-
-  { code:'RS5', category:'Rail Sequence One', name:'RS5 · 1f/3e Rail',
-    cb:{x:80,y:55}, ob:{x:180,y:38}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:80,y:55}, {x:180,y:38}, 'TR'),
-    cue:'Long rail version — same angle, four diamonds of travel.',
-    teaching:'', difficulty:2 },
-
-
-  { code:'RS7', category:'Rail Sequence One', name:'RS7 · 24/8g Rail',
-    cb:{x:405,y:155}, ob:{x:422,y:80}, cut:12.8, rh:false, pocket:'TR',
-    desc: gridDesc({x:405,y:155}, {x:422,y:80}, 'TR'),
-    cue:'Right rail, steeper cut — same compensation principle as top rail.',
-    teaching:'', difficulty:3 },
-
-  { code:'RS8', category:'Rail Sequence One', name:'RS8 · 32/16g Rail',
-    cb:{x:405,y:205}, ob:{x:422,y:130}, cut:12.8, rh:false, pocket:'TR',
-    desc: gridDesc({x:405,y:205}, {x:422,y:130}, 'TR'),
-    cue:'Longer right rail version — identical angle to RS7.',
-    teaching:'', difficulty:3 },
-
-  { code:'S1', category:'Straight Shots', name:'S1 · Straight Corner',
-    cb:{x:330,y:130}, ob:{x:380,y:80}, cut:0.0, rh:false, pocket:'TR',
-    desc: gridDesc({x:330,y:130}, {x:380,y:80}, 'TR'),
-    cue:'Watch the cue ball after contact — this shot is your stroke laboratory.',
-    teaching:'This is as easy as it gets. Nevertheless, practice it a dozen times. Shoot it with <b>topspin, middle and draw</b>, and watch what happens to the cue ball. The shot is so easy that you can afford to concentrate on your stroke here. Try to take any wobble out of it, and make it as <b>smooth and deliberate</b> as you can.',
-    difficulty:1 },
-
-  { code:'S2', category:'Straight Shots', name:'S2 · Diagonal Corner',
-    cb:{x:280,y:180}, ob:{x:380,y:80}, cut:0.0, rh:false, pocket:'TR',
-    desc: gridDesc({x:280,y:180}, {x:380,y:80}, 'TR'),
-    cue:'Leave about 1/4 of the object ball showing to the right of the ghost ball.',
-    teaching:'A little harder. Although this is similar to Shot 1, it requires concentration and is missable. LeStarZ says to <b>aim it 32% Left</b>. That’s a little more than a 1/4 of the object ball showing to the right of your ghost ball in position, and that means the <b>contact point</b> between the two balls is at half of that, or <b>16%.</b><br><br>Look closely at the <b>ball diagram,</b> in which the transparent ghost ball — or cue ball — overlaps the red object ball and leaves about 32% of the red object ball showing. Aim your own cue ball in this manner and the red ball will <b>probably</b> go in the pocket. We say “probably” to acknowledge several conditions that may interfere.<br><br>One, we don’t yet know how <b>your own stroke</b> works yet, or if it is consistent. You have to work on that. We also don’t know how the felt on your table works, either. And, in cut shots like this, we have to allow for the variations of drag that occurs when one ball hits another at an angle. There is a small result called “throw” that occurs, and changes the result of the interaction of balls. More about all this as we go.<br><br>For now, just make this shot about 5 or 10 times in a row, <b>note how it feels</b>, and then move on to the next shot. <b>Feeling</b> is what you are trying to achieve here, your instincts. You should in the end <b>just know</b> what the right angle is.',
-    difficulty:2 },
-
-  { code:'S3', category:'Straight Shots', name:'S3 · Cross Corner Cut',
-    cb:{x:355,y:155}, ob:{x:380,y:80}, cut:26.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:355,y:155}, {x:380,y:80}, 'TR'),
-    cue:'Less than half the object ball showing to the right — 43% is your target.',
-    teaching:'The <b>pure physics</b> say that you should leave <b>43%,</b> or somewhat less than half of the object ball showing to the right of the cue ball/ghost ball. Set up the shot at those spots on your table, and shoot it, leaving about 43% of the object ball showing to the right. Did it go in? Either way, shoot it a dozen more times.<br><br>Does it <b>consistently miss to one side?</b> If so, <b>adjust</b> your aim point. If not, if you miss <b>both</b> left and right, that’s on you: your stroke is <b>erratic</b>, and you have to make your stroke smooth and repeatable.<br><br><b>Relax!: nobody’s watching!</b> Shoot the shot many times and try to get it to be a consistent shot, and try to remember what the successful shot felt and looked like — and importantly, what it <b>felt like.</b>',
-    difficulty:2 },
-
-  { code:'S4', category:'Straight Shots', name:'S4 · Long Stretch Corner',
-    cb:{x:280,y:130}, ob:{x:380,y:80}, cut:18.4, rh:false, pocket:'TR',
-    desc: gridDesc({x:280,y:130}, {x:380,y:80}, 'TR'),
-    cue:'Stretch calm, stroke smooth — about a third of the ball to the left.',
-    teaching:'The hard part of this shot is that you have to <b>stretch across</b> the table to shoot it. It’s not a difficult shot, but it’s missable if you don’t concentrate, especially with the awkward stretch. Stay slow and calm and <b>shoot deliberately</b>. What is that angle? How much of the object ball should I see outside of the cue ball edge? Is my stroke calm? LeStarZ says about <b>a third of the object ball</b> should be to the left of your <b>inside edge line</b>. Is that reality? Shoot and find out.',
-    difficulty:2 },
-
-  { code:'S5', category:'Straight Shots', name:'S5 · Long Straight',
-    cb:{x:280,y:180}, ob:{x:330,y:130}, cut:0.0, rh:false, pocket:'TR',
-    desc: gridDesc({x:280,y:180}, {x:330,y:130}, 'TR'),
-    cue:'Full ball, slow stroke — then watch where the cue ball goes.',
-    teaching:'<b>Straight, but long</b>. Looks like a full ball hit, so you need a <b>calm stroke</b> to hit it well. After you get it to go in a few times, try hitting high on the cue ball, then middle, then low, and observe <b>where the cue ball ended</b> after the shot.',
-    difficulty:2 },
-
-  { code:'S6', category:'Straight Shots', name:'S6 · Cut Left',
-    cb:{x:280,y:180}, ob:{x:380,y:105}, cut:19.4, rh:false, pocket:'TR',
-    desc: gridDesc({x:280,y:180}, {x:380,y:105}, 'TR'),
-    cue:'Aim thinner than you think — this cut wants more angle than it shows.',
-    teaching:'This is a cut to the left. It looks easier than it is, and is <b>quite missable.</b> It’s a good learning shot for you, though, and we recommend you spend some time with it, until it is automatic: you look at the shot, you absolutely <b>know where to hit it,</b> and then you shoot it smoothly. Our physics calculator tells us we should shoot with about 1/3, 33% of the object ball outside of the ghost ball (look at the ball diagram). Try that, and see what really happens. We think you’ll need to <b>make a sharper angle</b> than that.<br><br>After it goes in regularly, watch what happens to the cue ball after the shot. Then deliberately apply <b>high, middle and low to the cue ball</b> in the shot and note where the cue ball winds up. It’s really useful info, and quite predictable, if you pay attention.',
-    difficulty:3 },
-
-  { code:'S7', category:'Straight Shots', name:'S7 · Hard Right Cut',
-    cb:{x:230,y:180}, ob:{x:330,y:55}, cut:37.3, rh:true, pocket:'TR',
-    desc: gridDesc({x:230,y:180}, {x:330,y:55}, 'TR'),
-    cue:'61% of the object ball showing to the right — a genuine forty-degree cut.',
-    teaching:'This is a fairly <b>common</b> shot, and fairly <b>hard</b> to make. However, you will master this through a little concentration and repetition. Look at the ball graphic in the Aimer. It says you need to see about 61% of the object ball to the right of the edge of your cue ball. The shot has a 37.9 degree angle to the pocket. Make <b>yourself aware</b> that this is about what a <b>forty degree</b> +/- angle looks like.<br><br>Now shoot it as the ball diagram in the app says. Did it go in? Most likely it missed short of the pocket. If so, set it up again and shoot thinner, say, about 75% of the ball. Set the ball diagram to show that, and look at how much of the red ball shows to the right of the inside edge line of the cue ball. See that same <b>setup on the real balls</b> and shoot. <b>Did it go?</b> If not, what’s your correction?',
-    difficulty:3 },
-  { code:'S8', category:'Rail Shots', name:'S8 · Rail cut — flat on the rail.',
-    cb:{x:205,y:105}, ob:{x:330,y:38}, cut:28.2, rh:true, pocket:'TR',
-    desc: gridDesc({x:205,y:105}, {x:330,y:38}, 'TR'),
-    cue:'Rail balls play short — aim thin and let the rail do the work.',
-    teaching:'Rail cut — flat on the rail.',
-    difficulty:2 },
-
-  { code:'S9', category:'Rail Shots', name:'S9 · Rail Shots',
-    cb:{x:280,y:105}, ob:{x:330,y:38}, cut:53.3, rh:true, pocket:'TR',
-    desc: gridDesc({x:280,y:105}, {x:330,y:38}, 'TR'),
-    cue:'Steeper angle than it looks; trust the ghost ball position.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S10', category:'Rail Shots', name:'S10 · Close angle rail.',
-    cb:{x:230,y:55}, ob:{x:330,y:38}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:230,y:55}, {x:330,y:38}, 'TR'),
-    cue:'Close and forgiving — a good place to feel what rail contact does.',
-    teaching:'Close angle rail.',
-    difficulty:2 },
-
-  { code:'S11', category:'Rail Shots', name:'S11 · Steeper rail shot.',
-    cb:{x:230,y:105}, ob:{x:330,y:38}, cut:33.8, rh:true, pocket:'TR',
-    desc: gridDesc({x:230,y:105}, {x:330,y:38}, 'TR'),
-    cue:'Steeper than S8; the rail is your guide, not the pocket.',
-    teaching:'Steeper rail shot.',
-    difficulty:2 },
-
-  { code:'S12', category:'Rail Shots', name:'S12 · 5’ long rail shot.',
-    cb:{x:130,y:130}, ob:{x:330,y:38}, cut:24.7, rh:true, pocket:'TR',
-    desc: gridDesc({x:130,y:130}, {x:330,y:38}, 'TR'),
-    cue:'Five feet of travel — stay slow and let the geometry do the work.',
-    teaching:'5’ long rail shot.',
-    difficulty:2 },
-
-  { code:'S13', category:'Side Pocket Shots', name:'S13 · Side Pocket Shots',
-    cb:{x:130,y:130}, ob:{x:205,y:80}, cut:29.7, rh:false, pocket:'TM',
-    desc: gridDesc({x:130,y:130}, {x:205,y:80}, 'TM'),
-    cue:'The side pocket is narrow — precision matters more than power here.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S14', category:'Side Pocket Shots', name:'S14 · Side Pocket Shots',
-    cb:{x:130,y:130}, ob:{x:180,y:80}, cut:0.0, rh:false, pocket:'TM',
-    desc: gridDesc({x:130,y:130}, {x:180,y:80}, 'TM'),
-    cue:'Straight to the side pocket — use this to calibrate your center-ball stroke.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S15', category:'Side Pocket Shots', name:'S15 · Side Pocket Shots',
-    cb:{x:130,y:130}, ob:{x:180,y:55}, cut:29.7, rh:true, pocket:'TM',
-    desc: gridDesc({x:130,y:130}, {x:180,y:55}, 'TM'),
-    cue:'Left cut to the side — aim thin and keep the stroke relaxed.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S16', category:'Side Pocket Shots', name:'S16 · Side Pocket Shots',
-    cb:{x:130,y:180}, ob:{x:155,y:80}, cut:42.3, rh:true, pocket:'TM',
-    desc: gridDesc({x:130,y:180}, {x:155,y:80}, 'TM'),
-    cue:'Long cut to the side — more angle than you expect.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S17', category:'Side Pocket Shots', name:'S17 · Side Pocket Shots',
-    cb:{x:130,y:180}, ob:{x:230,y:105}, cut:53.1, rh:false, pocket:'TM',
-    desc: gridDesc({x:130,y:180}, {x:230,y:105}, 'TM'),
-    cue:'Steep angle; the ghost ball tells you everything you need.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S18', category:'Side Pocket Shots', name:'S18 · Steep side cut.',
-    cb:{x:130,y:180}, ob:{x:230,y:130}, cut:63.4, rh:false, pocket:'TM',
-    desc: gridDesc({x:130,y:180}, {x:230,y:130}, 'TM'),
-    cue:'The steepest side cut — this one will surprise you the first few times.',
-    teaching:'Steep side cut.',
-    difficulty:2 },
-
-  { code:'S19', category:'Near Parallel', name:'S19 · Near Parallel',
-    cb:{x:105,y:55}, ob:{x:205,y:55}, cut:45.0, rh:false, pocket:'TM',
-    desc: gridDesc({x:105,y:55}, {x:205,y:55}, 'TM'),
-    cue:'Nearly straight to the side pocket — pure stroke shot.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S20', category:'Near Parallel', name:'S20 · Near Parallel',
-    cb:{x:105,y:55}, ob:{x:205,y:55}, cut:6.3, rh:false, pocket:'TR',
-    desc: gridDesc({x:105,y:55}, {x:205,y:55}, 'TR'),
-    cue:'Nearly straight to the corner — aim just a hair right.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S21', category:'Near Parallel', name:'S21 · Near Parallel',
-    cb:{x:105,y:80}, ob:{x:205,y:55}, cut:7.7, rh:true, pocket:'TR',
-    desc: gridDesc({x:105,y:80}, {x:205,y:55}, 'TR'),
-    cue:'Tiny left cut — the difference from S20 is subtle but real.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S22', category:'Near Parallel', name:'S22 · Near Parallel',
-    cb:{x:105,y:55}, ob:{x:205,y:55}, cut:6.3, rh:false, pocket:'TR',
-    desc: gridDesc({x:105,y:55}, {x:205,y:55}, 'TR'),
-    cue:'Same as S20 — shoot it again and compare the feel.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S23', category:'Near Parallel', name:'S23 · Near Parallel',
-    cb:{x:105,y:80}, ob:{x:205,y:80}, cut:12.5, rh:false, pocket:'TR',
-    desc: gridDesc({x:105,y:80}, {x:205,y:80}, 'TR'),
-    cue:'Both balls off the rail — small cut, big lesson in consistency.',
-    teaching:'',
-    difficulty:2 },
-
-  { code:'S24', category:'Near Parallel', name:'S24 · Near Parallel',
-    cb:{x:105,y:55}, ob:{x:205,y:80}, cut:26.6, rh:false, pocket:'TR',
-    desc: gridDesc({x:105,y:55}, {x:205,y:80}, 'TR'),
-    cue:'OB off the rail, cut right — watch the angle open up.',
-    teaching:'',
-    difficulty:2 },
-,
-
-  // ── INSTINCT BUILDER ──────────────────────────────────────
-  {
-    cb:{x:280,y:55}, ob:{x:380,y:38},
-    cut:9.6, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-f',
-    name:'CB 5f / OB 7e', code:'ib-5f-7e',
-    desc:'CB 5f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
-  },
-  {
-    cb:{x:230,y:55}, ob:{x:380,y:38},
-    cut:6.5, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-f',
-    name:'CB 4f / OB 7e', code:'ib-4f-7e',
-    desc:'CB 4f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
-  },
-  {
-    cb:{x:180,y:55}, ob:{x:380,y:38},
-    cut:4.9, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-f',
-    name:'CB 3f / OB 7e', code:'ib-3f-7e',
-    desc:'CB 3f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
-  },
-  {
-    cb:{x:130,y:55}, ob:{x:380,y:38},
-    cut:3.9, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-f',
-    name:'CB 2f / OB 7e', code:'ib-2f-7e',
-    desc:'CB 2f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
-  },
-  {
-    cb:{x:80,y:55}, ob:{x:380,y:38},
-    cut:3.2, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-f',
-    name:'CB 1f / OB 7e', code:'ib-1f-7e',
-    desc:'CB 1f · OB 7e · P3', cue:'Same OB, walk the line.', difficulty:1
-  },
-  {
-    cb:{x:280,y:80}, ob:{x:380,y:38},
-    cut:22.8, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-g',
-    name:'CB 5g / OB 7e', code:'ib-5g-7e',
-    desc:'CB 5g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
-  },
-  {
-    cb:{x:230,y:80}, ob:{x:380,y:38},
-    cut:15.6, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-g',
-    name:'CB 4g / OB 7e', code:'ib-4g-7e',
-    desc:'CB 4g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
-  },
-  {
-    cb:{x:180,y:80}, ob:{x:380,y:38},
-    cut:11.9, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-g',
-    name:'CB 3g / OB 7e', code:'ib-3g-7e',
-    desc:'CB 3g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
-  },
-  {
-    cb:{x:130,y:80}, ob:{x:380,y:38},
-    cut:9.5, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-g',
-    name:'CB 2g / OB 7e', code:'ib-2g-7e',
-    desc:'CB 2g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
-  },
-  {
-    cb:{x:80,y:80}, ob:{x:380,y:38},
-    cut:8.0, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-g',
-    name:'CB 1g / OB 7e', code:'ib-1g-7e',
-    desc:'CB 1g · OB 7e · P3', cue:'One step further from the rail.', difficulty:1
-  },
-  {
-    cb:{x:280,y:105}, ob:{x:380,y:38},
-    cut:33.8, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-long',
-    name:'CB 13f / OB 7e', code:'ib-13f-7e',
-    desc:'CB 13f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
-  },
-  {
-    cb:{x:230,y:105}, ob:{x:380,y:38},
-    cut:24.1, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-long',
-    name:'CB 12f / OB 7e', code:'ib-12f-7e',
-    desc:'CB 12f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
-  },
-  {
-    cb:{x:180,y:105}, ob:{x:380,y:38},
-    cut:18.5, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-long',
-    name:'CB 11f / OB 7e', code:'ib-11f-7e',
-    desc:'CB 11f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
-  },
-  {
-    cb:{x:130,y:105}, ob:{x:380,y:38},
-    cut:15.0, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-long',
-    name:'CB 10f / OB 7e', code:'ib-10f-7e',
-    desc:'CB 10f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
-  },
-  {
-    cb:{x:80,y:105}, ob:{x:380,y:38},
-    cut:12.6, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-7e-long',
-    name:'CB 9f / OB 7e', code:'ib-9f-7e',
-    desc:'CB 9f · OB 7e · P3', cue:'Longer shot — feel the angle steepen.', difficulty:1
-  },
-  {
-    cb:{x:230,y:55}, ob:{x:330,y:38},
-    cut:9.6, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-f',
-    name:'CB 4f / OB 6e', code:'ib-4f-6e',
-    desc:'CB 4f · OB 6e · P3', cue:'Closer pocket, same feel.', difficulty:1
-  },
-  {
-    cb:{x:180,y:55}, ob:{x:330,y:38},
-    cut:6.5, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-f',
-    name:'CB 3f / OB 6e', code:'ib-3f-6e',
-    desc:'CB 3f · OB 6e · P3', cue:'Closer pocket, same feel.', difficulty:1
-  },
-  {
-    cb:{x:130,y:55}, ob:{x:330,y:38},
-    cut:4.9, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-f',
-    name:'CB 2f / OB 6e', code:'ib-2f-6e',
-    desc:'CB 2f · OB 6e · P3', cue:'Closer pocket, same feel.', difficulty:1
-  },
-  {
-    cb:{x:80,y:55}, ob:{x:330,y:38},
-    cut:3.9, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-f',
-    name:'CB 1f / OB 6e', code:'ib-1f-6e',
-    desc:'CB 1f · OB 6e · P3', cue:'Closer pocket, same feel.', difficulty:1
-  },
-  {
-    cb:{x:230,y:80}, ob:{x:330,y:38},
-    cut:22.8, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-g',
-    name:'CB 4g / OB 6e', code:'ib-4g-6e',
-    desc:'CB 4g · OB 6e · P3', cue:'Fuller line — OB 6e.', difficulty:1
-  },
-  {
-    cb:{x:180,y:80}, ob:{x:330,y:38},
-    cut:15.6, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-g',
-    name:'CB 3g / OB 6e', code:'ib-3g-6e',
-    desc:'CB 3g · OB 6e · P3', cue:'Fuller line — OB 6e.', difficulty:1
-  },
-  {
-    cb:{x:130,y:80}, ob:{x:330,y:38},
-    cut:11.9, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-g',
-    name:'CB 2g / OB 6e', code:'ib-2g-6e',
-    desc:'CB 2g · OB 6e · P3', cue:'Fuller line — OB 6e.', difficulty:1
-  },
-  {
-    cb:{x:80,y:80}, ob:{x:330,y:38},
-    cut:9.5, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-g',
-    name:'CB 1g / OB 6e', code:'ib-1g-6e',
-    desc:'CB 1g · OB 6e · P3', cue:'Fuller line — OB 6e.', difficulty:1
-  },
-  {
-    cb:{x:230,y:105}, ob:{x:330,y:38},
-    cut:33.8, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-long',
-    name:'CB 12f / OB 6e', code:'ib-12f-6e',
-    desc:'CB 12f · OB 6e · P3', cue:'Long shots — OB 6e.', difficulty:1
-  },
-  {
-    cb:{x:180,y:105}, ob:{x:330,y:38},
-    cut:24.1, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-long',
-    name:'CB 11f / OB 6e', code:'ib-11f-6e',
-    desc:'CB 11f · OB 6e · P3', cue:'Long shots — OB 6e.', difficulty:1
-  },
-  {
-    cb:{x:130,y:105}, ob:{x:330,y:38},
-    cut:18.5, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-long',
-    name:'CB 10f / OB 6e', code:'ib-10f-6e',
-    desc:'CB 10f · OB 6e · P3', cue:'Long shots — OB 6e.', difficulty:1
-  },
-  {
-    cb:{x:80,y:105}, ob:{x:330,y:38},
-    cut:15.0, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'rail-6e-long',
-    name:'CB 9f / OB 6e', code:'ib-9f-6e',
-    desc:'CB 9f · OB 6e · P3', cue:'Long shots — OB 6e.', difficulty:1
-  },
-  {
-    cb:{x:255,y:55}, ob:{x:330,y:38},
-    cut:12.8, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'diagonal',
-    name:'CB 5 / OB 6e', code:'ib-5-6e',
-    desc:'CB 5 · OB 6e · P3', cue:'Same shot — different address.', difficulty:1
-  },
-  {
-    cb:{x:205,y:55}, ob:{x:280,y:38},
-    cut:12.8, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'diagonal',
-    name:'CB 4 / OB 5e', code:'ib-4-5e',
-    desc:'CB 4 · OB 5e · P3', cue:'Same shot — different address.', difficulty:1
-  },
-  {
-    cb:{x:130,y:55}, ob:{x:205,y:38},
-    cut:12.8, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'diagonal',
-    name:'CB 2f / OB 4d', code:'ib-2f-4d',
-    desc:'CB 2f · OB 4d · P3', cue:'Same shot — different address.', difficulty:1
-  },
-  {
-    cb:{x:80,y:55}, ob:{x:155,y:38},
-    cut:12.8, rh:true, pocket:'TR',
-    category:'INSTINCT BUILDER', group:'diagonal',
-    name:'CB 1f / OB 3d', code:'ib-1f-3d',
-    desc:'CB 1f · OB 3d · P3', cue:'Same shot — different address.', difficulty:1
-  },
-
-  // ── CHAPTER 2: Shallow Angle (9.6°) — Same Shot Across the Table ────────────
-  { code:'C2A', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2A · Center-Top → TR', difficulty:2,
-    cb:{x:180,y:105}, ob:{x:280,y:88}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:180,y:105}, {x:280,y:88}, 'TR'),
-    teaching:'<b>Same angle as RS1.</b> The ball is no longer on the rail — but the angle to the pocket is identical. Set up exactly as you did on the rail and trust the geometry. This is the core lesson: the table position changes, the shot does not.' },
-
-  { code:'C2B', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2B · Center Table → TR', difficulty:2,
-    cb:{x:130,y:155}, ob:{x:230,y:138}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:130,y:155}, {x:230,y:138}, 'TR'),
-    teaching:'Moving further from the pocket makes the shot feel different. The geometry says otherwise. Same 9.6°, same aim point on the OB, same result.' },
-
-  { code:'C2C', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2C · Lower Center → TR', difficulty:3,
-    cb:{x:80,y:205}, ob:{x:180,y:188}, cut:9.6, rh:true, pocket:'TR',
-    desc: gridDesc({x:80,y:205}, {x:180,y:188}, 'TR'),
-    teaching:'This feels like a completely different shot from RS1. It is not. Same angle, different address. If you made RS1 you can make this.' },
-
-  { code:'C2D', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2D · Left Side → TL', difficulty:2,
-    cb:{x:230,y:105}, ob:{x:130,y:88}, cut:9.6, rh:false, pocket:'TL',
-    desc: gridDesc({x:230,y:105}, {x:130,y:88}, 'TL'),
-    teaching:'Mirror image. The cut angle is exactly the same — 9.6° — but toward the left side. Your aim point on the OB moves to the opposite side. Everything else is identical.' },
-
-  { code:'C2E', category:'Same Shot — Whole Table (9.6°)', group:'shallow-scatter',
-    name:'C2E · Right Side → BR', difficulty:3,
-    cb:{x:380,y:155}, ob:{x:398,y:188}, cut:9.6, rh:false, pocket:'BR',
-    desc: gridDesc({x:380,y:155}, {x:398,y:188}, 'BR'),
-    teaching:'Same 9.6° angle, now shooting down the right rail toward the bottom pocket. The shot is the same. The address is different.' },
-
-  // ── CHAPTER 3: Medium Angle (22°) — Rail Sequence ─────────────────────────
-  { code:'RM1', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM1 · 5f Rail 22°', difficulty:2,
-    cb:{x:255,y:80}, ob:{x:380,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:255,y:80}, {x:380,y:30}, 'TR'),
-    teaching:'<b>Step up to 22°.</b> This is a noticeably steeper cut than the shallow rail sequence. You will feel the difference immediately. The contact point on the OB moves toward the outside edge. Start here and march it down the rail.' },
-
-  { code:'RM2', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM2 · 4f Rail 22°', difficulty:2,
-    cb:{x:205,y:80}, ob:{x:330,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:205,y:80}, {x:330,y:30}, 'TR'),
-    teaching:'Same 22°, one diamond further from the pocket. The shot travels further but the angle is unchanged.' },
-
-  { code:'RM3', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM3 · 3f Rail 22°', difficulty:3,
-    cb:{x:155,y:80}, ob:{x:280,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:155,y:80}, {x:280,y:30}, 'TR'),
-    teaching:'Halfway across the table. The distance makes it feel harder. Trust the aim point.' },
-
-  { code:'RM4', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM4 · 2f Rail 22°', difficulty:3,
-    cb:{x:105,y:80}, ob:{x:230,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:105,y:80}, {x:230,y:30}, 'TR'),
-    teaching:'Three-quarter table length. Still 22°. Still the same shot.' },
-
-  { code:'RM5', category:'Rail Sequence — Medium (22°)', group:'medium-rail',
-    name:'RM5 · 1f Rail 22°', difficulty:4,
-    cb:{x:55,y:80}, ob:{x:180,y:30}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:55,y:80}, {x:180,y:30}, 'TR'),
-    teaching:'Full table length. If you made RM1 you can make this. The angle is unchanged — only the distance is working against you now.' },
-
-  // ── CHAPTER 4: Medium Angle (22°) — Same Shot Across the Table ─────────────
-  { code:'M2A', category:'Same Shot — Whole Table (22°)', group:'medium-scatter',
-    name:'M2A · Center Top 22° → TR', difficulty:3,
-    cb:{x:155,y:130}, ob:{x:280,y:80}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:155,y:130}, {x:280,y:80}, 'TR'),
-    teaching:'<b>Same 22°, off the rail.</b> You have been making this shot on the rail for five reps. Now the OB is one diamond off the top cushion. The angle is identical.' },
-
-  { code:'M2B', category:'Same Shot — Whole Table (22°)', group:'medium-scatter',
-    name:'M2B · Center Table 22° → TR', difficulty:3,
-    cb:{x:105,y:180}, ob:{x:230,y:130}, cut:22.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:105,y:180}, {x:230,y:130}, 'TR'),
-    teaching:'Center table. The pocket feels far away. 22° is 22°.' },
-
-  { code:'M2C', category:'Same Shot — Whole Table (22°)', group:'medium-scatter',
-    name:'M2C · Left Side 22° → TL', difficulty:3,
-    cb:{x:255,y:130}, ob:{x:130,y:80}, cut:22.0, rh:false, pocket:'TL',
-    desc: gridDesc({x:255,y:130}, {x:130,y:80}, 'TL'),
-    teaching:'Mirror of M2A. Left side, left pocket, same 22° cut. The aim point is on the opposite side of the OB.' },
-
-  // ── CHAPTER 5: Steep Angle (35°) — Rail Sequence ──────────────────────────
-  { code:'RD1', category:'Rail Sequence — Steep (35°)', group:'steep-rail',
-    name:'RD1 · 5f Rail 35°', difficulty:3,
-    cb:{x:280,y:100}, ob:{x:380,y:30}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:280,y:100}, {x:380,y:30}, 'TR'),
-    teaching:'<b>35° — a genuine cut shot.</b> The contact point is now well toward the outside edge of the OB. You are hitting less ball. Start close and develop the feel before marching it down the rail.' },
-
-  { code:'RD2', category:'Rail Sequence — Steep (35°)', group:'steep-rail',
-    name:'RD2 · 4f Rail 35°', difficulty:3,
-    cb:{x:230,y:100}, ob:{x:330,y:30}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:230,y:100}, {x:330,y:30}, 'TR'),
-    teaching:'One diamond further. Same steep cut, more table to cover.' },
-
-  { code:'RD3', category:'Rail Sequence — Steep (35°)', group:'steep-rail',
-    name:'RD3 · 3f Rail 35°', difficulty:4,
-    cb:{x:180,y:100}, ob:{x:280,y:30}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:180,y:100}, {x:280,y:30}, 'TR'),
-    teaching:'Center table. 35° is getting real. Watch your stroke — it wants to push through the OB rather than across it.' },
-
-  { code:'RD4', category:'Rail Sequence — Steep (35°)', group:'steep-rail',
-    name:'RD4 · 2f Rail 35°', difficulty:4,
-    cb:{x:130,y:100}, ob:{x:230,y:30}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:130,y:100}, {x:230,y:30}, 'TR'),
-    teaching:'Three-quarter length at 35°. Slow the stroke, trust the angle.' },
-
-  // ── CHAPTER 6: Steep Angle (35°) — Same Shot Across the Table ──────────────
-  { code:'D2A', category:'Same Shot — Whole Table (35°)', group:'steep-scatter',
-    name:'D2A · Center Top 35° → TR', difficulty:4,
-    cb:{x:130,y:185}, ob:{x:280,y:80}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:130,y:185}, {x:280,y:80}, 'TR'),
-    teaching:'<b>Same 35°, off the rail.</b> You have been making this cut on the top cushion. Now the OB is in open table. The contact point has not moved. The angle has not changed.' },
-
-  { code:'D2B', category:'Same Shot — Whole Table (35°)', group:'steep-scatter',
-    name:'D2B · Center Table 35° → TR', difficulty:5,
-    cb:{x:80,y:235}, ob:{x:230,y:130}, cut:35.0, rh:true, pocket:'TR',
-    desc: gridDesc({x:80,y:235}, {x:230,y:130}, 'TR'),
-    teaching:'Full table diagonal at 35°. This is a hard shot. But you know this angle. You have been making it from three positions on the rail and one off it. This is the same shot.' },
-
-];
+const SHOT_LIBRARY = [];
 
 // ── USER SHOT NOTES ───────────────────────────────────────────
 // Per-shot coaching notes keyed by shot code (e.g. 'A1'), stored in localStorage.
@@ -1289,9 +707,6 @@ function loadUserShot(idx) {
     var spd = document.getElementById('sl-spd'); if(spd) spd.value = shot.sliders.speed || 50;
     var spn = document.getElementById('sl-spn'); if(spn) spn.value = shot.sliders.spin  || 0;
     var vrt = document.getElementById('sl-vert'); if(vrt) vrt.value = shot.sliders.vert || 0;
-    var tlo = document.getElementById('sl-throw-lo'); if(tlo) tlo.value = shot.sliders.tlo || 0;
-    var tmi = document.getElementById('sl-throw-mi'); if(tmi) tmi.value = shot.sliders.tmi || 0;
-    var thi = document.getElementById('sl-throw-hi'); if(thi) thi.value = shot.sliders.thi || 0;
   }
   onSliders();
   render();
@@ -1638,9 +1053,6 @@ function startRecord(presetCode, isMyShot) {
   var speed = document.getElementById('sl-speed') ? document.getElementById('sl-speed').value : 0;
   var spin  = document.getElementById('sl-spin')  ? document.getElementById('sl-spin').value  : 0;
   var vert  = document.getElementById('sl-vert')  ? document.getElementById('sl-vert').value  : 0;
-  var tlo   = document.getElementById('sl-throw-lo') ? document.getElementById('sl-throw-lo').value : 0;
-  var tmi   = document.getElementById('sl-throw-mi') ? document.getElementById('sl-throw-mi').value : 0;
-  var thi   = document.getElementById('sl-throw-hi') ? document.getElementById('sl-throw-hi').value : 0;
 
   var overlay = document.getElementById('record-overlay');
   if (!overlay) {
@@ -1659,7 +1071,6 @@ function startRecord(presetCode, isMyShot) {
     '<div style="font-size:11px;color:#666;margin-bottom:12px;line-height:1.5;">Make sure all sliders match what you actually did to make this shot.</div>' +
     '<div style="background:#f0f8f0;border-radius:6px;padding:8px 10px;font-size:10px;color:#333;margin-bottom:12px;line-height:1.8;">' +
     '<b>Speed:</b> '+speed+' &nbsp; <b>Spin:</b> '+spin+' &nbsp; <b>Vert:</b> '+vert+'<br>' +
-    '<b>T-Low:</b> '+tlo+' &nbsp; <b>T-Mid:</b> '+tmi+' &nbsp; <b>T-Hi:</b> '+thi +
     '</div>' +
     '<div style="margin-bottom:8px;">' +
     '<div style="font-size:10px;font-weight:900;color:#555;margin-bottom:3px;">TITLE</div>' +
@@ -1690,9 +1101,6 @@ function confirmRecord() {
   var speed = document.getElementById('sl-speed') ? parseInt(document.getElementById('sl-speed').value)||0 : 0;
   var spin  = document.getElementById('sl-spin')  ? parseInt(document.getElementById('sl-spin').value)||0  : 0;
   var vert  = document.getElementById('sl-vert')  ? parseInt(document.getElementById('sl-vert').value)||0  : 0;
-  var tlo   = document.getElementById('sl-throw-lo') ? parseInt(document.getElementById('sl-throw-lo').value)||0 : 0;
-  var tmi   = document.getElementById('sl-throw-mi') ? parseInt(document.getElementById('sl-throw-mi').value)||0 : 0;
-  var thi   = document.getElementById('sl-throw-hi') ? parseInt(document.getElementById('sl-throw-hi').value)||0 : 0;
 
   var cutDeg = S.diagCutDeg || 0;
   var dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' L' : ' R');
@@ -1704,8 +1112,7 @@ function confirmRecord() {
     cut: cutDeg, rh: S._diagDragRh,
     ts: Date.now(),
     desc: Math.round(cutDeg) + '°' + dir,
-    sliders: { speed:speed, spin:spin, vert:vert, tlo:tlo, tmi:tmi, thi:thi },
-    biasOn: biasOn
+    sliders: { speed:speed, spin:spin, vert:vert }
   };
   userShots.push(shot);
   saveUserShots();
@@ -1771,10 +1178,9 @@ function loadShot(idx) {
   window._perceptionOffset = 0;
   window._percBase = 0;
   window._percCompFrac = undefined;
+  window._percCompRh = undefined;
   var t = document.getElementById('perc-thumb');
-  var f = document.getElementById('perc-fill');
-  if (t) t.setAttribute('cx', '80');
-  if (f) f.setAttribute('width', '74');
+  if (t) t.setAttribute('cx', '170');
   // Clamp to ball-center coords (one radius inside rail face)
   const _clampX = (x) => Math.max(TL.left+BALL_R, Math.min(TL.right-BALL_R, x));
   const _clampY = (y) => Math.max(TL.top+BALL_R,  Math.min(TL.bottom-BALL_R, y));
@@ -2274,18 +1680,18 @@ if ('serviceWorker' in navigator) {
       </div>
       <!-- FLIPPABLE THREE: Inside Edge · Outside Edge · Twixt -->
       <div id="diag-flip-row" style="display:flex;flex-direction:row;gap:4px;grid-column:span 3;">
-        <div style="display:flex;flex-direction:column;align-items:center;flex:2;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:2;" onclick="toggleEdgeStripes()" title="Tap to toggle Inside/Outside edge crescents in diagram">
           <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#e87030;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Inside Edge</div>
           <div style="display:flex;gap:3px;flex:1;width:100%;">
-            <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+            <div id="r-aim-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
               <div id="r-aim" style="color:#e87030;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
             </div>
 
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
-          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#7dd3fc;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Outside</div>
-          <div style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleEdgeStripes()" title="Tap to toggle Inside/Outside edge crescents in diagram">
+          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#7dd3fc;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Outside Edge</div>
+          <div id="r-oe-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
             <div id="r-oe" style="color:#7dd3fc;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
           </div>
         </div>
@@ -2314,26 +1720,54 @@ if ('serviceWorker' in navigator) {
 
     <!-- SHOT LIBRARY PANEL placeholder — actual panel is fixed/floating -->
 
-    <!-- EYE-LEVEL DIAGRAM -->
-    <div id="perc-row" style="display:none;align-items:center;justify-content:center;gap:4px;padding:4px 8px;background:transparent;width:100%;box-sizing:border-box;overflow:hidden;">
-  <span style="font-size:9px;font-weight:900;font-style:italic;color:#ff8c00;white-space:nowrap;flex-shrink:1;">Reality Check—</span>
-  <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">L</span>
-  <svg id="perc-svg" height="28" style="flex:1;min-width:80px;max-width:160px;touch-action:none;cursor:grab;">
-    <rect x="6" y="10" width="148" height="8" rx="4" fill="rgba(255,140,0,0.25)" stroke="#ff8c00" stroke-width="1.5"/>
-    <rect id="perc-fill" x="6" y="10" width="74" height="8" rx="4" fill="rgba(255,140,0,0.6)"/>
-    <circle id="perc-thumb" cx="80" cy="14" r="12" fill="url(#pg)" stroke="none"/>
-    <defs>
-      <radialGradient id="pg" cx="35%" cy="28%" r="65%">
-        <stop offset="0%" stop-color="#ff9090"/>
-        <stop offset="35%" stop-color="#ee2020"/>
-        <stop offset="80%" stop-color="#aa0808"/>
-        <stop offset="100%" stop-color="#6a0808"/>
-      </radialGradient>
-    </defs>
+    <!-- REALITY CHECK — permanent, primary tool -->
+    <div id="perc-block" style="display:flex;flex-direction:column;align-items:stretch;background:rgba(255,140,0,0.06);border-top:1px solid rgba(255,140,0,0.3);border-bottom:1px solid rgba(255,140,0,0.3);width:100%;box-sizing:border-box;">
+    <div id="perc-row" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 12px 4px;width:100%;box-sizing:border-box;overflow:hidden;">
+  <span style="font-size:12px;font-weight:900;color:#ff8c00;white-space:nowrap;flex-shrink:0;letter-spacing:0.08em;">REALITY CHECK</span>
+  <span style="font-size:11px;font-weight:900;color:#ff8c00;white-space:nowrap;flex-shrink:0;">L</span>
+  <svg id="perc-svg" viewBox="0 0 340 56" preserveAspectRatio="xMidYMid meet" style="flex:1;min-width:200px;max-width:340px;height:56px;touch-action:none;cursor:grab;">
+    <!-- track -->
+    <rect x="20" y="26" width="300" height="12" rx="6" fill="rgba(255,140,0,0.22)" stroke="#ff8c00" stroke-width="1.5"/>
+    <!-- center divider -->
+    <line x1="170" y1="20" x2="170" y2="44" stroke="#ff8c00" stroke-width="2"/>
+    <!-- tick marks + numbers: 10 on each side, 15px spacing from center -->
+    <g id="perc-ticks" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#ff8c00" text-anchor="middle">
+      <!-- left side -->
+      <line x1="155" y1="24" x2="155" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="155" y="12">1</text>
+      <line x1="140" y1="24" x2="140" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="140" y="12">2</text>
+      <line x1="125" y1="24" x2="125" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="125" y="12">3</text>
+      <line x1="110" y1="24" x2="110" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="110" y="12">4</text>
+      <line x1="95"  y1="24" x2="95"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="95"  y="12">5</text>
+      <line x1="80"  y1="24" x2="80"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="80"  y="12">6</text>
+      <line x1="65"  y1="24" x2="65"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="65"  y="12">7</text>
+      <line x1="50"  y1="24" x2="50"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="50"  y="12">8</text>
+      <line x1="35"  y1="24" x2="35"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="35"  y="12">9</text>
+      <line x1="20"  y1="24" x2="20"  y2="40" stroke="#ff8c00" stroke-width="1.5"/><text x="20"  y="12">10</text>
+      <!-- center 0 -->
+      <text x="170" y="12" font-size="11">0</text>
+      <!-- right side -->
+      <line x1="185" y1="24" x2="185" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="185" y="12">1</text>
+      <line x1="200" y1="24" x2="200" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="200" y="12">2</text>
+      <line x1="215" y1="24" x2="215" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="215" y="12">3</text>
+      <line x1="230" y1="24" x2="230" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="230" y="12">4</text>
+      <line x1="245" y1="24" x2="245" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="245" y="12">5</text>
+      <line x1="260" y1="24" x2="260" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="260" y="12">6</text>
+      <line x1="275" y1="24" x2="275" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="275" y="12">7</text>
+      <line x1="290" y1="24" x2="290" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="290" y="12">8</text>
+      <line x1="305" y1="24" x2="305" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="305" y="12">9</text>
+      <line x1="320" y1="24" x2="320" y2="40" stroke="#ff8c00" stroke-width="1.5"/><text x="320" y="12">10</text>
+    </g>
+    <!-- thumb (perception ball — matches main ghost ball) -->
+    <circle id="perc-thumb" cx="170" cy="32" r="18" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5" opacity="0.5"/>
   </svg>
-  <span style="font-size:9px;font-weight:900;color:#ff8c00;white-space:nowrap;">R</span>
-  <button id="perc-zero-btn" style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 8px;border-radius:4px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZERO</button>
+  <span style="font-size:11px;font-weight:900;color:#ff8c00;white-space:nowrap;flex-shrink:0;">R</span>
+  <button id="perc-lock-btn" style="font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:5px 9px;border-radius:5px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;letter-spacing:0.05em;">LOCK</button>
+  <button id="perc-zero-btn" style="font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:5px 9px;border-radius:5px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;flex-shrink:0;letter-spacing:0.05em;">ZERO</button>
 </div>
+    <div id="perc-invite-row" style="display:flex;align-items:center;justify-content:center;padding:0 12px 8px;">
+      <button id="perc-invite-btn" onclick="toggleSlidersPanel()" style="background:none;border:none;font-family:Lato,sans-serif;font-size:11px;font-weight:900;color:#3ab0ff;cursor:pointer;padding:2px 8px;letter-spacing:0.08em;touch-action:manipulation;text-decoration:underline dotted rgba(58,176,255,0.5);text-underline-offset:2px;">(ADD SPIN AND SPEED?)</button>
+    </div>
+    </div><!-- /perc-block -->
     <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;">
       <svg id="botsvg" viewBox="0 0 460 300" preserveAspectRatio="xMidYMid meet"
            style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;"
@@ -2441,13 +1875,6 @@ if ('serviceWorker' in navigator) {
         <text id="bot-contact-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#4ade80" opacity="0">Contact Point</text>
         <!-- Contact point line — always on top -->
         <line id="bot-contact-line" x1="230" y1="0" x2="230" y2="230" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0"/>
-        <!-- Contact point dot on ball diagram -->
-        <!-- Three-ring target at contact point (ball equator on contact line) -->
-        <g id="cp-dot-diag" opacity="0">
-          <circle cx="230" cy="148" r="6"   fill="#d62828"/>
-          <circle cx="230" cy="148" r="4"   fill="#ffffff"/>
-          <circle cx="230" cy="148" r="2"   fill="#d62828"/>
-        </g>
         <!-- Opacity +/- buttons bottom-right -->
         <g onclick="ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
           <rect x="340" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
@@ -2460,6 +1887,14 @@ if ('serviceWorker' in navigator) {
         </g>
         <!-- Twixt stripes — on top of everything including balls, so the lens is visible -->
         <g id="twixt-stripes" opacity="0" pointer-events="none"></g>
+        <!-- Edge crescent stripes — inside & outside edges of OB (non-overlap region) -->
+        <g id="edge-stripes" opacity="0" pointer-events="none"></g>
+        <!-- Contact point bullseye — drawn after stripes so it sits on top -->
+        <g id="cp-dot-diag" opacity="0">
+          <circle cx="230" cy="148" r="6"   fill="#d62828"/>
+          <circle cx="230" cy="148" r="4"   fill="#ffffff"/>
+          <circle cx="230" cy="148" r="2"   fill="#d62828"/>
+        </g>
       </svg>
     </div>
 
@@ -2544,21 +1979,6 @@ if ('serviceWorker' in navigator) {
     </div>
   </div>
 
-  <!-- CALIBRATION PANEL -->
-  <div id="cal-panel">
-    <div id="cal-instruction"></div>
-    <div id="cal-status" style="font-size:10px;color:rgba(255,255,255,0.5);margin:3px 0;"></div>
-    <div class="cal-actions" style="display:flex;gap:4px;flex-wrap:wrap;">
-      <button class="cal-action-btn primary" id="cal-rec1-btn" onclick="calRecord1()">① RECORD PREDICTED</button>
-      <button class="cal-action-btn primary" id="cal-rec2-btn" onclick="calRecord2()" style="display:none;background:#1a5a3a;">② RECORD ACTUAL</button>
-      <button class="cal-action-btn" onclick="calUndo()">UNDO</button>
-      <button class="cal-action-btn danger" onclick="calReset()">RESET ALL</button>
-      <button class="cal-action-btn" onclick="toggleCalLibrary()" style="background:#2a3a5a;color:#aaccff;">LIBRARY</button>
-      <button class="cal-action-btn" onclick="calExport()" style="background:#2a4a2a;color:#4ade80;border-color:#4ade80;">EXPORT</button>
-    </div>
-    <div id="cal-result" style="margin-top:4px;"></div>
-    <div id="cal-library" style="display:none;margin-top:6px;max-height:140px;overflow-y:auto;font-size:10px;color:rgba(255,255,255,0.6);border-top:1px solid rgba(255,255,255,0.1);padding-top:4px;"></div>
-  </div>
 
   <!-- SLIDERS FLOATING PANEL -->
 
@@ -2607,7 +2027,6 @@ const S = {
   speed:  0.5,
   spin:   0,
   vert:   0,
-  bias:   0,
   snooker: false,
   rotation: 0,
   tableSize: 9,   // feet: 7, 9, 10, 12
@@ -2644,17 +2063,13 @@ window._panLocked = false;
 let lockTable = true;
 let lockBalls = true;
 let lockSliders = true;
-let biasOn = false;
 let contactDotOn = false; // contact point dot off by default
-let throwLo = 0, throwMi = 0, throwHi = 0; // 0-100 each, segments 0-20°, 20-50°, 50-90°
 let SNAP_POINTS = [];  // built after DOM ready
 const SNAP_RADIUS = 14;
 const ghostOn = true;  // always on
 let angleOn = false;
 function toggleContactDot() {
   contactDotOn = !contactDotOn;
-  const btn = document.getElementById('btn-cp');
-  if (btn) { btn.classList.toggle('on', contactDotOn); }
   const box = document.getElementById('r-cp-box');
   if (box) {
     box.style.background = contactDotOn ? 'rgba(74,222,128,0.18)' : 'rgba(0,0,0,0.3)';
@@ -2736,7 +2151,6 @@ function compute(cutDeg) {
 
   const cutRaw = cutDeg >= 90 ? 1.0 : Math.sin(cutDeg * RAD);
   const Z_des  = cutRaw >= 1.0 ? Math.PI/2 : Math.asin(cutRaw);
-  const biasRad = S.bias;
 
   // ── CALIBRATED CORRECTION (replaces bell + throw) ──────────
   let aimFrac;
@@ -2749,10 +2163,10 @@ function compute(cutDeg) {
   }
 
   // Apply bias
-  const Z_aim = Math.max(0, Math.min(Math.PI/2, Math.asin(aimFrac) + biasRad));
+  const Z_aim = Math.max(0, Math.min(Math.PI/2, Math.asin(aimFrac)));
 
   // ── SPIN THROW (kept — measurable effect with spin) ──────────
-  const spinThrowDeg = S.spin * (S.speed < 0.28 ? 1.5 : S.speed < 0.72 ? 0.5 : 0.1);
+  const spinThrowDeg = S.spin * (S.speed < 0.28 ? 2.5 : S.speed < 0.72 ? 1.2 : 0.3);
   const spinThrow = -spinThrowDeg * RAD;
   const Z_aim_final = Math.max(0, Math.min(Math.PI/2, Z_aim + spinThrow));
 
@@ -2818,7 +2232,6 @@ function tableCutDeg() {
 const svg = $('topsvg');
 svg.addEventListener('pointerdown', e => {
   const p = svgPt(e);
-  if (calTapActual(p)) return;
   if (window._panLocked!==true) return;
   if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
   if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
@@ -2860,21 +2273,7 @@ function tableToSvg(tx, ty) {
 // Throw compensation curve — three independent segments, linearly interpolated
 // Each slider -50/+50 maps to -1.0/+1.0 correction factor (negative = aim thinner)
 // Segment boundaries: 0-20° (lo), 20-50° (mid), 50-90° (hi)
-function getThrowComp(cutDeg) {
-  if (cutDeg <= 0) return 0;
-  if (cutDeg <= 20) {
-    // 0→20°: ramp from 0 up to throwLo at 20°
-    return throwLo * (cutDeg / 20);
-  } else if (cutDeg <= 50) {
-    // 20→50°: ramp from throwLo to throwMi
-    const t = (cutDeg - 20) / 30;
-    return throwLo + (throwMi - throwLo) * t;
-  } else {
-    // 50→90°: ramp from throwMi to throwHi
-    const t = (cutDeg - 50) / 40;
-    return throwMi + (throwHi - throwMi) * t;
-  }
-}
+function getThrowComp(cutDeg) { return 0; }
 
 // Compute cut angle from CB/OB positions — consistent formula
 // Rail shots use rail direction as departure; open shots use OB→pocket
@@ -3024,10 +2423,9 @@ function renderTable(d) {
   const cbToObAngle = Math.atan2(cbdy, cbdx);
   const side = rh ? 1 : -1;
   // Spin throw on OB — matches compute(): slow=1.5°/tip, med=0.5°/tip, fast=0.1°/tip
-  const spinThrowDeg = S.spin * (S.speed < 0.28 ? 1.5 : S.speed < 0.72 ? 0.5 : 0.1);
+  const spinThrowDeg = S.spin * (S.speed < 0.28 ? 2.5 : S.speed < 0.72 ? 1.2 : 0.3);
   const obSpinThrow  = -spinThrowDeg * RAD;
-  const biasAngle    = S.bias;  // already in radians
-  let obDepartAngle = cbToObAngle + side * Math.min(cutDeg, 90) * RAD + obSpinThrow + biasAngle;
+  let obDepartAngle = cbToObAngle + side * Math.min(cutDeg, 90) * RAD + obSpinThrow;
 
   // Rail shot override: only when no diagram adjustment has been made
   // Once user drags the diagram, use their angle instead
@@ -3060,7 +2458,7 @@ function renderTable(d) {
   sV('ob-arrow', true);
   // Tint arrow purple when bias is applied
   const _obarr = document.getElementById('ob-arrow');
-  if (_obarr) _obarr.setAttribute('stroke', (biasOn && S.bias !== 0) ? '#c890f0' : '#7dd3fc');
+  if (_obarr) _obarr.setAttribute('stroke', '#7dd3fc');
 
   // Ghost ball — show when GHOST is on
   // Throw compensation: shift ghost ball toward fuller contact
@@ -3225,26 +2623,35 @@ function drawBot(d) {
   const _diagThrowDelta = getThrowComp(cutDeg);
   const _diagRcBias = window._perceptionOffset || 0;
   const _diagRcSigned = (rh ? -_diagRcBias : _diagRcBias);
-  const aimF = Math.max(0, Math.min(1, Math.abs(d.diagFraction) + _diagThrowDelta + _diagRcSigned));
-  const ccx  = Math.max(4, Math.min(W-4, rh ? (ocx - aimF*2*r) : (ocx + aimF*2*r)));
+  // Allow the signed sum to go negative (RC slider indicating contact on the
+  // opposite side of OB center). When it does, flip the render side and use
+  // the magnitude. Critical for straight-in shots where diagFraction=0.
+  let _aimFSigned = Math.abs(d.diagFraction) + _diagThrowDelta + _diagRcSigned;
+  let _rhEffective = rh;
+  if (_aimFSigned < 0) { _aimFSigned = -_aimFSigned; _rhEffective = !rh; }
+  const aimF = Math.min(1, _aimFSigned);
+  const ccx  = Math.max(4, Math.min(W-4, _rhEffective ? (ocx - aimF*2*r) : (ocx + aimF*2*r)));
   window._percCompFrac = Math.max(0, Math.min(1, Math.abs(ccx - ocx) / (2*r)));
+  window._percCompRh   = _rhEffective;
   // ── OVERHEAD VIEW ──────────────────────────────────────────────────
   {
     var W2=460, H2=180, R=22;
     var obCx=W2*0.5, obCy=H2*0.5;
+    // Use RC-effective rh so perception ball flip (straight-in, etc.) carries through.
+    var rhOv = (window._percCompRh !== undefined) ? window._percCompRh : rh;
     // Contact point on OB (fraction along diameter)
     var frac = (window._percCompFrac !== undefined) ? window._percCompFrac : Math.max(0, Math.min(1, _compFrac));
-    var contactX = rh ? obCx + frac*2*R - R : obCx - frac*2*R + R;
-    var ghostCx = rh ? contactX - R : contactX + R;
+    var contactX = rhOv ? obCx + frac*2*R - R : obCx - frac*2*R + R;
+    var ghostCx = rhOv ? contactX - R : contactX + R;
     // CB position (further back on aim line)
     var cbDist = 120;
-    var cbCx = rh ? ghostCx - cbDist : ghostCx + cbDist;
+    var cbCx = rhOv ? ghostCx - cbDist : ghostCx + cbDist;
     cbCx = Math.max(R+4, Math.min(W2-R-4, cbCx));
     // Cut angle for deflection
     var cutR = (cutDeg||0) * Math.PI/180;
-    var obDirX = rh ? Math.cos(0)*60 : -Math.cos(0)*60;
-    var obDirY = -Math.sin(cutR) * 60 * (rh ? 1 : -1);
-    var cbDefX = ghostCx + (rh ? -Math.sin(cutR)*60 : Math.sin(cutR)*60);
+    var obDirX = rhOv ? Math.cos(0)*60 : -Math.cos(0)*60;
+    var obDirY = -Math.sin(cutR) * 60 * (rhOv ? 1 : -1);
+    var cbDefX = ghostCx + (rhOv ? -Math.sin(cutR)*60 : Math.sin(cutR)*60);
     var cbDefY = obCy + Math.cos(cutR)*60;
 
     function setOvh(id, attrs){
@@ -3272,7 +2679,11 @@ function drawBot(d) {
   $('revClipRect').setAttribute('height', 2*r);
 
   sC('bot-cb', ccx, ocy);
-  const _botCb = $('bot-cb'); if (_botCb) _botCb.setAttribute('opacity', Math.max(0.15, ghostOpacity));
+  // When edges mode is on, fade the CB to clear so the stripes tell the whole story.
+  const _cbOpacity = window._edgeStripes ? 0 : Math.max(0.15, ghostOpacity);
+  const _botCb = $('bot-cb'); if (_botCb) _botCb.setAttribute('opacity', _cbOpacity);
+  const _percTh = document.getElementById('perc-thumb');
+  if (_percTh) _percTh.setAttribute('opacity', Math.max(0.15, ghostOpacity));
 
 
   sC('bot-tip', Math.max(ccx-r*0.7, Math.min(ccx+r*0.7, ccx+(S.spin/4)*0.62*r)),
@@ -3295,7 +2706,7 @@ function drawBot(d) {
   const _contactX = (ocx + ccx) / 2;
   if (_cLine) { _cLine.setAttribute('x1',_contactX); _cLine.setAttribute('x2',_contactX); _cLine.setAttribute('y1',ocy-r-12); _cLine.setAttribute('y2',ocy+r+12); _cLine.setAttribute('opacity','1'); }
   const _cpDiag = $('cp-dot-diag');
-  if (_cpDiag) { _cpDiag.setAttribute('transform', 'translate(' + (_contactX - 230) + ',' + (ocy - 148) + ')'); _cpDiag.setAttribute('opacity', (!!window._twixtStripes && showContact) ? '1' : '0'); }
+  if (_cpDiag) { _cpDiag.setAttribute('transform', 'translate(' + (_contactX - 230) + ',' + (ocy - 148) + ')'); _cpDiag.setAttribute('opacity', ((!!window._twixtStripes || !!window._edgeStripes) && showContact) ? '1' : '0'); }
   const _cLbl = $('bot-contact-lbl');
   if (_cLbl) { _cLbl.setAttribute('x',_contactX); _cLbl.setAttribute('opacity','1'); }
   const _gbg = $('bot-cb-gold');
@@ -3356,6 +2767,62 @@ function drawBot(d) {
       _twixtG.setAttribute('opacity', '1');
     } else {
       _twixtG.setAttribute('opacity', '0');
+    }
+  }
+
+  // ── EDGE CRESCENT STRIPES — inside (OB's far side) and outside (CB's far side) ──
+  // Venn diagram: two balls overlap in the middle (twixt lens). The non-overlap
+  // regions are two crescents — one on each ball, pointing away from the other.
+  // Inside crescent = on the side the OB is being sent (OB's far side from CB).
+  //   Rendered as orange horizontal stripes.
+  // Outside crescent = opposite the direction the OB is sent (CB's far side
+  //   from OB). Rendered as cyan horizontal stripes.
+  const _edgeG = document.getElementById('edge-stripes');
+  if (_edgeG) {
+    const edgeOn = !!window._edgeStripes;
+    if (edgeOn && Math.abs(ccx - ocx) > 0.5) {
+      let html = '';
+      const cbLeft = ccx < ocx;
+      const STRIPE_SPACING = 4;
+      for (let y = ocy - r; y <= ocy + r; y += STRIPE_SPACING) {
+        const dy = y - ocy;
+        const bulge = Math.sqrt(Math.max(0, r*r - dy*dy));
+        if (bulge < 0.5) continue;
+        const obL = ocx - bulge, obR = ocx + bulge;
+        const cbL = ccx - bulge, cbR = ccx + bulge;
+        if (cbLeft) {
+          // OB far-side (inside) crescent on the RIGHT of OB.
+          // At each row, inside spans from (where CB ends OR OB starts, whichever is larger)
+          // to OB's right edge. Cap at OB's silhouette — no drawing where OB doesn't exist.
+          const insL = Math.max(obL, cbR);  // start of non-overlap on OB row
+          if (insL < obR) {
+            html += `<line x1="${insL.toFixed(1)}" y1="${y.toFixed(1)}" x2="${obR.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#ff9040" stroke-width="2" opacity="0.72"/>`;
+          }
+          // CB far-side (outside) crescent on the LEFT of CB.
+          // At each row, outside spans from CB's left edge to (CB's right OR OB's left, whichever is smaller).
+          // Cap at CB's silhouette — no drawing beyond the CB circle.
+          const outR = Math.min(cbR, obL);
+          if (cbL < outR) {
+            html += `<line x1="${cbL.toFixed(1)}" y1="${y.toFixed(1)}" x2="${outR.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#7dd3fc" stroke-width="1.8" opacity="0.55"/>`;
+          }
+        } else {
+          // Mirror image: CB is on the right.
+          // OB far-side (inside) crescent on the LEFT of OB.
+          const insR = Math.min(obR, cbL);
+          if (obL < insR) {
+            html += `<line x1="${obL.toFixed(1)}" y1="${y.toFixed(1)}" x2="${insR.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#ff9040" stroke-width="2" opacity="0.72"/>`;
+          }
+          // CB far-side (outside) crescent on the RIGHT of CB.
+          const outL = Math.max(cbL, obR);
+          if (outL < cbR) {
+            html += `<line x1="${outL.toFixed(1)}" y1="${y.toFixed(1)}" x2="${cbR.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#7dd3fc" stroke-width="1.8" opacity="0.55"/>`;
+          }
+        }
+      }
+      _edgeG.innerHTML = html;
+      _edgeG.setAttribute('opacity', '1');
+    } else {
+      _edgeG.setAttribute('opacity', '0');
     }
   }
 
@@ -3461,6 +2928,7 @@ document.addEventListener('keydown', e => {
 // ── SLIDERS ────────────────────────────────────────────────────
 // Twixt stripes toggle — tap the Twixt readout box to enable/disable
 window._twixtStripes = false;
+window._edgeStripes = false;
 function toggleTwixtStripes() {
   window._twixtStripes = !window._twixtStripes;
   var box = document.getElementById('r-twixt-box');
@@ -3470,37 +2938,26 @@ function toggleTwixtStripes() {
   }
   if (typeof render === 'function') render();
 }
+function toggleEdgeStripes() {
+  window._edgeStripes = !window._edgeStripes;
+  var ins = document.getElementById('r-aim-box');
+  var out = document.getElementById('r-oe-box');
+  if (ins) {
+    ins.style.background = window._edgeStripes ? 'rgba(232,112,48,0.22)' : 'rgba(0,0,0,0.3)';
+    ins.style.borderColor = window._edgeStripes ? 'rgba(232,112,48,0.55)' : 'rgba(255,255,255,0.07)';
+  }
+  if (out) {
+    out.style.background = window._edgeStripes ? 'rgba(125,211,252,0.22)' : 'rgba(0,0,0,0.3)';
+    out.style.borderColor = window._edgeStripes ? 'rgba(125,211,252,0.55)' : 'rgba(255,255,255,0.07)';
+  }
+  if (typeof render === 'function') render();
+}
 
 function onSliders() {
-  if(typeof _sgState!=="undefined") _syncBias();
   S.speed  = parseInt($('sl-spd').value)  / 100;
   S.spin   = parseInt($('sl-spn').value) / 25;  // -4..4 continuously
   S.vert   = parseInt($('sl-vert').value) / 25;  // -4..4 from -100..100
   S.distFt = 0;  // auto-calculated in compute()
-  // Single bias
-  if (biasOn) {
-        // Update number displays
-    const _bv = parseInt($('sl-bias')?.value || '0');
-    const _bn = document.getElementById('sv-bias-n');
-    const _bs = document.getElementById('sv-bias');
-    if (_bn) _bn.textContent = _bv;
-    if (_bs) _bs.textContent = (_bv > 0 ? '+' : '') + _bv;
-  } else {
-    S.bias = 0;
-  }
-  // Three-segment throw compensation — only active when PERSONAL ADJUSTMENT is ON
-  throwLo = biasOn ? parseInt($('sl-throw-lo')?.value || '0') / 50 : 0;
-  throwMi = biasOn ? parseInt($('sl-throw-mi')?.value || '0') / 50 : 0;
-  throwHi = biasOn ? parseInt($('sl-throw-hi')?.value || '0') / 50 : 0;
-  ['lo','mi','hi'].forEach(seg => {
-    const v = parseInt($('sl-throw-'+seg)?.value || '0');
-    const n = document.getElementById('sv-throw-'+seg+'-n');
-    const s = document.getElementById('sv-throw-'+seg);
-    // Display as IE delta: +12% or -8% or 0
-    const disp = v === 0 ? '0' : (v > 0 ? '+' : '') + v + '%';
-    if(n) n.textContent = v;
-    if(s) s.textContent = disp;
-  });
   if (!onSliders._raf) {
     onSliders._raf = requestAnimationFrame(function() {
       onSliders._raf = null;
@@ -3509,71 +2966,6 @@ function onSliders() {
   }
 }
 
-function toggleCal() {
-  const panel = document.getElementById('cal-panel');
-  if (!panel) return;
-  const isOpen = panel.classList.toggle('open');
-  const btn = document.getElementById('btn-cal');
-  if (btn) { btn.classList.toggle('on', isOpen); }
-  if (isOpen) {
-    positionPanelAtDock(panel);
-    const hdr = panel.querySelector('[id$="-header"],[id$="-handle"]') || panel.firstElementChild;
-    if (hdr) { panel.dataset.minimized='0'; panel.classList.remove('panel-minimized'); Array.from(panel.children).forEach(function(c){c.style.display='';}); minimizePanel(panel.id, hdr); }
-  }
-}
-
-function toggleCalLibrary() {
-  calLibraryOpen = !calLibraryOpen;
-  const lib = $('cal-library');
-  if (lib) lib.style.display = calLibraryOpen ? 'block' : 'none';
-  updateCalLibrary();
-}
-
-function updateCalLibrary() {
-  const lib = $('cal-library');
-  if (!lib || !calLibraryOpen) return;
-  if (!calShots.length) { lib.innerHTML = '<em>No shots recorded yet.</em>'; return; }
-  lib.innerHTML = calShots.slice().reverse().map((s, i) => {
-    const d = new Date(s.ts);
-    const dt = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
-    const zone = s.predictedCut < 30 ? 'FAT' : s.predictedCut < 60 ? 'MED' : 'THIN';
-    const err = s.error != null ? (s.error >= 0 ? '+' : '') + s.error.toFixed(1) + '°' : '—';
-    const idx = calShots.length - 1 - i;
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.06);">' +
-      '<span>' + dt + ' · ' + zone + ' · ' + s.predictedCut.toFixed(0) + '°</span>' +
-      '<span style="color:#c890f0;margin:0 6px;">' + err + '</span>' +
-      '<button onclick="calDeleteShot(' + idx + ')" style="font-size:9px;padding:1px 4px;border-radius:3px;border:1px solid rgba(255,80,80,0.4);background:rgba(255,80,80,0.1);color:#ff8080;cursor:pointer;">✕</button>' +
-      '</div>';
-  }).join('');
-}
-
-function calDeleteShot(idx) {
-  calShots.splice(idx, 1);
-  saveAimProfile();
-  applyCalibrationToBias();
-  updateCalLibrary();
-}
-
-function calTapActual(p) { return false; }  // legacy — no longer used
-
-function calUndo() {
-  if (calPhase === 'predicted') {
-    calPhase = 'idle'; calPendingShot = null;
-  } else if (calShots.length) {
-    calShots.pop();
-    saveAimProfile();
-    applyCalibrationToBias();
-  }
-  calUpdateUI();
-}
-
-function calReset() {
-  calShots = []; calPhase = 'idle'; calPendingShot = null;
-  saveAimProfile();
-    onSliders();
-  const res = $('cal-result'); if (res) res.style.display = 'none';
-  calUpdateUI(); render();
-}
 
 // ── TOGGLES ────────────────────────────────────────────────────
 function toggleGhost() {
@@ -3673,15 +3065,11 @@ function cycleRotation() { rotateRight(); }
 function loadAimProfile() {
   try {
     const p = JSON.parse(localStorage.getItem('lz-aimer-profile') || '{}');
-    if (typeof p.bias === 'number' && $('sl-bias')) $('sl-bias').value = p.bias;
-    if (Array.isArray(p.shots)) calShots = p.shots;
   } catch(e) {}
 }
 function saveAimProfile() {
   try {
     localStorage.setItem('lz-aimer-profile', JSON.stringify({
-      bias: parseInt($('sl-bias')?.value || '0'),
-      shots: calShots.slice(-50)
     }));
   } catch(e) {}
 }
@@ -3715,7 +3103,6 @@ loadUserShots();
 buildShotList();
 const epSnap = document.getElementById('ep-snap');
 if (epSnap) epSnap.classList.add('active');
-// ep-bias initialized in load handler
 render();
 // ── GLOBAL TOUCH SAFETY RESET (iOS pointer capture bug) ──────
 document.addEventListener('touchend', () => {
@@ -3757,37 +3144,14 @@ function toggleLock(which) {
 }
 
 function zeroSliders() {
-  S.speed = 0.5; S.spin = 0; S.vert = 0; S.bias = 0;
+  S.speed = 0.5; S.spin = 0; S.vert = 0;
   $('sl-spd').value  = '50';
   $('sl-spn').value  = '0';
   $('sl-vert').value = '0';
-    ['lo','mi','hi'].forEach(seg => {
-    const el = document.getElementById('sl-throw-'+seg);
-    if(el) el.value = '0';
-  });
-  throwLo = 0; throwMi = 0; throwHi = 0;
   onSliders();
   document.activeElement && document.activeElement.blur();
 }
 
-function _updateBiasBtn() {
-  var btn = document.getElementById('ep-bias');
-  if (!btn) return;
-  btn.style.background = biasOn ? '#c06010' : '#7a3a06';
-  btn.style.borderColor = biasOn ? '#f0a060' : '#aa5a10';
-  btn.innerHTML = biasOn ? 'PERSONAL ADJ ON<br>SLIDERS' : 'PERSONAL ADJ OFF<br>SLIDERS';
-}
-function toggleBias() {
-  biasOn = !biasOn;
-  // Keep _sgState in sync so _syncBias() doesn't override
-  if (typeof _sgState !== 'undefined') {
-    _sgState.ghost.on = biasOn;
-    if (biasOn) _sgState.ghost.frozen = false;
-    _sgApply('ghost');
-  }
-  _updateBiasBtn();
-  onSliders();
-}
 
 function toggleSnap(e) {
   snapOn = !snapOn;
@@ -4018,7 +3382,7 @@ function edgeZoomReset() {
   <!-- Bottom bar: SIZE scale + resize grip -->
   <div style="display:flex;align-items:center;padding:3px 0 3px 8px;background:#0a0a0a;border-top:1px solid #1a1a1a;border-radius:0 0 10px 10px;">
     <span style="font-size:7px;font-weight:900;color:rgba(255,255,255,0.4);font-family:Lato,sans-serif;flex-shrink:0;margin-right:5px;letter-spacing:0.5px;">SIZE</span>
-    <input type="range" id="sl-scale" min="50" max="100" value="100"
+    <input type="range" id="sl-scale" min="70" max="200" value="100"
       onclick="event.stopPropagation()"
       oninput="scaleSliderPanel(this.value)"
       style="flex:1;height:2px;-webkit-appearance:none;appearance:none;background:#333;border-radius:1px;cursor:pointer;outline:none;">
@@ -4066,9 +3430,6 @@ window.addEventListener('load', positionToolbar);
 window.addEventListener('load', function(){
   try {
     const b = JSON.parse(localStorage.getItem('lz-aimer-bias') || '{}');
-    if (b.fat !== undefined) { const el = document.getElementById('sl-bias-fat'); if(el) el.value = b.fat; }
-    if (b.med !== undefined) { const el = document.getElementById('sl-bias-med'); if(el) el.value = b.med; }
-    if (b.thin !== undefined) { const el = document.getElementById('sl-bias-thin'); if(el) el.value = b.thin; }
   } catch(e) {}
 
   _setLockBtn('ep-lt', lockTable,   'TABLE');
@@ -4079,7 +3440,6 @@ window.addEventListener('load', function(){
   (function(){
     var m = document.getElementById('btn-map');     if(m){ m.textContent = mapOn ? 'GRID ON' : 'GRID OFF'; m.classList.toggle('on', mapOn); }
     var s = document.getElementById('ep-snap');     if(s){ s.textContent = snapOn ? 'SNAP ON' : 'SNAP OFF'; s.classList.toggle('on', snapOn); }
-    _updateBiasBtn();
     var c = document.getElementById('btn-cbpath');  if(c){ c.classList.toggle('on', cbPathOn); c.style.lineHeight='1.3'; c.innerHTML = cbPathOn ? 'CUE PATH<br>ON' : 'CUE PATH<br>OFF'; }
     var a = document.getElementById('btn-angle');   if(a){ a.classList.toggle('on', angleOn); a.style.lineHeight='1.3'; a.innerHTML = angleOn ? 'BOUNCE<br>ANGLE ON' : 'BOUNCE<br>ANGLE OFF'; }
   })();
@@ -4091,7 +3451,6 @@ window.addEventListener('load', function(){
   const card = document.querySelector('.card');
   if(card) card.classList.toggle('sliders-unlocked', !lockSliders);
   // Apply bias
-  // biasBtn state managed by toggleBias()
 });
 window.addEventListener('resize', positionToolbar, {passive:true});
 window.addEventListener('resize', function(){ updateSnapLabels(document.getElementById('topsvg')); }, {passive:true});
@@ -4191,20 +3550,12 @@ function swapPanels(){
 </script>
 
 <script>
-function updateLockBtn() {
-  const allLocked = lockTable && lockBalls && lockSliders;
-  const _ql = document.getElementById('quick-lock');
-  if (_ql) {
-    const lbl = _ql.querySelector('span');
-    if (lbl) lbl.textContent = allLocked ? 'LOCKED' : 'UNLOCKED';
-  }
-}
 function btbCollapse() { /* pill stack removed — handled by dock */ }
 
 function btbExpand() { /* pill stack removed — handled by dock */ }
 
 const FLOAT_Z_A = 8800;
-const FLOAT_PANELS_A = ['sliders-block','shot-library-panel','throw-panel'];
+const FLOAT_PANELS_A = ['sliders-block','shot-library-panel'];
 function bringToTop(id) {
   FLOAT_PANELS_A.forEach(function(pid) {
     const el = document.getElementById(pid);
@@ -4236,23 +3587,6 @@ function forceMinimizePanel(panelId, headerId) {
   const btn = hdr.querySelector('.min-btn');
   if (btn) btn.textContent = '+';
 }
-function toggleAllLocks() {
-  const allLocked = lockTable && lockBalls && lockSliders;
-  lockTable = lockBalls = lockSliders = !allLocked;
-  _setLockBtn('ep-lt', lockTable,   'TABLE');
-  _setLockBtn('ep-lb', lockBalls,   'GHOST');
-  _setLockBtn('ep-ls', lockSliders, 'SLIDERS');
-  updateLockBtn();
-  render();
-  // Update floating sliders panel if open
-  var _sp = document.getElementById('sliders-block');
-  if (_sp && _slidersPanelOpen) {
-    _sp.classList.toggle('sliders-unlocked', !lockSliders);
-    var _sg2 = _sp.querySelector('.sgroup');
-    if (_sg2) _sg2.style.opacity = lockSliders ? '0.4' : '1';
-    _sp.querySelectorAll('.sgroup input[type=range]').forEach(function(el){ el.disabled = lockSliders; });
-  }
-}
 </script>
 
 <div id="btb">
@@ -4270,10 +3604,10 @@ function toggleAllLocks() {
         <button onclick="edgeZoom(1.3)" style="width:44px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;flex-shrink:0;"><span style="font-size:9px;font-weight:900;color:#a8ccff;">ZOOM</span><span style="font-size:18px;line-height:1;">+</span></button>
         <button onclick="edgeZoom(1/1.3)" style="width:44px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-sizing:border-box;flex-shrink:0;"><span style="font-size:9px;font-weight:900;color:#a8ccff;">ZOOM</span><span style="font-size:18px;line-height:1;">−</span></button>
         <button onclick="edgeZoomReset()" style="font-size:9px;font-weight:900;padding:0 8px;height:44px;border-radius:8px;border:2px solid #2c58ae;background:#1c3c8e;color:#a8ccff;cursor:pointer;touch-action:manipulation;flex-shrink:0;">ZOOM<br>RESET</button>
-        <button class="tg-btn tg-green on" id="btn-map"    onclick="toggleMap()">GRID<br>OFF</button>
-        <button class="tg-btn tg-gold  on" id="ep-snap"    onclick="toggleSnap()">SNAP<br>OFF</button>
-        <button class="tg-btn tg-green"    id="btn-cbpath" onclick="toggleCbPath()">CUE<br>PATH</button>
-        <button class="tg-btn tg-brown"    id="btn-angle"  onclick="toggleAngle()">BOUNCE<br>ANGLE</button>
+        <button class="tg-btn tg-green on" id="btn-map"    onclick="toggleMap()">GRID<br>ON</button>
+        <button class="tg-btn tg-gold  on" id="ep-snap"    onclick="toggleSnap()">SNAP<br>ON</button>
+        <button class="tg-btn tg-green"    id="btn-cbpath" onclick="toggleCbPath()">CUE PATH<br>OFF</button>
+        <button class="tg-btn tg-brown"    id="btn-angle"  onclick="toggleAngle()">BOUNCE<br>ANGLE OFF</button>
       </div>
       <!-- Row 2: Locks + Actions -->
       <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;max-width:min(520px,96vw);">
@@ -4375,19 +3709,7 @@ function vernierAim(dir) {
   render();
 }
 
-function throwStep(seg, dir) {
-  const el = document.getElementById('sl-throw-' + seg);
-  if (!el) return;
-  el.value = Math.max(-50, Math.min(50, parseInt(el.value) + dir));
-  onSliders(); render();
-}
 
-function biasStep(dir) {
-  const el = document.getElementById('sl-bias');
-  if (!el) return;
-  el.value = Math.max(-12, Math.min(12, parseInt(el.value) + dir));
-  onSliders(); render();
-}
 </script>
 <!-- SHOT LIBRARY — floating, draggable -->
 <div id="shot-library-panel" class="float-panel" style="border-color:rgba(240,223,112,0.5);min-width:300px;">
@@ -4589,327 +3911,6 @@ function biasStep(dir) {
 })();
 </script>
 
-<!-- ── SHOT DATA RECORD PANEL ─────────────────────────────────── -->
-<div id="throw-panel" class="float-panel" style="border-color:rgba(200,112,48,0.4);">
-  <div id="throw-panel-header" class="float-panel-header"><span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">SHOT DATA RECORD</span>
-    <div style="display:flex;gap:6px;align-items:center;">
-      <button class="min-btn" onclick="minimizeThrowPanel()" style="background:none;border:1px solid #aaa;border-radius:4px;color:#333;font-size:13px;font-weight:900;padding:2px 8px;cursor:pointer;touch-action:manipulation;" title="Minimize">—</button>
-      <button onclick="toggleThrowPanel()" style="background:none;border:none;color:#333333;font-size:22px;cursor:pointer;touch-action:manipulation;">✕</button>
-    </div>
-  </div>
-  <!-- Current shot info + record button -->
-  <div id="throw-panel-info" style="padding:4px 8px;border-bottom:1px solid #e8e8e8;background:#fff;">
-    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-      <span style="font-size:10px;color:#333;font-weight:700;">Cut:</span> <span id="td-cut" style="font-size:10px;color:#000;font-weight:900;">—</span>
-      <span style="font-size:10px;color:#333;font-weight:700;">Geo:</span> <span id="td-geo" style="font-size:10px;color:#000;font-weight:900;">—</span>
-      <span style="font-size:10px;color:#333;font-weight:700;">Comp:</span> <span id="td-comp" style="font-size:10px;color:#000;font-weight:900;">—</span>
-      <label style="display:flex;align-items:center;gap:3px;font-size:10px;color:#111;cursor:pointer;font-weight:700;">
-        <input type="checkbox" id="td-rail" style="width:11px;height:11px;"> Rail
-      </label>
-      <input id="td-note" type="text" placeholder="Note…" autocomplete="off"
-        style="flex:1;min-width:50px;background:#fff;border:1px solid #bbb;border-radius:3px;padding:2px 5px;color:#111;font-size:10px;outline:none;">
-      <button onclick="recordThrowShot()" style="padding:2px 8px;border-radius:3px;border:none;background:#1a4a1a;color:#fff;font-family:'Lato',sans-serif;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;white-space:nowrap;">REC</button>
-    </div>
-  </div>
-  <!-- Data log -->
-  <div id="throw-data-list" class="float-panel-body" style="cursor:grab;max-height:18vh;"></div>
-  <!-- Footer: scale + export + clear -->
-  <div id="throw-panel-footer" style="display:flex;gap:4px;padding:4px 8px;border-top:1px solid #e0e0e0;background:#f8f8f8;align-items:center;">
-    <span class="panel-scale-label" id="data-scale-lbl" style="font-size:8px;font-weight:900;color:rgba(0,0,0,0.35);font-family:'Lato',sans-serif;min-width:28px;text-align:right;">100%</span>
-    <input type="range" id="data-scale" min="50" max="100" value="100" oninput="scalePanel('throw-panel','data-scale','data-scale-lbl')" style="flex:1;height:3px;accent-color:rgba(240,223,112,0.8);">
-    <button onclick="exportThrowData()" style="padding:2px 8px;border-radius:3px;border:1px solid #888;background:#fff;color:#111;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">CSV</button>
-    <button onclick="clearThrowData()" style="padding:2px 8px;border-radius:3px;border:1px solid #cc3333;background:#fff;color:#cc3333;font-size:10px;font-weight:900;cursor:pointer;touch-action:manipulation;">CLEAR</button>
-
-  </div>
-</div>
-
-<script>
-// ── THROW COMP DATA PANEL ─────────────────────────────────────────────
-let throwPanelOpen = false;
-let throwData = [];
-
-function loadThrowData() {
-  try { throwData = JSON.parse(localStorage.getItem('lz-throw-data') || '[]'); } catch(e) { throwData = []; }
-}
-function saveThrowData() {
-  try {
-    localStorage.setItem('lz-throw-data', JSON.stringify(throwData));
-  } catch(e) {
-    // localStorage blocked (private mode or file://) — warn user
-    const el = document.getElementById('throw-data-list');
-    if (el && !document.getElementById('throw-save-warn')) {
-      const warn = document.createElement('div');
-      warn.id = 'throw-save-warn';
-      warn.style.cssText = 'padding:8px 12px;font-size:11px;color:#cc3333;background:#fff0f0;border-bottom:1px solid #ffcccc;';
-      warn.textContent = '⚠ Data cannot be saved on this device (private mode or file access). Export before closing.';
-      el.before(warn);
-    }
-  }
-}
-
-function minimizeThrowPanel() {
-  minimizePanel('throw-panel', document.getElementById('throw-panel-header'));
-}
-
-function toggleThrowPanel() {
-  throwPanelOpen = !throwPanelOpen;
-  const panel = document.getElementById('throw-panel');
-  if (!panel) return;
-  panel.style.display = throwPanelOpen ? 'flex' : 'none';
-  if (throwPanelOpen) {
-    bringToTop('throw-panel');
-    loadThrowData();
-    updateThrowPanelCurrent();
-    buildThrowList();
-    requestAnimationFrame(function(){
-      positionPanelAtDock(panel);
-    });
-  }
-}
-
-function updateThrowPanelCurrent() {
-  const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
-  const _d = compute(cutDeg);
-  const geoPct = Math.round(Math.abs(_d.diagFraction) * 100);
-  const throwDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
-  const compPct = Math.round(Math.min(1, Math.abs(_d.diagFraction) + throwDelta) * 100);
-  const el = (id) => document.getElementById(id);
-  const dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? 'L' : 'R');
-  if(el('td-cut'))  el('td-cut').textContent  = cutDeg.toFixed(1) + '°' + dir;
-  if(el('td-geo'))  el('td-geo').textContent  = geoPct + '%';
-  if(el('td-comp')) el('td-comp').textContent = compPct + '%';
-}
-
-function recordThrowShot() {
-  const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
-  if (cutDeg < 1.0) { alert('Set a cut angle first.'); return; }
-  const d = compute(cutDeg);
-  const geoPct  = Math.round(Math.abs(d.diagFraction) * 100);
-  const throwDelta = getThrowComp(cutDeg);
-  const compPct = Math.round(Math.min(1, Math.abs(d.diagFraction) + throwDelta) * 100);
-  const dir = S._diagDragRh ? 'L' : 'R';
-  const rail = document.getElementById('td-rail')?.checked || false;
-  const note = document.getElementById('td-note')?.value.trim() || '';
-  const record = {
-    ts: Date.now(),
-    cutDeg: Math.round(cutDeg * 10) / 10,
-    dir,
-    geoPct,
-    compPct,
-    tLo: Math.round(throwLo * 50),
-    tMi: Math.round(throwMi * 50),
-    tHi: Math.round(throwHi * 50),
-    rail,
-    note
-  };
-  throwData.push(record);
-  saveThrowData();
-  if(document.getElementById('td-note')) document.getElementById('td-note').value = '';
-  buildThrowList();
-}
-
-function buildThrowList() {
-  const el = document.getElementById('throw-data-list');
-  if (!el) return;
-  if (!throwData.length) {
-    el.innerHTML = '<div style="padding:16px 12px;font-size:13px;color:#888888;text-align:center;">No data recorded yet.<br>Set sliders, shoot, then tap RECORD.</div>';
-    return;
-  }
-  const rows = throwData.slice().reverse().map((r, ri) => {
-    const i = throwData.length - 1 - ri;
-    const d = new Date(r.ts);
-    const dt = (d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
-    return '<div style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #dddddd;font-size:12px;background:#ffffff;">' +
-      '<div style="flex:1;">' +
-        '<span style="color:#111111;font-weight:900;">' + r.cutDeg + '°' + r.dir + '</span>' +
-        '<span style="color:#888888;margin:0 4px;">·</span>' +
-        '<span style="color:#444444;">geo ' + r.geoPct + '%</span>' +
-        '<span style="color:#888888;margin:0 4px;">→</span>' +
-        '<span style="color:#1a4a1a;font-weight:900;">' + r.compPct + '%</span>' +
-        (r.rail ? '<span style="color:#666666;margin-left:6px;font-size:11px;">rail</span>' : '') +
-        (r.note ? '<div style="color:#555555;margin-top:2px;font-style:italic;">' + r.note + '</div>' : '') +
-        '<div style="color:#999999;margin-top:2px;font-size:10px;">T-LO:'+r.tLo+'% T-MI:'+r.tMi+'% T-HI:'+r.tHi+'% · '+dt+'</div>' +
-      '</div>' +
-      '<button onclick="deleteThrowRecord('+i+')" style="padding:3px 8px;border-radius:3px;border:1px solid #cc3333;background:#ffffff;color:#cc3333;cursor:pointer;font-size:11px;font-weight:900;">✕</button>' +
-    '</div>';
-  }).join('');
-  el.innerHTML = rows;
-}
-
-function deleteThrowRecord(i) {
-  throwData.splice(i, 1);
-  saveThrowData();
-  buildThrowList();
-}
-
-function exportThrowData() {
-  if (!throwData.length) { alert('No data recorded yet.'); return; }
-  const header = 'Date,Cut°,Dir,Geo%,Comp%,T-LO,T-MID,T-HI,Rail,Note';
-  const rows = throwData.map(r => {
-    const d = new Date(r.ts);
-    const dt = d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
-    return [dt, r.cutDeg, r.dir, r.geoPct, r.compPct, r.tLo, r.tMi, r.tHi, r.rail?'yes':'no', '"'+(r.note||'')+'"'].join(',');
-  });
-  const csv = header + '\n' + rows.join('\n');
-  let box = document.getElementById('throw-export-box');
-  if (!box) {
-    box = document.createElement('div');
-    box.id = 'throw-export-box';
-    box.style.cssText = 'position:fixed;z-index:9999;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #888;border-radius:8px;padding:16px;width:min(500px,95vw);box-shadow:0 8px 32px rgba(0,0,0,0.4);';
-    const hdr = document.createElement('div');
-    hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;';
-    hdr.innerHTML = '<span style="font-weight:900;font-size:13px;color:#111;">Copy this data</span>';
-    const closeBtn = document.createElement('button');
-    closeBtn.textContent = '✕';
-    closeBtn.style.cssText = 'border:none;background:none;font-size:20px;cursor:pointer;color:#333;';
-    closeBtn.onclick = function(){ box.remove(); };
-    hdr.appendChild(closeBtn);
-    box.appendChild(hdr);
-    const ta = document.createElement('textarea');
-    ta.id = 'throw-csv-text';
-    ta.readOnly = true;
-    ta.style.cssText = 'width:100%;height:180px;font-family:monospace;font-size:11px;border:1px solid #ccc;border-radius:4px;padding:8px;box-sizing:border-box;color:#111;background:#f9f9f9;resize:vertical;';
-    box.appendChild(ta);
-    const copyBtn = document.createElement('button');
-    copyBtn.textContent = 'SELECT ALL & COPY';
-    copyBtn.style.cssText = 'width:100%;margin-top:10px;padding:8px;background:#1a4a1a;color:#fff;border:none;border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;';
-    copyBtn.onclick = function(){
-      const t = document.getElementById('throw-csv-text');
-      t.select(); document.execCommand('copy');
-      copyBtn.textContent = 'Copied!';
-      setTimeout(function(){ copyBtn.textContent = 'SELECT ALL & COPY'; }, 1500);
-    };
-    box.appendChild(copyBtn);
-    document.body.appendChild(box);
-  }
-  document.getElementById('throw-csv-text').value = csv;
-}
-function clearThrowData() {
-  if (!confirm('Clear all throw comp data?')) return;
-  throwData = [];
-  saveThrowData();
-  buildThrowList();
-}
-
-// Update current shot display when render fires
-const _origRender = window.render;
-window.render = function() {
-  _origRender && _origRender();
-  if (throwPanelOpen) updateThrowPanelCurrent();
-};
-
-// Draggable panel
-(function(){
-  var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
-  window.addEventListener('load', function(){
-    // Show snap labels immediately on load
-    setTimeout(function(){
-      if (!window._snapPos) window._snapPos = {};
-      window._snapPos.cb = {x: S.cb.x, y: S.cb.y, label: xyToGrid(S.cb.x, S.cb.y)};
-      window._snapPos.ob = {x: S.ob.x, y: S.ob.y, label: xyToGrid(S.ob.x, S.ob.y)};
-      updateSnapLabels(document.getElementById('topsvg'));
-    }, 300);
-    panel  = document.getElementById('throw-panel');
-    header = document.getElementById('throw-panel-header');
-    if (!panel || !header) return;
-    // Position center-right on first open
-    panel.style.top  = '80px';
-    panel.style.left = Math.max(4, window.innerWidth - 440) + 'px';
-    header.addEventListener('pointerdown', function(e){
-      if (e.target.tagName === 'BUTTON') return;
-      e.preventDefault();
-      panel.style.transform = 'none';
-      var r = panel.getBoundingClientRect();
-      panel.style.left = r.left + 'px'; panel.style.top = r.top + 'px';
-      startX=e.clientX; startY=e.clientY;
-      origLeft=r.left; origTop=r.top;
-      didDrag=false; activePtr=e.pointerId;
-      try{ header.setPointerCapture(e.pointerId); }catch(ex){}
-    });
-    header.addEventListener('pointermove', function(e){
-      if (activePtr===null || e.pointerId!==activePtr) return;
-      var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
-      if (!didDrag && Math.hypot(dx,dy)>8) { didDrag=true; try{header.setPointerCapture(e.pointerId);}catch(ex){} }
-      if (!didDrag) return;
-      var nx=origLeft+dx;
-      var ny=origTop+dy;
-      panel.style.left=nx+'px'; panel.style.top=ny+'px';
-    });
-    header.addEventListener('pointerup', function(e){ if(e.pointerId===activePtr) activePtr=null; });
-    header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
-
-    // Bottom drag handle
-    var footer = document.getElementById('throw-panel-footer-drag');
-    if (footer) {
-      footer.addEventListener('pointerdown', function(e){
-        var r=panel.getBoundingClientRect();
-        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
-        didDrag=false; activePtr=e.pointerId;
-        footer.setPointerCapture(e.pointerId);
-      });
-      footer.addEventListener('pointermove', function(e){
-        if (activePtr===null||e.pointerId!==activePtr) return;
-        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
-        if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
-        if (!didDrag) return;
-        panel.style.left=origLeft+dx+'px';
-        panel.style.top=origTop+dy+'px';
-      });
-      footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
-      footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
-    }
-
-    // Data list drag at scroll edge
-    var dataList = document.getElementById('throw-data-list');
-    if (dataList) {
-      var listDragActive=false;
-      dataList.addEventListener('pointerdown', function(e){
-        var atTop=dataList.scrollTop===0, atBottom=dataList.scrollTop+dataList.clientHeight>=dataList.scrollHeight-2;
-        if (!atTop&&!atBottom) return;
-        var r=panel.getBoundingClientRect();
-        startX=e.clientX; startY=e.clientY; origLeft=r.left; origTop=r.top;
-        didDrag=false; listDragActive=true; activePtr=e.pointerId;
-        dataList.setPointerCapture(e.pointerId);
-        e.preventDefault();
-      });
-      dataList.addEventListener('pointermove', function(e){
-        if (!listDragActive||e.pointerId!==activePtr) return;
-        var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
-        if (!didDrag&&Math.hypot(dx,dy)>8) didDrag=true;
-        if (!didDrag) return;
-        panel.style.left=origLeft+dx+'px';
-        panel.style.top=origTop+dy+'px';
-      });
-      dataList.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
-      dataList.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
-    }
-
-    // Resize handle
-    var resizeHandle = document.getElementById('throw-panel-resize');
-    if (resizeHandle) {
-      var resizing=false, resizeStartX, resizeStartY, resizeStartW, resizeStartH, resizePtr=null;
-      resizeHandle.addEventListener('pointerdown', function(e){
-        e.stopPropagation();
-        resizing=true; resizePtr=e.pointerId;
-        resizeStartX=e.clientX; resizeStartY=e.clientY;
-        resizeStartW=panel.offsetWidth; resizeStartH=panel.offsetHeight;
-        resizeHandle.setPointerCapture(e.pointerId);
-      });
-      resizeHandle.addEventListener('pointermove', function(e){
-        if (!resizing||e.pointerId!==resizePtr) return;
-        var nw=Math.max(260,resizeStartW+(e.clientX-resizeStartX));
-        var nh=Math.max(150,resizeStartH+(e.clientY-resizeStartY));
-        panel.style.width=Math.min(nw,window.innerWidth-8)+'px';
-        if (dataList) { dataList.style.maxHeight=Math.max(60,nh-180)+'px'; dataList.style.minHeight=Math.max(60,nh-180)+'px'; }
-      });
-      resizeHandle.addEventListener('pointerup',     function(e){ resizing=false; resizePtr=null; });
-      resizeHandle.addEventListener('pointercancel', function(e){ resizing=false; resizePtr=null; });
-    }
-
-    loadThrowData();
-  });
-})();
-</script>
 
 <script>
 var _slidersPanelOpen = false;
@@ -4918,18 +3919,28 @@ var _slidersPositioned = false;
 
 // ── Slider group state ───────────────────────────────────────
 var _sgState = {
-  ball:  { on:true, frozen:false },
-  ghost: { on:true, frozen:false }
+  ball:  { on:true, frozen:false }
 };
 
 
 function scaleSliderPanel(val) {
   var panel = document.getElementById('sliders-block');
-  if (!panel) return;
-  var pct = parseInt(val) / 100;
-  var h = Math.round(150 + 350 * (pct - 0.5));
-  panel.style.height = h + 'px';
-  panel.style.maxHeight = h + 'px';
+  var wrap  = document.getElementById('sliders-scale-wrap');
+  if (!panel || !wrap) return;
+  var scale = Math.max(0.6, Math.min(2.5, parseInt(val) / 100));
+  // Scale the content — genuinely makes sliders, labels, numbers bigger.
+  wrap.style.transformOrigin = 'top left';
+  wrap.style.transform = 'scale(' + scale + ')';
+  // Size the panel so it actually contains the scaled content (transform
+  // doesn't affect layout flow, so we resize the parent manually).
+  var baseW = 340; // original wrap width
+  var baseH = wrap.scrollHeight || 200;
+  panel.style.width  = Math.round(baseW * scale) + 'px';
+  panel.style.height = 'auto';
+  panel.style.maxHeight = 'none';
+  // Make the outer content area match the scaled block so layout doesn't clip.
+  wrap.parentElement.style.width  = Math.round(baseW * scale) + 'px';
+  wrap.parentElement.style.height = Math.round(baseH * scale) + 'px';
 }
 
 
@@ -4983,10 +3994,8 @@ function sgFreeze(group) {
 }
 
 function sgZero(group) {
-  var ids = group === 'ball'
-    ? ['sl-spd','sl-spn','sl-vert']
-    : ['sl-throw-lo','sl-throw-mi','sl-throw-hi'];
-  ids.forEach(function(id){
+  if (group !== 'ball') return;
+  ['sl-spd','sl-spn','sl-vert'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) { el.value = id==='sl-spd' ? 50 : 0; }
   });
@@ -4998,9 +4007,8 @@ function _sgApply(group) {
   var grp = document.getElementById(group==='ball' ? 'sg-ball' : 'sg-ghost');
   var onBtn  = document.getElementById(group==='ball' ? 'bc-on' : 'gb-on');
   var frzBtn = document.getElementById(group==='ball' ? 'bc-freeze' : 'gb-freeze');
-  var ids = group === 'ball'
-    ? ['sl-spd','sl-spn','sl-vert']
-    : ['sl-throw-lo','sl-throw-mi','sl-throw-hi'];
+  if (group !== 'ball') return;
+  var ids = ['sl-spd','sl-spn','sl-vert'];
 
   // ON/OFF button
   if (onBtn) {
@@ -5024,15 +4032,6 @@ function _sgApply(group) {
   });
 }
 
-// Keep biasOn in sync with ghost group for render()
-function _syncBias() {
-  biasOn = _sgState.ghost.on && !_sgState.ghost.frozen;
-  _updateBiasBtn();
-}
-
-// Override onSliders to respect group state
-var _origOnSliders = null;
-
 // toggleSlidersActive replaced by sgToggle
 
 function toggleSlidersPanel() {
@@ -5046,12 +4045,14 @@ function toggleSlidersPanel() {
       positionPanelAtDock(panel);
     });
   }
+  var invite = document.getElementById('perc-invite-btn');
+  if (invite) invite.textContent = _slidersPanelOpen ? '(HIDE SPIN AND SPEED)' : '(ADD SPIN AND SPEED?)';
 }
 
 (function(){
   var panel, header, startX, startY, origLeft, origTop, didDrag=false, activePtr=null;
   window.addEventListener('load', function(){
-    updateLockBtn();
+
     panel  = document.getElementById('sliders-block');
     header = document.getElementById('sliders-handle');
     if (!panel || !header) return;
@@ -5187,13 +4188,6 @@ function toggleSlidersPanel() {
       </svg>
     
     </div>
-    <div class="dock-slot" id="dock-rc" title="Reality Check">
-      <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
-        <line x1="3" y1="14" x2="17" y2="14" stroke="#ff8c00" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="10" cy="14" r="2.5" fill="#0a0f0a" stroke="#ff8c00" stroke-width="1.4"/>
-        <text x="10" y="8" text-anchor="middle" font-family="Lato,sans-serif" font-size="7" font-weight="900" fill="#ff8c00" dominant-baseline="central">RC</text>
-      </svg>
-    </div>
     <div class="dock-slot" id="dock-learn" title="Learn">
       <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
       <div class="dline" style="width:12px;height:3px;background:#f0df70;"></div>
@@ -5284,18 +4278,6 @@ function toggleSlidersPanel() {
       if (!el) return;
       el.addEventListener('click', function(e){ e.stopPropagation(); fn(); });
     }
-    bind('dock-lock',     function(){
-      toggleAllLocks();
-      setActive('lock', !lockTable||!lockSliders);
-      // Sync perception slider with lock state
-      var percSvg = document.getElementById('perc-svg');
-      var percRow = document.getElementById('perc-row');
-      var percZeroBtn = document.getElementById('perc-zero-btn');
-      var locked = lockTable && lockBalls && lockSliders;
-      if (percRow) percRow.style.opacity = locked ? '0.35' : '1';
-      if (percSvg) percSvg.style.pointerEvents = locked ? 'none' : 'auto';
-      if (percZeroBtn) percZeroBtn.style.pointerEvents = locked ? 'none' : 'auto';
-    });
     // Orient toggle
     (function(){
       var _v = false;
@@ -5324,13 +4306,6 @@ function toggleSlidersPanel() {
       if(d2) d2.addEventListener('click', function(e){ e.stopPropagation(); tog(); });
     })();
     bind('dock-hand', function(){ window._panLocked=false; document.getElementById('dock-hand').classList.add('active'); document.getElementById('dock-ball').classList.remove('active'); });
-    bind('dock-rc', function(){
-      var row=document.getElementById('perc-row');
-      if(!row) return;
-      var on=row.style.display==='none'||row.style.display==='';
-      row.style.display=on?'flex':'none';
-      setActive('rc',on);
-    });
     bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); document.getElementById('dock-hand').classList.remove('active'); });
     bind('dock-learn',    function(){ var on=!_open.learn;   toggleShotLibrary();  setActive('learn',  on); });
     bind('dock-sliders',  function(){ var on=!_open.sliders; toggleSlidersPanel(); setActive('sliders',on); });
@@ -5470,7 +4445,6 @@ function wireEdgeResize(panelId) {
 
 window.addEventListener('load', function(){
   wireEdgeResize('shot-library-panel');
-  wireEdgeResize('throw-panel');
   wireEdgeResize('sliders-block');
 });
 
@@ -5483,11 +4457,10 @@ window.addEventListener('load', function(){
       e.stopPropagation();
       var panelId = btn.closest('[id]') ? btn.closest('[id]').id : null;
       // Find which panel this belongs to
-      var panel = btn.closest('.float-panel, #sliders-block, #shot-library-panel, #throw-panel');
-      var hdr   = btn.closest('.float-panel-header, #sliders-handle, #shot-lib-header, #throw-panel-header');
+      var panel = btn.closest('.float-panel, #sliders-block, #shot-library-panel');
+      var hdr   = btn.closest('.float-panel-header, #sliders-handle, #shot-lib-header');
       if (panel && hdr) {
-        if (panel.id === 'throw-panel') minimizeThrowPanel();
-        else minimizePanel(panel.id, hdr);
+        minimizePanel(panel.id, hdr);
       }
     });
   });
@@ -5497,27 +4470,30 @@ window.addEventListener('load', function(){
 (function(){
   var svg = document.getElementById('perc-svg');
   var thumb = document.getElementById('perc-thumb');
-  var fill  = document.getElementById('perc-fill');
-  var X1=6, X2=154, CX=80, dragging=false;
-  // RC slider spans from -0.25 to +0.25 of contact fraction (quarter-ball each way).
-  // Center (x=CX) = 0 bias. Full right = +0.25. Full left = -0.25.
-  // Range in slider pixels from center = 74; divide (x-CX) by (74/0.25) = 296.
-  var RC_SCALE = 296;
+  var X1=20, X2=320, CX=170, dragging=false;
+  // RC slider spans from -0.5 to +0.5 of contact fraction (half-ball each way).
+  // Center (x=CX) = 0 bias. Full right = +0.5. Full left = -0.5.
+  // Range in slider pixels from center = 150; divide (x-CX) by (150/0.5) = 300.
+  var RC_SCALE = 300;
+  window._rcLocked = false;
   function setX(x){
     x = Math.max(X1, Math.min(X2, x));
     thumb.setAttribute('cx', x);
-    fill.setAttribute('width', Math.max(0, x-X1));
     window._perceptionOffset = (x-CX)/RC_SCALE;
     if(typeof render==='function') render();
   }
+  window._rcSetX = setX;
   thumb.addEventListener('pointerdown', function(e){
+    if(window._rcLocked) return;
     if(e.detail>1) return;
     dragging=true; thumb.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   });
   svg.addEventListener('pointermove', function(e){
     if(!dragging) return;
     var r=svg.getBoundingClientRect();
-    setX(e.clientX - r.left);
+    // convert client x to viewBox x
+    var vbx = (e.clientX - r.left) * (340 / r.width);
+    setX(vbx);
     e.preventDefault();
   },{passive:false});
   svg.addEventListener('pointerup',     function(){ dragging=false; });
@@ -5526,10 +4502,9 @@ window.addEventListener('load', function(){
     // True zero — clears RC bias, returns slider to center.
     window._perceptionOffset=0;
     window._percCompFrac=undefined;
+    window._percCompRh=undefined;
     var t=document.getElementById('perc-thumb');
-    var f=document.getElementById('perc-fill');
-    if(t) t.setAttribute('cx','80');
-    if(f) f.setAttribute('width','74');
+    if(t) t.setAttribute('cx', String(CX));
     if(typeof render==='function') render();
   }
   window.percZero = zero;
@@ -5537,12 +4512,30 @@ window.addEventListener('load', function(){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-  var btn = document.getElementById('perc-zero-btn');
-  if (!btn) return;
-  btn.addEventListener('click', function(e){
-    e.stopPropagation();
-    if (typeof window.percZero === 'function') window.percZero();
-  });
+  var zb = document.getElementById('perc-zero-btn');
+  if (zb) {
+    zb.addEventListener('click', function(e){
+      e.stopPropagation();
+      if (typeof window.percZero === 'function') window.percZero();
+    });
+  }
+  var lb = document.getElementById('perc-lock-btn');
+  if (lb) {
+    function paint() {
+      var on = !!window._rcLocked;
+      lb.textContent = on ? 'LOCKED' : 'LOCK';
+      lb.style.background = on ? '#ff8c00' : 'rgba(255,140,0,0.2)';
+      lb.style.color      = on ? '#1a1400' : '#ff8c00';
+      var svg = document.getElementById('perc-svg');
+      if (svg) svg.style.cursor = on ? 'not-allowed' : 'grab';
+    }
+    paint();
+    lb.addEventListener('click', function(e){
+      e.stopPropagation();
+      window._rcLocked = !window._rcLocked;
+      paint();
+    });
+  }
 });
 </script>
 
