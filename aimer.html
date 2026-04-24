@@ -1861,14 +1861,15 @@ if ('serviceWorker' in navigator) {
         <!-- aim % badge removed — readouts at top of screen show the same info -->
         <!-- hint text -->
         <text   id="bot-hint" x="322" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)" opacity="0">Drag ▶ to begin</text>
-        <!-- Vernier aim buttons -->
+        <!-- Vernier aim buttons — SVG triangles (not text arrows) so iOS
+             doesn't substitute blue emoji variants. -->
         <g onclick="vernierAim(-1)" style="cursor:pointer;touch-action:manipulation;">
           <rect x="8" y="248" width="48" height="48" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-          <text x="32" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="#e6e6e6">◀</text>
+          <polygon points="40,260 40,284 22,272" fill="#e6e6e6"/>
         </g>
         <g onclick="vernierAim(1)" style="cursor:pointer;touch-action:manipulation;">
           <rect x="62" y="248" width="48" height="48" rx="8" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-          <text x="86" y="281" text-anchor="middle" font-family="Lato,sans-serif" font-size="24" font-weight="900" fill="#e6e6e6">▶</text>
+          <polygon points="78,260 78,284 96,272" fill="#e6e6e6"/>
         </g>
         <!-- Gold dashed ring on CB -->
         <circle id="bot-cb-gold" cx="230" cy="148" r="82" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="0"/>
@@ -1881,7 +1882,7 @@ if ('serviceWorker' in navigator) {
           <rect x="340" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
           <text x="358" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">−</text>
         </g>
-        <text x="395" y="279" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>
+        <text x="395" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>
         <g onclick="ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
           <rect x="418" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
           <text x="436" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">+</text>
@@ -1905,79 +1906,26 @@ if ('serviceWorker' in navigator) {
 
 
   <!-- ANGLE PANEL -->
-  <div id="angle-panel" style="display:none;background:rgba(0,0,0,0.35);border-radius:4px;margin-bottom:6px;padding:6px 8px;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <!-- SVG bounce diagram -->
-      <svg id="angle-svg" width="140" height="90" viewBox="0 0 140 90" style="flex-shrink:0;">
-        <!-- Rail line -->
-        <line x1="0" y1="45" x2="140" y2="45" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-        <!-- Approach arrow (CB → contact) -->
-        <line id="angle-line-approach" x1="20" y1="20" x2="70" y2="45" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round"/>
-        <polygon id="angle-arr-approach" points="70,45 62,38 65,47" fill="#7dd3fc"/>
-        <!-- OB depart arrow -->
-        <line id="angle-line-depart" x1="70" y1="45" x2="120" y2="20" stroke="#4ade80" stroke-width="2" stroke-linecap="round"/>
-        <polygon id="angle-arr-depart" points="120,20 112,27 121,28" fill="#4ade80"/>
-        <!-- Contact point -->
-        <circle cx="70" cy="45" r="4" fill="rgba(255,255,255,0.6)"/>
-        <!-- Labels -->
-        <text id="angle-lbl-approach" x="12" y="16" fill="#7dd3fc" font-size="9" font-family="Lato,sans-serif" font-weight="900">—</text>
-        <text id="angle-lbl-depart"   x="100" y="16" fill="#4ade80" font-size="9" font-family="Lato,sans-serif" font-weight="900">—</text>
-        <text x="55" y="62" fill="rgba(255,255,255,0.4)" font-size="8" font-family="Lato,sans-serif">BOUNCE ANGLE</text>
-      </svg>
-      <!-- Number readouts -->
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#7dd3fc;display:inline-block;"></span>
-          <span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:900;letter-spacing:1px;">IN</span>
-          <span id="angle-approach" style="font-size:14px;font-weight:900;color:#7dd3fc;">—</span>
-        
-
-</div>
-
-<div id="overhead-wrap" style="width:100%;background:rgba(0,0,0,0.28);margin-top:4px;overflow:hidden;border-radius:4px;">
-  <div style="text-align:center;font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.3);padding:3px 0 2px;text-transform:uppercase;">Overhead View</div>
-  <svg id="overhead-svg" viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
-    <rect width="460" height="180" fill="rgba(0,0,0,0.2)"/>
-    <!-- OB -->
-    <circle id="ovh-ob" cx="230" cy="90" r="22" fill="url(#ovh-gob)" opacity="0.9"/>
-    <!-- Ghost CB at contact -->
-    <circle id="ovh-ghost" cx="184" cy="90" r="22" fill="rgba(180,180,180,0.18)" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-dasharray="5,3"/>
-    <!-- CB -->
-    <circle id="ovh-cb" cx="100" cy="90" r="22" fill="url(#ovh-gcb)" opacity="0.9"/>
-    <!-- Aim line: CB center to contact point -->
-    <line id="ovh-aim" x1="100" y1="90" x2="184" y2="90" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.7"/>
-    <!-- OB direction arrow -->
-    <line id="ovh-ob-dir" x1="230" y1="90" x2="310" y2="90" stroke="#ee4444" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
-    <!-- CB deflection arrow -->
-    <line id="ovh-cb-def" x1="184" y1="90" x2="184" y2="30" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
-    <!-- Contact fraction line on OB -->
-    <line id="ovh-contact-line" x1="230" y1="68" x2="230" y2="112" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
-    <defs>
-      <radialGradient id="ovh-gob" cx="35%" cy="30%">
-        <stop offset="0%" stop-color="#ff9090"/>
-        <stop offset="40%" stop-color="#ee2020"/>
-        <stop offset="100%" stop-color="#880808"/>
-      </radialGradient>
-      <radialGradient id="ovh-gcb" cx="35%" cy="30%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="100%" stop-color="#cccccc"/>
-      </radialGradient>
-    </defs>
-  </svg>
-</div>
-
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#4ade80;display:inline-block;"></span>
-          <span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:900;letter-spacing:1px;">OUT</span>
-          <span id="angle-depart" style="font-size:14px;font-weight:900;color:#4ade80;">—</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#f0df70;display:inline-block;"></span>
-          <span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:900;letter-spacing:1px;">CUT</span>
-          <span id="angle-cut" style="font-size:14px;font-weight:900;color:#f0df70;">—</span>
-        </div>
-      </div>
-    </div>
+  <div id="angle-panel" style="display:none;background:rgba(0,0,0,0.35);border-radius:4px;margin-bottom:6px;padding:6px;">
+    <div style="text-align:center;font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:4px;">Cut Angle</div>
+    <!-- Isolated ghost-ball-and-OB geometry: just the teaching diagram, nothing else -->
+    <svg id="angle-mini" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:60%;max-width:220px;height:auto;display:block;margin:0 auto;background:rgba(40,80,40,0.35);border-radius:3px;">
+      <!-- Short aim-in line approaching the ghost (yellow dashed) -->
+      <line id="mini-aim"    x1="0" y1="0" x2="0" y2="0" stroke="#f0df70" stroke-width="2" stroke-dasharray="6,5" stroke-linecap="round" opacity="0.9"/>
+      <!-- Short OB depart line (cyan dashed) -->
+      <line id="mini-depart" x1="0" y1="0" x2="0" y2="0" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="6,5" stroke-linecap="round" opacity="0.9"/>
+      <!-- Protractor arc at contact -->
+      <path id="mini-arc" d="" fill="none" stroke="#4ade80" stroke-width="2" opacity="0.9"/>
+      <!-- Ghost ball (dashed yellow outline, touching OB) -->
+      <circle id="mini-ghost" cx="0" cy="0" r="0" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.85"/>
+      <!-- OB (red) -->
+      <circle id="mini-ob"    cx="0" cy="0" r="0" fill="#d62828" stroke="#8a1818" stroke-width="1"/>
+      <!-- Cut angle number on the inside of the OB -->
+      <text id="mini-arc-lbl" x="0" y="0" fill="#f0df70" font-size="32" font-weight="900" font-family="Lato,sans-serif" text-anchor="middle">—</text>
+    </svg>
+    <span id="angle-approach" style="display:none;">—</span>
+    <span id="angle-depart"   style="display:none;">—</span>
+    <span id="angle-cut"      style="display:none;">—</span>
   </div>
 
 
@@ -2085,7 +2033,7 @@ function toggleAngle() {
   if (btn) {
     btn.classList.toggle('on', angleOn);
     btn.style.lineHeight = '1.3';
-    btn.innerHTML = angleOn ? 'BOUNCE<br>ANGLE ON' : 'BOUNCE<br>ANGLE OFF';
+    btn.innerHTML = angleOn ? 'SHOT<br>ANGLES ON' : 'SHOT<br>ANGLES OFF';
   }
   const panel = document.getElementById('angle-panel');
   if (panel) panel.style.display = angleOn ? 'block' : 'none';
@@ -2531,26 +2479,65 @@ function renderTable(d) {
     if (ap) ap.textContent = _approachDeg.toFixed(1) + '°';
     if (ct) ct.textContent = _cutDisplay + '°';
     if (dp) dp.textContent = _obDepartDeg.toFixed(1) + '°';
-    // Update SVG diagram
+    // Isolated teaching diagram: OB + ghost ball touching it, short aim-in line
+    // into the ghost, short depart line out of the OB, protractor arc at contact,
+    // cut-angle number on the inside. Rotated to match the table orientation of
+    // the current shot, so the student recognizes it as the same shot, zoomed.
     (function(){
-      var cx=70, cy=45, len=45;
-      // Approach: coming from upper-left or upper-right
-      var aRad = _approachDeg * Math.PI / 180;
-      var ax = cx - Math.cos(aRad) * len * (rh ? 1 : -1);
-      var ay = cy - Math.sin(aRad) * len;
-      var la = document.getElementById('angle-line-approach');
-      var aa = document.getElementById('angle-arr-approach');
-      var la2 = document.getElementById('angle-lbl-approach');
-      if (la) la.setAttribute('x1', ax.toFixed(1)), la.setAttribute('y1', ay.toFixed(1));
-      if (la2) la2.textContent = _approachDeg.toFixed(1) + '°';
-      // Depart: going upper-right or upper-left (opposite side)
-      var dRad = _obDepartDeg * Math.PI / 180;
-      var dx = cx + Math.cos(dRad) * len * (rh ? 1 : -1);
-      var dy = cy - Math.sin(dRad) * len;
-      var ld = document.getElementById('angle-line-depart');
-      var ld2 = document.getElementById('angle-lbl-depart');
-      if (ld) ld.setAttribute('x2', dx.toFixed(1)), ld.setAttribute('y2', dy.toFixed(1));
-      if (ld2) ld2.textContent = _obDepartDeg.toFixed(1) + '°';
+      var BR = 28;          // big ball radius in the 200×200 viewBox
+      var CX = 100, CY = 100;  // center of mini viewBox
+      // Direction of the shot as seen on the table (CB→OB unit vector)
+      var vx = S.ob.x - S.cb.x, vy = S.ob.y - S.cb.y;
+      var vlen = Math.max(0.001, Math.hypot(vx, vy));
+      var ux = vx / vlen, uy = vy / vlen;
+      // In the mini, the ghost-to-OB axis runs along this same direction.
+      // Place ghost and OB symmetric about the center, each a radius from it.
+      var gx = CX - ux * BR, gy = CY - uy * BR;
+      var obxm = CX + ux * BR, obym = CY + uy * BR;
+      // Short aim-in line: extends from the ghost back along the approach
+      // direction (opposite to ux,uy) by ~1 ball diameter.
+      var aimLen = 2 * BR;
+      var aimStartX = gx - ux * aimLen, aimStartY = gy - uy * aimLen;
+      // Depart direction in table frame
+      var ddx = Math.cos(obDepartAngle), ddy = Math.sin(obDepartAngle);
+      var departLen = 3.2 * BR;
+      var depEndX = obxm + ddx * departLen, depEndY = obym + ddy * departLen;
+
+      // Protractor arc at contact (where ghost touches OB = midpoint between centers = frame center)
+      var aInAng  = Math.atan2(uy, ux);
+      var aOutAng = Math.atan2(ddy, ddx);
+      var diff = aOutAng - aInAng;
+      while (diff >  Math.PI) diff -= 2*Math.PI;
+      while (diff < -Math.PI) diff += 2*Math.PI;
+      var arcR = 20;
+      var sweep = diff > 0 ? 1 : 0;
+      var arcStartX = CX + arcR * Math.cos(aInAng);
+      var arcStartY = CY + arcR * Math.sin(aInAng);
+      var arcEndX   = CX + arcR * Math.cos(aOutAng);
+      var arcEndY   = CY + arcR * Math.sin(aOutAng);
+      var arcPath = 'M ' + arcStartX.toFixed(1) + ' ' + arcStartY.toFixed(1)
+                  + ' A ' + arcR + ' ' + arcR + ' 0 0 ' + sweep + ' '
+                  + arcEndX.toFixed(1) + ' ' + arcEndY.toFixed(1);
+      // Label centered on the OB
+      var lblX = obxm;
+      var lblY = obym;
+
+      var _mAim    = document.getElementById('mini-aim');
+      var _mDepart = document.getElementById('mini-depart');
+      var _mArc    = document.getElementById('mini-arc');
+      var _mArcLbl = document.getElementById('mini-arc-lbl');
+      var _mGhost  = document.getElementById('mini-ghost');
+      var _mOb     = document.getElementById('mini-ob');
+      if (_mAim)    { _mAim.setAttribute('x1', aimStartX.toFixed(1)); _mAim.setAttribute('y1', aimStartY.toFixed(1)); _mAim.setAttribute('x2', gx.toFixed(1)); _mAim.setAttribute('y2', gy.toFixed(1)); }
+      if (_mDepart) { _mDepart.setAttribute('x1', obxm.toFixed(1)); _mDepart.setAttribute('y1', obym.toFixed(1)); _mDepart.setAttribute('x2', depEndX.toFixed(1)); _mDepart.setAttribute('y2', depEndY.toFixed(1)); }
+      if (_mArc)    { _mArc.setAttribute('d', arcPath); }
+      if (_mArcLbl) {
+        _mArcLbl.textContent = (cutDeg || 0).toFixed(0) + '°';
+        _mArcLbl.setAttribute('x', lblX.toFixed(1));
+        _mArcLbl.setAttribute('y', (lblY + 11).toFixed(1));
+      }
+      if (_mGhost)  { _mGhost.setAttribute('cx', gx.toFixed(1));  _mGhost.setAttribute('cy', gy.toFixed(1));  _mGhost.setAttribute('r', BR); }
+      if (_mOb)     { _mOb.setAttribute('cx', obxm.toFixed(1));   _mOb.setAttribute('cy', obym.toFixed(1));  _mOb.setAttribute('r', BR); }
     })();
   }
 
@@ -3448,7 +3435,7 @@ window.addEventListener('load', function(){
     var m = document.getElementById('btn-map');     if(m){ m.textContent = mapOn ? 'GRID ON' : 'GRID OFF'; m.classList.toggle('on', mapOn); }
     var s = document.getElementById('ep-snap');     if(s){ s.textContent = snapOn ? 'SNAP ON' : 'SNAP OFF'; s.classList.toggle('on', snapOn); }
     var c = document.getElementById('btn-cbpath');  if(c){ c.classList.toggle('on', cbPathOn); c.style.lineHeight='1.3'; c.innerHTML = cbPathOn ? 'CUE PATH<br>ON' : 'CUE PATH<br>OFF'; }
-    var a = document.getElementById('btn-angle');   if(a){ a.classList.toggle('on', angleOn); a.style.lineHeight='1.3'; a.innerHTML = angleOn ? 'BOUNCE<br>ANGLE ON' : 'BOUNCE<br>ANGLE OFF'; }
+    var a = document.getElementById('btn-angle');   if(a){ a.classList.toggle('on', angleOn); a.style.lineHeight='1.3'; a.innerHTML = angleOn ? 'SHOT<br>ANGLES ON' : 'SHOT<br>ANGLES OFF'; }
   })();
 
   // Apply slider lock visually
@@ -3614,7 +3601,7 @@ function forceMinimizePanel(panelId, headerId) {
         <button class="tg-btn tg-green on" id="btn-map"    onclick="toggleMap()">GRID<br>ON</button>
         <button class="tg-btn tg-gold  on" id="ep-snap"    onclick="toggleSnap()">SNAP<br>ON</button>
         <button class="tg-btn tg-green"    id="btn-cbpath" onclick="toggleCbPath()">CUE PATH<br>OFF</button>
-        <button class="tg-btn tg-brown"    id="btn-angle"  onclick="toggleAngle()">BOUNCE<br>ANGLE OFF</button>
+        <button class="tg-btn tg-brown"    id="btn-angle"  onclick="toggleAngle()">SHOT<br>ANGLES OFF</button>
       </div>
       <!-- Row 2: Locks + Actions -->
       <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:stretch;max-width:min(520px,96vw);">
