@@ -1817,6 +1817,7 @@ if ('serviceWorker' in navigator) {
           <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">100%</text>
           <text x="189" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">75%</text>
           <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>
+          <text x="271" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">25%</text>
           <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0%</text>
         </g>
         <!-- Fraction labels LH -->
@@ -1857,9 +1858,7 @@ if ('serviceWorker' in navigator) {
         <line   id="bot-edge-line" x1="230" y1="54" x2="230" y2="242" stroke="#e87030" stroke-width="2" stroke-linecap="round" stroke-dasharray="6,4" opacity="0"/>
         <text   id="bot-edge-lbl"  x="230" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080" opacity="0">Inside Edge</text>
         <text   id="bot-cb-outer-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#7dd3fc" opacity="0">Outside Edge</text>
-        <!-- aim % badge -->
-        <rect   id="bot-aim-bg"   opacity="0"  x="190" y="240" width="80" height="30" rx="7" fill="#e87030" opacity="0"/>
-        <text   id="bot-aim-pct"  opacity="0" x="230" y="260" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="900" fill="white" opacity="0">0%</text>
+        <!-- aim % badge removed — readouts at top of screen show the same info -->
         <!-- hint text -->
         <text   id="bot-hint" x="322" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)" opacity="0">Drag ▶ to begin</text>
         <!-- Vernier aim buttons -->
@@ -2337,13 +2336,21 @@ function render() {
   // increases it when the cut is to the left. This gives uniform direction on screen.
   const _rcBias = window._perceptionOffset || 0;
   const _rcSigned = (S._diagDragRh ? -_rcBias : _rcBias);
-  const _compFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) + _throwDelta + _rcSigned));
-  const _displayFrac = Math.max(0, Math.min(1, Math.abs(d.diagFraction) + _throwDelta + _rcSigned));
+  // Match drawBot: let the signed sum go negative (RC pushing past OB center).
+  // When it does, take magnitude — the ghost ball is now on the OPPOSITE side
+  // of OB center from where the cut direction says it is. Without this, the
+  // readouts freeze at 0 while the slider keeps going. rhEffective below tracks
+  // the side of contact for the readout labels.
+  const _fracSigned = Math.abs(d.diagFraction) + _throwDelta + _rcSigned;
+  const _fracMag = Math.abs(_fracSigned);
+  const _rhEffectiveReadout = (_fracSigned < 0) ? !S._diagDragRh : S._diagDragRh;
+  const _compFrac = Math.min(1, _fracMag);
+  const _displayFrac = Math.min(1, _fracMag);
   var aimP = Math.round(_displayFrac * 100);
   const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
-  // Use _compFrac (1.5x corrected) — same source as the accurate bot-aim-pct
+  // Use _compFrac (1.5x corrected) as the accurate fraction source
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = Math.round((1 - _compFrac) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (S._diagDragRh ? ' R' : ' L')); }
+  if (_cpEl) { const _cpPct = Math.round((1 - _compFrac) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (_rhEffectiveReadout ? ' R' : ' L')); }
   const _aimP = Math.round(_compFrac * 100);
   const _raim = $('r-aim'); if (_raim) _raim.textContent = _aimP + '%';
   const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = _aimP + '%';
@@ -2833,17 +2840,6 @@ function drawBot(d) {
   // "inside edge" floating label follows edgeX
   $('bot-edge-lbl').setAttribute('x', Math.max(60, Math.min(edgeX, W-60)).toString());
   $('bot-edge-lbl').setAttribute('opacity', showMarker ? '1' : '0');
-  const bx = Math.max(44, Math.min(edgeX, W-44));
-  $('bot-aim-bg').setAttribute('x',  bx-40);
-  $('bot-aim-bg').setAttribute('y',  '262');
-  $('bot-aim-bg').setAttribute('opacity', op);
-  $('bot-aim-pct').setAttribute('x', bx);
-  $('bot-aim-pct').setAttribute('y', '282');
-  $('bot-aim-pct').setAttribute('opacity', op);
-  // Use compensated fraction for diagram percentage label
-  const _botThrowDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
-  const _botAimP = Math.round(Math.min(1, Math.abs(d.diagFraction) + _botThrowDelta) * 100);
-  $('bot-aim-pct').textContent = Math.abs(_botAimP) + '%';
   $('bot-hint').setAttribute('opacity', '0');
   $('bot-hint').setAttribute('x', rh ? ocx-r-70 : ocx+r+24);
   $('bot-hint').setAttribute('text-anchor', rh ? 'end' : 'start');
