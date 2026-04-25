@@ -1626,7 +1626,7 @@ if ('serviceWorker' in navigator) {
           <!-- CB path rays: stun/follow/draw -->
           <line id="cb-stun"   x1="0" y1="0" x2="0" y2="0" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="7,4" opacity="0"/>
           <line id="cb-follow" x1="0" y1="0" x2="0" y2="0" stroke="#f97316"               stroke-width="1.8" stroke-dasharray="7,4" opacity="0"/>
-          <line id="cb-draw"   x1="0" y1="0" x2="0" y2="0" stroke="#3b82f6"               stroke-width="1.8" stroke-dasharray="7,4" opacity="0"/>
+          <line id="cb-draw"   x1="0" y1="0" x2="0" y2="0" stroke="#c084fc"               stroke-width="1.8" stroke-dasharray="7,4" opacity="0"/>
           <!-- CB path scratch-threat dots at rail -->
           <circle id="cb-stun-dot"   cx="0" cy="0" r="5" opacity="0"/>
           <circle id="cb-follow-dot" cx="0" cy="0" r="5" opacity="0"/>
@@ -1641,8 +1641,8 @@ if ('serviceWorker' in navigator) {
             <text x="374" y="192" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">STUN</text>
             <line x1="353" y1="201" x2="370" y2="201" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
             <text x="374" y="204" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">FOLLOW</text>
-            <line x1="353" y1="213" x2="370" y2="213" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="5,3"/>
-            <text x="374" y="216" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#3b82f6">DRAW</text>
+            <line x1="353" y1="213" x2="370" y2="213" stroke="#c084fc" stroke-width="1.8" stroke-dasharray="5,3"/>
+            <text x="374" y="216" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#c084fc">DRAW</text>
           </g>
           <!-- Object ball -->
           <circle id="ob-shadow" cx="231" cy="151" r="8" fill="#000" opacity="0.32"/>
@@ -2572,37 +2572,22 @@ function renderTable(d) {
       return { x: sx + dx*t, y: sy + dy*t };
     }
 
-    // Pocket positions for scratch threat detection
-    const _pockets = [
-      {x:TL.left, y:TL.top}, {x:(TL.left+TL.right)/2, y:TL.top}, {x:TL.right, y:TL.top},
-      {x:TL.left, y:TL.bottom}, {x:(TL.left+TL.right)/2, y:TL.bottom}, {x:TL.right, y:TL.bottom}
-    ];
-    const cornerR = 28, sideR = 22; // scratch zone radii in px
-
-    function isScratch(endPt) {
-      return _pockets.some((p, i) => {
-        const r = (i === 1 || i === 4) ? sideR : cornerR;
-        return Math.hypot(endPt.x - p.x, endPt.y - p.y) < r;
-      });
-    }
-
-    function drawRay(lineId, dotId, angle, baseColor, scratchColor) {
+    function drawRay(lineId, dotId, angle, baseColor) {
       const end = rayToRail(gx, gy, angle);
-      const scratch = isScratch(end);
       const el = document.getElementById(lineId);
       const dot = document.getElementById(dotId);
       if (el) {
         sL(lineId, gx, gy, end.x, end.y);
         el.style.opacity = '1';
-        el.setAttribute('stroke', scratch ? scratchColor : baseColor);
+        el.setAttribute('stroke', baseColor);
       }
       // Terminator dots removed — lines just end as dashes, cleaner visual.
       if (dot) dot.style.opacity = '0';
     }
 
-    drawRay('cb-stun',   'cb-stun-dot',   stunAngle,   'rgba(255,255,255,0.85)', '#ef4444');
-    drawRay('cb-follow', 'cb-follow-dot', followAngle, '#f97316',                '#ef4444');
-    drawRay('cb-draw',   'cb-draw-dot',   drawAngle,   '#3b82f6',                '#ef4444');
+    drawRay('cb-stun',   'cb-stun-dot',   stunAngle,   'rgba(255,255,255,0.85)');
+    drawRay('cb-follow', 'cb-follow-dot', followAngle, '#f97316');
+    drawRay('cb-draw',   'cb-draw-dot',   drawAngle,   '#c084fc');
   } else if (!cbPathOn) {
     ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
       .forEach(id => { const el = document.getElementById(id); if (el) el.style.opacity = '0'; });
@@ -4082,14 +4067,33 @@ function toggleSlidersPanel() {
     
     </div>
     <div class="dock-slot" id="dock-learn" title="Learn">
-      <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
-      <div class="dline" style="width:12px;height:3px;background:#f0df70;"></div>
-      <div class="dline" style="width:16px;height:3px;background:#f0df70;"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" style="pointer-events:none;">
+        <!-- left page -->
+        <path d="M 2 5 Q 6 4 11 5 L 11 18 Q 6 17 2 18 Z" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linejoin="round"/>
+        <!-- right page -->
+        <path d="M 20 5 Q 16 4 11 5 L 11 18 Q 16 17 20 18 Z" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linejoin="round"/>
+        <!-- text lines on left page -->
+        <line x1="4.5" y1="8"  x2="9"  y2="8"  stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+        <line x1="4.5" y1="11" x2="9"  y2="11" stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+        <line x1="4.5" y1="14" x2="8"  y2="14" stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+        <!-- text lines on right page -->
+        <line x1="13"  y1="8"  x2="17.5" y2="8"  stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+        <line x1="13"  y1="11" x2="17.5" y2="11" stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+        <line x1="13"  y1="14" x2="16.5" y2="14" stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+      </svg>
     </div>
     <div class="dock-slot" id="dock-sliders" title="Sliders">
-      <div class="dline" style="width:16px;height:3px;background:#c084fc;"></div>
-      <div class="dline" style="width:16px;height:3px;background:#c084fc;"></div>
-      <div class="dline" style="width:16px;height:3px;background:#c084fc;"></div>
+      <svg width="22" height="22" viewBox="0 0 22 22" style="pointer-events:none;">
+        <!-- top track + thumb (positioned right) -->
+        <line x1="2" y1="5" x2="20" y2="5" stroke="#c084fc" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="15" cy="5" r="3" fill="#c084fc"/>
+        <!-- middle track + thumb (positioned left) -->
+        <line x1="2" y1="11" x2="20" y2="11" stroke="#c084fc" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="7" cy="11" r="3" fill="#c084fc"/>
+        <!-- bottom track + thumb (positioned right of center) -->
+        <line x1="2" y1="17" x2="20" y2="17" stroke="#c084fc" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="17" r="3" fill="#c084fc"/>
+      </svg>
     </div>
 
     <div class="dock-slot" id="dock-swap" title="Swap Table / Perception">
@@ -4102,16 +4106,10 @@ function toggleSlidersPanel() {
     </div>
 
     <div class="dock-slot" id="dock-zoom-in" title="Zoom in">
-      <div style="display:flex;flex-direction:column;align-items:center;pointer-events:none;gap:0;">
-        <span style="font-size:16px;font-weight:900;color:#a8ccff;line-height:1;">+</span>
-        <span style="font-size:11px;font-weight:900;color:#a8ccff;line-height:1;">Z</span>
-      </div>
+      <span style="font-size:26px;font-weight:900;color:#a8ccff;line-height:1;pointer-events:none;">+</span>
     </div>
     <div class="dock-slot" id="dock-zoom-out" title="Zoom out">
-      <div style="display:flex;flex-direction:column;align-items:center;pointer-events:none;gap:0;">
-        <span style="font-size:16px;font-weight:900;color:#a8ccff;line-height:1;">−</span>
-        <span style="font-size:11px;font-weight:900;color:#a8ccff;line-height:1;">Z</span>
-      </div>
+      <span style="font-size:26px;font-weight:900;color:#a8ccff;line-height:1;pointer-events:none;">−</span>
     </div>
     <div class="dock-slot" id="dock-cuepath" title="Toggle cue path">
       <svg width="18" height="18" viewBox="0 0 18 18" style="pointer-events:none;">
