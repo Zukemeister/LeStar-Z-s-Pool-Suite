@@ -2277,7 +2277,7 @@ function render() {
   // Readouts: contact/IE/fraction follow ghost ball (throw compensated + RC bias);
   // angle and distance stay pure geometry.
   const Zdeg = cutDeg < 1.0 ? 0 : Math.round(cutDeg * 10)/10;
-  const _dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' R' : ' L');
+  const _dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' L' : ' R');
   // Throw compensation applied to fraction
   const _throwDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
   // RC perception bias: shifts displayed contact fraction. Positive slider = right.
@@ -2302,7 +2302,7 @@ function render() {
   const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
   // Use _compFrac (1.5x corrected) as the accurate fraction source
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = Math.round((1 - _compFrac) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (_rhEffectiveReadout ? ' R' : ' L')); }
+  if (_cpEl) { const _cpPct = Math.round((1 - _compFrac) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (_rhEffectiveReadout ? ' L' : ' R')); }
   const _aimP = Math.round(_compFrac * 100);
   const _raim = $('r-aim'); if (_raim) _raim.textContent = _aimP + '%';
   const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = _aimP + '%';
