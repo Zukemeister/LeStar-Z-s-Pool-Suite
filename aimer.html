@@ -1635,15 +1635,7 @@ if ('serviceWorker' in navigator) {
           <!-- Contact point dot on OB surface -->
           <circle id="cp-dot-table" cx="0" cy="0" r="4" fill="#ffffff" stroke="#ff6600" stroke-width="1.5" opacity="0"/>
           <!-- CB Path legend (shown when cbPathOn) -->
-          <g id="cb-path-legend" opacity="0">
-            <rect x="348" y="178" width="80" height="46" rx="4" fill="rgba(0,0,0,0.55)"/>
-            <line x1="353" y1="189" x2="370" y2="189" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-dasharray="5,3"/>
-            <text x="374" y="192" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.8)">STUN</text>
-            <line x1="353" y1="201" x2="370" y2="201" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>
-            <text x="374" y="204" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#f97316">FOLLOW</text>
-            <line x1="353" y1="213" x2="370" y2="213" stroke="#c084fc" stroke-width="1.8" stroke-dasharray="5,3"/>
-            <text x="374" y="216" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="#c084fc">DRAW</text>
-          </g>
+          <!-- cue path legend removed from topsvg — now lives as draggable overlay below -->
           <!-- Object ball -->
           <circle id="ob-shadow" cx="231" cy="151" r="8" fill="#000" opacity="0.32"/>
           <circle id="ob"        cx="230" cy="150" r="8" fill="url(#gOB)" stroke="#903010" stroke-width="1" cursor="grab"/>
@@ -1673,6 +1665,39 @@ if ('serviceWorker' in navigator) {
         <text x="405" y="244" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#000" pointer-events="none">SNAP</text>
       </g>
 </svg>
+
+<!-- ── CUE PATH BOX — anchored inside the table area, top-right corner ── -->
+<div id="cb-path-box" style="display:none;position:absolute;top:6%;right:6px;z-index:60;width:31%;max-width:200px;background:#1a1a1a;border:1.5px solid rgba(240,223,112,0.45);border-radius:7px;padding:6px 8px 4px;box-shadow:0 2px 10px rgba(0,0,0,0.5);">
+  <div style="text-align:center;font-family:Lato,sans-serif;font-size:9px;font-weight:900;letter-spacing:0.6px;color:#f0df70;padding:0 0 4px;">CUE BALL PATH</div>
+  <svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+    <defs>
+      <linearGradient id="cb-path-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#c084fc" stop-opacity="0.85"/>
+        <stop offset="50%"  stop-color="#ffffff" stop-opacity="0.7"/>
+        <stop offset="100%" stop-color="#f97316" stop-opacity="0.85"/>
+      </linearGradient>
+      <linearGradient id="cb-speed-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#5b8cff" stop-opacity="0.75"/>
+        <stop offset="50%"  stop-color="#ffe080" stop-opacity="0.75"/>
+        <stop offset="100%" stop-color="#ff7050" stop-opacity="0.85"/>
+      </linearGradient>
+    </defs>
+    <!-- VERT bar -->
+    <rect id="cb-path-bar" x="6" y="4" width="88" height="12" rx="5" fill="url(#cb-path-grad)" stroke="rgba(255,255,255,0.25)" stroke-width="0.6" style="cursor:pointer;touch-action:none;"/>
+    <line x1="50" y1="2" x2="50" y2="18" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+    <circle id="cb-path-thumb" cx="50" cy="10" r="4.2" fill="#ffffff" stroke="rgba(0,0,0,0.6)" stroke-width="0.8" style="pointer-events:none;"/>
+    <text x="6"  y="26" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="#c084fc">DRAW</text>
+    <text x="50" y="26" text-anchor="middle" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="rgba(255,255,255,0.7)">STUN</text>
+    <text x="94" y="26" text-anchor="end" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="#f97316">FOLLOW</text>
+    <!-- SPEED bar -->
+    <rect id="cb-speed-bar" x="6" y="38" width="88" height="12" rx="5" fill="url(#cb-speed-grad)" stroke="rgba(255,255,255,0.25)" stroke-width="0.6" style="cursor:pointer;touch-action:none;"/>
+    <circle id="cb-speed-thumb" cx="50" cy="44" r="4.2" fill="#ffffff" stroke="rgba(0,0,0,0.6)" stroke-width="0.8" style="pointer-events:none;"/>
+    <text x="6"  y="60" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="#5b8cff">SOFT</text>
+    <text x="50" y="60" text-anchor="middle" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="#ffe080">MED</text>
+    <text x="94" y="60" text-anchor="end" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="#ff7050">FIRM</text>
+    <text x="50" y="74" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" font-style="italic" fill="rgba(255,255,255,0.5)">approx. — tap to adjust</text>
+  </svg>
+</div>
     </div>
 
 <div id="perception-section">
@@ -1762,6 +1787,8 @@ if ('serviceWorker' in navigator) {
       <line x1="305" y1="24" x2="305" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="305" y="12">9</text>
       <line x1="320" y1="24" x2="320" y2="40" stroke="#ff8c00" stroke-width="1.5"/><text x="320" y="12">10</text>
     </g>
+    <text x="20"  y="52" text-anchor="start" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#ff8c00" letter-spacing="0.5">THICKER</text>
+    <text x="320" y="52" text-anchor="end"   font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#ff8c00" letter-spacing="0.5">THINNER</text>
     <!-- thumb (perception ball — matches main ghost ball) -->
     <circle id="perc-thumb" cx="170" cy="32" r="18" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5" opacity="0.5"/>
   </svg>
@@ -2051,10 +2078,61 @@ function toggleCbPath() {
     btn.style.lineHeight = '1.3';
     btn.innerHTML = cbPathOn ? 'CUE PATH<br>ON' : 'CUE PATH<br>OFF';
   }
-  const leg = document.getElementById('cb-path-legend');
-  if (leg) leg.setAttribute('opacity', cbPathOn ? '1' : '0');
+  const box = document.getElementById('cb-path-box');
+  if (box) box.style.display = cbPathOn ? 'block' : 'none';
   render();
 }
+
+// ── CUE PATH BARS (interactive vert + speed selectors) ────────────
+// The colored bars in the cue path legend double as sliders. Tap or drag
+// along a bar; the underlying slider gets updated and the cue path
+// re-renders. Vert bar maps to ±4 (full draw → full follow). Speed bar
+// maps to 0..1 (soft → firm).
+(function(){
+  function attachBar(barId, sliderId, mapTtoValue, sliderScale) {
+    var dragging = false;
+    function setFromClientX(clientX) {
+      var bar = document.getElementById(barId);
+      if (!bar) return;
+      var rect = bar.getBoundingClientRect();
+      var t = (clientX - rect.left) / rect.width;
+      t = Math.max(0, Math.min(1, t));
+      var slider = document.getElementById(sliderId);
+      if (slider) {
+        slider.value = String(Math.round(mapTtoValue(t) * sliderScale));
+        if (typeof onSliders === 'function') onSliders();
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      var bar = document.getElementById(barId);
+      if (!bar) return;
+      bar.addEventListener('pointerdown', function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        dragging = true;
+        try { bar.setPointerCapture(e.pointerId); } catch(_){}
+        setFromClientX(e.clientX);
+      });
+      bar.addEventListener('pointermove', function(e){
+        if (!dragging) return;
+        e.preventDefault();
+        setFromClientX(e.clientX);
+      });
+      bar.addEventListener('pointerup', function(e){
+        dragging = false;
+        try { bar.releasePointerCapture(e.pointerId); } catch(_){}
+      });
+      bar.addEventListener('pointercancel', function(){ dragging = false; });
+    });
+  }
+  // Vert: t in [0,1] → vert in [-4, +4].  sl-vert range is ±100, scale ×25.
+  attachBar('cb-path-bar',  'sl-vert', function(t){ return (t * 2 - 1) * 4; }, 25);
+  // Speed: t in [0,1] → speed in [0, 1].  sl-spd range is 0..100, scale ×100.
+  attachBar('cb-speed-bar', 'sl-spd',  function(t){ return t; },                100);
+})();
+
+// (Drag handler removed — box is now position:absolute inside .top-box.)
+
 let ghostOpacity = 0.5;
 let obPocketed = false;
 let justShot   = false;
@@ -2280,14 +2358,13 @@ function render() {
   const _dir = cutDeg < 1.0 ? '' : (S._diagDragRh ? ' L' : ' R');
   // Throw compensation applied to fraction
   const _throwDelta = cutDeg < 1.0 ? 0 : getThrowComp(cutDeg);
-  // RC perception bias: shifts displayed contact fraction. Positive slider = right.
-  // For left-hand cuts (S._diagDragRh=false), right on screen means toward FULLER
-  // contact (smaller fraction, more IE). For right-hand cuts, right means THINNER.
-  // Use a screen-consistent convention: positive RC always reduces fraction
-  // (moves ghost ball toward fuller contact) when the cut is to the right, and
-  // increases it when the cut is to the left. This gives uniform direction on screen.
+  // RC perception bias: shifts displayed contact fraction along the THINNER ↔ THICKER
+  // axis, NOT along screen left/right. Slider toward "+" always thins the cut
+  // (increases fraction); slider toward "−" always thickens (reduces fraction).
+  // This matches how players think — "hit it thinner" or "hit it thicker" is the
+  // same instruction regardless of whether the cut goes left or right.
   const _rcBias = window._perceptionOffset || 0;
-  const _rcSigned = (S._diagDragRh ? -_rcBias : _rcBias);
+  const _rcSigned = _rcBias;
   // Match drawBot: let the signed sum go negative (RC pushing past OB center).
   // When it does, take magnitude — the ghost ball is now on the OPPOSITE side
   // of OB center from where the cut direction says it is. Without this, the
@@ -2545,50 +2622,100 @@ function renderTable(d) {
     })();
   }
 
-  // ── CB PATH RAYS ─────────────────────────────────────────────
+  // ── CB PATH RAY (single line, driven by vertical spin slider) ──
   if (cbPathOn && cutDeg > 0.5) {
-    const cx = S.cb.x, cy = S.cb.y;
     // CB departs from ghost ball position (where CB was at contact)
     const gx = S.ob.x - Math.cos(_approachAngle) * 2 * BALL_R;
     const gy = S.ob.y - Math.sin(_approachAngle) * 2 * BALL_R;
 
-    // Stun line: 90° to OB departure
+    // Tangent line: 90° to line of centers at impact (the "stun" direction)
     const stunAngle = obDepartAngle + Math.PI/2 * (rh ? -1 : 1);
-    // Follow: narrows toward OB path — stun angle rotated toward obDepartAngle
-    const followFactor = 0.55; // how much follow closes the angle
-    const followAngle = stunAngle + (obDepartAngle - stunAngle) * followFactor;
-    // Draw: opens past 90°
-    const drawFactor = 0.55;
-    const drawAngle = stunAngle - (obDepartAngle - stunAngle) * drawFactor;
+    // Maximum deflection from tangent (full follow / full draw) depends on cut.
+    // For a rolling CB, the steady-state bend toward OB direction is about
+    // atan( (2/5) * cot(cutDeg) ).  Thick cuts → strong bend; thin cuts → little.
+    // This is a textbook approximation; real play also depends on speed, tip
+    // contact location, and cloth.  Note in the manual that this is approximate.
+    const _cutRad = Math.max(0.5, cutDeg) * RAD;
+    const _maxBend = Math.atan(0.4 / Math.tan(_cutRad));  // 0.4 = 2/5
+    // Speed factor: at slow speeds the CB has time to roll into its
+    // steady-state path (full deflection); at fast speeds it shoots away
+    // along the tangent before spin reasserts itself.  Scale from 1.0 at
+    // speed=0 (soft) to 0.4 at speed=1 (firm).
+    const _speedFactor = 1.0 - 0.6 * (S.speed || 0);
+    // Sign of "toward OB": which side of the tangent the OB sits on
+    let _toOb = obDepartAngle - stunAngle;
+    while (_toOb >  Math.PI) _toOb -= 2*Math.PI;
+    while (_toOb < -Math.PI) _toOb += 2*Math.PI;
+    const _toObSign = _toOb >= 0 ? 1 : -1;
+    // Vertical-spin slider value, normalized to [-1, +1]
+    //   +1 = full follow (rolling), 0 = stun, −1 = full draw
+    const _spinV = Math.max(-1, Math.min(1, (S.vert || 0) / 4));
+    // Update thumbs on the floating box's interactive bars (bar x = 8..92, width 84, center 50)
+    const _thumb = document.getElementById('cb-path-thumb');
+    if (_thumb) _thumb.setAttribute('cx', String(50 + _spinV * 42));
+    const _spdThumb = document.getElementById('cb-speed-thumb');
+    if (_spdThumb) _spdThumb.setAttribute('cx', String(8 + (S.speed || 0) * 84));
+    // Linear deflection in [-_maxBend, +_maxBend], scaled by speed
+    const _cbAngle = stunAngle + _toObSign * _spinV * _maxBend * _speedFactor;
 
-    function rayToRail(sx, sy, angle) {
-      const dx = Math.cos(angle), dy = Math.sin(angle);
-      let t = 9999;
-      if (dy < 0) t = Math.min(t, (TL.top    - sy) / dy);
-      if (dy > 0) t = Math.min(t, (TL.bottom - sy) / dy);
-      if (dx < 0) t = Math.min(t, (TL.left   - sx) / dx);
-      if (dx > 0) t = Math.min(t, (TL.right  - sx) / dx);
-      t = Math.max(10, t);
-      return { x: sx + dx*t, y: sy + dy*t };
+    // Color blend: white (stun) → orange (#f97316) at +1 follow,
+    //              white (stun) → light purple (#c084fc) at −1 draw
+    const _stun   = [255, 255, 255];  // white
+    const _follow = [249, 115,  22];  // #f97316
+    const _draw   = [192, 132, 252];  // #c084fc
+    const _t = Math.abs(_spinV);  // 0..1
+    const _target = _spinV > 0 ? _follow : _draw;
+    const r = Math.round(_stun[0] + (_target[0] - _stun[0]) * _t);
+    const g = Math.round(_stun[1] + (_target[1] - _stun[1]) * _t);
+    const b = Math.round(_stun[2] + (_target[2] - _stun[2]) * _t);
+    const _cbColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+
+    // Project to first rail
+    const dx = Math.cos(_cbAngle), dy = Math.sin(_cbAngle);
+    let t = 9999;
+    let hitRail = null;
+    if (dy < 0) { const tt = (TL.top    - gy) / dy; if (tt < t) { t = tt; hitRail = 'top';    } }
+    if (dy > 0) { const tt = (TL.bottom - gy) / dy; if (tt < t) { t = tt; hitRail = 'bottom'; } }
+    if (dx < 0) { const tt = (TL.left   - gx) / dx; if (tt < t) { t = tt; hitRail = 'left';   } }
+    if (dx > 0) { const tt = (TL.right  - gx) / dx; if (tt < t) { t = tt; hitRail = 'right';  } }
+    t = Math.max(10, t);
+    const _ex = gx + dx * t, _ey = gy + dy * t;
+
+    // Draw the first segment on cb-stun
+    const _stunEl = document.getElementById('cb-stun');
+    if (_stunEl) {
+      sL('cb-stun', gx, gy, _ex, _ey);
+      _stunEl.style.opacity = '1';
+      _stunEl.setAttribute('stroke', _cbColor);
     }
 
-    function drawRay(lineId, dotId, angle, baseColor) {
-      const end = rayToRail(gx, gy, angle);
-      const el = document.getElementById(lineId);
-      const dot = document.getElementById(dotId);
-      if (el) {
-        sL(lineId, gx, gy, end.x, end.y);
-        el.style.opacity = '1';
-        el.setAttribute('stroke', baseColor);
-      }
-      // Terminator dots removed — lines just end as dashes, cleaner visual.
-      if (dot) dot.style.opacity = '0';
+    // ── REBOUND SEGMENT: reflect off the rail we just hit, project to the
+    // next rail, draw a second segment.  Even though the real shot might
+    // not travel that far, this warns the player where the CB COULD go if
+    // it has the energy.  Drawn on cb-follow at lower opacity (40%) so it
+    // reads as a secondary/possibility line. -----------------------------
+    let _rebDx = dx, _rebDy = dy;
+    if (hitRail === 'top' || hitRail === 'bottom') _rebDy = -_rebDy;
+    else                                            _rebDx = -_rebDx;
+    let t2 = 9999;
+    if (_rebDy < 0) t2 = Math.min(t2, (TL.top    - _ey) / _rebDy);
+    if (_rebDy > 0) t2 = Math.min(t2, (TL.bottom - _ey) / _rebDy);
+    if (_rebDx < 0) t2 = Math.min(t2, (TL.left   - _ex) / _rebDx);
+    if (_rebDx > 0) t2 = Math.min(t2, (TL.right  - _ex) / _rebDx);
+    t2 = Math.max(10, t2);
+    const _ex2 = _ex + _rebDx * t2, _ey2 = _ey + _rebDy * t2;
+    const _rebEl = document.getElementById('cb-follow');
+    if (_rebEl) {
+      sL('cb-follow', _ex, _ey, _ex2, _ey2);
+      _rebEl.style.opacity = '0.4';
+      // Same color, dashed-attribute already set; lower opacity reads as "possible"
+      _rebEl.setAttribute('stroke', _cbColor);
     }
 
-    drawRay('cb-stun',   'cb-stun-dot',   stunAngle,   'rgba(255,255,255,0.85)');
-    drawRay('cb-follow', 'cb-follow-dot', followAngle, '#f97316');
-    drawRay('cb-draw',   'cb-draw-dot',   drawAngle,   '#c084fc');
-  } else if (!cbPathOn) {
+    ['cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
+      .forEach(id => { const el = document.getElementById(id); if (el) el.style.opacity = '0'; });
+  } else {
+    // Either cue path is off, or cut is too small (shot is straight) — clear all lines
     ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
       .forEach(id => { const el = document.getElementById(id); if (el) el.style.opacity = '0'; });
   }
@@ -2603,11 +2730,10 @@ function drawBot(d) {
   const rh = (S._diagDragRh !== undefined) ? S._diagDragRh : (cby < 0);
   const cutDeg = d.cutDeg || 0;
   // Apply throw compensation and RC perception bias to diagram contact point.
-  // RC shifts fraction space (matches readouts); right on screen = positive shift
-  // regardless of cut side (sign-flipped for right-hand cuts so visual is consistent).
+  // RC shifts the contact along the THINNER ↔ THICKER axis (same on either cut).
   const _diagThrowDelta = getThrowComp(cutDeg);
   const _diagRcBias = window._perceptionOffset || 0;
-  const _diagRcSigned = (rh ? -_diagRcBias : _diagRcBias);
+  const _diagRcSigned = _diagRcBias;
   // Allow the signed sum to go negative (RC slider indicating contact on the
   // opposite side of OB center). When it does, flip the render side and use
   // the magnitude. Critical for straight-in shots where diagFraction=0.
@@ -2932,6 +3058,28 @@ function onSliders() {
   S.spin   = parseInt($('sl-spn').value) / 25;  // -4..4 continuously
   S.vert   = parseInt($('sl-vert').value) / 25;  // -4..4 from -100..100
   S.distFt = 0;  // auto-calculated in compute()
+  // Update slider value displays
+  var _spdEl = $('sv-spd');
+  if (_spdEl) {
+    var s = S.speed;
+    _spdEl.textContent = s < 0.20 ? 'soft'
+                       : s < 0.45 ? 'med-soft'
+                       : s < 0.55 ? 'medium'
+                       : s < 0.80 ? 'med-firm'
+                       :            'firm';
+  }
+  var _spnEl = $('sv-spn');
+  if (_spnEl) {
+    var sp = S.spin;  // -4..+4
+    if (Math.abs(sp) < 0.25) _spnEl.textContent = 'center';
+    else _spnEl.textContent = (sp > 0 ? 'R ' : 'L ') + Math.abs(sp).toFixed(1);
+  }
+  var _vrtEl = $('sv-vert');
+  if (_vrtEl) {
+    var v = S.vert;  // -4..+4
+    if (Math.abs(v) < 0.25) _vrtEl.textContent = 'stun';
+    else _vrtEl.textContent = (v > 0 ? 'follow ' : 'draw ') + Math.abs(v).toFixed(1);
+  }
   if (!onSliders._raf) {
     onSliders._raf = requestAnimationFrame(function() {
       onSliders._raf = null;
@@ -3332,20 +3480,17 @@ function edgeZoomReset() {
       <div class="srow">
         <span class="slbl" style="color:#b090f0;">speed</span>
         <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
-        <span id="sv-spd-n" style="font-size:11px;font-weight:900;color:rgba(240,223,112,0.5);min-width:14px;text-align:center;">5</span>
-        <span class="sval" id="sv-spd" style="color:#f0df70;">med</span>
+        <span class="sval" id="sv-spd" style="color:#f0df70;min-width:48px;text-align:right;">med</span>
       </div>
       <div class="srow" style="margin-top:6px;">
         <span class="slbl">spin</span>
         <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
-        <span id="sv-spn-n" style="font-size:11px;font-weight:900;color:rgba(232,112,176,0.5);min-width:14px;text-align:center;">0</span>
-        <span class="sval" id="sv-spn" style="color:#e870b0;">0%</span>
+        <span class="sval" id="sv-spn" style="color:#e870b0;min-width:48px;text-align:right;">0</span>
       </div>
       <div class="srow" style="margin-top:6px;">
         <span class="slbl">vert</span>
         <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
-        <span id="sv-vert-n" style="font-size:11px;font-weight:900;color:rgba(125,211,252,0.5);min-width:14px;text-align:center;">0</span>
-        <span class="sval" id="sv-vert" style="color:#7dd3fc;">center</span>
+        <span class="sval" id="sv-vert" style="color:#7dd3fc;min-width:48px;text-align:right;">stun</span>
       </div>
     </div>
 
@@ -3500,7 +3645,7 @@ function swapPanels(){
     if(window._panLocked===true) return;
     if(e.target.closest('circle, [data-ball]')) return;
     if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
-    if(e.target.closest('#perc-row, #btb, .float-panel, #dock')) return;
+    if(e.target.closest('#perc-row, #btb, .float-panel, #dock, #cb-path-bar, #cb-speed-bar, #cb-path-box')) return;
     panPtr = e.pointerId;
     panStartX = e.clientX; panStartY = e.clientY;
     panInitTx = _pz.tx;    panInitTy = _pz.ty;
