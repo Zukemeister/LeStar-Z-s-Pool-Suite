@@ -32,7 +32,7 @@ h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-b
 #help-btn{position:absolute;left:0;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;}
 #table-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);padding:4px 10px;border-radius:14px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.06em;cursor:pointer;line-height:1.2;}
 .diagram-wrap{border-radius:4px;overflow:hidden;margin-bottom:10px;}
-.svg-box{position:relative;width:100%;overflow:hidden;background:rgba(0,0,0,0.22);}
+.svg-box{position:relative;width:100%;overflow:hidden;background:transparent;}
 .svg-box.top-box{aspect-ratio:460/278;padding-bottom:0;}
 .svg-box.aim-box{aspect-ratio:460/220;padding-bottom:0;}
 .svg-box svg{position:absolute;top:0;left:0;width:100%;height:100%;}
@@ -1835,7 +1835,7 @@ if ('serviceWorker' in navigator) {
       <button id="perc-invite-btn" onclick="toggleSlidersPanel()" title="Spin and speed — opens a panel with sliders for English (sidespin), vert (draw/follow), and stroke speed. These affect the cue ball path display." style="background:none;border:none;font-family:Lato,sans-serif;font-size:11px;font-weight:900;color:#3ab0ff;cursor:pointer;padding:2px 8px;letter-spacing:0.08em;touch-action:manipulation;text-decoration:underline dotted rgba(58,176,255,0.5);text-underline-offset:2px;">(ADD SPIN AND SPEED?)</button>
     </div>
     </div><!-- /perc-block -->
-    <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;">
+    <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;touch-action:none;">
       <svg id="botsvg" viewBox="0 0 460 300" preserveAspectRatio="xMidYMid meet"
            style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;"
            xmlns="http://www.w3.org/2000/svg">
@@ -1943,12 +1943,12 @@ if ('serviceWorker' in navigator) {
         <!-- Contact point line — always on top -->
         <line id="bot-contact-line" x1="230" y1="0" x2="230" y2="230" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0"/>
         <!-- Opacity +/- buttons bottom-right -->
-        <g onclick="ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
+        <g onclick="if(window._panLocked!==true)return;ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
           <rect x="340" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
           <text x="358" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">−</text>
         </g>
         <text x="395" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>
-        <g onclick="ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
+        <g onclick="if(window._panLocked!==true)return;ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
           <rect x="418" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
           <text x="436" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">+</text>
         </g>
@@ -2083,6 +2083,7 @@ const SNAP_RADIUS = 14;
 const ghostOn = true;  // always on
 let angleOn = false;
 function toggleContactDot() {
+  if (window._panLocked !== true) return;
   contactDotOn = !contactDotOn;
   const box = document.getElementById('r-cp-box');
   if (box) {
@@ -2093,6 +2094,7 @@ function toggleContactDot() {
 }
 
 function toggleAngle() {
+  if (window._panLocked !== true) return;
   angleOn = !angleOn;
   const panel = document.getElementById('angle-panel');
   if (panel) panel.style.display = angleOn ? 'block' : 'none';
@@ -3026,10 +3028,11 @@ function updateDiagCut(svgX) {
 
 botsvg.addEventListener('pointerdown', e => {
   if (window._panLocked!==true) return;
+  e.preventDefault();  // claim the gesture as ours regardless of where in botsvg
   const p2 = botSvgPt(e);
   // Dead zone: only respond within the ball's vertical extent (center 148 ± radius 82)
   if (p2.y < 66 || p2.y > 230) return;
-  e.preventDefault(); diagDrag = true; justShot = false; S._userAdjustedDiag = true;
+  diagDrag = true; justShot = false; S._userAdjustedDiag = true;
   botsvg.setPointerCapture(e.pointerId);
   updateDiagCut(p2.x);
   render();
@@ -3065,6 +3068,7 @@ document.addEventListener('keydown', e => {
 window._twixtStripes = false;
 window._edgeStripes = false;
 function toggleTwixtStripes() {
+  if (window._panLocked !== true) return;
   window._twixtStripes = !window._twixtStripes;
   var box = document.getElementById('r-twixt-box');
   if (box) {
@@ -3074,6 +3078,7 @@ function toggleTwixtStripes() {
   if (typeof render === 'function') render();
 }
 function toggleEdgeStripes() {
+  if (window._panLocked !== true) return;
   window._edgeStripes = !window._edgeStripes;
   var ins = document.getElementById('r-aim-box');
   var out = document.getElementById('r-oe-box');
@@ -3316,6 +3321,23 @@ document.addEventListener('click', function(e) {
   if (y < 50)  y = 50;
   pop.style.left = x + 'px';
   pop.style.top  = y + 'px';
+}, true);
+
+// PAN-MODE CLICK BLOCKER (defense in depth) — when pan mode is active, block
+// clicks/pointerdowns on everything except the dock, the help button, and
+// open popouts. Function-level gates already protect specific toggles, but
+// this catches anything we missed and prevents inline onclick handlers from
+// firing on readouts/etc. while panning.
+function _panModeBlocked(target) {
+  if (window._panLocked !== false) return false;  // not in pan mode
+  // Allow taps on dock (so user can switch modes), help button, popouts
+  if (target.closest('#dock, #help-btn, #help-popup, #help-mode-banner, #info-overlay, .float-panel')) return false;
+  return true;
+}
+// Block clicks (which is what fires the inline onclick="..." handlers).
+// Don't block pointerdown — the pan handler on #zoom-wrap needs to receive it.
+document.addEventListener('click', function(e) {
+  if (_panModeBlocked(e.target)) { e.stopPropagation(); e.preventDefault(); }
 }, true);
 
 // Also intercept pointerdown in capture phase — many of our buttons have
@@ -3946,6 +3968,7 @@ function forceMinimizePanel(panelId, headerId) {
 
 <script>
 function vernierAim(dir) {
+  if (window._panLocked !== true) return;
   // One percent of ball fraction per click.
   // Fraction = sin(cut), so Δcut = asin(frac+step) - asin(frac).
   // Keep a signed fraction so clicks move smoothly through 0 with no visual snap.
