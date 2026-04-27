@@ -3845,22 +3845,14 @@ function swapPanels(){
   function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
 
   function onDown(e){
-    // Always-skip: dock, float panels, real buttons/inputs
+    if(window._panLocked===true) return;  // ball mode — pan disabled
+    // Pan mode is ON. Allow pointerdown to flow through to:
+    //  - the dock (so the user can tap dock-ball to leave pan mode)
+    //  - explicit popout panels (.float-panel) the user has opened
+    //  - actual buttons and inputs that need direct interaction
+    // Everything ELSE inside the table area is grabbed for panning.
     if(e.target.closest('#dock, .float-panel')) return;
     if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
-    if(window._panLocked===true) {
-      // Ball mode — pan ONLY from "safe" non-interactive surfaces.
-      // Skip balls, rail buttons, cue-path legend, perception row, type menu.
-      if(e.target.closest(
-        '#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi, ' +
-        '#rail-size-btn, #rail-unit-btn, #rail-table-btn, ' +
-        '#rail-grid-btn, #rail-snap-btn, #rail-type-menu, ' +
-        '#cb-path-legend, #perc-row, #btb'
-      )) return;
-      // Allow pan from felt, wood rail, cushion strips, diamonds, pockets.
-    }
-    // Pan mode (false) — every surface inside table area is grabbable
-    // (already filtered above for dock/panels/buttons).
     panPtr = e.pointerId;
     panStartX = e.clientX; panStartY = e.clientY;
     panInitTx = _pz.tx;    panInitTy = _pz.ty;
