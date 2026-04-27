@@ -3218,8 +3218,123 @@ document.addEventListener('pointerdown', function(e){
 });
 
 function toggleInfo() {
-  $('info-overlay').classList.toggle('open');
+  // ? button now toggles HELP MODE — taps on any tagged control reveal its
+  // description rather than triggering the normal action.
+  toggleHelpMode();
 }
+
+// ── HELP MODE ─────────────────────────────────────────────────────
+// When on, tapping any element with a <title> child shows a popup with
+// the title's text. The element's normal click handler does not fire.
+window._helpModeOn = false;
+function toggleHelpMode() {
+  window._helpModeOn = !window._helpModeOn;
+  const btn = document.getElementById('help-btn');
+  if (btn) {
+    if (window._helpModeOn) {
+      btn.style.background = 'rgba(240,223,112,0.85)';
+      btn.style.color = '#000';
+      btn.style.borderColor = '#f0df70';
+    } else {
+      btn.style.background = 'rgba(255,255,255,0.08)';
+      btn.style.color = 'rgba(255,255,255,0.7)';
+      btn.style.borderColor = 'rgba(255,255,255,0.35)';
+    }
+  }
+  // Show/hide the help-mode banner so the user knows the mode is on
+  let banner = document.getElementById('help-mode-banner');
+  if (window._helpModeOn) {
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'help-mode-banner';
+      banner.textContent = 'HELP MODE — tap any control for an explanation. Tap ? to exit.';
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9500;background:rgba(240,223,112,0.95);color:#000;font-family:Lato,sans-serif;font-size:11px;font-weight:900;letter-spacing:0.4px;text-align:center;padding:6px 12px;box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+      document.body.appendChild(banner);
+    }
+    banner.style.display = 'block';
+  } else if (banner) {
+    banner.style.display = 'none';
+  }
+  // Hide any open help popup
+  const pop = document.getElementById('help-popup');
+  if (pop) pop.style.display = 'none';
+}
+
+// Capture-phase click interceptor: if help mode is on and the target has a
+// <title> ancestor, show the title text in a popup and stop the click.
+document.addEventListener('click', function(e) {
+  if (!window._helpModeOn) return;
+  // Don't intercept clicks on the ? button itself or on the popup
+  if (e.target.closest('#help-btn, #help-popup, #help-mode-banner')) return;
+  // Find the nearest ancestor that has a title (HTML attr or SVG <title> child)
+  let el = e.target;
+  let titleText = null;
+  while (el && el !== document.body && el.nodeType === 1) {
+    // HTML title attribute
+    const attr = el.getAttribute && el.getAttribute('title');
+    if (attr && attr.trim()) { titleText = attr.trim(); break; }
+    // SVG <title> child (iterate children directly to avoid :scope quirks)
+    if (el.children) {
+      for (let i = 0; i < el.children.length; i++) {
+        const c = el.children[i];
+        if (c.tagName && c.tagName.toLowerCase() === 'title' && c.textContent && c.textContent.trim()) {
+          titleText = c.textContent.trim();
+          break;
+        }
+      }
+      if (titleText) break;
+    }
+    el = el.parentNode;
+  }
+  if (!titleText) return;
+  e.stopPropagation();
+  e.preventDefault();
+  // Show the description in a popup near the click
+  let pop = document.getElementById('help-popup');
+  if (!pop) {
+    pop = document.createElement('div');
+    pop.id = 'help-popup';
+    pop.style.cssText = 'position:fixed;z-index:9600;background:#1a1a1a;color:#fff;font-family:Lato,sans-serif;font-size:12px;font-weight:500;line-height:1.4;padding:10px 14px;border:1.5px solid #f0df70;border-radius:6px;max-width:280px;box-shadow:0 4px 14px rgba(0,0,0,0.6);cursor:pointer;';
+    pop.addEventListener('click', function(){ pop.style.display = 'none'; });
+    document.body.appendChild(pop);
+  }
+  pop.textContent = titleText;
+  pop.style.display = 'block';
+  // Position near the click, but keep on-screen
+  const pad = 8;
+  const w = pop.offsetWidth || 280;
+  const h = pop.offsetHeight || 60;
+  let x = e.clientX + 12;
+  let y = e.clientY + 12;
+  if (x + w > window.innerWidth - pad)  x = window.innerWidth - w - pad;
+  if (y + h > window.innerHeight - pad) y = e.clientY - h - 12;
+  if (x < pad) x = pad;
+  if (y < 50)  y = 50;
+  pop.style.left = x + 'px';
+  pop.style.top  = y + 'px';
+}, true);
+
+// Also intercept pointerdown in capture phase — many of our buttons have
+// pointerdown handlers that fire before click and trigger their actions.
+document.addEventListener('pointerdown', function(e) {
+  if (!window._helpModeOn) return;
+  if (e.target.closest('#help-btn, #help-popup, #help-mode-banner')) return;
+  // If this target has a <title> we'll handle it on click — block the pointerdown
+  let el = e.target;
+  while (el && el !== document.body && el.nodeType === 1) {
+    const attr = el.getAttribute && el.getAttribute('title');
+    if (attr && attr.trim()) { e.stopPropagation(); e.preventDefault(); return; }
+    if (el.children) {
+      for (let i = 0; i < el.children.length; i++) {
+        const c = el.children[i];
+        if (c.tagName && c.tagName.toLowerCase() === 'title' && c.textContent && c.textContent.trim()) {
+          e.stopPropagation(); e.preventDefault(); return;
+        }
+      }
+    }
+    el = el.parentNode;
+  }
+}, true);
 
 function rotateLeft() {
   S.rotation = (S.rotation + 270) % 360;
@@ -4287,7 +4402,7 @@ function toggleSlidersPanel() {
   <div id="dock-bar" class="vertical">
     <div class="dock-orient-dot" id="dock-dot-start" style="pointer-events:auto;touch-action:manipulation;"></div>
 
-    <div class="dock-slot active" id="dock-hand" title="Pan mode">
+    <div class="dock-slot active" id="dock-hand" title="Pan mode — drag the table around. Balls and sliders are locked while in pan mode.">
       <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
         <!-- Up arrow -->
         <line x1="10" y1="2" x2="10" y2="9" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
@@ -4308,7 +4423,7 @@ function toggleSlidersPanel() {
     
     
     </div>
-    <div class="dock-slot" id="dock-ball" title="Ball mode">
+    <div class="dock-slot" id="dock-ball" title="Ball mode — drag balls and use sliders. Pan is disabled.">
       <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
         <defs>
           <radialGradient id="dock-ob-g" cx="35%" cy="28%" r="65%">
@@ -4323,7 +4438,7 @@ function toggleSlidersPanel() {
       </svg>
     
     </div>
-    <div class="dock-slot" id="dock-learn" title="Learn">
+    <div class="dock-slot" id="dock-learn" title="Learning panel — opens lessons and shot library.">
       <svg width="22" height="22" viewBox="0 0 22 22" style="pointer-events:none;">
         <!-- left page -->
         <path d="M 2 5 Q 6 4 11 5 L 11 18 Q 6 17 2 18 Z" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linejoin="round"/>
@@ -4339,7 +4454,7 @@ function toggleSlidersPanel() {
         <line x1="13"  y1="14" x2="16.5" y2="14" stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
       </svg>
     </div>
-    <div class="dock-slot" id="dock-sliders" title="Sliders">
+    <div class="dock-slot" id="dock-sliders" title="Sliders — opens a panel for speed, English (sidespin), and vert (draw/follow).">
       <svg width="22" height="22" viewBox="0 0 22 22" style="pointer-events:none;">
         <!-- top track + thumb (positioned right) -->
         <line x1="2" y1="5" x2="20" y2="5" stroke="#c084fc" stroke-width="2" stroke-linecap="round"/>
@@ -4353,7 +4468,7 @@ function toggleSlidersPanel() {
       </svg>
     </div>
 
-    <div class="dock-slot" id="dock-swap" title="Swap Table / Perception">
+    <div class="dock-slot" id="dock-swap" title="Swap — switches the top view (table) and the bottom view (perception ball).">
       <div style="pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:2px;">
         <svg width="14" height="18" viewBox="0 0 14 18" style="pointer-events:none;">
           <path d="M4 2 L4 16 M1 12 L4 16 L7 12" stroke="#90f0f8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -4362,13 +4477,13 @@ function toggleSlidersPanel() {
       </div>
     </div>
 
-    <div class="dock-slot" id="dock-zoom-in" title="Zoom in">
+    <div class="dock-slot" id="dock-zoom-in" title="Zoom in — enlarges the table view.">
       <span style="font-size:26px;font-weight:900;color:#a8ccff;line-height:1;pointer-events:none;">+</span>
     </div>
-    <div class="dock-slot" id="dock-zoom-out" title="Zoom out">
+    <div class="dock-slot" id="dock-zoom-out" title="Zoom out — shrinks the table view.">
       <span style="font-size:26px;font-weight:900;color:#a8ccff;line-height:1;pointer-events:none;">−</span>
     </div>
-    <div class="dock-slot" id="dock-recenter" title="Recenter table">
+    <div class="dock-slot" id="dock-recenter" title="Recenter — returns the table to its default centered position. Use this if you pan it off-screen.">
       <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
         <rect x="3" y="5" width="14" height="10" rx="1.5" fill="none" stroke="#a8ccff" stroke-width="1.4"/>
         <line x1="10" y1="2" x2="10" y2="6"  stroke="#a8ccff" stroke-width="1.4" stroke-linecap="round"/>
@@ -4378,7 +4493,7 @@ function toggleSlidersPanel() {
         <circle cx="10" cy="10" r="1.5" fill="#a8ccff"/>
       </svg>
     </div>
-    <div class="dock-slot" id="dock-cuepath" title="Toggle cue path">
+    <div class="dock-slot" id="dock-cuepath" title="Cue path — shows where the CB will travel after contact, plus a faint rebound off the first rail.">
       <svg width="18" height="18" viewBox="0 0 18 18" style="pointer-events:none;">
         <circle cx="9" cy="9" r="5" fill="none" stroke="#f0df70" stroke-width="1.5"/>
         <line x1="9" y1="1" x2="9" y2="4" stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
@@ -4629,12 +4744,14 @@ window.addEventListener('load', function(){
   }
   window._rcSetX = setX;
   thumb.addEventListener('pointerdown', function(e){
+    if(window._panLocked !== true) return;  // pan mode — RC thumb inert
     if(window._rcLocked) return;
     if(e.detail>1) return;
     dragging=true; thumb.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   });
   svg.addEventListener('pointermove', function(e){
     if(!dragging) return;
+    if(window._panLocked !== true) { dragging=false; return; }
     var r=svg.getBoundingClientRect();
     // convert client x to viewBox x
     var vbx = (e.clientX - r.left) * (340 / r.width);
