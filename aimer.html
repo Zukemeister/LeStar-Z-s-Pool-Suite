@@ -33,7 +33,7 @@ h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-b
 #table-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);padding:4px 10px;border-radius:14px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.06em;cursor:pointer;line-height:1.2;}
 .diagram-wrap{border-radius:4px;overflow:hidden;margin-bottom:10px;}
 .svg-box{position:relative;width:100%;overflow:hidden;background:rgba(0,0,0,0.22);}
-.svg-box.top-box{aspect-ratio:460/260;padding-bottom:0;}
+.svg-box.top-box{aspect-ratio:460/278;padding-bottom:0;}
 .svg-box.aim-box{aspect-ratio:460/220;padding-bottom:0;}
 .svg-box svg{position:absolute;top:0;left:0;width:100%;height:100%;}
 .sep{display:none;}
@@ -1346,7 +1346,11 @@ if ('serviceWorker' in navigator) {
           </marker>
         </defs>
         <g id="tbl-content">
-        <!-- Wood rail -->
+        <!-- Top headroom band: fills the y=-18..0 area with outer-wrap green so the
+             button strip blends with the surrounding background instead of showing
+             the .svg-box dark overlay. -->
+        <rect x="0" y="-18" width="460" height="18" fill="#1a361a"/>
+        <!-- Wood rail (original size) -->
         <rect x="0" y="0" width="460" height="260" rx="9" fill="#3d2b1f"/>
         <rect x="1.5" y="1.5" width="457" height="257" rx="8" fill="none" stroke="#5a3f2c" stroke-width="2"/>
         <!-- Cushion strips -->
@@ -2295,8 +2299,8 @@ const svg = $('topsvg');
 svg.addEventListener('pointerdown', e => {
   const p = svgPt(e);
   if (window._panLocked!==true) return;
-  if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
-  if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
+  if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); e.stopPropagation(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
+  if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); e.stopPropagation(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
 });
 svg.addEventListener('pointermove', e => {
   if (!drag) return; e.preventDefault();
@@ -3841,15 +3845,22 @@ function swapPanels(){
   function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
 
   function onDown(e){
-    if(window._panLocked===true) return;  // ball mode — pan disabled
-    // Pan mode is ON. Allow pointerdown to flow through to:
-    //  - the dock (so the user can tap dock-ball to leave pan mode)
-    //  - explicit popout panels (.float-panel) the user has opened
-    //  - actual buttons and inputs that need direct interaction
-    // Everything ELSE inside the table area is grabbed for panning, including
-    // balls, sliders, readouts, vernier arrows, the cue path bar, etc.
+    // Always-skip: dock, float panels, real buttons/inputs
     if(e.target.closest('#dock, .float-panel')) return;
     if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+    if(window._panLocked===true) {
+      // Ball mode — pan ONLY from "safe" non-interactive surfaces.
+      // Skip balls, rail buttons, cue-path legend, perception row, type menu.
+      if(e.target.closest(
+        '#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi, ' +
+        '#rail-size-btn, #rail-unit-btn, #rail-table-btn, ' +
+        '#rail-grid-btn, #rail-snap-btn, #rail-type-menu, ' +
+        '#cb-path-legend, #perc-row, #btb'
+      )) return;
+      // Allow pan from felt, wood rail, cushion strips, diamonds, pockets.
+    }
+    // Pan mode (false) — every surface inside table area is grabbable
+    // (already filtered above for dock/panels/buttons).
     panPtr = e.pointerId;
     panStartX = e.clientX; panStartY = e.clientY;
     panInitTx = _pz.tx;    panInitTy = _pz.ty;
