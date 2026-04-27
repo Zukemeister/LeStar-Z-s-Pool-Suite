@@ -1176,6 +1176,7 @@ function loadShot(idx) {
   const shot = SHOT_LIBRARY[idx];
   if (!shot) return;
   window._perceptionOffset = 0;
+  window._rcMultiplier = 0;  // computed on LOCK from current shot's physics-vs-perceived ratio
   window._percBase = 0;
   window._percCompFrac = undefined;
   window._percCompRh = undefined;
@@ -2401,12 +2402,21 @@ function render() {
   // This matches how players think — "hit it thinner" or "hit it thicker" is the
   // same instruction regardless of whether the cut goes left or right.
   const _rcBias = window._perceptionOffset || 0;
-  const _rcSigned = _rcBias;
+  const _rcMult = window._rcMultiplier || 0;
+  const _rcLocked = !!window._rcLocked;
+  // RC application:
+  //   LOCKED — apply multiplier to physics fraction (scales with cut size).
+  //            Multiplier was computed from the original lock shot.
+  //   UNLOCKED — apply additive bias from current slider position.
+  // Both modes taper to zero in the last degree near 0° cut so the
+  // L/R side flip doesn't produce a position discontinuity.
+  const _rcTaper = Math.min(1, cutDeg / 1);  // full at 1°, 0 at 0°
+  const _rcSigned = _rcLocked
+    ? (Math.abs(d.diagFraction) * _rcMult * _rcTaper)
+    : (_rcBias * _rcTaper);
   // Match drawBot: let the signed sum go negative (RC pushing past OB center).
   // When it does, take magnitude — the ghost ball is now on the OPPOSITE side
-  // of OB center from where the cut direction says it is. Without this, the
-  // readouts freeze at 0 while the slider keeps going. rhEffective below tracks
-  // the side of contact for the readout labels.
+  // of OB center from where the cut direction says it is.
   const _fracSigned = Math.abs(d.diagFraction) + _throwDelta + _rcSigned;
   const _fracMag = Math.abs(_fracSigned);
   const _rhEffectiveReadout = (_fracSigned < 0) ? !S._diagDragRh : S._diagDragRh;
@@ -2767,10 +2777,17 @@ function drawBot(d) {
   const rh = (S._diagDragRh !== undefined) ? S._diagDragRh : (cby < 0);
   const cutDeg = d.cutDeg || 0;
   // Apply throw compensation and RC perception bias to diagram contact point.
-  // RC shifts the contact along the THINNER ↔ THICKER axis (same on either cut).
+  // When LOCKED, RC scales physics fraction by the captured multiplier.
+  // When UNLOCKED, RC adds the slider offset directly.
+  // Both taper to 0 in the last degree near 0° cut to avoid position jump.
   const _diagThrowDelta = getThrowComp(cutDeg);
   const _diagRcBias = window._perceptionOffset || 0;
-  const _diagRcSigned = _diagRcBias;
+  const _diagRcMult = window._rcMultiplier || 0;
+  const _diagRcLocked = !!window._rcLocked;
+  const _diagRcTaper = Math.min(1, cutDeg / 1);
+  const _diagRcSigned = _diagRcLocked
+    ? (Math.abs(d.diagFraction) * _diagRcMult * _diagRcTaper)
+    : (_diagRcBias * _diagRcTaper);
   // Allow the signed sum to go negative (RC slider indicating contact on the
   // opposite side of OB center). When it does, flip the render side and use
   // the magnitude. Critical for straight-in shots where diagFraction=0.
@@ -4821,8 +4838,28 @@ document.addEventListener('DOMContentLoaded', function(){
     paint();
     lb.addEventListener('click', function(e){
       e.stopPropagation();
-      window._rcLocked = !window._rcLocked;
+      var newLocked = !window._rcLocked;
+      if (newLocked) {
+        // Snapshot the current shot's physics fraction. Use the same cutDeg
+        // that render() uses so we capture the value the user sees.
+        var lockCutDeg = (typeof S !== 'undefined' && S.diagCutDeg !== null) ? S.diagCutDeg : 0;
+        var d = (typeof compute === 'function') ? compute(lockCutDeg) : null;
+        var physicsFrac = d ? Math.abs(d.diagFraction || 0) : 0;
+        var biasFrac = window._perceptionOffset || 0;
+        if (physicsFrac > 0.05) {
+          // Multiplier: how much extra (relative to physics) the user wants applied.
+          // Adjusted = physics + bias. Multiplier m = bias / physics so that
+          // physics * (1 + m) = physics + bias.
+          window._rcMultiplier = biasFrac / physicsFrac;
+        } else {
+          window._rcMultiplier = 0;
+        }
+      } else {
+        window._rcMultiplier = 0;
+      }
+      window._rcLocked = newLocked;
       paint();
+      if (typeof render === 'function') render();
     });
   }
 });
