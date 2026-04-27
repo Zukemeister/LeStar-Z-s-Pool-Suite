@@ -3043,20 +3043,37 @@ function updateDiagCut(svgX) {
   S._diagDragRh = (clamped < 0);
 }
 
+// On grab, capture the finger-to-cut offset so the ball doesn't jump.
+// While dragging, current cut = (finger position) + (offset captured at grab).
+let _diagGrabOffset = 0;
+function updateDiagCutWithOffset(svgX) {
+  updateDiagCut(svgX + _diagGrabOffset);
+}
+
 botsvg.addEventListener('pointerdown', e => {
   if (window._panLocked!==true) return;
-  e.preventDefault();  // claim the gesture as ours regardless of where in botsvg
+  e.preventDefault();
   const p2 = botSvgPt(e);
-  // Dead zone: only respond within the ball's vertical extent (center 148 ± radius 82)
   if (p2.y < 66 || p2.y > 230) return;
   diagDrag = true; justShot = false; S._userAdjustedDiag = true;
   botsvg.setPointerCapture(e.pointerId);
-  updateDiagCut(p2.x);
+  // Compute the current cut's "virtual finger position" — where on the slider
+  // the current cut value would fall — and capture the offset between that
+  // and the actual finger position. This way, subsequent moves track the
+  // finger's relative motion without jumping.
+  const ocx = 230;
+  const DRAG_RANGE = 224;
+  const currentFingerX = p2.x;
+  const currentCutSign = S._diagDragRh ? -1 : 1;
+  const currentCutFrac = (S.diagCutDeg || 0) / 90;
+  const currentVirtualX = ocx + currentCutSign * currentCutFrac * DRAG_RANGE;
+  _diagGrabOffset = currentVirtualX - currentFingerX;
+  // Don't update the cut on initial touch — let the user move first
   render();
 });
 botsvg.addEventListener('pointermove', e => {
   if (!diagDrag) return; e.preventDefault(); S._userAdjustedDiag = true;
-  updateDiagCut(botSvgPt(e).x);
+  updateDiagCutWithOffset(botSvgPt(e).x);
   render();
 });
 botsvg.addEventListener('pointerup',    () => { diagDrag = false; });
