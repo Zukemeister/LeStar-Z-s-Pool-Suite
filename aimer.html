@@ -1721,6 +1721,11 @@ if ('serviceWorker' in navigator) {
         </g>
       </g>
       <!-- Bottom-rail toggle buttons: GRID and SNAP -->
+      <g id="rail-lock-btn" style="cursor:pointer;touch-action:manipulation;">
+        <title>Lock table — disables ball drags so you can pan freely from any point on the table.</title>
+        <rect x="8" y="246" width="34" height="14" rx="3" fill="rgba(240,223,112,0.55)" stroke="rgba(240,223,112,0.7)" stroke-width="0.7"/>
+        <text id="rail-lock-txt" x="25" y="254" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#000" pointer-events="none">LOCK</text>
+      </g>
       <g id="rail-grid-btn" onclick="toggleMap()" style="cursor:pointer;touch-action:manipulation;">
         <title>Grid overlay — toggles a fine cyan grid over the table for precise ball placement.</title>
         <rect x="338" y="246" width="34" height="14" rx="3" fill="rgba(74,222,128,0.55)" stroke="rgba(74,222,128,0.7)" stroke-width="0.7"/>
@@ -1734,7 +1739,7 @@ if ('serviceWorker' in navigator) {
 </svg>
     </div>
 
-<div id="perception-section">
+<div id="perception-section" style="position:relative;">
     <div class="sep"></div>
     <div style="text-align:center;letter-spacing:0.18em;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);padding:3px 0 2px;text-transform:uppercase;">The Doors of Perception</div>
     <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:4px 0;height:36px;contain:layout style;width:100%;box-sizing:border-box;">
@@ -1847,6 +1852,11 @@ if ('serviceWorker' in navigator) {
           </clipPath>
         </defs>
         <rect width="460" height="300" fill="rgba(0,0,0,0.28)"/>
+        <g id="botsvg-lock-btn" style="cursor:pointer;touch-action:manipulation;">
+          <title>Lock perception — disables ball drag so you can pan freely from any point in this section.</title>
+          <rect x="8" y="8" width="34" height="14" rx="3" fill="rgba(240,223,112,0.55)" stroke="rgba(240,223,112,0.7)" stroke-width="0.7"/>
+          <text id="botsvg-lock-txt" x="25" y="16" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#000" pointer-events="none">LOCK</text>
+        </g>
         <!-- Static tick marks — never change -->
         <g id="bot-ticks">
           <line x1="230" y1="131" x2="230" y2="165" stroke="#7fd0f0" stroke-width="2.2" opacity="1.0"/>
@@ -1971,8 +1981,8 @@ if ('serviceWorker' in navigator) {
 
 
 
-  <!-- ANGLE PANEL -->
-  <div id="angle-panel" style="display:none;background:rgba(0,0,0,0.35);border-radius:4px;margin-bottom:6px;padding:6px;">
+  <!-- ANGLE PANEL (the SVG inside is moved into sliders panel at load time) -->
+  <div id="angle-panel" style="display:none;">
     <div style="text-align:center;font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:4px;">Cut Angle</div>
     <!-- Isolated ghost-ball-and-OB geometry: just the teaching diagram, nothing else -->
     <svg id="angle-mini" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:60%;max-width:220px;height:auto;display:block;margin:0 auto;background:rgba(40,80,40,0.35);border-radius:3px;">
@@ -2075,6 +2085,13 @@ function togglePan(){
   if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'DRAG<br>MODE ON' : 'DRAG<br>MODE OFF'; }
 }
 window._panLocked = true;  // default: single-finger does NOT pan; pan is two-finger
+// Per-panel pan locks. When locked, the panel's interactive elements stop
+// claiming gestures, allowing the wrap-level pan handler to pan from there.
+// Default: ON. The user explicitly unlocks a panel when they want to
+// interact with balls/sliders.
+window._tableLocked = true;
+window._perceptionLocked = true;
+window._slidersLocked = true;
 let lockTable = true;
 let lockBalls = true;
 let lockSliders = true;
@@ -2082,7 +2099,7 @@ let contactDotOn = false; // contact point dot off by default
 let SNAP_POINTS = [];  // built after DOM ready
 const SNAP_RADIUS = 14;
 const ghostOn = true;  // always on
-let angleOn = false;
+let angleOn = true;
 function toggleContactDot() {
   contactDotOn = !contactDotOn;
   const box = document.getElementById('r-cp-box');
@@ -2094,6 +2111,11 @@ function toggleContactDot() {
 }
 
 function toggleAngle() {
+  // Angle diagram is now permanently shown in the sliders panel right column.
+  // This function is left in place so the inline onclick on CUT readout
+  // doesn't error, but it does nothing.
+  return;
+  /* legacy code preserved below for reference; never executes
   angleOn = !angleOn;
   const panel = document.getElementById('angle-panel');
   if (panel) panel.style.display = angleOn ? 'block' : 'none';
@@ -2103,6 +2125,7 @@ function toggleAngle() {
     cutBox.style.borderColor = angleOn ? 'rgba(240,223,112,0.55)' : 'rgba(255,255,255,0.07)';
   }
   render();
+  */
 }
 function toggleCbPath() {
   cbPathOn = !cbPathOn;
@@ -2300,6 +2323,7 @@ const svg = $('topsvg');
 // finger position on touch-down.
 let _ballGrabDx = 0, _ballGrabDy = 0;
 svg.addEventListener('pointerdown', e => {
+  if (window._tableLocked) return;  // table locked: no ball grabs, fall through to pan
   const p = svgPt(e);
   // Ball drag works regardless of pan/ball mode. The wrapper-level pan handler
   // ignores touches that started on a ball; the ball handler picks them up.
@@ -3073,6 +3097,7 @@ function updateDiagCutWithOffset(svgX) {
 // touch within a hit-zone of the ball center engages drag, touch outside
 // is unclaimed and falls through to the wrap-level pan handler.
 botsvg.addEventListener('pointerdown', e => {
+  if (window._perceptionLocked) return;  // perception locked: no drag, fall through to pan
   const p2 = botSvgPt(e);
   // Hit zone: a circle around the perception OB center (230, 148) of
   // radius 100 in SVG units. The OB itself is 82px radius; this gives a
@@ -3722,17 +3747,24 @@ function edgeZoomReset() {
 
   <div id="sliders-block" class="float-panel" style="background:rgba(10,15,10,0.97) !important;border-color:rgba(200,144,240,0.4);">
 
-  <!-- Header -->
-  <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);">
-    <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#f0df70;pointer-events:none;">SLIDERS</span>
+  <!-- Header: lock button replaces title; minimize stays as small button -->
+  <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);display:flex;align-items:center;justify-content:space-between;padding:4px 6px;">
+    <!-- Lock button (SVG style, matches table/perception locks) -->
+    <svg id="sliders-lock-btn" width="44" height="18" viewBox="0 0 44 18" style="cursor:pointer;touch-action:manipulation;flex-shrink:0;">
+      <title>Lock sliders — disables slider drags so you can pan freely from any point in this section.</title>
+      <rect x="1" y="1" width="42" height="16" rx="3" fill="rgba(240,223,112,0.55)" stroke="rgba(240,223,112,0.7)" stroke-width="0.7"/>
+      <text id="sliders-lock-txt" x="22" y="9" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#000" pointer-events="none">LOCK</text>
+    </svg>
     <div style="display:flex;gap:4px;align-items:center;">
       <button class="min-btn" title="Minimize sliders" onclick="event.stopPropagation();minimizePanel('sliders-block',document.getElementById('sliders-handle'))" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">—</button>
       <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
     </div>
   </div>
 
-  <div class="float-panel-body">
-    <div id="sliders-scale-wrap" class="panel-scale-wrap" style="padding:8px 10px 10px;width:340px;">
+  <!-- Two-column body: sliders left, angle diagram right -->
+  <div class="float-panel-body" style="display:flex;flex-direction:row;gap:8px;padding:8px;">
+    <!-- LEFT: sliders -->
+    <div id="sliders-scale-wrap" class="panel-scale-wrap" style="flex:1 1 50%;min-width:0;">
 
     <!-- BALL CONTROL group -->
     <div id="sg-ball" style="background:rgba(176,144,240,0.08);border:1px solid rgba(176,144,240,0.2);border-radius:8px;padding:8px 10px;margin-bottom:8px;">
@@ -3763,20 +3795,11 @@ function edgeZoomReset() {
 
     <div id="sg-ghost"></div>
 
-  </div>
     </div><!-- /sliders-scale-wrap -->
-  <!-- Bottom bar: SIZE scale + resize grip -->
-  <div style="display:flex;align-items:center;padding:3px 0 3px 8px;background:#0a0a0a;border-top:1px solid #1a1a1a;border-radius:0 0 10px 10px;">
-    <span style="font-size:7px;font-weight:900;color:rgba(255,255,255,0.4);font-family:Lato,sans-serif;flex-shrink:0;margin-right:5px;letter-spacing:0.5px;">SIZE</span>
-    <input type="range" id="sl-scale" min="70" max="200" value="100"
-      onclick="event.stopPropagation()"
-      oninput="scaleSliderPanel(this.value)"
-      style="flex:1;height:2px;-webkit-appearance:none;appearance:none;background:#333;border-radius:1px;cursor:pointer;outline:none;">
-    <div id="sliders-resize" style="width:16px;height:16px;cursor:se-resize;touch-action:none;user-select:none;flex-shrink:0;display:flex;align-items:flex-end;justify-content:flex-end;opacity:0.4;">
-      <svg width="10" height="10" viewBox="0 0 10 10" style="pointer-events:none;">
-        <line x1="2" y1="9" x2="9" y2="2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="6" y1="9" x2="9" y2="6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
+
+    <!-- RIGHT: angle diagram, always visible -->
+    <div id="sliders-angle-mount" style="flex:1 1 50%;min-width:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);border-radius:6px;padding:6px;">
+      <!-- The angle-panel content will be moved here at load time -->
     </div>
   </div>
   </div><!-- /sliders-block -->
@@ -3959,21 +3982,21 @@ function swapPanels(){
     if (!target) return false;
     if (target.closest('#dock, .float-panel')) return true;
     if (target.tagName === 'BUTTON' || target.tagName === 'INPUT') return true;
-    // Ball circles inside topsvg — handled by topsvg ball drag
-    if (target.closest('#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi')) return true;
+    // Lock buttons (SVG): protected so taps register
+    if (target.closest('#rail-lock-btn, #botsvg-lock-btn')) return true;
+    // Ball circles inside topsvg — handled by topsvg ball drag (unless locked)
+    if (!window._tableLocked && target.closest('#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi')) return true;
     // Rail buttons (TBL/UNIT/TYPE/GRID/SNAP) and dropdowns
     if (target.closest('#rail-size-btn, #rail-unit-btn, #rail-table-btn, ' +
                        '#rail-grid-btn, #rail-snap-btn, #rail-type-menu')) return true;
     // Cue path bars and box
     if (target.closest('#cb-path-legend, #cb-path-bar, #cb-speed-bar')) return true;
-    // Specific interactive elements — they handle their own taps/drags.
-    // Pan from empty space anywhere else IS allowed.
-    // Note: #botsvg is intentionally NOT protected. The botsvg perception
-    // drag uses a direction-sensitive threshold: horizontal motion claims
-    // the perception drag; vertical motion is abandoned, allowing this
-    // wrap-level pan handler to claim it for vertical pan.
-    if (target.closest('#perc-svg, #perc-row, #perc-invite-btn')) return true;
-    if (target.closest('#sliders-block, #shot-library-panel')) return true;
+    // Perception interactive elements (unless perception is locked)
+    if (!window._perceptionLocked && target.closest('#perc-svg, #perc-row, #perc-invite-btn')) return true;
+    // Sliders block: protected only when not locked. When locked, fall
+    // through to allow pan from the sliders area.
+    if (!window._slidersLocked && target.closest('#sliders-block')) return true;
+    if (target.closest('#shot-library-panel')) return true;
     // Angle panel and other floating overlays
     if (target.closest('#angle-panel, #info-overlay')) return true;
     return false;
@@ -3998,6 +4021,42 @@ function swapPanels(){
       e.preventDefault();
     }
     // Single finger: don't claim anything yet — wait for motion.
+  }
+
+  // Coalesce gesture-frame updates with rAF — pointermove events fire faster
+  // than display refresh, and consecutive moves with only one finger updated
+  // each (iOS delivers one finger's update per event) produce flicker if we
+  // apply per-event. Schedule one apply per animation frame.
+  var _gestureRafScheduled = false;
+  function _scheduleGestureApply() {
+    if (_gestureRafScheduled) return;
+    _gestureRafScheduled = true;
+    requestAnimationFrame(function(){
+      _gestureRafScheduled = false;
+      if (!gesture || gesture.pending || pointers.size < 2) return;
+      var mid = midpoint();
+      var dist = distance();
+      var w = getWrap();
+      var pr = w.parentElement.getBoundingClientRect();
+      var midLocalX = mid.x - pr.left;
+      var midLocalY = mid.y - pr.top;
+      var distRatio = dist / gesture.startDist;
+      var newScale = gesture.startScale * distRatio;
+      newScale = Math.max(0.4, Math.min(4, newScale));
+      var contentX = (gesture.startMidLocalX - gesture.startTx) / gesture.startScale;
+      var contentY = (gesture.startMidLocalY - gesture.startTy) / gesture.startScale;
+      var newTx = midLocalX - contentX * newScale;
+      var newTy = midLocalY - contentY * newScale;
+      if (Math.abs(newTx - gesture.lastTx) > 200 ||
+          Math.abs(newTy - gesture.lastTy) > 200) {
+        return;
+      }
+      _pz.scale = newScale;
+      _pz.tx = newTx; _pz.ty = newTy;
+      _pz.apply();
+      gesture.lastTx = newTx;
+      gesture.lastTy = newTy;
+    });
   }
 
   function onMove(e){
@@ -4027,24 +4086,8 @@ function swapPanels(){
         e.preventDefault();
         return;
       }
-      var midLocalX = mid.x - pr.left;
-      var midLocalY = mid.y - pr.top;
-      var distRatio = dist / gesture.startDist;
-      var newScale = gesture.startScale * distRatio;
-      newScale = Math.max(0.4, Math.min(4, newScale));
-      var contentX = (gesture.startMidLocalX - gesture.startTx) / gesture.startScale;
-      var contentY = (gesture.startMidLocalY - gesture.startTy) / gesture.startScale;
-      var newTx = midLocalX - contentX * newScale;
-      var newTy = midLocalY - contentY * newScale;
-      if (Math.abs(newTx - gesture.lastTx) > 200 ||
-          Math.abs(newTy - gesture.lastTy) > 200) {
-        e.preventDefault(); return;
-      }
-      _pz.scale = newScale;
-      _pz.tx = newTx; _pz.ty = newTy;
-      _pz.apply();
-      gesture.lastTx = newTx;
-      gesture.lastTy = newTy;
+      // Schedule a coalesced update on next animation frame
+      _scheduleGestureApply();
       e.preventDefault();
       return;
     }
@@ -4494,12 +4537,8 @@ function toggleSlidersPanel() {
   var panel = document.getElementById('sliders-block');
   if (!panel) return;
   panel.style.display = _slidersPanelOpen ? 'flex' : 'none';
-  if (_slidersPanelOpen) {
-    bringToTop('sliders-block');
-    requestAnimationFrame(function(){
-      positionPanelAtDock(panel);
-    });
-  }
+  // Note: sliders are permanently mounted under perception-section by
+  // load-time code. We just toggle visibility here; no repositioning.
   var invite = document.getElementById('perc-invite-btn');
   if (invite) invite.textContent = _slidersPanelOpen ? '(HIDE SPIN AND SPEED)' : '(ADD SPIN AND SPEED?)';
 }
@@ -5010,6 +5049,103 @@ document.addEventListener('DOMContentLoaded', function(){
       if (typeof render === 'function') render();
     });
   }
+
+  // Wire up panel lock buttons (SVG-based now).
+  function _wireSvgLock(btnId, txtId, flagName) {
+    var btn = document.getElementById(btnId);
+    var txt = document.getElementById(txtId);
+    var rect = btn ? btn.querySelector('rect') : null;
+    if (!btn) return;
+    function paint() {
+      var on = !!window[flagName];
+      if (txt) txt.textContent = on ? 'LOCKED' : 'LOCK';
+      if (rect) {
+        // LOCKED: bright orange. UNLOCKED: dimmer yellow (matches SNAP look).
+        rect.setAttribute('fill',  on ? 'rgba(255,140,0,0.8)' : 'rgba(240,223,112,0.55)');
+        rect.setAttribute('stroke', on ? 'rgba(255,140,0,0.95)' : 'rgba(240,223,112,0.7)');
+      }
+    }
+    paint();
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      window[flagName] = !window[flagName];
+      paint();
+    });
+  }
+  _wireSvgLock('rail-lock-btn',   'rail-lock-txt',   '_tableLocked');
+  _wireSvgLock('botsvg-lock-btn', 'botsvg-lock-txt', '_perceptionLocked');
+  _wireSvgLock('sliders-lock-btn','sliders-lock-txt','_slidersLocked');
+
+  // When sliders are locked, also disable the slider inputs so dragging
+  // a thumb doesn't fire onSliders. Keep this in sync via the lock button.
+  function _applySlidersLockState() {
+    var locked = !!window._slidersLocked;
+    var inputs = document.querySelectorAll('#sliders-block input[type="range"]');
+    inputs.forEach(function(el){ el.disabled = locked; });
+    var sg = document.querySelector('#sliders-block .sgroup, #sliders-block #sg-ball');
+    if (sg) sg.style.opacity = locked ? '0.55' : '1';
+  }
+  _applySlidersLockState();
+  // Hook into the lock button click to also update slider disabled state
+  var slBtn = document.getElementById('sliders-lock-btn');
+  if (slBtn) {
+    slBtn.addEventListener('click', function(){
+      // After the wireSvgLock click handler toggles the flag, update inputs
+      requestAnimationFrame(_applySlidersLockState);
+    });
+  }
+
+  // Move the angle-mini SVG into the right column of the sliders panel.
+  (function(){
+    var mount = document.getElementById('sliders-angle-mount');
+    var miniSvg = document.getElementById('angle-mini');
+    if (!mount || !miniSvg) return;
+    // Move the SVG into the new mount
+    mount.appendChild(miniSvg);
+    // Make it fill the column nicely
+    miniSvg.style.width  = '100%';
+    miniSvg.style.maxWidth = 'none';
+    miniSvg.style.height = 'auto';
+    miniSvg.style.margin = '0';
+    miniSvg.style.background = 'rgba(40,80,40,0.35)';
+    miniSvg.style.borderRadius = '3px';
+    // Force the angle panel to be considered "on" so render() updates it
+    if (typeof angleOn !== 'undefined') {
+      try { angleOn = true; } catch(e) {}
+    }
+  })();
+
+  // Permanently mount sliders-block under the perception section.
+  // This converts it from a floating panel into a fixed inline element.
+  (function(){
+    var sliders = document.getElementById('sliders-block');
+    var perception = document.getElementById('perception-section');
+    if (!sliders || !perception) return;
+    // Move the sliders DOM element to be right after perception-section
+    if (perception.nextSibling !== sliders) {
+      perception.parentNode.insertBefore(sliders, perception.nextSibling);
+    }
+    // Override floating styles: become a normal block element below perception
+    sliders.style.position = 'static';
+    sliders.style.display = 'flex';
+    sliders.style.width = '100%';
+    sliders.style.maxWidth = 'none';
+    sliders.style.maxHeight = 'none';
+    sliders.style.boxShadow = 'none';
+    sliders.style.zIndex = 'auto';
+    sliders.style.marginTop = '6px';
+    sliders.style.borderRadius = '8px';
+    // Hide the close button on the header (panel is permanent now)
+    var hdr = document.getElementById('sliders-handle');
+    if (hdr) {
+      var closeBtn = hdr.querySelector('button[onclick*="toggleSlidersPanel"]');
+      if (closeBtn) closeBtn.style.display = 'none';
+    }
+    // Mark internally as "open" so the dock-sliders state tracker is consistent
+    if (typeof _slidersPanelOpen !== 'undefined') {
+      try { _slidersPanelOpen = true; } catch(e) {}
+    }
+  })();
 });
 </script>
 
