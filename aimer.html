@@ -3091,16 +3091,17 @@ function updateDiagCutWithOffset(svgX) {
 }
 
 // Perception ball drag uses the same pattern as the table balls:
-// touch within a hit-zone of the ball center engages drag, touch outside
-// is unclaimed and falls through to the wrap-level pan handler.
+// touch within a hit-zone of the ball engages drag, touch outside is
+// unclaimed and falls through to the wrap-level pan handler.
 botsvg.addEventListener('pointerdown', e => {
   if (window._perceptionLocked) return;  // perception locked: no drag, fall through to pan
   const p2 = botSvgPt(e);
-  // Hit zone: a circle around the perception OB center (230, 148) of
-  // radius 100 in SVG units. The OB itself is 82px radius; this gives a
-  // small margin for grabbing without making the zone so big it eats pan.
-  const dx = p2.x - 230, dy = p2.y - 148;
-  if (Math.hypot(dx, dy) > 100) return;  // outside hit zone — let pan handle
+  // Hit zone: a horizontal band that spans the area the ghost ball can occupy
+  // at any cut angle. Vertical range is the ball's vertical extent (center 148
+  // ± radius 82, with margin). This way the user can grab the ghost wherever
+  // it currently is along the OB diameter, including extreme cut angles.
+  // botsvg viewBox is 460x300, so x can run 0..460.
+  if (p2.y < 50 || p2.y > 246) return;  // outside vertical ball band — fall through to pan
   e.preventDefault();
   e.stopPropagation();
   diagDrag = true;
