@@ -4392,25 +4392,15 @@ function toggleSlidersPanel() {
 
 // ── PINCH ZOOM COMPENSATION ───────────────────────────────────
 // Keeps the BTB toolbar at constant visual size during pinch zoom.
+// VisualViewport scale-compensation block: previously this re-scaled the
+// dock and tools-window every time the visual viewport changed. On phone
+// browsers (especially iOS) the viewport changes constantly as the URL bar
+// collapses/expands and on every scroll, causing the dock to flicker, scale,
+// and "escape" the user's finger. Disabled — dock stays a fixed size and
+// position; if the user pinch-zooms the page itself, the dock zooms with it.
+// That's normal behavior and matches what users expect.
 (function(){
-  if (!window.visualViewport) return;
-  function applyViewportScale() {
-    var s = window.visualViewport.scale;
-    var btb = document.getElementById('btb');
-    if (btb) {
-      btb.style.transform = 'scale(' + (1/s) + ')';
-      btb.style.transformOrigin = 'bottom left';
-    }
-    var dock = document.getElementById('dock');
-    if (dock) {
-      dock.style.transform = 'scale(' + (1/s) + ')';
-      dock.style.transformOrigin = 'bottom center';
-    }
-    window._vpScale = s;
-  }
-  window.visualViewport.addEventListener('resize', applyViewportScale);
-  window.visualViewport.addEventListener('scroll', applyViewportScale);
-  applyViewportScale();
+  // intentionally empty — see comment above
 })();
 
 // Collapsed circle — drag moves BTB without expanding
