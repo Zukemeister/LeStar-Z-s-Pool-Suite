@@ -1322,6 +1322,7 @@ if ('serviceWorker' in navigator) {
 
     <!-- TABLE -->
     <div class="svg-box top-box" style="position:relative;">
+      <button id="rail-lock-btn" title="Lock table — disables ball drags so you can pan freely from any point on the table." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
       <svg id="topsvg" viewBox="0 -18 460 278" preserveAspectRatio="xMidYMid meet"
            style="position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none;-webkit-user-select:none;user-select:none;overflow:hidden;"
            xmlns="http://www.w3.org/2000/svg">
@@ -1721,11 +1722,6 @@ if ('serviceWorker' in navigator) {
         </g>
       </g>
       <!-- Bottom-rail toggle buttons: GRID and SNAP -->
-      <g id="rail-lock-btn" style="cursor:pointer;touch-action:manipulation;">
-        <title>Lock table — disables ball drags so you can pan freely from any point on the table.</title>
-        <rect x="8" y="246" width="34" height="14" rx="3" fill="rgba(240,223,112,0.55)" stroke="rgba(240,223,112,0.7)" stroke-width="0.7"/>
-        <text id="rail-lock-txt" x="25" y="254" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#000" pointer-events="none">LOCK</text>
-      </g>
       <g id="rail-grid-btn" onclick="toggleMap()" style="cursor:pointer;touch-action:manipulation;">
         <title>Grid overlay — toggles a fine cyan grid over the table for precise ball placement.</title>
         <rect x="338" y="246" width="34" height="14" rx="3" fill="rgba(74,222,128,0.55)" stroke="rgba(74,222,128,0.7)" stroke-width="0.7"/>
@@ -1842,6 +1838,7 @@ if ('serviceWorker' in navigator) {
     </div>
     </div><!-- /perc-block -->
     <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;touch-action:none;">
+      <button id="botsvg-lock-btn" title="Lock perception — disables ball drag so you can pan freely from any point in this section." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
       <svg id="botsvg" viewBox="0 0 460 300" preserveAspectRatio="xMidYMid meet"
            style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;"
            xmlns="http://www.w3.org/2000/svg">
@@ -1852,11 +1849,6 @@ if ('serviceWorker' in navigator) {
           </clipPath>
         </defs>
         <rect width="460" height="300" fill="rgba(0,0,0,0.28)"/>
-        <g id="botsvg-lock-btn" style="cursor:pointer;touch-action:manipulation;">
-          <title>Lock perception — disables ball drag so you can pan freely from any point in this section.</title>
-          <rect x="8" y="8" width="34" height="14" rx="3" fill="rgba(240,223,112,0.55)" stroke="rgba(240,223,112,0.7)" stroke-width="0.7"/>
-          <text id="botsvg-lock-txt" x="25" y="16" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#000" pointer-events="none">LOCK</text>
-        </g>
         <!-- Static tick marks — never change -->
         <g id="bot-ticks">
           <line x1="230" y1="131" x2="230" y2="165" stroke="#7fd0f0" stroke-width="2.2" opacity="1.0"/>
@@ -2164,6 +2156,10 @@ function toggleCbPath() {
       var bar = document.getElementById(barId);
       if (!bar) return;
       bar.addEventListener('pointerdown', function(e){
+        // Honor lock states: if either the table or the sliders panel is
+        // locked, don't claim this gesture. Pan handler will pick it up if
+        // motion exceeds threshold, or it'll just be a tap that goes nowhere.
+        if (window._tableLocked || window._slidersLocked) return;
         e.stopPropagation();
         e.preventDefault();
         dragging = true;
@@ -2172,6 +2168,7 @@ function toggleCbPath() {
       });
       bar.addEventListener('pointermove', function(e){
         if (!dragging) return;
+        if (window._tableLocked || window._slidersLocked) { dragging = false; return; }
         e.preventDefault();
         setFromClientX(e.clientX);
       });
@@ -3815,6 +3812,11 @@ const _pz = {
     w._zscale=this.scale;
     w.style.transform=`translate(${this.tx}px,${this.ty}px) scale(${this.scale})`;
     w.style.transformOrigin='top left';
+    // Reposition floating lock buttons to overlay their panels at fixed
+    // viewport coordinates (they're position:fixed at document.body level).
+    if (typeof window._repositionFloatingLocks === 'function') {
+      window._repositionFloatingLocks();
+    }
   }
 };
 // Apply the initial scale immediately, and again on load for safety
@@ -3989,8 +3991,10 @@ function swapPanels(){
     // Rail buttons (TBL/UNIT/TYPE/GRID/SNAP) and dropdowns
     if (target.closest('#rail-size-btn, #rail-unit-btn, #rail-table-btn, ' +
                        '#rail-grid-btn, #rail-snap-btn, #rail-type-menu')) return true;
-    // Cue path bars and box
-    if (target.closest('#cb-path-legend, #cb-path-bar, #cb-speed-bar')) return true;
+    // Cue path bars and box (protected only when interactive, i.e. neither
+    // the table nor the sliders are locked).
+    if (!window._tableLocked && !window._slidersLocked &&
+        target.closest('#cb-path-legend, #cb-path-bar, #cb-speed-bar')) return true;
     // Perception interactive elements (unless perception is locked)
     if (!window._perceptionLocked && target.closest('#perc-svg, #perc-row, #perc-invite-btn')) return true;
     // Sliders block: protected only when not locked. When locked, fall
@@ -5075,24 +5079,32 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
 
-  // Wire up panel lock buttons (SVG-based now).
+  // Wire up panel lock buttons. Works for both HTML buttons (with text content)
+  // and SVG-style buttons (with a child <text> element, txtId optional).
   var _lockBtnRepainters = [];
   window._refreshAllLockBtns = function(){
     _lockBtnRepainters.forEach(function(fn){ fn(); });
-    // Also reapply slider input disabled state
     if (typeof _applySlidersLockState === 'function') _applySlidersLockState();
   };
   function _wireSvgLock(btnId, txtId, flagName) {
     var btn = document.getElementById(btnId);
-    var txt = document.getElementById(txtId);
-    var rect = btn ? btn.querySelector('rect') : null;
     if (!btn) return;
+    var txt = txtId ? document.getElementById(txtId) : null;
+    var rect = btn.querySelector ? btn.querySelector('rect') : null;
+    var isHtmlBtn = (btn.tagName === 'BUTTON');
     function paint() {
       var on = !!window[flagName];
-      if (txt) txt.textContent = on ? 'LOCKED' : 'LOCK';
+      if (txt) {
+        txt.textContent = on ? 'LOCKED' : 'LOCK';
+      } else if (isHtmlBtn) {
+        btn.textContent = on ? 'LOCKED' : 'LOCK';
+      }
       if (rect) {
         rect.setAttribute('fill',  on ? 'rgba(255,140,0,0.8)' : 'rgba(240,223,112,0.55)');
         rect.setAttribute('stroke', on ? 'rgba(255,140,0,0.95)' : 'rgba(240,223,112,0.7)');
+      } else if (isHtmlBtn) {
+        btn.style.background = on ? 'rgba(255,140,0,0.8)' : 'rgba(240,223,112,0.55)';
+        btn.style.borderColor = on ? 'rgba(255,140,0,0.95)' : 'rgba(240,223,112,0.7)';
       }
     }
     paint();
@@ -5103,9 +5115,70 @@ document.addEventListener('DOMContentLoaded', function(){
       paint();
     });
   }
-  _wireSvgLock('rail-lock-btn',   'rail-lock-txt',   '_tableLocked');
-  _wireSvgLock('botsvg-lock-btn', 'botsvg-lock-txt', '_perceptionLocked');
+  _wireSvgLock('rail-lock-btn',   null,              '_tableLocked');
+  _wireSvgLock('botsvg-lock-btn', null,              '_perceptionLocked');
   _wireSvgLock('sliders-lock-btn','sliders-lock-txt','_slidersLocked');
+
+  // Move the table & perception lock buttons to document.body so they live
+  // outside zoom-wrap. Position them with position:fixed at the viewport
+  // coordinates of their respective panels' bottom-left / top-left corners.
+  // They no longer pan or zoom with the content — they "float" in screen space,
+  // always staying at their panel's corner regardless of zoom or pan state.
+  (function(){
+    var tableBtn = document.getElementById('rail-lock-btn');
+    var percBtn  = document.getElementById('botsvg-lock-btn');
+    if (tableBtn) document.body.appendChild(tableBtn);
+    if (percBtn)  document.body.appendChild(percBtn);
+
+    function reposition() {
+      var pad = 6;  // distance from viewport edge when clamped
+      // Table panel: anchor button to bottom-left of the table SVG box.
+      if (tableBtn) {
+        var box = document.querySelector('.svg-box.top-box');
+        if (box) {
+          var r = box.getBoundingClientRect();
+          var bw = tableBtn.offsetWidth || 60;
+          var bh = tableBtn.offsetHeight || 22;
+          // Ideal position: bottom-left of panel, with 8px inset.
+          var idealLeft = r.left + 8;
+          var idealTop  = r.bottom - bh - 8;
+          // Clamp to viewport so the button is always fully visible.
+          var clampedLeft = Math.max(pad, Math.min(window.innerWidth  - bw - pad, idealLeft));
+          var clampedTop  = Math.max(pad, Math.min(window.innerHeight - bh - pad, idealTop));
+          tableBtn.style.visibility = 'visible';
+          tableBtn.style.left = Math.round(clampedLeft) + 'px';
+          tableBtn.style.top  = Math.round(clampedTop)  + 'px';
+        }
+      }
+      // Perception ball panel: anchor button to top-left of the aim-wrap.
+      if (percBtn) {
+        var aim = document.getElementById('aim-wrap');
+        if (aim) {
+          var r2 = aim.getBoundingClientRect();
+          var bw2 = percBtn.offsetWidth || 60;
+          var bh2 = percBtn.offsetHeight || 22;
+          var idealLeft2 = r2.left + 8;
+          var idealTop2  = r2.top  + 8;
+          var clampedLeft2 = Math.max(pad, Math.min(window.innerWidth  - bw2 - pad, idealLeft2));
+          var clampedTop2  = Math.max(pad, Math.min(window.innerHeight - bh2 - pad, idealTop2));
+          percBtn.style.visibility = 'visible';
+          percBtn.style.left = Math.round(clampedLeft2) + 'px';
+          percBtn.style.top  = Math.round(clampedTop2)  + 'px';
+        }
+      }
+    }
+    window._repositionFloatingLocks = reposition;
+    window.addEventListener('resize', reposition, {passive:true});
+    window.addEventListener('scroll', reposition, {passive:true});
+    // Also reposition after every animation frame for the first 2 seconds
+    // to catch any late layout shifts (font load, image load, etc.)
+    var startTime = Date.now();
+    function tickReposition() {
+      reposition();
+      if (Date.now() - startTime < 2000) requestAnimationFrame(tickReposition);
+    }
+    requestAnimationFrame(tickReposition);
+  })();
   // Detach/attach helper: a panel can be popped out of its inline parent and
   // floated as a position:fixed draggable element, then re-attached. The
   // floating panel uses a simple top-bar drag handler.
