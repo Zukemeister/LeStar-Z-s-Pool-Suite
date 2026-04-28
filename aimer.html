@@ -2319,12 +2319,12 @@ svg.addEventListener('pointermove', e => {
   } else if (drag==='cb') {
     const snapped = applySnap(p.x, p.y);
     const clamped = clampBall(snapped.x, snapped.y);
-    S.cb = {x: snapped.x, y: snapped.y};
+    S.cb = {x: clamped.x, y: clamped.y};
     // Recompute cut from positions
     { const _c = computeCutFromPositions(S.cb, S.ob, S.pocket || 'TR');
       S.diagCutDeg = _c.cutDeg; S._diagDragRh = _c.rh; S._userAdjustedDiag = false; }
     justShot = false;
-    if (snapped.label) showSnapLabel($('topsvg'), snapped.x, snapped.y, snapped.label, 'cb');
+    if (snapped.label) showSnapLabel($('topsvg'), clamped.x, clamped.y, snapped.label, 'cb');
   }
   render();
 });
@@ -3876,33 +3876,34 @@ function swapPanels(){
 
 <script>
 // ── PAN VIA POINTER EVENTS ON ZOOM-WRAP ──────────────────────
-// Multi-touch pan/zoom on the table wrapper.
-// - One finger drag: ignored (does NOT pan). Single-finger gestures are
-//   reserved for ball drags (which have their own handlers on topsvg) and
-//   for taps on UI elements.
-// - Two finger drag: pan the table (any direction).
-// - Two finger pinch: zoom in/out.
-// - The legacy pan-mode (dock-hand) still works via the modal mechanism for
-//   accessibility, gated by the same _panLocked flag check.
+// SINGLE-FINGER GLIDE pan + two-finger pinch zoom on the table wrapper.
+//
+// Single-finger touch starts in a "pending" state — neither pan nor click has
+// been claimed. The handler watches motion:
+//   - If the finger releases before MOTION_THRESHOLD: it was a tap, no pan
+//     started, and any tap handlers (buttons, readouts) fire normally.
+//   - If the finger moves beyond MOTION_THRESHOLD: pan starts. Subsequent
+//     motion drags the table.
+// Crucially: pan is only claimed if the original touch landed on empty felt
+// (not on a ball, not on a UI element). A finger that lands on a ball will
+// be picked up by the ball-drag handler on topsvg, which has its own
+// threshold.
+//
+// Two-finger touch is always pinch+pan, with zoom anchored at the gesture
+// midpoint so the content under the fingers stays under the fingers.
 (function(){
   var wrap = null;
-  // Map of active pointers: pointerId → {x, y}
-  var pointers = new Map();
-  // State of an active 2-finger gesture
-  var gesture = null;  // { startMidX, startMidY, startDist, startTx, startTy, startScale }
-  // Single-pointer pan state (only used when in legacy pan mode)
-  var panPtr = null;
-  var panStartX=0, panStartY=0, panInitTx=0, panInitTy=0;
+  var pointers = new Map();  // pointerId → { x, y, startX, startY, startTarget }
+  var gesture = null;        // 2-finger state
+  var panState = null;       // { ptrId, startTx, startTy } once pan is active
+  var MOTION_THRESHOLD = 8;  // pixels before single-finger pan begins
 
   function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
 
   function midpoint() {
     var pts = Array.from(pointers.values());
     if (pts.length < 2) return null;
-    return {
-      x: (pts[0].x + pts[1].x) / 2,
-      y: (pts[0].y + pts[1].y) / 2
-    };
+    return { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
   }
   function distance() {
     var pts = Array.from(pointers.values());
@@ -3928,66 +3929,57 @@ function swapPanels(){
     };
   }
 
+  // Decide: did this pointer-down start on something that should NOT trigger
+  // a pan-from-felt gesture? (Balls, UI elements, controls.)
+  function isProtectedTarget(target) {
+    if (!target) return false;
+    if (target.closest('#dock, .float-panel')) return true;
+    if (target.tagName === 'BUTTON' || target.tagName === 'INPUT') return true;
+    // Ball circles inside topsvg — handled by topsvg ball drag
+    if (target.closest('#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi')) return true;
+    // Rail buttons (TBL/UNIT/TYPE/GRID/SNAP) and dropdowns
+    if (target.closest('#rail-size-btn, #rail-unit-btn, #rail-table-btn, ' +
+                       '#rail-grid-btn, #rail-snap-btn, #rail-type-menu')) return true;
+    // Cue path bars and box
+    if (target.closest('#cb-path-legend, #cb-path-bar, #cb-speed-bar')) return true;
+    return false;
+  }
+
   function onDown(e){
-    // Always ignore touches on dock, panels, buttons, inputs — they have their
-    // own handlers and shouldn't trigger pan/zoom.
-    if(e.target.closest('#dock, .float-panel')) return;
-    if(e.target.tagName==='BUTTON' || e.target.tagName==='INPUT') return;
+    pointers.set(e.pointerId, {
+      x: e.clientX,
+      y: e.clientY,
+      startX: e.clientX,
+      startY: e.clientY,
+      startTarget: e.target,
+      startTime: Date.now()
+    });
 
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    // Legacy pan mode (dock-hand active): single-finger drag pans.
-    // This preserves the explicit pan-mode for users who prefer it.
-    if (window._panLocked === false && pointers.size === 1) {
-      panPtr = e.pointerId;
-      panStartX = e.clientX; panStartY = e.clientY;
-      panInitTx = _pz.tx;    panInitTy = _pz.ty;
-      getWrap().setPointerCapture(e.pointerId);
-      e.preventDefault();
-      return;
-    }
-
-    // Two-finger gesture about to start. We DON'T capture startDist yet —
-    // wait until the first pointermove arrives with both fingers registered,
-    // so both pointer positions are known. This avoids "flash zoom" on
-    // touch-down where startDist is computed from a stale or phantom position.
+    // Two fingers down: enter pinch+pan gesture (cancel any in-progress pan/drag)
     if (pointers.size === 2) {
-      // Cancel any single-finger pan that was in progress
-      panPtr = null;
-      // Cancel any ball drag — two fingers always mean pan/zoom
+      panState = null;
       if (typeof drag !== 'undefined' && drag) drag = null;
       if (typeof diagDrag !== 'undefined' && diagDrag) diagDrag = false;
-      // Mark that a gesture WILL start; init on first move.
       gesture = { pending: true };
       e.preventDefault();
     }
+    // Single finger: don't claim anything yet — wait for motion.
   }
 
   function onMove(e){
-    if (!pointers.has(e.pointerId)) return;
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    var p = pointers.get(e.pointerId);
+    if (!p) return;
+    p.x = e.clientX;
+    p.y = e.clientY;
 
-    // Single-finger pan (legacy mode only)
-    if (panPtr !== null && e.pointerId === panPtr) {
-      var newTx = panInitTx + (e.clientX - panStartX);
-      var newTy = panInitTy + (e.clientY - panStartY);
-      var c = clampPan(newTx, newTy);
-      _pz.tx = c.tx; _pz.ty = c.ty;
-      _pz.apply();
-      e.preventDefault();
-      return;
-    }
-
-    // Two-finger gesture: pan + zoom, with zoom anchored at the gesture midpoint.
+    // Two-finger gesture
     if (gesture && pointers.size >= 2) {
       var mid = midpoint();
       var dist = distance();
       var w = getWrap();
       var pr = w.parentElement.getBoundingClientRect();
-      // First valid 2-finger move: lock in the gesture's start state now that
-      // both pointers have known, current positions.
       if (gesture.pending) {
-        if (dist < 20) return;  // sanity: ignore implausibly close fingers
+        if (dist < 20) return;
         gesture = {
           startMidLocalX: mid.x - pr.left,
           startMidLocalY: mid.y - pr.top,
@@ -3995,61 +3987,79 @@ function swapPanels(){
           startTx: _pz.tx,
           startTy: _pz.ty,
           startScale: _pz.scale,
-          // Track last applied tx/ty/scale to ignore single-frame outliers
           lastTx: _pz.tx,
-          lastTy: _pz.ty,
-          lastScale: _pz.scale
+          lastTy: _pz.ty
         };
         e.preventDefault();
         return;
       }
-      // Current midpoint in parent-local coords
       var midLocalX = mid.x - pr.left;
       var midLocalY = mid.y - pr.top;
-      // Scale: only update if the distance changed by more than a small dead
-      // zone. This prevents incidental zoom when the user is mostly panning.
       var distRatio = dist / gesture.startDist;
-      // Dead zone: ignore distance changes within ±3% (jitter).
       if (Math.abs(distRatio - 1) < 0.03) distRatio = 1;
       var newScale = gesture.startScale * distRatio;
       newScale = Math.max(0.4, Math.min(4, newScale));
-      // Compute the content-coordinate point that was under the start midpoint
       var contentX = (gesture.startMidLocalX - gesture.startTx) / gesture.startScale;
       var contentY = (gesture.startMidLocalY - gesture.startTy) / gesture.startScale;
-      // Place that content point under the CURRENT midpoint at the new scale
       var newTx = midLocalX - contentX * newScale;
       var newTy = midLocalY - contentY * newScale;
-      // Outlier rejection: if the proposed change is enormous (more than 200
-      // px in a single frame), it's probably a phantom event — ignore.
       if (Math.abs(newTx - gesture.lastTx) > 200 ||
           Math.abs(newTy - gesture.lastTy) > 200) {
-        e.preventDefault();
-        return;
+        e.preventDefault(); return;
       }
       _pz.scale = newScale;
-      _pz.tx = newTx;
-      _pz.ty = newTy;
+      _pz.tx = newTx; _pz.ty = newTy;
       _pz.apply();
       gesture.lastTx = newTx;
       gesture.lastTy = newTy;
-      gesture.lastScale = newScale;
       e.preventDefault();
+      return;
+    }
+
+    // Single-finger pan: only triggers when motion exceeds threshold AND
+    // the original target wasn't a protected element.
+    if (pointers.size === 1) {
+      // Already panning?
+      if (panState && panState.ptrId === e.pointerId) {
+        var newTx = panState.startTx + (e.clientX - p.startX);
+        var newTy = panState.startTy + (e.clientY - p.startY);
+        var c = clampPan(newTx, newTy);
+        _pz.tx = c.tx; _pz.ty = c.ty;
+        _pz.apply();
+        e.preventDefault();
+        return;
+      }
+      // Not yet panning — check if we should start.
+      if (isProtectedTarget(p.startTarget)) return;  // ball or UI: hands off
+      var dx = e.clientX - p.startX;
+      var dy = e.clientY - p.startY;
+      if (Math.hypot(dx, dy) >= MOTION_THRESHOLD) {
+        panState = {
+          ptrId: e.pointerId,
+          startTx: _pz.tx,
+          startTy: _pz.ty
+        };
+        getWrap().setPointerCapture(e.pointerId);
+        e.preventDefault();
+      }
     }
   }
 
   function onUp(e){
     pointers.delete(e.pointerId);
-    if (e.pointerId === panPtr) panPtr = null;
-    if (pointers.size < 2) {
-      // Gesture ended (or downgraded to single finger). Apply the clamp now
-      // so if the user dragged outside the soft limits, the table eases back
-      // to a valid position. (We didn't clamp during the gesture because that
-      // produces visible snapping while the user is mid-pinch.)
-      if (gesture && !gesture.pending) {
-        var c = clampPan(_pz.tx, _pz.ty);
-        _pz.tx = c.tx; _pz.ty = c.ty;
-        _pz.apply();
-      }
+    if (panState && panState.ptrId === e.pointerId) {
+      // Apply clamp on release in case user dragged past soft limit during pan
+      var c = clampPan(_pz.tx, _pz.ty);
+      _pz.tx = c.tx; _pz.ty = c.ty;
+      _pz.apply();
+      panState = null;
+    }
+    if (pointers.size < 2 && gesture && !gesture.pending) {
+      var c2 = clampPan(_pz.tx, _pz.ty);
+      _pz.tx = c2.tx; _pz.ty = c2.ty;
+      _pz.apply();
+      gesture = null;
+    } else if (pointers.size < 2) {
       gesture = null;
     }
   }
