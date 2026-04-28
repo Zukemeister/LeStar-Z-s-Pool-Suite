@@ -3757,7 +3757,6 @@ function edgeZoomReset() {
     </svg>
     <div style="display:flex;gap:4px;align-items:center;">
       <button id="sliders-detach-btn" title="Detach sliders — pop out as a floating panel you can drag." style="background:rgba(58,176,255,0.12);border:1px solid rgba(58,176,255,0.35);border-radius:5px;color:#3ab0ff;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">↗</button>
-      <button class="min-btn" title="Minimize sliders" onclick="event.stopPropagation();minimizePanel('sliders-block',document.getElementById('sliders-handle'))" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">—</button>
       <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
     </div>
   </div>
@@ -5139,10 +5138,30 @@ document.addEventListener('DOMContentLoaded', function(){
       detached = true;
       savedInlineStyle = panel.getAttribute('style') || '';
       var r = panel.getBoundingClientRect();
+      // Compute initial floating position. Default to where the panel was,
+      // but clamp so it's clearly visible inside the viewport. If the
+      // original spot is off-screen (which can happen when the panel sits
+      // below the fold), reposition to the upper-middle of the visible area.
+      var w = Math.max(280, Math.round(r.width || 320));
+      var h = Math.max(120, Math.round(r.height || 240));
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      var left = Math.round(r.left);
+      var top  = Math.round(r.top);
+      // If off-screen or unreasonable, place in upper-middle area
+      if (top < 0 || top + 60 > vh || left < 0 || left + 40 > vw || w > vw) {
+        w = Math.min(w, vw - 20);
+        left = Math.round((vw - w) / 2);
+        top = Math.round(vh * 0.15);
+      } else {
+        // Clamp so it fits in viewport
+        left = Math.max(8, Math.min(vw - w - 8, left));
+        top  = Math.max(8, Math.min(vh - 60, top));
+      }
       document.body.appendChild(panel);
       panel.style.cssText =
-        'position:fixed;left:'+Math.round(r.left)+'px;top:'+Math.round(r.top)+'px;' +
-        'width:'+Math.round(r.width)+'px;z-index:9000;' +
+        'position:fixed;left:'+left+'px;top:'+top+'px;' +
+        'width:'+w+'px;max-height:'+(vh - top - 8)+'px;overflow:auto;z-index:9000;' +
         'background:rgba(10,15,10,0.97);border:1px solid rgba(200,144,240,0.4);border-radius:8px;' +
         'box-shadow:0 4px 24px rgba(0,0,0,0.45);';
       btn.textContent = '↙';
