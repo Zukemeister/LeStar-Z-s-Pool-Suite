@@ -3947,35 +3947,18 @@ function swapPanels(){
       return;
     }
 
-    // Two-finger gesture starts: capture initial state.
+    // Two-finger gesture about to start. We DON'T capture startDist yet —
+    // wait until the first pointermove arrives with both fingers registered,
+    // so both pointer positions are known. This avoids "flash zoom" on
+    // touch-down where startDist is computed from a stale or phantom position.
     if (pointers.size === 2) {
       // Cancel any single-finger pan that was in progress
       panPtr = null;
-      // Cancel any ball drag in progress — two fingers always means pan/zoom,
-      // never ball manipulation.
-      if (typeof drag !== 'undefined' && drag) {
-        drag = null;
-      }
-      if (typeof diagDrag !== 'undefined' && diagDrag) {
-        diagDrag = false;
-      }
-      var mid = midpoint();
-      // Compute midpoint relative to the wrapper's parent, which is the
-      // coordinate space of _pz.tx/ty. This lets us zoom about the midpoint:
-      // the content point under the midpoint stays there as scale changes.
-      var w = getWrap();
-      var pr = w.parentElement.getBoundingClientRect();
-      gesture = {
-        startMidX: mid.x,
-        startMidY: mid.y,
-        // Midpoint in parent's local coordinates
-        startMidLocalX: mid.x - pr.left,
-        startMidLocalY: mid.y - pr.top,
-        startDist: distance(),
-        startTx: _pz.tx,
-        startTy: _pz.ty,
-        startScale: _pz.scale
-      };
+      // Cancel any ball drag — two fingers always mean pan/zoom
+      if (typeof drag !== 'undefined' && drag) drag = null;
+      if (typeof diagDrag !== 'undefined' && diagDrag) diagDrag = false;
+      // Mark that a gesture WILL start; init on first move.
+      gesture = { pending: true };
       e.preventDefault();
     }
   }
@@ -4001,6 +3984,21 @@ function swapPanels(){
       var dist = distance();
       var w = getWrap();
       var pr = w.parentElement.getBoundingClientRect();
+      // First valid 2-finger move: lock in the gesture's start state now that
+      // both pointers have known, current positions.
+      if (gesture.pending) {
+        if (dist < 20) return;  // sanity: ignore implausibly close fingers
+        gesture = {
+          startMidLocalX: mid.x - pr.left,
+          startMidLocalY: mid.y - pr.top,
+          startDist: dist,
+          startTx: _pz.tx,
+          startTy: _pz.ty,
+          startScale: _pz.scale
+        };
+        e.preventDefault();
+        return;  // don't apply any change yet — this frame is just init
+      }
       // Current midpoint in parent-local coords
       var midLocalX = mid.x - pr.left;
       var midLocalY = mid.y - pr.top;
