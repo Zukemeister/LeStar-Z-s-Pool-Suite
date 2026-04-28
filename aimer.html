@@ -3994,17 +3994,24 @@ function swapPanels(){
           startDist: dist,
           startTx: _pz.tx,
           startTy: _pz.ty,
-          startScale: _pz.scale
+          startScale: _pz.scale,
+          // Track last applied tx/ty/scale to ignore single-frame outliers
+          lastTx: _pz.tx,
+          lastTy: _pz.ty,
+          lastScale: _pz.scale
         };
         e.preventDefault();
-        return;  // don't apply any change yet — this frame is just init
+        return;
       }
       // Current midpoint in parent-local coords
       var midLocalX = mid.x - pr.left;
       var midLocalY = mid.y - pr.top;
-      // New scale based on pinch distance change
-      var scaleFactor = (gesture.startDist > 5) ? (dist / gesture.startDist) : 1;
-      var newScale = gesture.startScale * scaleFactor;
+      // Scale: only update if the distance changed by more than a small dead
+      // zone. This prevents incidental zoom when the user is mostly panning.
+      var distRatio = dist / gesture.startDist;
+      // Dead zone: ignore distance changes within ±3% (jitter).
+      if (Math.abs(distRatio - 1) < 0.03) distRatio = 1;
+      var newScale = gesture.startScale * distRatio;
       newScale = Math.max(0.4, Math.min(4, newScale));
       // Compute the content-coordinate point that was under the start midpoint
       var contentX = (gesture.startMidLocalX - gesture.startTx) / gesture.startScale;
@@ -4012,10 +4019,20 @@ function swapPanels(){
       // Place that content point under the CURRENT midpoint at the new scale
       var newTx = midLocalX - contentX * newScale;
       var newTy = midLocalY - contentY * newScale;
+      // Outlier rejection: if the proposed change is enormous (more than 200
+      // px in a single frame), it's probably a phantom event — ignore.
+      if (Math.abs(newTx - gesture.lastTx) > 200 ||
+          Math.abs(newTy - gesture.lastTy) > 200) {
+        e.preventDefault();
+        return;
+      }
       _pz.scale = newScale;
-      var c = clampPan(newTx, newTy);
-      _pz.tx = c.tx; _pz.ty = c.ty;
+      _pz.tx = newTx;
+      _pz.ty = newTy;
       _pz.apply();
+      gesture.lastTx = newTx;
+      gesture.lastTy = newTy;
+      gesture.lastScale = newScale;
       e.preventDefault();
     }
   }
@@ -4023,10 +4040,16 @@ function swapPanels(){
   function onUp(e){
     pointers.delete(e.pointerId);
     if (e.pointerId === panPtr) panPtr = null;
-    // If we drop below 2 fingers, end any pinch gesture.
-    // Don't try to convert remaining finger to a single-finger pan — that
-    // creates accidental drags after pinch-zoom releases.
     if (pointers.size < 2) {
+      // Gesture ended (or downgraded to single finger). Apply the clamp now
+      // so if the user dragged outside the soft limits, the table eases back
+      // to a valid position. (We didn't clamp during the gesture because that
+      // produces visible snapping while the user is mid-pinch.)
+      if (gesture && !gesture.pending) {
+        var c = clampPan(_pz.tx, _pz.ty);
+        _pz.tx = c.tx; _pz.ty = c.ty;
+        _pz.apply();
+      }
       gesture = null;
     }
   }
