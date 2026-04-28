@@ -3951,10 +3951,26 @@ function swapPanels(){
     if (pointers.size === 2) {
       // Cancel any single-finger pan that was in progress
       panPtr = null;
+      // Cancel any ball drag in progress — two fingers always means pan/zoom,
+      // never ball manipulation.
+      if (typeof drag !== 'undefined' && drag) {
+        drag = null;
+      }
+      if (typeof diagDrag !== 'undefined' && diagDrag) {
+        diagDrag = false;
+      }
       var mid = midpoint();
+      // Compute midpoint relative to the wrapper's parent, which is the
+      // coordinate space of _pz.tx/ty. This lets us zoom about the midpoint:
+      // the content point under the midpoint stays there as scale changes.
+      var w = getWrap();
+      var pr = w.parentElement.getBoundingClientRect();
       gesture = {
         startMidX: mid.x,
         startMidY: mid.y,
+        // Midpoint in parent's local coordinates
+        startMidLocalX: mid.x - pr.left,
+        startMidLocalY: mid.y - pr.top,
         startDist: distance(),
         startTx: _pz.tx,
         startTy: _pz.ty,
@@ -3979,21 +3995,26 @@ function swapPanels(){
       return;
     }
 
-    // Two-finger gesture: pan + zoom
+    // Two-finger gesture: pan + zoom, with zoom anchored at the gesture midpoint.
     if (gesture && pointers.size >= 2) {
       var mid = midpoint();
       var dist = distance();
-      // Zoom factor based on pinch distance change
+      var w = getWrap();
+      var pr = w.parentElement.getBoundingClientRect();
+      // Current midpoint in parent-local coords
+      var midLocalX = mid.x - pr.left;
+      var midLocalY = mid.y - pr.top;
+      // New scale based on pinch distance change
       var scaleFactor = (gesture.startDist > 5) ? (dist / gesture.startDist) : 1;
       var newScale = gesture.startScale * scaleFactor;
-      // Clamp scale to a sensible range (e.g., 0.4x to 4x)
       newScale = Math.max(0.4, Math.min(4, newScale));
+      // Compute the content-coordinate point that was under the start midpoint
+      var contentX = (gesture.startMidLocalX - gesture.startTx) / gesture.startScale;
+      var contentY = (gesture.startMidLocalY - gesture.startTy) / gesture.startScale;
+      // Place that content point under the CURRENT midpoint at the new scale
+      var newTx = midLocalX - contentX * newScale;
+      var newTy = midLocalY - contentY * newScale;
       _pz.scale = newScale;
-      // Pan based on midpoint movement
-      var dx = mid.x - gesture.startMidX;
-      var dy = mid.y - gesture.startMidY;
-      var newTx = gesture.startTx + dx;
-      var newTy = gesture.startTy + dy;
       var c = clampPan(newTx, newTy);
       _pz.tx = c.tx; _pz.ty = c.ty;
       _pz.apply();
