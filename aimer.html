@@ -2295,20 +2295,40 @@ function tableCutDeg() {
 }
 
 const svg = $('topsvg');
+// Offset captured when grabbing a ball — finger position relative to ball
+// center. Maintained throughout the drag so the ball doesn't jump to the
+// finger position on touch-down.
+let _ballGrabDx = 0, _ballGrabDy = 0;
 svg.addEventListener('pointerdown', e => {
   const p = svgPt(e);
   // Ball drag works regardless of pan/ball mode. The wrapper-level pan handler
-  // requires 2 fingers for pan, so a single-finger touch on a ball can safely
-  // engage the ball drag. The pan-mode toggle is now optional and mostly a
-  // legacy/accessibility affordance.
-  if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); e.stopPropagation(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
-  if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); e.stopPropagation(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
+  // ignores touches that started on a ball; the ball handler picks them up.
+  if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) {
+    e.preventDefault(); e.stopPropagation();
+    drag = 'ob';
+    _ballGrabDx = p.x - S.ob.x;
+    _ballGrabDy = p.y - S.ob.y;
+    svg.setPointerCapture(e.pointerId);
+    return;
+  }
+  if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) {
+    e.preventDefault(); e.stopPropagation();
+    drag = 'cb';
+    _ballGrabDx = p.x - S.cb.x;
+    _ballGrabDy = p.y - S.cb.y;
+    svg.setPointerCapture(e.pointerId);
+    return;
+  }
 });
 svg.addEventListener('pointermove', e => {
   if (!drag) return; e.preventDefault();
   const p = svgPt(e);
+  // Apply the offset captured at grab time so the ball stays under the
+  // finger from where it was grabbed (no jump to fingertip).
+  const targetX = p.x - _ballGrabDx;
+  const targetY = p.y - _ballGrabDy;
   if (drag==='ob') {
-    const snapped = applySnap(p.x, p.y);
+    const snapped = applySnap(targetX, targetY);
     const clamped = clampBall(snapped.x, snapped.y);
     S.ob = {x: clamped.x, y: clamped.y};
     justShot = false;
@@ -2317,7 +2337,7 @@ svg.addEventListener('pointermove', e => {
     { const _c = computeCutFromPositions(S.cb, S.ob, S.pocket || 'TR');
       S.diagCutDeg = _c.cutDeg; S._diagDragRh = _c.rh; S._userAdjustedDiag = false; }
   } else if (drag==='cb') {
-    const snapped = applySnap(p.x, p.y);
+    const snapped = applySnap(targetX, targetY);
     const clamped = clampBall(snapped.x, snapped.y);
     S.cb = {x: clamped.x, y: clamped.y};
     // Recompute cut from positions
@@ -3942,6 +3962,12 @@ function swapPanels(){
                        '#rail-grid-btn, #rail-snap-btn, #rail-type-menu')) return true;
     // Cue path bars and box
     if (target.closest('#cb-path-legend, #cb-path-bar, #cb-speed-bar')) return true;
+    // Perception section: perception ball drag, RC slider, readouts, vernier
+    // arrows, ghost opacity buttons. ALL of this is below the table but
+    // inside zoom-wrap; hands off for the pan handler.
+    if (target.closest('#perception-section, #botsvg, #perc-row, #perc-svg')) return true;
+    // Angle panel and other floating overlays inside zoom-wrap
+    if (target.closest('#angle-panel, #info-overlay')) return true;
     return false;
   }
 
