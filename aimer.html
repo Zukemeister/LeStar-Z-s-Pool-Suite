@@ -1944,12 +1944,12 @@ if ('serviceWorker' in navigator) {
         <!-- Contact point line — always on top -->
         <line id="bot-contact-line" x1="230" y1="0" x2="230" y2="230" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0"/>
         <!-- Opacity +/- buttons bottom-right -->
-        <g onclick="if(window._panLocked!==true)return;ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
+        <g onclick="ghostOpacity=Math.max(0.1,parseFloat((ghostOpacity-0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
           <rect x="340" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
           <text x="358" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">−</text>
         </g>
         <text x="395" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.75)">OPACITY</text>
-        <g onclick="if(window._panLocked!==true)return;ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
+        <g onclick="ghostOpacity=Math.min(1.0,parseFloat((ghostOpacity+0.2).toFixed(1)));render();" style="cursor:pointer;touch-action:manipulation;">
           <rect x="418" y="268" width="36" height="26" rx="5" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
           <text x="436" y="285" text-anchor="middle" font-family="Lato,sans-serif" font-size="16" font-weight="900" fill="rgba(255,255,255,0.7)">+</text>
         </g>
@@ -2074,7 +2074,7 @@ function togglePan(){
   const _pan = document.getElementById('ep-pan');
   if (_pan) { _pan.classList.toggle('dim', !panMode); _pan.classList.toggle('on', panMode); _pan.innerHTML = panMode ? 'DRAG<br>MODE ON' : 'DRAG<br>MODE OFF'; }
 }
-window._panLocked = false;
+window._panLocked = true;  // default: single-finger does NOT pan; pan is two-finger
 let lockTable = true;
 let lockBalls = true;
 let lockSliders = true;
@@ -2084,7 +2084,6 @@ const SNAP_RADIUS = 14;
 const ghostOn = true;  // always on
 let angleOn = false;
 function toggleContactDot() {
-  if (window._panLocked !== true) return;
   contactDotOn = !contactDotOn;
   const box = document.getElementById('r-cp-box');
   if (box) {
@@ -2095,7 +2094,6 @@ function toggleContactDot() {
 }
 
 function toggleAngle() {
-  if (window._panLocked !== true) return;
   angleOn = !angleOn;
   const panel = document.getElementById('angle-panel');
   if (panel) panel.style.display = angleOn ? 'block' : 'none';
@@ -2143,7 +2141,6 @@ function toggleCbPath() {
       var bar = document.getElementById(barId);
       if (!bar) return;
       bar.addEventListener('pointerdown', function(e){
-        if (window._panLocked !== true) return;  // pan mode — let table grab it
         e.stopPropagation();
         e.preventDefault();
         dragging = true;
@@ -2152,7 +2149,6 @@ function toggleCbPath() {
       });
       bar.addEventListener('pointermove', function(e){
         if (!dragging) return;
-        if (window._panLocked !== true) { dragging = false; return; }
         e.preventDefault();
         setFromClientX(e.clientX);
       });
@@ -2301,7 +2297,10 @@ function tableCutDeg() {
 const svg = $('topsvg');
 svg.addEventListener('pointerdown', e => {
   const p = svgPt(e);
-  if (window._panLocked!==true) return;
+  // Ball drag works regardless of pan/ball mode. The wrapper-level pan handler
+  // requires 2 fingers for pan, so a single-finger touch on a ball can safely
+  // engage the ball drag. The pan-mode toggle is now optional and mostly a
+  // legacy/accessibility affordance.
   if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) { e.preventDefault(); e.stopPropagation(); drag='ob'; svg.setPointerCapture(e.pointerId); return; }
   if (Math.hypot(p.x-S.cb.x, p.y-S.cb.y) < 36) { e.preventDefault(); e.stopPropagation(); drag='cb'; svg.setPointerCapture(e.pointerId); return; }
 });
@@ -3051,7 +3050,7 @@ function updateDiagCutWithOffset(svgX) {
 }
 
 botsvg.addEventListener('pointerdown', e => {
-  if (window._panLocked!==true) return;
+  // Perception ball drag works in any mode (no pan/ball gate).
   e.preventDefault();
   const p2 = botSvgPt(e);
   if (p2.y < 66 || p2.y > 230) return;
@@ -3102,7 +3101,6 @@ document.addEventListener('keydown', e => {
 window._twixtStripes = false;
 window._edgeStripes = false;
 function toggleTwixtStripes() {
-  if (window._panLocked !== true) return;
   window._twixtStripes = !window._twixtStripes;
   var box = document.getElementById('r-twixt-box');
   if (box) {
@@ -3112,7 +3110,6 @@ function toggleTwixtStripes() {
   if (typeof render === 'function') render();
 }
 function toggleEdgeStripes() {
-  if (window._panLocked !== true) return;
   window._edgeStripes = !window._edgeStripes;
   var ins = document.getElementById('r-aim-box');
   var out = document.getElementById('r-oe-box');
@@ -3357,23 +3354,10 @@ document.addEventListener('click', function(e) {
   pop.style.top  = y + 'px';
 }, true);
 
-// PAN-MODE CLICK BLOCKER (defense in depth) — when pan mode is active, block
-// clicks/pointerdowns on everything except the dock, the help button, and
-// open popouts. Function-level gates already protect specific toggles, but
-// this catches anything we missed and prevents inline onclick handlers from
-// firing on readouts/etc. while panning.
-function _panModeBlocked(target) {
-  if (window._panLocked !== false) return false;  // not in pan mode
-  // Allow taps on dock (so user can switch modes), help button, popouts
-  if (target.closest('#dock, #help-btn, #help-popup, #help-mode-banner, #info-overlay, .float-panel')) return false;
-  return true;
-}
-// Block clicks (which is what fires the inline onclick="..." handlers).
-// Don't block pointerdown — the pan handler on #zoom-wrap needs to receive it.
-document.addEventListener('click', function(e) {
-  if (_panModeBlocked(e.target)) { e.stopPropagation(); e.preventDefault(); }
-}, true);
-
+// Pan-mode click blocker removed — with multi-touch pan/zoom, single-finger
+// taps are always for UI elements and never for pan, so there's no risk of
+// a tap firing during a pan gesture. Readouts and other tappables work in
+// any mode.
 // Also intercept pointerdown in capture phase — many of our buttons have
 // pointerdown handlers that fire before click and trigger their actions.
 document.addEventListener('pointerdown', function(e) {
@@ -3892,64 +3876,140 @@ function swapPanels(){
 
 <script>
 // ── PAN VIA POINTER EVENTS ON ZOOM-WRAP ──────────────────────
-// Uses pointerId to avoid conflict with SVG ball drags which use setPointerCapture
+// Multi-touch pan/zoom on the table wrapper.
+// - One finger drag: ignored (does NOT pan). Single-finger gestures are
+//   reserved for ball drags (which have their own handlers on topsvg) and
+//   for taps on UI elements.
+// - Two finger drag: pan the table (any direction).
+// - Two finger pinch: zoom in/out.
+// - The legacy pan-mode (dock-hand) still works via the modal mechanism for
+//   accessibility, gated by the same _panLocked flag check.
 (function(){
   var wrap = null;
+  // Map of active pointers: pointerId → {x, y}
+  var pointers = new Map();
+  // State of an active 2-finger gesture
+  var gesture = null;  // { startMidX, startMidY, startDist, startTx, startTy, startScale }
+  // Single-pointer pan state (only used when in legacy pan mode)
   var panPtr = null;
   var panStartX=0, panStartY=0, panInitTx=0, panInitTy=0;
 
   function getWrap(){ return wrap || (wrap = document.getElementById('zoom-wrap')); }
 
+  function midpoint() {
+    var pts = Array.from(pointers.values());
+    if (pts.length < 2) return null;
+    return {
+      x: (pts[0].x + pts[1].x) / 2,
+      y: (pts[0].y + pts[1].y) / 2
+    };
+  }
+  function distance() {
+    var pts = Array.from(pointers.values());
+    if (pts.length < 2) return 0;
+    return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+  }
+  function clampPan(newTx, newTy) {
+    var w = getWrap();
+    var parent = w && w.parentElement;
+    if (!parent) return { tx: newTx, ty: newTy };
+    var pRect = parent.getBoundingClientRect();
+    var s = _pz.scale;
+    var wW = w.offsetWidth  * s;
+    var wH = w.offsetHeight * s;
+    var minVisible = 0.30;
+    var maxTx =  pRect.width  - minVisible * wW;
+    var minTx = -(wW - minVisible * wW);
+    var maxTy =  pRect.height - minVisible * wH;
+    var minTy = -(wH - minVisible * wH);
+    return {
+      tx: Math.max(minTx, Math.min(maxTx, newTx)),
+      ty: Math.max(minTy, Math.min(maxTy, newTy))
+    };
+  }
+
   function onDown(e){
-    if(window._panLocked===true) return;  // ball mode — pan disabled
-    // Pan mode is ON. Allow pointerdown to flow through to:
-    //  - the dock (so the user can tap dock-ball to leave pan mode)
-    //  - explicit popout panels (.float-panel) the user has opened
-    //  - actual buttons and inputs that need direct interaction
-    // Everything ELSE inside the table area is grabbed for panning.
+    // Always ignore touches on dock, panels, buttons, inputs — they have their
+    // own handlers and shouldn't trigger pan/zoom.
     if(e.target.closest('#dock, .float-panel')) return;
-    if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
-    panPtr = e.pointerId;
-    panStartX = e.clientX; panStartY = e.clientY;
-    panInitTx = _pz.tx;    panInitTy = _pz.ty;
-    getWrap().setPointerCapture(e.pointerId);
-    e.preventDefault();
+    if(e.target.tagName==='BUTTON' || e.target.tagName==='INPUT') return;
+
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    // Legacy pan mode (dock-hand active): single-finger drag pans.
+    // This preserves the explicit pan-mode for users who prefer it.
+    if (window._panLocked === false && pointers.size === 1) {
+      panPtr = e.pointerId;
+      panStartX = e.clientX; panStartY = e.clientY;
+      panInitTx = _pz.tx;    panInitTy = _pz.ty;
+      getWrap().setPointerCapture(e.pointerId);
+      e.preventDefault();
+      return;
+    }
+
+    // Two-finger gesture starts: capture initial state.
+    if (pointers.size === 2) {
+      // Cancel any single-finger pan that was in progress
+      panPtr = null;
+      var mid = midpoint();
+      gesture = {
+        startMidX: mid.x,
+        startMidY: mid.y,
+        startDist: distance(),
+        startTx: _pz.tx,
+        startTy: _pz.ty,
+        startScale: _pz.scale
+      };
+      e.preventDefault();
+    }
   }
 
   function onMove(e){
-    if(panPtr === null || e.pointerId !== panPtr) return;
-    var w = getWrap();
-    var newTx = panInitTx + (e.clientX - panStartX);
-    var newTy = panInitTy + (e.clientY - panStartY);
-    // Clamp so at least 30% of the (scaled) wrapper overlaps its parent box.
-    // Use parentElement (DOM parent) rather than offsetParent: offsetParent
-    // depends on which ancestor has CSS positioning, and on this layout that
-    // can be the body, giving wrong (much too large) clamp limits — most
-    // visibly on the right side. parentElement is the immediate container.
-    var parent = w.parentElement;
-    if (parent) {
-      var pRect = parent.getBoundingClientRect();
-      var pW = pRect.width;
-      var pH = pRect.height;
-      var s  = _pz.scale;
-      var wW = w.offsetWidth  * s;
-      var wH = w.offsetHeight * s;
-      var minVisible = 0.30;  // at least 30% of table stays in view
-      var maxTx =  pW - minVisible * wW;
-      var minTx = -(wW - minVisible * wW);
-      var maxTy =  pH - minVisible * wH;
-      var minTy = -(wH - minVisible * wH);
-      newTx = Math.max(minTx, Math.min(maxTx, newTx));
-      newTy = Math.max(minTy, Math.min(maxTy, newTy));
+    if (!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    // Single-finger pan (legacy mode only)
+    if (panPtr !== null && e.pointerId === panPtr) {
+      var newTx = panInitTx + (e.clientX - panStartX);
+      var newTy = panInitTy + (e.clientY - panStartY);
+      var c = clampPan(newTx, newTy);
+      _pz.tx = c.tx; _pz.ty = c.ty;
+      _pz.apply();
+      e.preventDefault();
+      return;
     }
-    _pz.tx = newTx;
-    _pz.ty = newTy;
-    _pz.apply();
-    e.preventDefault();
+
+    // Two-finger gesture: pan + zoom
+    if (gesture && pointers.size >= 2) {
+      var mid = midpoint();
+      var dist = distance();
+      // Zoom factor based on pinch distance change
+      var scaleFactor = (gesture.startDist > 5) ? (dist / gesture.startDist) : 1;
+      var newScale = gesture.startScale * scaleFactor;
+      // Clamp scale to a sensible range (e.g., 0.4x to 4x)
+      newScale = Math.max(0.4, Math.min(4, newScale));
+      _pz.scale = newScale;
+      // Pan based on midpoint movement
+      var dx = mid.x - gesture.startMidX;
+      var dy = mid.y - gesture.startMidY;
+      var newTx = gesture.startTx + dx;
+      var newTy = gesture.startTy + dy;
+      var c = clampPan(newTx, newTy);
+      _pz.tx = c.tx; _pz.ty = c.ty;
+      _pz.apply();
+      e.preventDefault();
+    }
   }
 
   function onUp(e){
-    if(e.pointerId === panPtr) panPtr = null;
+    pointers.delete(e.pointerId);
+    if (e.pointerId === panPtr) panPtr = null;
+    // If we drop below 2 fingers, end any pinch gesture.
+    // Don't try to convert remaining finger to a single-finger pan — that
+    // creates accidental drags after pinch-zoom releases.
+    if (pointers.size < 2) {
+      gesture = null;
+    }
   }
 
   window.addEventListener('load', function(){
@@ -4002,7 +4062,6 @@ function forceMinimizePanel(panelId, headerId) {
 
 <script>
 function vernierAim(dir) {
-  if (window._panLocked !== true) return;
   // One percent of ball fraction per click.
   // Fraction = sin(cut), so Δcut = asin(frac+step) - asin(frac).
   // Keep a signed fraction so clicks move smoothly through 0 with no visual snap.
@@ -4346,7 +4405,6 @@ function _sgApply(group) {
 // toggleSlidersActive replaced by sgToggle
 
 function toggleSlidersPanel() {
-  if (window._panLocked !== true) return;  // pan mode — invite/toggle inert
   _slidersPanelOpen = !_slidersPanelOpen;
   var panel = document.getElementById('sliders-block');
   if (!panel) return;
@@ -4453,7 +4511,7 @@ function toggleSlidersPanel() {
   <div id="dock-bar" class="vertical">
     <div class="dock-orient-dot" id="dock-dot-start" style="pointer-events:auto;touch-action:manipulation;"></div>
 
-    <div class="dock-slot active" id="dock-hand" title="Pan mode — drag the table around. Balls and sliders are locked while in pan mode.">
+    <div class="dock-slot" id="dock-hand" title="Single-finger pan mode — for accessibility. Most users can pan with two fingers anywhere on the table without this button.">
       <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
         <!-- Up arrow -->
         <line x1="10" y1="2" x2="10" y2="9" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
@@ -4474,7 +4532,7 @@ function toggleSlidersPanel() {
     
     
     </div>
-    <div class="dock-slot" id="dock-ball" title="Ball mode — drag balls and use sliders. Pan is disabled.">
+    <div class="dock-slot active" id="dock-ball" title="Ball mode (default) — drag balls with one finger, pan with two fingers, pinch to zoom.">
       <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
         <defs>
           <radialGradient id="dock-ob-g" cx="35%" cy="28%" r="65%">
@@ -4795,14 +4853,12 @@ window.addEventListener('load', function(){
   }
   window._rcSetX = setX;
   thumb.addEventListener('pointerdown', function(e){
-    if(window._panLocked !== true) return;  // pan mode — RC thumb inert
     if(window._rcLocked) return;
     if(e.detail>1) return;
     dragging=true; thumb.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   });
   svg.addEventListener('pointermove', function(e){
     if(!dragging) return;
-    if(window._panLocked !== true) { dragging=false; return; }
     var r=svg.getBoundingClientRect();
     // convert client x to viewBox x
     var vbx = (e.clientX - r.left) * (340 / r.width);
