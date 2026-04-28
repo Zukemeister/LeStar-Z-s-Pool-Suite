@@ -3069,34 +3069,64 @@ function updateDiagCutWithOffset(svgX) {
   updateDiagCut(svgX + _diagGrabOffset);
 }
 
+// Perception ball pointerdown: enter "potential drag" state. Don't claim the
+// gesture yet — wait for motion. If motion is primarily horizontal (which is
+// the only meaningful direction for cut adjustment), engage diagDrag. If
+// motion is primarily vertical, we let it fall through so the wrap-level pan
+// handler can pick it up.
+let _diagPotential = null;  // {ptrId, startX, startY}
 botsvg.addEventListener('pointerdown', e => {
-  // Perception ball drag works in any mode (no pan/ball gate).
-  e.preventDefault();
   const p2 = botSvgPt(e);
   if (p2.y < 66 || p2.y > 230) return;
-  diagDrag = true; justShot = false; S._userAdjustedDiag = true;
-  botsvg.setPointerCapture(e.pointerId);
-  // Compute the current cut's "virtual finger position" — where on the slider
-  // the current cut value would fall — and capture the offset between that
-  // and the actual finger position. This way, subsequent moves track the
-  // finger's relative motion without jumping.
-  const ocx = 230;
-  const DRAG_RANGE = 224;
-  const currentFingerX = p2.x;
-  const currentCutSign = S._diagDragRh ? -1 : 1;
-  const currentCutFrac = (S.diagCutDeg || 0) / 90;
-  const currentVirtualX = ocx + currentCutSign * currentCutFrac * DRAG_RANGE;
-  _diagGrabOffset = currentVirtualX - currentFingerX;
-  // Don't update the cut on initial touch — let the user move first
-  render();
+  // Don't claim the gesture yet — start "potential drag" state.
+  _diagPotential = {
+    ptrId: e.pointerId,
+    startSvgX: p2.x,
+    startClientX: e.clientX,
+    startClientY: e.clientY
+  };
 });
 botsvg.addEventListener('pointermove', e => {
-  if (!diagDrag) return; e.preventDefault(); S._userAdjustedDiag = true;
-  updateDiagCutWithOffset(botSvgPt(e).x);
-  render();
+  // Already-engaged drag: continue updating
+  if (diagDrag && _diagPotential && e.pointerId === _diagPotential.ptrId) {
+    e.preventDefault();
+    S._userAdjustedDiag = true;
+    updateDiagCutWithOffset(botSvgPt(e).x);
+    render();
+    return;
+  }
+  // Potential drag — check if motion qualifies
+  if (_diagPotential && e.pointerId === _diagPotential.ptrId) {
+    const dx = e.clientX - _diagPotential.startClientX;
+    const dy = e.clientY - _diagPotential.startClientY;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 8) return;  // below threshold; don't decide yet
+    // Decided: if mostly horizontal, claim as perception drag.
+    // If mostly vertical, abandon — let the pan handler grab it.
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // Engage perception drag
+      diagDrag = true;
+      justShot = false;
+      S._userAdjustedDiag = true;
+      botsvg.setPointerCapture(e.pointerId);
+      e.preventDefault();
+      // Capture the grab offset based on the start position
+      const ocx = 230, DRAG_RANGE = 224;
+      const currentCutSign = S._diagDragRh ? -1 : 1;
+      const currentCutFrac = (S.diagCutDeg || 0) / 90;
+      const currentVirtualX = ocx + currentCutSign * currentCutFrac * DRAG_RANGE;
+      _diagGrabOffset = currentVirtualX - _diagPotential.startSvgX;
+      // Apply the current finger position
+      updateDiagCutWithOffset(botSvgPt(e).x);
+      render();
+    } else {
+      // Vertical-dominant motion — abandon perception drag, let pan engage
+      _diagPotential = null;
+    }
+  }
 });
-botsvg.addEventListener('pointerup',    () => { diagDrag = false; });
-botsvg.addEventListener('pointercancel',() => { diagDrag = false; });
+botsvg.addEventListener('pointerup',    e => { diagDrag = false; if (_diagPotential && _diagPotential.ptrId === e.pointerId) _diagPotential = null; });
+botsvg.addEventListener('pointercancel',e => { diagDrag = false; if (_diagPotential && _diagPotential.ptrId === e.pointerId) _diagPotential = null; });
 
 // ── KEYBOARD ──────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
@@ -3938,7 +3968,7 @@ function swapPanels(){
     var s = _pz.scale;
     var wW = w.offsetWidth  * s;
     var wH = w.offsetHeight * s;
-    var minVisible = 0.30;
+    var minVisible = 0.10;
     var maxTx =  pRect.width  - minVisible * wW;
     var minTx = -(wW - minVisible * wW);
     var maxTy =  pRect.height - minVisible * wH;
@@ -3962,11 +3992,15 @@ function swapPanels(){
                        '#rail-grid-btn, #rail-snap-btn, #rail-type-menu')) return true;
     // Cue path bars and box
     if (target.closest('#cb-path-legend, #cb-path-bar, #cb-speed-bar')) return true;
-    // Perception section: perception ball drag, RC slider, readouts, vernier
-    // arrows, ghost opacity buttons. ALL of this is below the table but
-    // inside zoom-wrap; hands off for the pan handler.
-    if (target.closest('#perception-section, #botsvg, #perc-row, #perc-svg')) return true;
-    // Angle panel and other floating overlays inside zoom-wrap
+    // Specific interactive elements — they handle their own taps/drags.
+    // Pan from empty space anywhere else IS allowed.
+    // Note: #botsvg is intentionally NOT protected. The botsvg perception
+    // drag uses a direction-sensitive threshold: horizontal motion claims
+    // the perception drag; vertical motion is abandoned, allowing this
+    // wrap-level pan handler to claim it for vertical pan.
+    if (target.closest('#perc-svg, #perc-row, #perc-invite-btn')) return true;
+    if (target.closest('#sliders-block, #shot-library-panel')) return true;
+    // Angle panel and other floating overlays
     if (target.closest('#angle-panel, #info-overlay')) return true;
     return false;
   }
@@ -4022,7 +4056,6 @@ function swapPanels(){
       var midLocalX = mid.x - pr.left;
       var midLocalY = mid.y - pr.top;
       var distRatio = dist / gesture.startDist;
-      if (Math.abs(distRatio - 1) < 0.03) distRatio = 1;
       var newScale = gesture.startScale * distRatio;
       newScale = Math.max(0.4, Math.min(4, newScale));
       var contentX = (gesture.startMidLocalX - gesture.startTx) / gesture.startScale;
