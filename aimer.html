@@ -3756,15 +3756,16 @@ function edgeZoomReset() {
       <text id="sliders-lock-txt" x="22" y="9" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#000" pointer-events="none">LOCK</text>
     </svg>
     <div style="display:flex;gap:4px;align-items:center;">
+      <button id="sliders-detach-btn" title="Detach sliders — pop out as a floating panel you can drag." style="background:rgba(58,176,255,0.12);border:1px solid rgba(58,176,255,0.35);border-radius:5px;color:#3ab0ff;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">↗</button>
       <button class="min-btn" title="Minimize sliders" onclick="event.stopPropagation();minimizePanel('sliders-block',document.getElementById('sliders-handle'))" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.3);border-radius:5px;color:#f0df70;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">—</button>
       <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
     </div>
   </div>
 
-  <!-- Two-column body: sliders left, angle diagram right -->
-  <div class="float-panel-body" style="display:flex;flex-direction:row;gap:8px;padding:8px;">
+  <!-- Two-column body: sliders left (more space), angle diagram right (smaller) -->
+  <div class="float-panel-body" style="display:flex;flex-direction:row;gap:6px;padding:6px;align-items:stretch;">
     <!-- LEFT: sliders -->
-    <div id="sliders-scale-wrap" class="panel-scale-wrap" style="flex:1 1 50%;min-width:0;">
+    <div id="sliders-scale-wrap" class="panel-scale-wrap" style="flex:1 1 65%;min-width:0;">
 
     <!-- BALL CONTROL group -->
     <div id="sg-ball" style="background:rgba(176,144,240,0.08);border:1px solid rgba(176,144,240,0.2);border-radius:8px;padding:8px 10px;margin-bottom:8px;">
@@ -3797,8 +3798,9 @@ function edgeZoomReset() {
 
     </div><!-- /sliders-scale-wrap -->
 
-    <!-- RIGHT: angle diagram, always visible -->
-    <div id="sliders-angle-mount" style="flex:1 1 50%;min-width:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);border-radius:6px;padding:6px;">
+    <!-- RIGHT: angle diagram, always visible (compact) -->
+    <div id="sliders-angle-mount" style="flex:0 0 35%;max-width:35%;min-width:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);border-radius:6px;padding:4px;position:relative;">
+      <button id="angle-detach-btn" title="Detach cut-angle diagram — pop out as a floating panel you can drag." style="position:absolute;right:3px;top:3px;background:rgba(58,176,255,0.12);border:1px solid rgba(58,176,255,0.35);border-radius:4px;color:#3ab0ff;font-size:10px;font-weight:900;padding:1px 5px;cursor:pointer;touch-action:manipulation;z-index:5;">↗</button>
       <!-- The angle-panel content will be moved here at load time -->
     </div>
   </div>
@@ -4687,17 +4689,15 @@ function toggleSlidersPanel() {
         <line x1="13"  y1="14" x2="16.5" y2="14" stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
       </svg>
     </div>
-    <div class="dock-slot" id="dock-sliders" title="Sliders — opens a panel for speed, English (sidespin), and vert (draw/follow).">
+    <div class="dock-slot active" id="dock-lockall" title="Lock all — toggles the lock state of the table, perception, and sliders panels together. Tap once to lock everything (so any touch pans the table); tap again to unlock everything.">
       <svg width="22" height="22" viewBox="0 0 22 22" style="pointer-events:none;">
-        <!-- top track + thumb (positioned right) -->
-        <line x1="2" y1="5" x2="20" y2="5" stroke="#c084fc" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="15" cy="5" r="3" fill="#c084fc"/>
-        <!-- middle track + thumb (positioned left) -->
-        <line x1="2" y1="11" x2="20" y2="11" stroke="#c084fc" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="7" cy="11" r="3" fill="#c084fc"/>
-        <!-- bottom track + thumb (positioned right of center) -->
-        <line x1="2" y1="17" x2="20" y2="17" stroke="#c084fc" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="12" cy="17" r="3" fill="#c084fc"/>
+        <!-- Padlock body -->
+        <rect id="dock-lockall-body" x="5" y="10" width="12" height="9" rx="1.5" fill="#f0df70" stroke="#a89000" stroke-width="0.7"/>
+        <!-- Shackle (different shapes for locked/unlocked) -->
+        <path id="dock-lockall-shackle" d="M7 10 L7 7 A4 4 0 0 1 15 7 L15 10" fill="none" stroke="#f0df70" stroke-width="2" stroke-linecap="round"/>
+        <!-- Keyhole -->
+        <circle cx="11" cy="14" r="1.4" fill="#1a1400"/>
+        <rect x="10.4" y="14" width="1.2" height="3" fill="#1a1400"/>
       </svg>
     </div>
 
@@ -4820,7 +4820,34 @@ function toggleSlidersPanel() {
     bind('dock-hand', function(){ window._panLocked=false; document.getElementById('dock-hand').classList.add('active'); document.getElementById('dock-ball').classList.remove('active'); });
     bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); document.getElementById('dock-hand').classList.remove('active'); });
     bind('dock-learn',    function(){ var on=!_open.learn;   toggleShotLibrary();  setActive('learn',  on); });
-    bind('dock-sliders',  function(){ var on=!_open.sliders; toggleSlidersPanel(); setActive('sliders',on); });
+    bind('dock-lockall',  function(){
+      // Determine target state: if ANY lock is currently off, lock all.
+      // Otherwise (all locked), unlock all.
+      var anyOff = !window._tableLocked || !window._perceptionLocked || !window._slidersLocked;
+      var target = anyOff;  // true = lock all; false = unlock all
+      window._tableLocked      = target;
+      window._perceptionLocked = target;
+      window._slidersLocked    = target;
+      // Update each lock button's visual state by re-firing their paint.
+      // Simulate a click on each? No — easier: directly re-paint by dispatching
+      // a synthetic refresh. The lock buttons each have a paint() inside their
+      // closure. We expose a global refresh so we can call it here.
+      if (typeof window._refreshAllLockBtns === 'function') {
+        window._refreshAllLockBtns();
+      }
+      // Update dock-lockall visual to reflect locked-vs-unlocked
+      var slot = document.getElementById('dock-lockall');
+      if (slot) slot.classList.toggle('active', target);
+      var shackle = document.getElementById('dock-lockall-shackle');
+      if (shackle) {
+        // Locked: closed shackle. Unlocked: open shackle (rotated).
+        if (target) {
+          shackle.setAttribute('d', 'M7 10 L7 7 A4 4 0 0 1 15 7 L15 10');
+        } else {
+          shackle.setAttribute('d', 'M7 10 L7 7 A4 4 0 0 1 15 7');
+        }
+      }
+    });
     bind('dock-swap',     function(){ swapPanels(); });
     bind('dock-zoom-in',  function(){ edgeZoom(1.3); });
     bind('dock-zoom-out', function(){ edgeZoom(1/1.3); });
@@ -5051,6 +5078,12 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   // Wire up panel lock buttons (SVG-based now).
+  var _lockBtnRepainters = [];
+  window._refreshAllLockBtns = function(){
+    _lockBtnRepainters.forEach(function(fn){ fn(); });
+    // Also reapply slider input disabled state
+    if (typeof _applySlidersLockState === 'function') _applySlidersLockState();
+  };
   function _wireSvgLock(btnId, txtId, flagName) {
     var btn = document.getElementById(btnId);
     var txt = document.getElementById(txtId);
@@ -5060,12 +5093,12 @@ document.addEventListener('DOMContentLoaded', function(){
       var on = !!window[flagName];
       if (txt) txt.textContent = on ? 'LOCKED' : 'LOCK';
       if (rect) {
-        // LOCKED: bright orange. UNLOCKED: dimmer yellow (matches SNAP look).
         rect.setAttribute('fill',  on ? 'rgba(255,140,0,0.8)' : 'rgba(240,223,112,0.55)');
         rect.setAttribute('stroke', on ? 'rgba(255,140,0,0.95)' : 'rgba(240,223,112,0.7)');
       }
     }
     paint();
+    _lockBtnRepainters.push(paint);
     btn.addEventListener('click', function(e){
       e.stopPropagation();
       window[flagName] = !window[flagName];
@@ -5075,6 +5108,111 @@ document.addEventListener('DOMContentLoaded', function(){
   _wireSvgLock('rail-lock-btn',   'rail-lock-txt',   '_tableLocked');
   _wireSvgLock('botsvg-lock-btn', 'botsvg-lock-txt', '_perceptionLocked');
   _wireSvgLock('sliders-lock-btn','sliders-lock-txt','_slidersLocked');
+  // Detach/attach helper: a panel can be popped out of its inline parent and
+  // floated as a position:fixed draggable element, then re-attached. The
+  // floating panel uses a simple top-bar drag handler.
+  function _makeDetachable(panelId, btnId) {
+    var panel = document.getElementById(panelId);
+    var btn   = document.getElementById(btnId);
+    if (!panel || !btn) return;
+    var detached = false;
+    var dragHandle = null;
+    var savedInlineStyle = panel.getAttribute('style') || '';
+    // Capture the panel's home: parent and next-sibling at the moment of
+    // first call. We'll restore to this same DOM position when re-attached.
+    var homeParent = panel.parentNode;
+    var homeNextSib = panel.nextSibling;
+    function attach() {
+      detached = false;
+      panel.setAttribute('style', savedInlineStyle);
+      if (homeParent) {
+        if (homeNextSib && homeNextSib.parentNode === homeParent) {
+          homeParent.insertBefore(panel, homeNextSib);
+        } else {
+          homeParent.appendChild(panel);
+        }
+      }
+      btn.textContent = '↗';
+      if (dragHandle && dragHandle.parentNode) dragHandle.parentNode.removeChild(dragHandle);
+      dragHandle = null;
+    }
+    function detach() {
+      detached = true;
+      savedInlineStyle = panel.getAttribute('style') || '';
+      var r = panel.getBoundingClientRect();
+      document.body.appendChild(panel);
+      panel.style.cssText =
+        'position:fixed;left:'+Math.round(r.left)+'px;top:'+Math.round(r.top)+'px;' +
+        'width:'+Math.round(r.width)+'px;z-index:9000;' +
+        'background:rgba(10,15,10,0.97);border:1px solid rgba(200,144,240,0.4);border-radius:8px;' +
+        'box-shadow:0 4px 24px rgba(0,0,0,0.45);';
+      btn.textContent = '↙';
+      dragHandle = document.createElement('div');
+      dragHandle.style.cssText = 'background:rgba(0,0,0,0.5);height:14px;border-radius:8px 8px 0 0;cursor:grab;touch-action:none;display:flex;align-items:center;justify-content:center;';
+      dragHandle.innerHTML = '<div style="width:32px;height:3px;background:rgba(255,255,255,0.4);border-radius:2px;"></div>';
+      panel.insertBefore(dragHandle, panel.firstChild);
+      _bindDragHandle(panel, dragHandle);
+    }
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if (detached) attach(); else detach();
+    });
+  }
+
+  // Generic drag handler for floating panels
+  function _bindDragHandle(panel, handle) {
+    var dragging = false, startX = 0, startY = 0, startLeft = 0, startTop = 0;
+    handle.addEventListener('pointerdown', function(e){
+      e.preventDefault(); e.stopPropagation();
+      dragging = true;
+      startX = e.clientX; startY = e.clientY;
+      var r = panel.getBoundingClientRect();
+      startLeft = r.left; startTop = r.top;
+      handle.setPointerCapture(e.pointerId);
+    });
+    handle.addEventListener('pointermove', function(e){
+      if (!dragging) return;
+      e.preventDefault();
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      var newLeft = Math.max(0, Math.min(window.innerWidth  - 60, startLeft + dx));
+      var newTop  = Math.max(0, Math.min(window.innerHeight - 60, startTop  + dy));
+      panel.style.left = newLeft + 'px';
+      panel.style.top  = newTop  + 'px';
+    });
+    handle.addEventListener('pointerup',     function(){ dragging = false; });
+    handle.addEventListener('pointercancel', function(){ dragging = false; });
+  }
+
+  // Permanently mount sliders-block under the perception section.
+  // This converts it from a floating panel into a fixed inline element.
+  (function(){
+    var sliders = document.getElementById('sliders-block');
+    var perception = document.getElementById('perception-section');
+    if (!sliders || !perception) return;
+    if (perception.nextSibling !== sliders) {
+      perception.parentNode.insertBefore(sliders, perception.nextSibling);
+    }
+    sliders.style.position = 'static';
+    sliders.style.display = 'flex';
+    sliders.style.width = '100%';
+    sliders.style.maxWidth = 'none';
+    sliders.style.maxHeight = 'none';
+    sliders.style.boxShadow = 'none';
+    sliders.style.zIndex = 'auto';
+    sliders.style.marginTop = '6px';
+    sliders.style.borderRadius = '8px';
+    var hdr = document.getElementById('sliders-handle');
+    if (hdr) {
+      var closeBtn = hdr.querySelector('button[onclick*="toggleSlidersPanel"]');
+      if (closeBtn) closeBtn.style.display = 'none';
+    }
+    if (typeof _slidersPanelOpen !== 'undefined') {
+      try { _slidersPanelOpen = true; } catch(e) {}
+    }
+  })();
+
+  _makeDetachable('sliders-block', 'sliders-detach-btn');
+  _makeDetachable('sliders-angle-mount', 'angle-detach-btn');
 
   // When sliders are locked, also disable the slider inputs so dragging
   // a thumb doesn't fire onSliders. Keep this in sync via the lock button.
@@ -5112,38 +5250,6 @@ document.addEventListener('DOMContentLoaded', function(){
     // Force the angle panel to be considered "on" so render() updates it
     if (typeof angleOn !== 'undefined') {
       try { angleOn = true; } catch(e) {}
-    }
-  })();
-
-  // Permanently mount sliders-block under the perception section.
-  // This converts it from a floating panel into a fixed inline element.
-  (function(){
-    var sliders = document.getElementById('sliders-block');
-    var perception = document.getElementById('perception-section');
-    if (!sliders || !perception) return;
-    // Move the sliders DOM element to be right after perception-section
-    if (perception.nextSibling !== sliders) {
-      perception.parentNode.insertBefore(sliders, perception.nextSibling);
-    }
-    // Override floating styles: become a normal block element below perception
-    sliders.style.position = 'static';
-    sliders.style.display = 'flex';
-    sliders.style.width = '100%';
-    sliders.style.maxWidth = 'none';
-    sliders.style.maxHeight = 'none';
-    sliders.style.boxShadow = 'none';
-    sliders.style.zIndex = 'auto';
-    sliders.style.marginTop = '6px';
-    sliders.style.borderRadius = '8px';
-    // Hide the close button on the header (panel is permanent now)
-    var hdr = document.getElementById('sliders-handle');
-    if (hdr) {
-      var closeBtn = hdr.querySelector('button[onclick*="toggleSlidersPanel"]');
-      if (closeBtn) closeBtn.style.display = 'none';
-    }
-    // Mark internally as "open" so the dock-sliders state tracker is consistent
-    if (typeof _slidersPanelOpen !== 'undefined') {
-      try { _slidersPanelOpen = true; } catch(e) {}
     }
   })();
 });
