@@ -3069,64 +3069,38 @@ function updateDiagCutWithOffset(svgX) {
   updateDiagCut(svgX + _diagGrabOffset);
 }
 
-// Perception ball pointerdown: enter "potential drag" state. Don't claim the
-// gesture yet — wait for motion. If motion is primarily horizontal (which is
-// the only meaningful direction for cut adjustment), engage diagDrag. If
-// motion is primarily vertical, we let it fall through so the wrap-level pan
-// handler can pick it up.
-let _diagPotential = null;  // {ptrId, startX, startY}
+// Perception ball drag uses the same pattern as the table balls:
+// touch within a hit-zone of the ball center engages drag, touch outside
+// is unclaimed and falls through to the wrap-level pan handler.
 botsvg.addEventListener('pointerdown', e => {
   const p2 = botSvgPt(e);
-  if (p2.y < 66 || p2.y > 230) return;
-  // Don't claim the gesture yet — start "potential drag" state.
-  _diagPotential = {
-    ptrId: e.pointerId,
-    startSvgX: p2.x,
-    startClientX: e.clientX,
-    startClientY: e.clientY
-  };
+  // Hit zone: a circle around the perception OB center (230, 148) of
+  // radius 100 in SVG units. The OB itself is 82px radius; this gives a
+  // small margin for grabbing without making the zone so big it eats pan.
+  const dx = p2.x - 230, dy = p2.y - 148;
+  if (Math.hypot(dx, dy) > 100) return;  // outside hit zone — let pan handle
+  e.preventDefault();
+  e.stopPropagation();
+  diagDrag = true;
+  justShot = false;
+  S._userAdjustedDiag = true;
+  botsvg.setPointerCapture(e.pointerId);
+  // Capture grab offset so the cut doesn't jump on touch.
+  const ocx = 230, DRAG_RANGE = 224;
+  const currentCutSign = S._diagDragRh ? -1 : 1;
+  const currentCutFrac = (S.diagCutDeg || 0) / 90;
+  const currentVirtualX = ocx + currentCutSign * currentCutFrac * DRAG_RANGE;
+  _diagGrabOffset = currentVirtualX - p2.x;
 });
 botsvg.addEventListener('pointermove', e => {
-  // Already-engaged drag: continue updating
-  if (diagDrag && _diagPotential && e.pointerId === _diagPotential.ptrId) {
-    e.preventDefault();
-    S._userAdjustedDiag = true;
-    updateDiagCutWithOffset(botSvgPt(e).x);
-    render();
-    return;
-  }
-  // Potential drag — check if motion qualifies
-  if (_diagPotential && e.pointerId === _diagPotential.ptrId) {
-    const dx = e.clientX - _diagPotential.startClientX;
-    const dy = e.clientY - _diagPotential.startClientY;
-    const dist = Math.hypot(dx, dy);
-    if (dist < 8) return;  // below threshold; don't decide yet
-    // Decided: if mostly horizontal, claim as perception drag.
-    // If mostly vertical, abandon — let the pan handler grab it.
-    if (Math.abs(dx) > Math.abs(dy)) {
-      // Engage perception drag
-      diagDrag = true;
-      justShot = false;
-      S._userAdjustedDiag = true;
-      botsvg.setPointerCapture(e.pointerId);
-      e.preventDefault();
-      // Capture the grab offset based on the start position
-      const ocx = 230, DRAG_RANGE = 224;
-      const currentCutSign = S._diagDragRh ? -1 : 1;
-      const currentCutFrac = (S.diagCutDeg || 0) / 90;
-      const currentVirtualX = ocx + currentCutSign * currentCutFrac * DRAG_RANGE;
-      _diagGrabOffset = currentVirtualX - _diagPotential.startSvgX;
-      // Apply the current finger position
-      updateDiagCutWithOffset(botSvgPt(e).x);
-      render();
-    } else {
-      // Vertical-dominant motion — abandon perception drag, let pan engage
-      _diagPotential = null;
-    }
-  }
+  if (!diagDrag) return;
+  e.preventDefault();
+  S._userAdjustedDiag = true;
+  updateDiagCutWithOffset(botSvgPt(e).x);
+  render();
 });
-botsvg.addEventListener('pointerup',    e => { diagDrag = false; if (_diagPotential && _diagPotential.ptrId === e.pointerId) _diagPotential = null; });
-botsvg.addEventListener('pointercancel',e => { diagDrag = false; if (_diagPotential && _diagPotential.ptrId === e.pointerId) _diagPotential = null; });
+botsvg.addEventListener('pointerup',    () => { diagDrag = false; });
+botsvg.addEventListener('pointercancel',() => { diagDrag = false; });
 
 // ── KEYBOARD ──────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
