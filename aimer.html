@@ -3745,13 +3745,8 @@ function edgeZoomReset() {
   <div id="sliders-block" class="float-panel" style="background:rgba(10,15,10,0.97) !important;border-color:rgba(200,144,240,0.4);">
 
   <!-- Header: lock button replaces title; minimize stays as small button -->
-  <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);display:flex;align-items:center;justify-content:space-between;padding:4px 6px;">
-    <!-- Lock button (SVG style, matches table/perception locks) -->
-    <svg id="sliders-lock-btn" width="44" height="18" viewBox="0 0 44 18" style="cursor:pointer;touch-action:manipulation;flex-shrink:0;">
-      <title>Lock sliders — disables slider drags so you can pan freely from any point in this section.</title>
-      <rect x="1" y="1" width="42" height="16" rx="3" fill="rgba(240,223,112,0.55)" stroke="rgba(240,223,112,0.7)" stroke-width="0.7"/>
-      <text id="sliders-lock-txt" x="22" y="9" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#000" pointer-events="none">LOCK</text>
-    </svg>
+  <button id="sliders-lock-btn" title="Lock sliders — disables slider drags so you can pan freely from any point in this section." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
+  <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);display:flex;align-items:center;justify-content:flex-end;padding:4px 6px;">
     <div style="display:flex;gap:4px;align-items:center;">
       <button id="sliders-detach-btn" title="Detach sliders — pop out as a floating panel you can drag." style="background:rgba(58,176,255,0.12);border:1px solid rgba(58,176,255,0.35);border-radius:5px;color:#3ab0ff;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">↗</button>
       <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
@@ -5115,9 +5110,9 @@ document.addEventListener('DOMContentLoaded', function(){
       paint();
     });
   }
-  _wireSvgLock('rail-lock-btn',   null,              '_tableLocked');
-  _wireSvgLock('botsvg-lock-btn', null,              '_perceptionLocked');
-  _wireSvgLock('sliders-lock-btn','sliders-lock-txt','_slidersLocked');
+  _wireSvgLock('rail-lock-btn',   null, '_tableLocked');
+  _wireSvgLock('botsvg-lock-btn', null, '_perceptionLocked');
+  _wireSvgLock('sliders-lock-btn',null, '_slidersLocked');
 
   // Move the table & perception lock buttons to document.body so they live
   // outside zoom-wrap. Position them with position:fixed at the viewport
@@ -5127,11 +5122,13 @@ document.addEventListener('DOMContentLoaded', function(){
   (function(){
     var tableBtn = document.getElementById('rail-lock-btn');
     var percBtn  = document.getElementById('botsvg-lock-btn');
+    var sliBtn   = document.getElementById('sliders-lock-btn');
     if (tableBtn) document.body.appendChild(tableBtn);
     if (percBtn)  document.body.appendChild(percBtn);
+    if (sliBtn)   document.body.appendChild(sliBtn);
 
     function reposition() {
-      var pad = 6;  // distance from viewport edge when clamped
+      var pad = 6;
       // Table panel: anchor button to bottom-left of the table SVG box.
       if (tableBtn) {
         var box = document.querySelector('.svg-box.top-box');
@@ -5139,10 +5136,8 @@ document.addEventListener('DOMContentLoaded', function(){
           var r = box.getBoundingClientRect();
           var bw = tableBtn.offsetWidth || 60;
           var bh = tableBtn.offsetHeight || 22;
-          // Ideal position: bottom-left of panel, with 8px inset.
           var idealLeft = r.left + 8;
           var idealTop  = r.bottom - bh - 8;
-          // Clamp to viewport so the button is always fully visible.
           var clampedLeft = Math.max(pad, Math.min(window.innerWidth  - bw - pad, idealLeft));
           var clampedTop  = Math.max(pad, Math.min(window.innerHeight - bh - pad, idealTop));
           tableBtn.style.visibility = 'visible';
@@ -5166,12 +5161,26 @@ document.addEventListener('DOMContentLoaded', function(){
           percBtn.style.top  = Math.round(clampedTop2)  + 'px';
         }
       }
+      // Sliders panel: anchor button to top-left of the sliders-block.
+      if (sliBtn) {
+        var sb = document.getElementById('sliders-block');
+        if (sb) {
+          var r3 = sb.getBoundingClientRect();
+          var bw3 = sliBtn.offsetWidth || 60;
+          var bh3 = sliBtn.offsetHeight || 22;
+          var idealLeft3 = r3.left + 8;
+          var idealTop3  = r3.top  + 8;
+          var clampedLeft3 = Math.max(pad, Math.min(window.innerWidth  - bw3 - pad, idealLeft3));
+          var clampedTop3  = Math.max(pad, Math.min(window.innerHeight - bh3 - pad, idealTop3));
+          sliBtn.style.visibility = 'visible';
+          sliBtn.style.left = Math.round(clampedLeft3) + 'px';
+          sliBtn.style.top  = Math.round(clampedTop3)  + 'px';
+        }
+      }
     }
     window._repositionFloatingLocks = reposition;
     window.addEventListener('resize', reposition, {passive:true});
     window.addEventListener('scroll', reposition, {passive:true});
-    // Also reposition after every animation frame for the first 2 seconds
-    // to catch any late layout shifts (font load, image load, etc.)
     var startTime = Date.now();
     function tickReposition() {
       reposition();
