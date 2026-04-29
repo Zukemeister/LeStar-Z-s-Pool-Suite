@@ -4724,6 +4724,13 @@ function toggleSlidersPanel() {
         <circle cx="10" cy="10" r="1.5" fill="#a8ccff"/>
       </svg>
     </div>
+    <div class="dock-slot" id="dock-reset" title="Reset — restores all defaults: clears RC lock and bias, zeros sliders, returns balls to default positions, locks all panels, and resets zoom. Use if the app gets into an unexpected state.">
+      <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
+        <!-- Circular refresh arrow -->
+        <path d="M 4 10 A 6 6 0 1 1 10 16" fill="none" stroke="#ffa040" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="2,10 6,10 4,7" fill="#ffa040"/>
+      </svg>
+    </div>
     <div class="dock-slot" id="dock-cuepath" title="Cue path — shows where the CB will travel after contact, plus a faint rebound off the first rail.">
       <svg width="18" height="18" viewBox="0 0 18 18" style="pointer-events:none;">
         <circle cx="9" cy="9" r="5" fill="none" stroke="#f0df70" stroke-width="1.5"/>
@@ -4854,6 +4861,56 @@ function toggleSlidersPanel() {
       _pz.tx = 0;
       _pz.ty = 0;
       _pz.apply();
+    });
+    bind('dock-reset', function(){
+      // Hard reset to known-good defaults. Use if the app gets confused —
+      // captured RC multiplier from a stale lock, locks in unexpected state,
+      // sliders out of zero, balls panned out of view, etc.
+      // Clear RC state
+      window._rcLocked = false;
+      window._rcMultiplier = 0;
+      window._perceptionOffset = 0;
+      var rcThumb = document.getElementById('perc-thumb');
+      if (rcThumb) rcThumb.setAttribute('cx', '170');  // center of slider
+      var rcLockBtn = document.getElementById('perc-lock-btn');
+      if (rcLockBtn) {
+        rcLockBtn.textContent = 'LOCK';
+        rcLockBtn.style.background = 'rgba(255,140,0,0.2)';
+        rcLockBtn.style.color = '#ff8c00';
+      }
+      // Reset all panel locks to default (locked)
+      window._tableLocked = true;
+      window._perceptionLocked = true;
+      window._slidersLocked = true;
+      if (typeof window._refreshAllLockBtns === 'function') {
+        window._refreshAllLockBtns();
+      }
+      // Zero sliders
+      ['sl-spd','sl-spn','sl-vert'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) {
+          el.value = (id === 'sl-spd') ? '50' : '0';
+        }
+      });
+      if (typeof onSliders === 'function') onSliders();
+      // Reset zoom and pan
+      _pz.scale = 1/1.3;
+      _pz.tx = 0;
+      _pz.ty = 0;
+      _pz.apply();
+      // Reset balls to default positions
+      if (typeof S !== 'undefined' && S) {
+        S.cb = {x: 280, y: 130};
+        S.ob = {x: 180, y: 130};
+        S.diagCutDeg = null;
+        S._userAdjustedDiag = false;
+        S._diagDragRh = undefined;
+      }
+      // Re-render
+      if (typeof render === 'function') render();
+      if (typeof window._repositionFloatingLocks === 'function') {
+        window._repositionFloatingLocks();
+      }
     });
     bind('dock-cuepath', function(){ toggleCbPath(); setActive('cuepath', cbPathOn); });
 
@@ -5130,20 +5187,30 @@ document.addEventListener('DOMContentLoaded', function(){
 
     function reposition() {
       var pad = 6;
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      // Helper: is the rect at least partly visible in the viewport?
+      function partlyVisible(r) {
+        return r.right > 0 && r.left < vw && r.bottom > 0 && r.top < vh;
+      }
       // Table panel: anchor button to bottom-left of the table SVG box.
       if (tableBtn) {
         var box = document.querySelector('.svg-box.top-box');
         if (box) {
           var r = box.getBoundingClientRect();
-          var bw = tableBtn.offsetWidth || 60;
-          var bh = tableBtn.offsetHeight || 22;
-          var idealLeft = r.left + 8;
-          var idealTop  = r.bottom - bh - 8;
-          var clampedLeft = Math.max(pad, Math.min(window.innerWidth  - bw - pad, idealLeft));
-          var clampedTop  = Math.max(pad, Math.min(window.innerHeight - bh - pad, idealTop));
-          tableBtn.style.visibility = 'visible';
-          tableBtn.style.left = Math.round(clampedLeft) + 'px';
-          tableBtn.style.top  = Math.round(clampedTop)  + 'px';
+          if (!partlyVisible(r)) {
+            tableBtn.style.visibility = 'hidden';
+          } else {
+            var bw = tableBtn.offsetWidth || 60;
+            var bh = tableBtn.offsetHeight || 22;
+            var idealLeft = r.left + 8;
+            var idealTop  = r.bottom - bh - 8;
+            var clampedLeft = Math.max(pad, Math.min(vw - bw - pad, idealLeft));
+            var clampedTop  = Math.max(pad, Math.min(vh - bh - pad, idealTop));
+            tableBtn.style.visibility = 'visible';
+            tableBtn.style.left = Math.round(clampedLeft) + 'px';
+            tableBtn.style.top  = Math.round(clampedTop)  + 'px';
+          }
         }
       }
       // Perception ball panel: anchor button to top-left of the aim-wrap.
@@ -5151,15 +5218,19 @@ document.addEventListener('DOMContentLoaded', function(){
         var aim = document.getElementById('aim-wrap');
         if (aim) {
           var r2 = aim.getBoundingClientRect();
-          var bw2 = percBtn.offsetWidth || 60;
-          var bh2 = percBtn.offsetHeight || 22;
-          var idealLeft2 = r2.left + 8;
-          var idealTop2  = r2.top  + 8;
-          var clampedLeft2 = Math.max(pad, Math.min(window.innerWidth  - bw2 - pad, idealLeft2));
-          var clampedTop2  = Math.max(pad, Math.min(window.innerHeight - bh2 - pad, idealTop2));
-          percBtn.style.visibility = 'visible';
-          percBtn.style.left = Math.round(clampedLeft2) + 'px';
-          percBtn.style.top  = Math.round(clampedTop2)  + 'px';
+          if (!partlyVisible(r2)) {
+            percBtn.style.visibility = 'hidden';
+          } else {
+            var bw2 = percBtn.offsetWidth || 60;
+            var bh2 = percBtn.offsetHeight || 22;
+            var idealLeft2 = r2.left + 8;
+            var idealTop2  = r2.top  + 8;
+            var clampedLeft2 = Math.max(pad, Math.min(vw - bw2 - pad, idealLeft2));
+            var clampedTop2  = Math.max(pad, Math.min(vh - bh2 - pad, idealTop2));
+            percBtn.style.visibility = 'visible';
+            percBtn.style.left = Math.round(clampedLeft2) + 'px';
+            percBtn.style.top  = Math.round(clampedTop2)  + 'px';
+          }
         }
       }
       // Sliders panel: anchor button to top-left of the sliders-block.
@@ -5167,15 +5238,19 @@ document.addEventListener('DOMContentLoaded', function(){
         var sb = document.getElementById('sliders-block');
         if (sb) {
           var r3 = sb.getBoundingClientRect();
-          var bw3 = sliBtn.offsetWidth || 60;
-          var bh3 = sliBtn.offsetHeight || 22;
-          var idealLeft3 = r3.left + 8;
-          var idealTop3  = r3.top  + 8;
-          var clampedLeft3 = Math.max(pad, Math.min(window.innerWidth  - bw3 - pad, idealLeft3));
-          var clampedTop3  = Math.max(pad, Math.min(window.innerHeight - bh3 - pad, idealTop3));
-          sliBtn.style.visibility = 'visible';
-          sliBtn.style.left = Math.round(clampedLeft3) + 'px';
-          sliBtn.style.top  = Math.round(clampedTop3)  + 'px';
+          if (!partlyVisible(r3)) {
+            sliBtn.style.visibility = 'hidden';
+          } else {
+            var bw3 = sliBtn.offsetWidth || 60;
+            var bh3 = sliBtn.offsetHeight || 22;
+            var idealLeft3 = r3.left + 8;
+            var idealTop3  = r3.top  + 8;
+            var clampedLeft3 = Math.max(pad, Math.min(vw - bw3 - pad, idealLeft3));
+            var clampedTop3  = Math.max(pad, Math.min(vh - bh3 - pad, idealTop3));
+            sliBtn.style.visibility = 'visible';
+            sliBtn.style.left = Math.round(clampedLeft3) + 'px';
+            sliBtn.style.top  = Math.round(clampedTop3)  + 'px';
+          }
         }
       }
     }
