@@ -4863,27 +4863,53 @@ function toggleSlidersPanel() {
       _pz.apply();
     });
     bind('dock-reset', function(){
-      // Hard reset to known-good defaults. Use if the app gets confused —
-      // captured RC multiplier from a stale lock, locks in unexpected state,
-      // sliders out of zero, balls panned out of view, etc.
-      // Clear RC state
+      // Hard reset to known-good defaults. Restores the app to exactly the
+      // state it has at first page load. Use this if anything seems off.
+      // RC state
       window._rcLocked = false;
       window._rcMultiplier = 0;
       window._perceptionOffset = 0;
+      window._percBase = 0;
+      window._percCompFrac = undefined;
+      window._percCompRh = undefined;
       var rcThumb = document.getElementById('perc-thumb');
-      if (rcThumb) rcThumb.setAttribute('cx', '170');  // center of slider
+      if (rcThumb) rcThumb.setAttribute('cx', '170');
       var rcLockBtn = document.getElementById('perc-lock-btn');
       if (rcLockBtn) {
         rcLockBtn.textContent = 'LOCK';
         rcLockBtn.style.background = 'rgba(255,140,0,0.2)';
         rcLockBtn.style.color = '#ff8c00';
       }
-      // Reset all panel locks to default (locked)
+      // Panel locks (default: locked)
+      window._panLocked = true;
       window._tableLocked = true;
       window._perceptionLocked = true;
       window._slidersLocked = true;
       if (typeof window._refreshAllLockBtns === 'function') {
         window._refreshAllLockBtns();
+      }
+      // Visual toggles back to defaults
+      window._twixtStripes = false;
+      window._edgeStripes = false;
+      window._helpModeOn = false;
+      if (typeof contactDotOn !== 'undefined') {
+        try { contactDotOn = false; } catch(e){}
+        var cdBox = document.getElementById('r-cp-box');
+        if (cdBox) {
+          cdBox.style.background = 'rgba(0,0,0,0.3)';
+          cdBox.style.borderColor = 'rgba(255,255,255,0.07)';
+        }
+      }
+      if (typeof angleOn !== 'undefined') { try { angleOn = true; } catch(e){} }
+      if (typeof cbPathOn !== 'undefined') { try { cbPathOn = true; } catch(e){} }
+      if (typeof mapOn !== 'undefined')   { try { mapOn = true; } catch(e){} }
+      if (typeof snapOn !== 'undefined')  { try { snapOn = true; } catch(e){} }
+      if (typeof ghostOpacity !== 'undefined') { try { ghostOpacity = 0.5; } catch(e){} }
+      // Reset twixt/edge stripe box visual indicators
+      var twBox = document.getElementById('r-twixt-box');
+      if (twBox) {
+        twBox.style.background = 'rgba(0,0,0,0.3)';
+        twBox.style.borderColor = 'rgba(255,255,255,0.07)';
       }
       // Zero sliders
       ['sl-spd','sl-spn','sl-vert'].forEach(function(id){
@@ -4898,15 +4924,18 @@ function toggleSlidersPanel() {
       _pz.tx = 0;
       _pz.ty = 0;
       _pz.apply();
-      // Reset balls to default positions
+      // Reset balls and shot state to initial defaults
       if (typeof S !== 'undefined' && S) {
-        S.cb = {x: 280, y: 130};
-        S.ob = {x: 180, y: 130};
-        S.diagCutDeg = null;
-        S._userAdjustedDiag = false;
+        S.ob = {x: 230, y: 130};
+        S.cb = {x: 130, y: 180};
+        S.diagCutDeg = 0;
         S._diagDragRh = undefined;
+        S._userAdjustedDiag = false;
+        S.speed = 0.5;
+        S.spin = 0;
+        S.vert = 0;
       }
-      // Re-render
+      // Re-render everything
       if (typeof render === 'function') render();
       if (typeof window._repositionFloatingLocks === 'function') {
         window._repositionFloatingLocks();
