@@ -2276,8 +2276,25 @@ function compute(cutDeg) {
   const throwDiff = atExtreme ? 0
                   : Math.round(Math.sin(Z_aim_final) * 100) - Math.round(geoFrac * 100);
 
+  // ── COMPENSATED FRACTION (hump-curve cut correction) ────────
+  // Pushes the predicted contact point thinner in the mid-range of cut angles,
+  // tapers to zero at 0° and 90°. Conservative bias: K below the empirical
+  // bias suggested by table data (~0.20). User undercuts slightly, learns to
+  // add cut. Used by the contact-point readouts and the cue path direction.
+  // The diagonal aim line and ghost ball stay pure geometry.
+  const HUMP_K = 0.15;
+  const sideSign = (cutDeg > 0 && Math.sin(cutDeg * RAD) >= 0) ? 1 : 1; // hump magnitude only
+  const humpBias = HUMP_K * Math.sin(2 * cutDeg * RAD);  // 0 at 0° and 90°, peaks at 45°
+  const compFrac = atExtreme ? geoFrac
+                 : Math.max(-0.5, Math.min(1, geoFrac + humpBias));
+  // Effective cut angle reflecting the bias-corrected contact point. Used
+  // ONLY for cue path direction (stun tangent). The cut readout itself
+  // remains pure geometry.
+  const compCutDeg = atExtreme ? cutDeg
+                   : (compFrac >= 1 ? 90 : Math.asin(compFrac) / RAD);
+
   return { Z_des, Z_aim: Z_aim_final, geoFrac, aimFraction, diagFraction, cutDeg, distFt,
-           throwDiff, squirtFraction };
+           throwDiff, squirtFraction, compFrac, compCutDeg };
 }
 
 // ── TABLE SVG ─────────────────────────────────────────────────
@@ -2457,7 +2474,12 @@ function render() {
   // Match drawBot: let the signed sum go negative (RC pushing past OB center).
   // When it does, take magnitude — the ghost ball is now on the OPPOSITE side
   // of OB center from where the cut direction says it is.
-  const _fracSigned = Math.abs(d.diagFraction) + _throwDelta + _rcSigned;
+  // The hump-curve bias (d.compFrac vs d.diagFraction) is added on top of throw
+  // and RC; it shifts the displayed contact thinner in the mid cut range.
+  const _humpDelta = (d.compFrac !== undefined && d.diagFraction !== undefined)
+                   ? (Math.abs(d.compFrac) - Math.abs(d.diagFraction))
+                   : 0;
+  const _fracSigned = Math.abs(d.diagFraction) + _humpDelta + _throwDelta + _rcSigned;
   const _fracMag = Math.abs(_fracSigned);
   const _rhEffectiveReadout = (_fracSigned < 0) ? !S._diagDragRh : S._diagDragRh;
   const _compFrac = Math.min(1, _fracMag);
@@ -2715,8 +2737,32 @@ function renderTable(d) {
     const gx = S.ob.x - Math.cos(_approachAngle) * 2 * BALL_R;
     const gy = S.ob.y - Math.sin(_approachAngle) * 2 * BALL_R;
 
-    // Tangent line: 90° to line of centers at impact (the "stun" direction)
-    const stunAngle = obDepartAngle + Math.PI/2 * (rh ? -1 : 1);
+    // Tangent line: 90° to line of centers at impact (the "stun" direction).
+    // With the hump-curve bias and RC offset applied, the actual line of
+    // centers is rotated from pure geometry — the user is aiming at a
+    // slightly thinner (or thicker) contact than the geometric one. So the
+    // stun direction rotates by the same amount as the effective cut delta.
+    const _humpCutDelta = (d.compCutDeg !== undefined && d.cutDeg !== undefined)
+                       ? (d.compCutDeg - d.cutDeg) * RAD * (rh ? 1 : -1)
+                       : 0;
+    // RC contribution to the effective cut: convert RC fraction to an
+    // effective cut angle shift. Approximation: dCut ≈ dFrac / cos(cut).
+    var _rcFracDelta = 0;
+    if (window._rcLocked) {
+      _rcFracDelta = Math.abs(d.diagFraction || 0) * (window._rcMultiplier || 0)
+                   * Math.min(1, cutDeg / 1);
+    } else {
+      _rcFracDelta = (window._perceptionOffset || 0) * Math.min(1, cutDeg / 1);
+    }
+    var _rcCutDelta = 0;
+    if (Math.abs(_rcFracDelta) > 0.001) {
+      var _baseFrac = Math.abs(d.compFrac !== undefined ? d.compFrac : (d.diagFraction || 0));
+      var _rcFrac   = Math.max(-0.5, Math.min(1, _baseFrac + _rcFracDelta));
+      var _baseRad  = Math.asin(Math.max(-1, Math.min(1, _baseFrac)));
+      var _rcRad    = Math.asin(Math.max(-1, Math.min(1, _rcFrac)));
+      _rcCutDelta   = (_rcRad - _baseRad) * (rh ? 1 : -1);
+    }
+    const stunAngle = obDepartAngle + Math.PI/2 * (rh ? -1 : 1) + _humpCutDelta + _rcCutDelta;
     // Maximum deflection from tangent (full follow / full draw) depends on cut.
     // For a rolling CB, the steady-state bend toward OB direction is about
     // atan( (2/5) * cot(cutDeg) ).  Thick cuts → strong bend; thin cuts → little.
@@ -2831,7 +2877,12 @@ function drawBot(d) {
   // Allow the signed sum to go negative (RC slider indicating contact on the
   // opposite side of OB center). When it does, flip the render side and use
   // the magnitude. Critical for straight-in shots where diagFraction=0.
-  let _aimFSigned = Math.abs(d.diagFraction) + _diagThrowDelta + _diagRcSigned;
+  // Hump-curve bias (compFrac vs diagFraction) shifts the contact thinner
+  // in the mid cut range. Same convention as the readouts.
+  const _diagHumpDelta = (d.compFrac !== undefined && d.diagFraction !== undefined)
+                       ? (Math.abs(d.compFrac) - Math.abs(d.diagFraction))
+                       : 0;
+  let _aimFSigned = Math.abs(d.diagFraction) + _diagHumpDelta + _diagThrowDelta + _diagRcSigned;
   let _rhEffective = rh;
   if (_aimFSigned < 0) { _aimFSigned = -_aimFSigned; _rhEffective = !rh; }
   const aimF = Math.min(1, _aimFSigned);
