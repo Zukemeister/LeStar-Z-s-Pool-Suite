@@ -1323,6 +1323,16 @@ if ('serviceWorker' in navigator) {
     <!-- TABLE -->
     <div class="svg-box top-box" style="position:relative;">
       <button id="rail-lock-btn" title="Lock table — disables ball drags so you can pan freely from any point on the table." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
+      <button id="slider-indicator-btn" title="Sliders status — bright blue when speed, spin, or vert is set away from default. Tap to scroll to the sliders panel." style="position:fixed;left:0;top:0;z-index:200;width:30px;height:24px;padding:0;border-radius:4px;background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.2);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;visibility:hidden;">
+        <svg width="20" height="20" viewBox="0 0 22 22" style="pointer-events:none;display:block;">
+          <line id="si-track-1" x1="2" y1="5" x2="20" y2="5" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+          <circle id="si-thumb-1" cx="15" cy="5" r="3" fill="#888"/>
+          <line id="si-track-2" x1="2" y1="11" x2="20" y2="11" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+          <circle id="si-thumb-2" cx="7" cy="11" r="3" fill="#888"/>
+          <line id="si-track-3" x1="2" y1="17" x2="20" y2="17" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+          <circle id="si-thumb-3" cx="12" cy="17" r="3" fill="#888"/>
+        </svg>
+      </button>
       <svg id="topsvg" viewBox="0 -18 460 278" preserveAspectRatio="xMidYMid meet"
            style="position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none;-webkit-user-select:none;user-select:none;overflow:hidden;"
            xmlns="http://www.w3.org/2000/svg">
@@ -2041,6 +2051,11 @@ const S = {
   cb: {x:130, y:180},
   diagCutDeg: 0,
   _diagDragRh: undefined,
+  // Cut is the user's responsibility (set via perception ball or loadShot).
+  // Default to "manual mode" so dragging balls doesn't auto-aim the arrow at
+  // a pocket — the arrow stays at the user's cut and rotates passively with
+  // the CB→OB line.
+  _userAdjustedDiag: true,
   speed:  0.5,
   spin:   0,
   vert:   0,
@@ -2278,20 +2293,23 @@ function compute(cutDeg) {
 
   // ── COMPENSATED FRACTION (hump-curve cut correction) ────────
   // Pushes the predicted contact point thinner in the mid-range of cut angles,
-  // tapers to zero at 0° and 90°. Conservative bias: K below the empirical
-  // bias suggested by table data (~0.20). User undercuts slightly, learns to
-  // add cut. Used by the contact-point readouts and the cue path direction.
+  // tapers to zero at 0° and 90°. Conservative bias: produces less than the
+  // empirical bias suggested by table data. User undercuts slightly, learns
+  // to add cut. Used by the contact-point readouts and the cue path direction.
   // The diagonal aim line and ghost ball stay pure geometry.
-  const HUMP_K = 0.15;
-  const sideSign = (cutDeg > 0 && Math.sin(cutDeg * RAD) >= 0) ? 1 : 1; // hump magnitude only
-  const humpBias = HUMP_K * Math.sin(2 * cutDeg * RAD);  // 0 at 0° and 90°, peaks at 45°
-  const compFrac = atExtreme ? geoFrac
-                 : Math.max(-0.5, Math.min(1, geoFrac + humpBias));
-  // Effective cut angle reflecting the bias-corrected contact point. Used
-  // ONLY for cue path direction (stun tangent). The cut readout itself
-  // remains pure geometry.
-  const compCutDeg = atExtreme ? cutDeg
-                   : (compFrac >= 1 ? 90 : Math.asin(compFrac) / RAD);
+  //
+  // The bias is applied as an ANGULAR shift to the cut, not a fraction shift.
+  // This naturally caps at sin(90°) = 1.0 so there's no saturation flat
+  // region at near-90° cuts where the perception ball would freeze.
+  // K_DEG is the peak angular bias in degrees, calibrated so that at 45° cut
+  // the resulting fraction shift roughly matches the old K=0.15 behavior.
+  const HUMP_K_DEG = 14;
+  // Smooth taper at the extreme end so there's no discontinuity at the
+  // atExtreme threshold. The basic sin(2*cutDeg) shape already goes to 0
+  // at 90°, so additional tapering is unnecessary; just clamp the sum.
+  const humpAngBias = HUMP_K_DEG * Math.sin(2 * cutDeg * RAD);  // 0 at 0° and 90°, peaks at 45°
+  const compCutDeg = Math.min(90, Math.max(0, cutDeg + humpAngBias));
+  const compFrac = Math.max(-0.5, Math.min(1, Math.sin(compCutDeg * RAD)));
 
   return { Z_des, Z_aim: Z_aim_final, geoFrac, aimFraction, diagFraction, cutDeg, distFt,
            throwDiff, squirtFraction, compFrac, compCutDeg };
@@ -2371,16 +2389,14 @@ svg.addEventListener('pointermove', e => {
     S.ob = {x: clamped.x, y: clamped.y};
     justShot = false;
     if (snapped.label) showSnapLabel($('topsvg'), clamped.x, clamped.y, snapped.label, 'ob');
-    // Recompute cut from positions
-    { const _c = computeCutFromPositions(S.cb, S.ob, S.pocket || 'TR');
-      S.diagCutDeg = _c.cutDeg; S._diagDragRh = _c.rh; S._userAdjustedDiag = false; }
+    // Cut angle is set by the user (perception ball / loadShot), not derived
+    // from ball positions. Dragging the OB just translates the geometry; the
+    // arrow rotates with the new CB→OB direction but the cut stays put.
   } else if (drag==='cb') {
     const snapped = applySnap(targetX, targetY);
     const clamped = clampBall(snapped.x, snapped.y);
     S.cb = {x: clamped.x, y: clamped.y};
-    // Recompute cut from positions
-    { const _c = computeCutFromPositions(S.cb, S.ob, S.pocket || 'TR');
-      S.diagCutDeg = _c.cutDeg; S._diagDragRh = _c.rh; S._userAdjustedDiag = false; }
+    // Cut angle is set by the user; dragging CB doesn't recompute it.
     justShot = false;
     if (snapped.label) showSnapLabel($('topsvg'), clamped.x, clamped.y, snapped.label, 'cb');
   }
@@ -2400,6 +2416,25 @@ function tableToSvg(tx, ty) {
 // Each slider -50/+50 maps to -1.0/+1.0 correction factor (negative = aim thinner)
 // Segment boundaries: 0-20° (lo), 20-50° (mid), 50-90° (hi)
 function getThrowComp(cutDeg) { return 0; }
+
+// Convert depart-angle offset α (angle between CB→OB line and OB-departure
+// line) to the true cut angle θ at the contact point. The true cut angle is
+// the angle at the ghost ball between the CB-trajectory and the line of
+// centers — the standard pool definition.
+//
+// For CB-OB distance d and k = 2R:
+//   |CB→ghost|² = d² − 2k·d·cos(α) + k²
+//   cos(θ)     = (d·cos(α) − k) / |CB→ghost|
+// If cos(θ) ≤ 0 the geometry implies a cut > 90° (impossible). Clamp at 90°.
+function alphaToCutDeg(alphaAbs, dCO) {
+  const k = 2 * BALL_R;
+  if (dCO <= k + 0.001) return 0;  // balls touching/overlapping; degenerate
+  const cA = Math.cos(alphaAbs);
+  const gcLen = Math.sqrt(Math.max(0.0001, dCO*dCO - 2*k*dCO*cA + k*k));
+  const cT = (dCO * cA - k) / gcLen;
+  if (cT <= 0) return 90;
+  return Math.acos(Math.min(1, cT)) * (180/Math.PI);
+}
 
 // Compute cut angle from CB/OB positions — consistent formula
 // Rail shots use rail direction as departure; open shots use OB→pocket
@@ -2425,7 +2460,10 @@ function computeCutFromPositions(cb, ob, pocketName) {
   let diff = departure - cbToOb;
   while (diff >  Math.PI) diff -= 2*Math.PI;
   while (diff < -Math.PI) diff += 2*Math.PI;
-  return { cutDeg: Math.abs(diff * DEG), rh: diff > 0 };
+  // diff is α (the depart-direction offset). Convert to true cut angle θ.
+  const _dCO = Math.hypot(ob.x - cb.x, ob.y - cb.y);
+  const _theta = alphaToCutDeg(Math.abs(diff), _dCO);
+  return { cutDeg: _theta, rh: diff > 0 };
 }
 
 function render() {
@@ -2485,6 +2523,7 @@ function render() {
   const _compFrac = Math.min(1, _fracMag);
   const _displayFrac = Math.min(1, _fracMag);
   var aimP = Math.round(_displayFrac * 100);
+
   const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
   // Use _compFrac (1.5x corrected) as the accurate fraction source
   const _cpEl = $('r-cp');
@@ -2564,7 +2603,7 @@ function renderTable(d) {
   if (justShot) { sV('ob-arrow', false); sV('ghost-ball', false); ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.opacity='0';}); return; }
 
   // OB departure arrow
-  const cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
+  let cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
   const rh = S._diagDragRh !== undefined ? S._diagDragRh : false;
   window._diagRh = rh;
   const cbToObAngle = Math.atan2(cbdy, cbdx);
@@ -2572,7 +2611,25 @@ function renderTable(d) {
   // Spin throw on OB — matches compute(): slow=1.5°/tip, med=0.5°/tip, fast=0.1°/tip
   const spinThrowDeg = S.spin * (S.speed < 0.28 ? 2.5 : S.speed < 0.72 ? 1.2 : 0.3);
   const obSpinThrow  = -spinThrowDeg * RAD;
-  let obDepartAngle = cbToObAngle + side * Math.min(cutDeg, 90) * RAD + obSpinThrow;
+  // OB departure direction. The CUT ANGLE θ is the angle at the contact point
+  // between the CB-trajectory and the line of centers — the standard pool
+  // definition. The OB departs along the line of centers, which is at some
+  // angle α from the CB→OB line. θ ≠ α in general; they only coincide when
+  // CB-OB distance is much greater than 2R.
+  //
+  // Given desired cut θ and CB-OB distance d, the depart-direction offset α is:
+  //   cos(α) = (k·sin²(θ) + cos(θ)·sqrt(d² − k²·sin²(θ))) / d   where k = 2R.
+  // This guarantees the visible angle between the CB→ghost line and the
+  // OB-departure arrow on the table equals θ exactly, at any distance.
+  const _cutR = Math.min(cutDeg, 90) * RAD;
+  const _cutS = Math.sin(_cutR), _cutA = Math.cos(_cutR);
+  const _k    = 2 * BALL_R;
+  const _dCO  = Math.hypot(cbdx, cbdy);
+  const _alphaCos = (_dCO > 0.001)
+    ? (_k * _cutS * _cutS + _cutA * Math.sqrt(Math.max(0, _dCO*_dCO - _k*_k*_cutS*_cutS))) / _dCO
+    : 1;
+  const _alpha = Math.acos(Math.max(-1, Math.min(1, _alphaCos)));
+  let obDepartAngle = cbToObAngle + side * _alpha + obSpinThrow;
 
   // Rail shot override: only when no diagram adjustment has been made
   // Once user drags the diagram, use their angle instead
@@ -2588,6 +2645,37 @@ function renderTable(d) {
       const _pocketY = S.pocket ? ({TL:30,TM:30,TR:30,BR:230,BM:230,BL:230}[S.pocket]||130) : 130;
       obDepartAngle = ob.y < _pocketY ? Math.PI/2 : -Math.PI/2;
     }
+  }
+
+  // CLAMP TO 90°: if the geometric setup yields a cut > 90° (the OB would
+  // have to depart on the OPPOSITE side of OB from where the CB can come),
+  // the shot is impossible. Clamp the departure direction so the implied
+  // cut is exactly 90° from the CB position. This caps the table aim line
+  // at the geometric maximum that any possible shot can have.
+  {
+    let _diff = obDepartAngle - cbToObAngle;
+    while (_diff >  Math.PI) _diff -= 2*Math.PI;
+    while (_diff < -Math.PI) _diff += 2*Math.PI;
+    if (Math.abs(_diff) > Math.PI/2) {
+      // Cut would exceed 90°. Clamp departure to ±90° from CB direction.
+      const _sign = _diff >= 0 ? 1 : -1;
+      obDepartAngle = cbToObAngle + _sign * Math.PI/2;
+    }
+  }
+
+  // After the rail-shot override and 90° clamp, the drawn departure angle
+  // may differ from what was implied by S.diagCutDeg. Sync S.diagCutDeg to
+  // the TRUE cut angle that the drawn geometry produces — not just the
+  // depart-angle offset from CB→OB. Only when the user has not manually
+  // dragged the perception slider (otherwise their drag is the source of
+  // truth and we don't second-guess it).
+  if (!S._userAdjustedDiag) {
+    let _drawnDiff = obDepartAngle - cbToObAngle;
+    while (_drawnDiff >  Math.PI) _drawnDiff -= 2*Math.PI;
+    while (_drawnDiff < -Math.PI) _drawnDiff += 2*Math.PI;
+    S.diagCutDeg = alphaToCutDeg(Math.abs(_drawnDiff), _dCO);
+    cutDeg = S.diagCutDeg;
+    S._diagDragRh = _drawnDiff > 0;
   }
 
   const odx = Math.cos(obDepartAngle), ody = Math.sin(obDepartAngle);
@@ -2613,13 +2701,12 @@ function renderTable(d) {
   // Ghost ball position is pure geometry — no throw correction
   const _perpX = 0;
   const _perpY = 0;
-  // For rail shots: approach from direction opposite to departure
-  // For regular shots: approach = CB→OB line adjusted for cut
-  const _approachAngle = !S._userAdjustedDiag && (
-    S.ob.y <= TL.top + BALL_R + 4 || S.ob.y >= TL.bottom - BALL_R - 4 ||
-    S.ob.x <= TL.left + BALL_R + 4 || S.ob.x >= TL.right - BALL_R - 4
-  ) ? obDepartAngle
-    : cbToObAngle + side * Math.min(cutDeg, 90) * RAD;
+  // Ghost ball is positioned along the OB-departure direction, regardless of
+  // rail or non-rail. obDepartAngle is the source of truth (set above using
+  // the geometric α formula for non-rail shots, the cushion direction for
+  // rail shots). Using it here directly keeps ghost position consistent with
+  // the OB-departure arrow drawn on the table.
+  const _approachAngle = obDepartAngle;
   const _SVG_R = BALL_R; // ghost ball display radius
   const _gx = Math.max(TL.left + _SVG_R, Math.min(TL.right  - _SVG_R, S.ob.x - Math.cos(_approachAngle) * 2 * BALL_R + _perpX));
   const _gy = Math.max(TL.top  + _SVG_R, Math.min(TL.bottom - _SVG_R, S.ob.y - Math.sin(_approachAngle) * 2 * BALL_R + _perpY));
@@ -2682,8 +2769,13 @@ function renderTable(d) {
       // OB at +depart from center, ghost at -depart from center.
       var obxm = CX + ddx * BR, obym = CY + ddy * BR;
       var gx   = CX - ddx * BR, gy   = CY - ddy * BR;
-      // Aim line direction: from CB toward ghost (i.e., CB→OB direction in world).
-      var vx = S.ob.x - S.cb.x, vy = S.ob.y - S.cb.y;
+      // Aim line direction: from CB toward GHOST in world (the actual CB
+      // trajectory). At close range with big cuts, this differs from CB→OB
+      // direction by ~atan2(2R·sin(α), d−2R·cos(α)), and using the trajectory
+      // direction here makes the protractor arc span the true cut angle θ.
+      var _ghostWX = S.ob.x - Math.cos(obDepartAngle) * 2 * BALL_R;
+      var _ghostWY = S.ob.y - Math.sin(obDepartAngle) * 2 * BALL_R;
+      var vx = _ghostWX - S.cb.x, vy = _ghostWY - S.cb.y;
       var vlen = Math.max(0.001, Math.hypot(vx, vy));
       var ux = vx / vlen, uy = vy / vlen;
       // Short aim-in line: starts from ghost, extends back along approach.
@@ -2825,27 +2917,48 @@ function renderTable(d) {
     // ── REBOUND SEGMENT: reflect off the rail we just hit, project to the
     // next rail, draw a second segment.  Even though the real shot might
     // not travel that far, this warns the player where the CB COULD go if
-    // it has the energy.  Drawn on cb-follow at lower opacity (40%) so it
-    // reads as a secondary/possibility line. -----------------------------
+    // it has the energy.  Drawn on cb-follow at 0.4 opacity in GREEN — the
+    // color matches Banker's first-bank line for consistency between apps.
     let _rebDx = dx, _rebDy = dy;
-    if (hitRail === 'top' || hitRail === 'bottom') _rebDy = -_rebDy;
-    else                                            _rebDx = -_rebDx;
+    let _hit2 = null;
+    if (hitRail === 'top' || hitRail === 'bottom') { _rebDy = -_rebDy; _hit2 = (hitRail === 'top') ? 'top' : 'bottom'; }
+    else                                            { _rebDx = -_rebDx; _hit2 = (hitRail === 'left') ? 'left' : 'right'; }
     let t2 = 9999;
-    if (_rebDy < 0) t2 = Math.min(t2, (TL.top    - _ey) / _rebDy);
-    if (_rebDy > 0) t2 = Math.min(t2, (TL.bottom - _ey) / _rebDy);
-    if (_rebDx < 0) t2 = Math.min(t2, (TL.left   - _ex) / _rebDx);
-    if (_rebDx > 0) t2 = Math.min(t2, (TL.right  - _ex) / _rebDx);
+    let _hitRail2 = null;
+    if (_rebDy < 0) { const tt = (TL.top    - _ey) / _rebDy; if (tt < t2) { t2 = tt; _hitRail2 = 'top'; } }
+    if (_rebDy > 0) { const tt = (TL.bottom - _ey) / _rebDy; if (tt < t2) { t2 = tt; _hitRail2 = 'bottom'; } }
+    if (_rebDx < 0) { const tt = (TL.left   - _ex) / _rebDx; if (tt < t2) { t2 = tt; _hitRail2 = 'left'; } }
+    if (_rebDx > 0) { const tt = (TL.right  - _ex) / _rebDx; if (tt < t2) { t2 = tt; _hitRail2 = 'right'; } }
     t2 = Math.max(10, t2);
     const _ex2 = _ex + _rebDx * t2, _ey2 = _ey + _rebDy * t2;
     const _rebEl = document.getElementById('cb-follow');
     if (_rebEl) {
       sL('cb-follow', _ex, _ey, _ex2, _ey2);
-      _rebEl.style.opacity = '0.4';
-      // Same color, dashed-attribute already set; lower opacity reads as "possible"
-      _rebEl.setAttribute('stroke', _cbColor);
+      _rebEl.style.opacity = '0.75';
+      _rebEl.setAttribute('stroke', '#4ade80');  // green, matches Banker bk-path
     }
 
-    ['cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
+    // ── SECOND REBOUND (VIOLET): reflect off the second rail, project to a
+    // third. Drawn at lower opacity (0.25) to read as more speculative.
+    // Matches Banker's bk-path2 violet color for cross-app consistency.
+    let _reb2Dx = _rebDx, _reb2Dy = _rebDy;
+    if (_hitRail2 === 'top' || _hitRail2 === 'bottom') _reb2Dy = -_reb2Dy;
+    else                                                _reb2Dx = -_reb2Dx;
+    let t3 = 9999;
+    if (_reb2Dy < 0) t3 = Math.min(t3, (TL.top    - _ey2) / _reb2Dy);
+    if (_reb2Dy > 0) t3 = Math.min(t3, (TL.bottom - _ey2) / _reb2Dy);
+    if (_reb2Dx < 0) t3 = Math.min(t3, (TL.left   - _ex2) / _reb2Dx);
+    if (_reb2Dx > 0) t3 = Math.min(t3, (TL.right  - _ex2) / _reb2Dx);
+    t3 = Math.max(10, t3);
+    const _ex3 = _ex2 + _reb2Dx * t3, _ey3 = _ey2 + _reb2Dy * t3;
+    const _reb2El = document.getElementById('cb-draw');
+    if (_reb2El) {
+      sL('cb-draw', _ex2, _ey2, _ex3, _ey3);
+      _reb2El.style.opacity = '0.55';
+      _reb2El.setAttribute('stroke', '#a78bfa');  // violet, matches Banker bk-path2
+    }
+
+    ['cb-stun-dot','cb-follow-dot','cb-draw-dot']
       .forEach(id => { const el = document.getElementById(id); if (el) el.style.opacity = '0'; });
   } else {
     // Either cue path is off, or cut is too small (shot is straight) — clear all lines
@@ -2879,10 +2992,12 @@ function drawBot(d) {
   // the magnitude. Critical for straight-in shots where diagFraction=0.
   // Hump-curve bias (compFrac vs diagFraction) shifts the contact thinner
   // in the mid cut range. Same convention as the readouts.
-  const _diagHumpDelta = (d.compFrac !== undefined && d.diagFraction !== undefined)
-                       ? (Math.abs(d.compFrac) - Math.abs(d.diagFraction))
-                       : 0;
-  let _aimFSigned = Math.abs(d.diagFraction) + _diagHumpDelta + _diagThrowDelta + _diagRcSigned;
+  // The ghost ball position in the perception view is PURE GEOMETRY plus
+  // throw and RC adjustments. The hump-curve bias is applied only to the
+  // numerical READOUTS, not to the visual ghost position. This way, when
+  // the user drags the ghost to the OB outside edge (aimF=1, cut=90°),
+  // the table's blue line and the perception ball agree.
+  let _aimFSigned = Math.abs(d.diagFraction) + _diagThrowDelta + _diagRcSigned;
   let _rhEffective = rh;
   if (_aimFSigned < 0) { _aimFSigned = -_aimFSigned; _rhEffective = !rh; }
   const aimF = Math.min(1, _aimFSigned);
@@ -3127,11 +3242,26 @@ function botSvgPt(e) {
 
 function updateDiagCut(svgX) {
   const ocx = 230;
-  const DRAG_RANGE = 224;
-  const raw = svgX - ocx;
-  const clamped = Math.max(-DRAG_RANGE, Math.min(DRAG_RANGE, raw));
-  S.diagCutDeg = Math.min(90, Math.abs(clamped) / DRAG_RANGE * 90);
-  S._diagDragRh = (clamped < 0);
+  const r = 82;
+  const minX = ocx - 2*r;
+  const maxX = ocx + 2*r;
+  const fingerX = Math.max(minX, Math.min(maxX, svgX));
+  // Snap to maximum if finger is within 8 SVG units of the visual edge.
+  const SNAP_PX = 8;
+  let aimF;
+  const distFromCenter = Math.abs(fingerX - ocx);
+  if (distFromCenter >= 2*r - SNAP_PX) {
+    aimF = 1;
+  } else {
+    aimF = distFromCenter / (2*r);
+  }
+  S.diagCutDeg = (aimF >= 1) ? 90 : (Math.asin(aimF) * 180/Math.PI);
+  S._diagDragRh = (fingerX < ocx);
+  // Debug
+  window._dbgFingerX = fingerX.toFixed(1);
+  window._dbgDist = distFromCenter.toFixed(1);
+  window._dbgAimF = aimF.toFixed(3);
+  window._dbgRawSvgX = svgX.toFixed(1);
 }
 
 // On grab, capture the finger-to-cut offset so the ball doesn't jump.
@@ -3160,11 +3290,13 @@ botsvg.addEventListener('pointerdown', e => {
   S._userAdjustedDiag = true;
   botsvg.setPointerCapture(e.pointerId);
   // Capture grab offset so the cut doesn't jump on touch.
-  const ocx = 230, DRAG_RANGE = 224;
+  // Ghost center sits at ocx + sign * sin(cutDeg) * 2r (pure geometry).
+  const ocx = 230, r = 82;
   const currentCutSign = S._diagDragRh ? -1 : 1;
-  const currentCutFrac = (S.diagCutDeg || 0) / 90;
-  const currentVirtualX = ocx + currentCutSign * currentCutFrac * DRAG_RANGE;
-  _diagGrabOffset = currentVirtualX - p2.x;
+  const _curCutDeg = S.diagCutDeg || 0;
+  const _curAimF = Math.sin(_curCutDeg * Math.PI/180);
+  const currentGhostX = ocx + currentCutSign * _curAimF * 2 * r;
+  _diagGrabOffset = currentGhostX - p2.x;
 });
 botsvg.addEventListener('pointermove', e => {
   if (!diagDrag) return;
@@ -3254,6 +3386,10 @@ function onSliders() {
       onSliders._raf = null;
       render();
     });
+  }
+  // Update the slider state indicator (blue when active, gray when default)
+  if (typeof window._updateSliderIndicator === 'function') {
+    window._updateSliderIndicator();
   }
 }
 
@@ -5261,9 +5397,51 @@ document.addEventListener('DOMContentLoaded', function(){
     var tableBtn = document.getElementById('rail-lock-btn');
     var percBtn  = document.getElementById('botsvg-lock-btn');
     var sliBtn   = document.getElementById('sliders-lock-btn');
+    var sliInd   = document.getElementById('slider-indicator-btn');
     if (tableBtn) document.body.appendChild(tableBtn);
     if (percBtn)  document.body.appendChild(percBtn);
     if (sliBtn)   document.body.appendChild(sliBtn);
+    if (sliInd)   document.body.appendChild(sliInd);
+
+    // Wire slider indicator: scroll to sliders on tap
+    if (sliInd) {
+      sliInd.addEventListener('click', function(e){
+        e.stopPropagation();
+        var sb = document.getElementById('sliders-block');
+        if (sb && sb.scrollIntoView) {
+          sb.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+      });
+    }
+
+    // Update indicator color based on slider state. Called from onSliders().
+    window._updateSliderIndicator = function() {
+      if (!sliInd) return;
+      var spdEl = document.getElementById('sl-spd');
+      var spnEl = document.getElementById('sl-spn');
+      var vrtEl = document.getElementById('sl-vert');
+      var spd = spdEl ? parseInt(spdEl.value) : 50;
+      var spn = spnEl ? parseInt(spnEl.value) : 0;
+      var vrt = vrtEl ? parseInt(vrtEl.value) : 0;
+      var anyActive = (spd !== 50) || (spn !== 0) || (vrt !== 0);
+      var color = anyActive ? '#3ab0ff' : '#888';
+      // Update all three tracks and thumbs
+      ['si-track-1','si-track-2','si-track-3'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.setAttribute('stroke', color);
+      });
+      ['si-thumb-1','si-thumb-2','si-thumb-3'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.setAttribute('fill', color);
+      });
+      // Glow border when active
+      sliInd.style.borderColor = anyActive ? 'rgba(58,176,255,0.7)' : 'rgba(255,255,255,0.2)';
+      sliInd.style.background  = anyActive ? 'rgba(58,176,255,0.15)' : 'rgba(0,0,0,0.55)';
+    };
+    // Initial paint
+    if (typeof window._updateSliderIndicator === 'function') {
+      window._updateSliderIndicator();
+    }
 
     function reposition() {
       var pad = 6;
@@ -5280,6 +5458,7 @@ document.addEventListener('DOMContentLoaded', function(){
           var r = box.getBoundingClientRect();
           if (!partlyVisible(r)) {
             tableBtn.style.visibility = 'hidden';
+            if (sliInd) sliInd.style.visibility = 'hidden';
           } else {
             var bw = tableBtn.offsetWidth || 60;
             var bh = tableBtn.offsetHeight || 22;
@@ -5290,6 +5469,18 @@ document.addEventListener('DOMContentLoaded', function(){
             tableBtn.style.visibility = 'visible';
             tableBtn.style.left = Math.round(clampedLeft) + 'px';
             tableBtn.style.top  = Math.round(clampedTop)  + 'px';
+            // Position the slider indicator just to the right of the lock
+            if (sliInd) {
+              var siw = sliInd.offsetWidth || 30;
+              var sih = sliInd.offsetHeight || 24;
+              var siLeft = clampedLeft + bw + 6;
+              var siTop  = clampedTop + (bh - sih) / 2;
+              siLeft = Math.max(pad, Math.min(vw - siw - pad, siLeft));
+              siTop  = Math.max(pad, Math.min(vh - sih - pad, siTop));
+              sliInd.style.visibility = 'visible';
+              sliInd.style.left = Math.round(siLeft) + 'px';
+              sliInd.style.top  = Math.round(siTop)  + 'px';
+            }
           }
         }
       }
