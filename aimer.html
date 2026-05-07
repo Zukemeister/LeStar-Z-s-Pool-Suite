@@ -897,7 +897,7 @@ var FOUNDATIONAL_SHOT = {
   shot: {
     ob: {x:230, y:130}, cb: {x:230, y:205},
     cut: 0, pocket: 'TM', rh: false,
-    vert: 2, speed: 0.5
+    vert: 0, speed: 0.5
   }
 };
 
@@ -990,7 +990,7 @@ var MAGAZINE = {
   intro: {
     title: 'Welcome',
     blocks: [
-      { p: '[Don\'s introduction goes here. A few paragraphs about what this is, who it\'s for, why a curriculum and not just a tool, what the student will get out of it. Replace this placeholder with whatever you want to say up front.]' },
+      { p: '[LeStar Z\'s introduction goes here. A few paragraphs about what this is, who it\'s for, why a curriculum and not just a tool, what the student will get out of it. Replace this placeholder with whatever LeStar wants to say up front.]' },
       { p: 'When you\'re ready, scroll on into the Warm-Up.' }
     ]
   },
@@ -1014,24 +1014,24 @@ var MAGAZINE = {
     {
       title: 'Sequence 1 — The Vertical Axis',
       blocks: [
-        { p: '[Don\'s intro to Sequence 1 goes here. Why this sequence, what it teaches that the warm-up didn\'t, what to attend to as the student moves through it. Few paragraphs of context.]' },
+        { p: '[LeStar\'s intro to Sequence 1 goes here. Why this sequence, what it teaches that the warm-up didn\'t, what to attend to as the student moves through it. Few paragraphs of context.]' },
         { h: 'Shot 1' },
-        { p: '[Don\'s prose for shot 1. The same idea as the warm-up follow shot, but now with a purpose: leave the cue ball at a specific spot for the next shot. The follow stroke now has a job to do.]' },
+        { p: '[LeStar\'s prose for shot 1. The same idea as the warm-up follow shot, but now with a purpose: leave the cue ball at a specific spot for the next shot. The follow stroke now has a job to do.]' },
         { set: 'seq1.shot1', label: 'SET UP SHOT 1' },
         { p: '[After the user has shot it. What did they notice? Where should the cue ball have ended up?]' },
         { done: 'seq1.shot1', label: 'DONE — MOVE TO SHOT 2' },
         { h: 'Shot 2' },
-        { p: '[Don\'s prose for shot 2. Stop shot into the corner. Stun on a near-straight shot.]' },
+        { p: '[LeStar\'s prose for shot 2. Stop shot into the corner. Stun on a near-straight shot.]' },
         { set: 'seq1.shot2', label: 'SET UP SHOT 2' },
         { p: '[After.]' },
         { done: 'seq1.shot2', label: 'DONE — MOVE TO SHOT 3' },
         { h: 'Shot 3' },
-        { p: '[Don\'s prose for shot 3. Long shot to the corner with follow, sending the cue ball toward the spot.]' },
+        { p: '[LeStar\'s prose for shot 3. Long shot to the corner with follow, sending the cue ball toward the spot.]' },
         { set: 'seq1.shot3', label: 'SET UP SHOT 3' },
         { p: '[After.]' },
         { done: 'seq1.shot3', label: 'DONE — MOVE TO SHOT 4' },
         { h: 'Shot 4' },
-        { p: '[Don\'s prose for shot 4. Modest cut into the bottom side pocket. Closing the loop — same skill as the warm-up, arrived at by position play.]' },
+        { p: '[LeStar\'s prose for shot 4. Modest cut into the bottom side pocket. Closing the loop — same skill as the warm-up, arrived at by position play.]' },
         { set: 'seq1.shot4', label: 'SET UP SHOT 4' },
         { p: '[After. Closing thoughts on the sequence.]' }
       ]
@@ -1181,7 +1181,7 @@ function buildMagazine() {
   // Header — TOC button + NOTES quick-access
   h += '<div style="position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#1a5a1a;color:#fff;gap:6px;">';
   h += '<button onclick="toggleMagTOC()" style="background:none;border:1px solid #fff;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;cursor:pointer;touch-action:manipulation;">≡ CONTENTS</button>';
-  h += '<span style="flex:1;text-align:center;font-size:11px;font-weight:900;letter-spacing:0.5px;">Aimer — Learn</span>';
+  h += '<span style="flex:1;text-align:center;font-size:11px;font-weight:900;letter-spacing:0.5px;">LeStar Z\'s Aimer Manifesto</span>';
   h += '<button onclick="showLearnTab(\'notes\')" title="Open MY NOTES" style="background:none;border:1px solid #fff;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;cursor:pointer;touch-action:manipulation;">📝 NOTES</button>';
   h += '</div>';
 
