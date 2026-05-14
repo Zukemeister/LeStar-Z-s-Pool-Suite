@@ -5386,10 +5386,13 @@ function swapPanels(){
     if (target.tagName === 'BUTTON' || target.tagName === 'INPUT') return true;
     // Lock buttons (SVG): protected so taps register
     if (target.closest('#rail-lock-btn, #botsvg-lock-btn')) return true;
-    // The Author panel: protected from pan so panel UI works. This
-    // is the only Author-specific protection. Ball-drag behavior on
-    // the table follows the player's default behavior.
+    // The Author panel: protected from pan so panel UI works.
     if (target.closest('#shot-library-panel')) return true;
+    // Author balls and overlay: protected from pan so ball drags work.
+    // This mirrors the player's protection of #ob, #cb, #ob-hi above —
+    // author balls are inside #author-overlay and need the same kind of
+    // pass-through to their drag handlers.
+    if (target.closest('#author-overlay')) return true;
     // Ball circles inside topsvg — handled by topsvg ball drag (unless locked)
     if (!window._tableLocked && target.closest('#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi')) return true;
     // Rail buttons (TBL/UNIT/TYPE/GRID/SNAP) and dropdowns
