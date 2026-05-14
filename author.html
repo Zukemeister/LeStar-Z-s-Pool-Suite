@@ -5693,6 +5693,11 @@ function vernierAim(dir) {
         <button id="auth-add">+ Ball</button>
         <button id="auth-sub" class="auth-danger" disabled>− Ball</button>
       </div>
+      <div class="auth-row">
+        <button id="auth-ball-prev" disabled>◀</button>
+        <span id="auth-ball-current" style="flex:1;text-align:center;font-weight:900;color:#f0df70;">No OB</span>
+        <button id="auth-ball-next" disabled>▶</button>
+      </div>
       <div class="auth-info" id="auth-info">No balls placed.</div>
     </div>
     <!-- SHOT section -->
@@ -7178,6 +7183,8 @@ document.addEventListener('DOMContentLoaded', function(){
     bindBtn('auth-clear-shot', clearShot);
     bindBtn('auth-next', nextShot);
     bindBtn('auth-undo', undoShot);
+    bindBtn('auth-ball-prev', selectPrevBall);
+    bindBtn('auth-ball-next', selectNextBall);
 
     // Game-management buttons
     bindBtn('auth-game-new', newGameClick);
@@ -7259,6 +7266,10 @@ document.addEventListener('DOMContentLoaded', function(){
     ];
     var s = spread[balls.length % spread.length];
     balls.push({ x: s[0] + Math.random()*8 - 4, y: s[1] + Math.random()*8 - 4 });
+    // If no current OB, auto-select the new ball so user can drag it
+    if (current.ballIdx == null) {
+      current.ballIdx = balls.length - 1;
+    }
     saveLibrary();
     render(); refreshUI();
   }
@@ -7276,11 +7287,44 @@ document.addEventListener('DOMContentLoaded', function(){
     render(); refreshUI();
   }
 
+  // Pull the currently-dragged positions from the player's S into our
+  // author state. Call this before switching which ball is the current
+  // OB, so the user's drag isn't lost when they cycle to another ball.
+  function syncFromS() {
+    if (!window.S) return;
+    if (window.S.cb) { cb.x = window.S.cb.x; cb.y = window.S.cb.y; }
+    if (window.S.ob && current.ballIdx != null && balls[current.ballIdx]) {
+      balls[current.ballIdx].x = window.S.ob.x;
+      balls[current.ballIdx].y = window.S.ob.y;
+    }
+  }
+
   function selectBall(idx) {
+    syncFromS();
     current.ballIdx = idx;
     if (current.pocket) placeDefaultGhost();
     saveLibrary();
     render(); refreshUI();
+  }
+
+  // Cycle to the previous ball (lower index, wrap to last). Skips
+  // "done" balls so the user only cycles among still-playable ones.
+  function selectPrevBall() {
+    if (balls.length === 0) return;
+    var startIdx = (current.ballIdx == null) ? 0 : current.ballIdx;
+    for (var step = 1; step <= balls.length; step++) {
+      var i = (startIdx - step + balls.length) % balls.length;
+      if (!balls[i].done) { selectBall(i); return; }
+    }
+  }
+
+  function selectNextBall() {
+    if (balls.length === 0) return;
+    var startIdx = (current.ballIdx == null) ? -1 : current.ballIdx;
+    for (var step = 1; step <= balls.length; step++) {
+      var i = (startIdx + step) % balls.length;
+      if (!balls[i].done) { selectBall(i); return; }
+    }
   }
 
   function selectPocket(pocket) {
@@ -7571,16 +7615,33 @@ document.addEventListener('DOMContentLoaded', function(){
     var shotNum = document.getElementById('auth-shot-num');
     if (shotNum) shotNum.textContent = 'Shot ' + (shots.length + 1);
 
+    // Count available (non-done) balls
+    var available = balls.filter(function(b){ return !b.done; }).length;
+
     var step = document.getElementById('auth-step');
     if (step) {
       if (balls.length === 0) {
         step.textContent = 'Add some balls first.';
       } else if (current.ballIdx == null) {
-        step.textContent = 'Tap a ball to designate as OB.';
+        step.textContent = 'Use ◀ ▶ to select an OB.';
       } else if (!current.pocket) {
-        step.textContent = 'Ball ' + (current.ballIdx + 1) + ' selected. Tap a pocket.';
+        step.textContent = 'Ball ' + (current.ballIdx + 1) + ' is the OB. Tap a pocket.';
       } else {
         step.textContent = 'Drag cyan ghost; adjust sliders.';
+      }
+    }
+
+    // Ball selector
+    var bp = document.getElementById('auth-ball-prev');
+    var bn = document.getElementById('auth-ball-next');
+    var bc = document.getElementById('auth-ball-current');
+    if (bp) bp.disabled = available < 2;
+    if (bn) bn.disabled = available < 2;
+    if (bc) {
+      if (current.ballIdx == null) {
+        bc.textContent = balls.length === 0 ? 'No balls' : 'No OB';
+      } else {
+        bc.textContent = 'OB: Ball ' + (current.ballIdx + 1);
       }
     }
 
