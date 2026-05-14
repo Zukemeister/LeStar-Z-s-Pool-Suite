@@ -5386,13 +5386,9 @@ function swapPanels(){
     if (target.tagName === 'BUTTON' || target.tagName === 'INPUT') return true;
     // Lock buttons (SVG): protected so taps register
     if (target.closest('#rail-lock-btn, #botsvg-lock-btn')) return true;
-    // Authoring overlay: drag balls only when unlocked. When the table is
-    // locked, allow the pan code to handle these touches like felt — so
-    // the user can pan past the balls without disturbing them.
-    if (!window._tableLocked && target.closest('#author-overlay')) return true;
-    // The Author panel itself is always protected from pan, regardless
-    // of lock state (it's a UI panel, not part of the table). The panel
-    // is now built on the shot-library-panel chassis.
+    // The Author panel: protected from pan so panel UI works. This
+    // is the only Author-specific protection. Ball-drag behavior on
+    // the table follows the player's default behavior.
     if (target.closest('#shot-library-panel')) return true;
     // Ball circles inside topsvg — handled by topsvg ball drag (unless locked)
     if (!window._tableLocked && target.closest('#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi')) return true;
@@ -7657,7 +7653,6 @@ document.addEventListener('DOMContentLoaded', function(){
       var grp = drawBall(b.x, b.y, num, selected);
       if (b.done) grp.style.opacity = '0.25';
       grp.style.cursor = b.done ? 'default' : 'grab';
-      grp.style.touchAction = 'none';
       attachDrag(grp, i);
       g.appendChild(grp);
     });
@@ -7665,7 +7660,6 @@ document.addEventListener('DOMContentLoaded', function(){
     // ── CB on top of object balls (so it's always grabbable) ──
     var cbGrp = drawCB(cb.x, cb.y);
     cbGrp.style.cursor = 'grab';
-    cbGrp.style.touchAction = 'none';
     attachCbDrag(cbGrp);
     g.appendChild(cbGrp);
 
@@ -7674,7 +7668,6 @@ document.addEventListener('DOMContentLoaded', function(){
       var lg = mkCircle(current.ghost.x, current.ghost.y, BALL_R_AUTH,
         'rgba(125,211,252,0.20)', '#7dd3fc', '2.5', '5,3');
       lg.style.cursor = 'grab';
-      lg.style.touchAction = 'none';
       attachGhostDrag(lg);
       g.appendChild(lg);
     }
@@ -7778,9 +7771,6 @@ document.addEventListener('DOMContentLoaded', function(){
     var sx, sy;
     var children = grp.children;
     grp.addEventListener('pointerdown', function(e){
-      // Respect the table lock: when locked, balls don't drag — page
-      // can pan instead. Same UX as the main aimer.
-      if (window._tableLocked) return;
       e.preventDefault(); e.stopPropagation();
       dragging = true;
       moved = false;
@@ -7807,12 +7797,9 @@ document.addEventListener('DOMContentLoaded', function(){
       dragging = false;
       try { grp.releasePointerCapture(e.pointerId); } catch(_){}
       if (!moved) {
-        // Tap — select this ball as OB (unless it's done)
         if (!balls[idx].done) selectBall(idx);
       } else {
-        // Drag ended — persist new position
         saveLibrary();
-        // If this is the active OB, full re-render to update aim lines
         if (idx === current.ballIdx) render();
       }
     });
@@ -7822,7 +7809,6 @@ document.addEventListener('DOMContentLoaded', function(){
     var dragging = false;
     var children = grp.children;
     grp.addEventListener('pointerdown', function(e){
-      if (window._tableLocked) return;
       e.preventDefault(); e.stopPropagation();
       dragging = true;
       try { grp.setPointerCapture(e.pointerId); } catch(_){}
@@ -7841,7 +7827,7 @@ document.addEventListener('DOMContentLoaded', function(){
       dragging = false;
       try { grp.releasePointerCapture(e.pointerId); } catch(_){}
       saveLibrary();
-      render();  // re-render so aim line/ghost-ball follow the new CB
+      render();
     });
   }
 
@@ -7849,7 +7835,6 @@ document.addEventListener('DOMContentLoaded', function(){
   function attachGhostDrag(el) {
     var dragging = false;
     el.addEventListener('pointerdown', function(e){
-      if (window._tableLocked) return;
       e.preventDefault(); e.stopPropagation();
       dragging = true;
       el.style.cursor = 'grabbing';
