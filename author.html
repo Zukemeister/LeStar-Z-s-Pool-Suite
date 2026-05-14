@@ -549,6 +549,34 @@ body { padding-bottom: 80px !important; }
   flex-shrink: 0; touch-action: manipulation;
 }
 .dock-orient-dot:active { background: rgba(240,223,112,0.8); }
+/* ───── AUTHOR PANEL CONTROLS ───── */
+.auth-sec { margin: 8px 0; padding-top: 8px; border-top: 1px solid #3a5a3a; }
+.auth-sec:first-of-type { border-top: none; padding-top: 0; }
+.auth-sec-label { font-size: 10px; font-weight: 900; color: #7a9a4a; letter-spacing: 1.5px; margin-bottom: 4px; }
+.auth-row { display: flex; gap: 6px; margin: 4px 0; align-items: center; }
+.auth-row button { padding: 6px 10px; background: #2a3a2a; color: #e8e8d0; border: 1px solid #4a5a3a; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; touch-action: manipulation; flex: 1; }
+.auth-row button:hover { background: #3a4a3a; }
+.auth-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+.auth-row button.auth-danger { background: #5a2a2a; color: #f0c0c0; border-color: #7a3a3a; }
+.auth-row button.auth-danger:hover { background: #7a3a3a; }
+.auth-row button.auth-primary { background: #5a7a3a; color: #fff; border-color: #7a9a4a; }
+.auth-row button.auth-primary:hover { background: #7a9a4a; }
+#shot-library-panel .auth-info { font-size: 11px; color: #a0c08a; margin: 4px 0; }
+.auth-shot-num { font-size: 14px; font-weight: 900; color: #f0df70; margin: 6px 0 2px;
+  background: rgba(240,223,112,0.08); border: 1px solid rgba(240,223,112,0.3);
+  border-radius: 4px; padding: 4px 8px; text-align: center; }
+.auth-pgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin: 6px 0; }
+.auth-pkt { padding: 6px 0; background: #2a3a2a; color: #e8e8d0; border: 1px solid #4a5a3a; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+.auth-pkt.active { background: #5a7a3a; border-color: #7a9a4a; color: #fff; }
+.auth-pkt:disabled { opacity: 0.4; cursor: not-allowed; }
+#shot-library-panel input[type="text"], #shot-library-panel select, #shot-library-panel textarea {
+  background: #1a2a1a; color: #e8e8d0; border: 1px solid #4a5a3a; border-radius: 3px;
+  padding: 4px 6px; font-size: 12px; font-family: inherit;
+}
+#shot-library-panel textarea { font-family: inherit; resize: vertical; }
+.auth-notes { font-size: 11px; height: 60px; flex: 1; }
+#auth-output { font-family: Monaco, monospace; font-size: 10px; height: 100px; width: 100%;
+  box-sizing: border-box; margin-top: 6px; }
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -5358,9 +5386,14 @@ function swapPanels(){
     if (target.tagName === 'BUTTON' || target.tagName === 'INPUT') return true;
     // Lock buttons (SVG): protected so taps register
     if (target.closest('#rail-lock-btn, #botsvg-lock-btn')) return true;
-    // Authoring overlay: any element inside the authoring overlay group
-    // should be protected so it gets ball-drag instead of page-pan
-    if (target.closest('#author-overlay, #author-panel')) return true;
+    // Authoring overlay: drag balls only when unlocked. When the table is
+    // locked, allow the pan code to handle these touches like felt — so
+    // the user can pan past the balls without disturbing them.
+    if (!window._tableLocked && target.closest('#author-overlay')) return true;
+    // The Author panel itself is always protected from pan, regardless
+    // of lock state (it's a UI panel, not part of the table). The panel
+    // is now built on the shot-library-panel chassis.
+    if (target.closest('#shot-library-panel')) return true;
     // Ball circles inside topsvg — handled by topsvg ball drag (unless locked)
     if (!window._tableLocked && target.closest('#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi')) return true;
     // Rail buttons (TBL/UNIT/TYPE/GRID/SNAP) and dropdowns
@@ -5628,40 +5661,79 @@ function vernierAim(dir) {
 
 
 </script>
-<!-- SHOT LIBRARY — floating, draggable -->
-<div id="shot-library-panel" class="float-panel" style="border-color:rgba(240,223,112,0.5);min-width:300px;">
+<!-- AUTHOR — floating, draggable, built on Learn panel chassis -->
+<div id="shot-library-panel" class="float-panel" style="display:flex;border-color:rgba(240,223,112,0.5);min-width:300px;background:#1a2a1a;top:20px;right:20px;">
   <!-- Header -->
   <div id="shot-lib-header" class="float-panel-header" style="background:#1a1400;">
-    <span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">LEARN</span>
+    <span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">✎ AUTHOR</span>
     <div style="display:flex;align-items:center;gap:6px;">
-      <button onclick="showLearnTab('myshots')" style="font-size:9px;font-weight:900;padding:2px 7px;border-radius:10px;border:1px solid rgba(240,223,112,0.5);background:rgba(240,223,112,0.15);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">MY SHOTS ↓</button>
       <button class="min-btn" onclick="minimizePanel('shot-library-panel',this.closest('#shot-lib-header'))" style="background:none;border:1px solid #aaa;border-radius:4px;color:#aaa;font-size:13px;font-weight:900;padding:1px 7px;cursor:pointer;touch-action:manipulation;">—</button>
-      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:#aaa;font-size:22px;line-height:1;cursor:pointer;padding:0 4px;touch-action:manipulation;">✕</button>
     </div>
   </div>
-  <!-- Tab bar -->
-  <div style="display:flex;border-bottom:2px solid #e0e0e0;background:#f0f0f0;">
-    <button id="learn-tab-sequences" onclick="showLearnTab('sequences')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid #1a5a1a;background:#fff;color:#1a5a1a;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">SEQUENCES</button>
-    <button id="learn-tab-notes" onclick="showLearnTab('notes')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">MY NOTES</button>
-    <button id="learn-tab-presets" onclick="showLearnTab('presets')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">LIBRARY</button>
-    <button id="learn-tab-myshots" onclick="showLearnTab('myshots')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">RECORDS</button>
+  <!-- Body: all authoring controls -->
+  <div id="auth-body" class="float-panel-body" style="background:#1a2a1a;color:#e8e8d0;padding:10px;min-height:200px;font-family:Lato,sans-serif;font-size:12px;">
+    <!-- GAME section -->
+    <div class="auth-sec">
+      <div class="auth-sec-label">GAME</div>
+      <div class="auth-row">
+        <select id="auth-game-sel" style="flex:1;"></select>
+        <button id="auth-game-new" title="New game">+</button>
+        <button id="auth-game-del" class="auth-danger" title="Delete this game">×</button>
+      </div>
+      <div class="auth-row">
+        <input type="text" id="auth-title" placeholder="Game title" style="flex:1;"/>
+      </div>
+      <div class="auth-row">
+        <textarea id="auth-notes" placeholder="Notes for this game..." class="auth-notes"></textarea>
+      </div>
+    </div>
+    <!-- BALLS section -->
+    <div class="auth-sec">
+      <div class="auth-sec-label">BALLS</div>
+      <div class="auth-row">
+        <button id="auth-add">+ Ball</button>
+        <button id="auth-sub" class="auth-danger" disabled>− Ball</button>
+      </div>
+      <div class="auth-info" id="auth-info">No balls placed.</div>
+    </div>
+    <!-- SHOT section -->
+    <div class="auth-sec">
+      <div class="auth-shot-num" id="auth-shot-num">Shot 1</div>
+      <div class="auth-info" id="auth-step">Tap a ball to begin.</div>
+      <div class="auth-pgrid">
+        <button class="auth-pkt" data-p="TL" disabled>TL</button>
+        <button class="auth-pkt" data-p="TM" disabled>TM</button>
+        <button class="auth-pkt" data-p="TR" disabled>TR</button>
+        <button class="auth-pkt" data-p="BL" disabled>BL</button>
+        <button class="auth-pkt" data-p="BM" disabled>BM</button>
+        <button class="auth-pkt" data-p="BR" disabled>BR</button>
+      </div>
+      <div class="auth-row">
+        <button id="auth-next" class="auth-primary" disabled>✓ Next Shot</button>
+        <button id="auth-undo" disabled>↶ Undo</button>
+      </div>
+      <div class="auth-row">
+        <button id="auth-clear-shot" class="auth-danger">Clear Shot</button>
+      </div>
+    </div>
+    <!-- EXPORT section -->
+    <div class="auth-sec">
+      <div class="auth-row">
+        <button id="auth-export-one" class="auth-primary">Export This Game</button>
+      </div>
+      <div class="auth-row">
+        <button id="auth-export-all">Export All Games</button>
+      </div>
+      <textarea id="auth-output" placeholder="Export output appears here." style="display:none;"></textarea>
+    </div>
   </div>
-  <!-- Sequences tab -->
-  <div id="learn-pane-sequences" class="float-panel-body" style="cursor:default;min-height:200px;"></div>
-  <!-- My Notes tab -->
-  <div id="learn-pane-notes" class="float-panel-body" style="display:none;padding:0;"></div>
-  <!-- Library tab -->
-  <div id="learn-pane-presets" class="float-panel-body" style="display:none;cursor:grab;min-height:200px;"></div>
-  <!-- Records tab -->
-  <div id="learn-pane-myshots" class="float-panel-body" style="display:none;"></div>
-  <!-- Footer: record button + scale -->
+  <!-- Footer: size slider (resize) -->
   <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-top:2px solid #f0df70;background:#0a0a0a;">
     <div style="display:flex;align-items:center;gap:6px;flex:1;">
       <span style="font-size:9px;font-weight:900;color:#f0df70;letter-spacing:1px;">SIZE</span>
       <input type="range" id="learn-scale" min="50" max="100" value="100" oninput="scalePanel('shot-library-panel','learn-scale','learn-scale-lbl')"
         style="flex:1;height:4px;-webkit-appearance:none;appearance:none;background:#555;border-radius:2px;cursor:pointer;outline:none;accent-color:#f0df70;">
     </div>
-    <button onclick="startRecord()" title="Record this shot" style="font-size:9px;font-weight:900;padding:3px 10px;border-radius:10px;border:1px solid #f0df70;background:rgba(192,160,24,0.2);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:1px;margin-left:10px;">⬤ REC</button>
   </div>
 </div>
 
@@ -7076,60 +7148,6 @@ document.addEventListener('DOMContentLoaded', function(){
     BL: {x:30,y:230}, BM: {x:230,y:230}, BR: {x:430,y:230}
   };
 
-  // ────── Inject panel styles ──────
-  var style = document.createElement('style');
-  style.textContent =
-    '#author-panel{position:fixed;top:80px;right:16px;z-index:9999;'
-  + 'background:rgba(20,30,20,0.96);border:2px solid #f0df70;border-radius:8px;'
-  + 'padding:12px;width:280px;font-family:Lato,sans-serif;color:#e8e8d0;'
-  + 'font-size:12px;box-shadow:0 4px 20px rgba(0,0,0,0.5);}'
-  + '#author-panel .ah{font-weight:900;color:#f0df70;font-size:13px;'
-  + 'letter-spacing:1px;cursor:move;padding:4px 8px;margin:-12px -12px 8px;'
-  + 'background:rgba(240,223,112,0.12);border-radius:6px 6px 0 0;'
-  + 'display:flex;justify-content:space-between;align-items:center;}'
-  + '#author-panel .collapse-btn{cursor:pointer;font-size:14px;padding:0 4px;'
-  + 'user-select:none;transition:transform 0.2s;}'
-  + '#author-panel.collapsed{width:auto;min-width:140px;}'
-  + '#author-panel.collapsed .ah{margin:-12px;border-radius:6px;}'
-  + '#author-panel.collapsed .collapse-btn{transform:rotate(-90deg);}'
-  + '#author-panel.collapsed #auth-body{display:none;}'
-  + '#author-panel .row{display:flex;gap:6px;align-items:center;margin:6px 0;}'
-  + '#author-panel button{background:#3a4a2a;color:#f0df70;border:1px solid #5a7a3a;'
-  + 'border-radius:4px;padding:6px 12px;font-size:12px;font-weight:700;'
-  + 'cursor:pointer;flex:1;}'
-  + '#author-panel button:hover{background:#4a6a3a;}'
-  + '#author-panel button.danger{background:#5a2a2a;color:#f0c0c0;border-color:#7a3a3a;}'
-  + '#author-panel button.danger:hover{background:#7a3a3a;}'
-  + '#author-panel button.primary{background:#5a7a3a;color:#fff;border-color:#7a9a4a;}'
-  + '#author-panel button.primary:hover{background:#7a9a4a;}'
-  + '#author-panel button:disabled{opacity:0.4;cursor:not-allowed;}'
-  + '#author-panel .info{font-size:11px;color:#a0c08a;margin:4px 0;}'
-  + '#author-panel .shot-num{font-size:14px;font-weight:900;color:#f0df70;margin:6px 0 2px;'
-  + 'background:rgba(240,223,112,0.08);border:1px solid rgba(240,223,112,0.3);'
-  + 'border-radius:4px;padding:4px 8px;text-align:center;}'
-  + '#author-panel .sec{margin:8px 0;padding-top:8px;border-top:1px solid #3a5a3a;}'
-  + '#author-panel .sec:first-of-type{border-top:none;padding-top:0;}'
-  + '#author-panel .sec-label{font-size:10px;font-weight:900;color:#7a9a4a;letter-spacing:1.5px;margin-bottom:4px;}'
-  + '#author-panel input,#author-panel select,#author-panel textarea{'
-  + 'background:#1a2a1a;color:#e8e8d0;border:1px solid #4a5a3a;border-radius:3px;'
-  + 'padding:4px 6px;font-size:12px;font-family:inherit;}'
-  + '#author-panel textarea{font-family:Monaco,monospace;font-size:10px;height:100px;width:100%;'
-  + 'box-sizing:border-box;resize:vertical;margin-top:6px;}'
-  + '#author-panel textarea.notes{font-family:inherit;font-size:11px;height:60px;margin-top:0;'
-  + 'flex:1;}'
-  + '#author-panel select{font-family:inherit;}'
-  + '#author-panel .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin:6px 0;}'
-  + '#author-panel .pkt{padding:6px 4px;font-size:10px;text-align:center;'
-  + 'background:#2a3a2a;color:#a0c0a0;border:1px solid #3a5a3a;border-radius:3px;'
-  + 'cursor:pointer;font-weight:700;flex:none;}'
-  + '#author-panel .pkt:hover{background:#3a5a3a;}'
-  + '#author-panel .pkt.active{background:#f0df70;color:#1a1400;border-color:#f0df70;}'
-  + '#author-panel .pkt:disabled{opacity:0.4;cursor:not-allowed;}'
-  + '#author-author-badge{position:fixed;top:8px;left:8px;z-index:9998;'
-  + 'background:#f0df70;color:#1a1400;font-weight:900;font-size:10px;'
-  + 'letter-spacing:1.5px;padding:3px 8px;border-radius:3px;'
-  + 'pointer-events:none;opacity:0.85;}';
-  document.head.appendChild(style);
 
   // ────── Hide main aimer's dynamic layer ──────
   // In the authoring tool we don't want the main aimer drawing its own
@@ -7142,117 +7160,17 @@ document.addEventListener('DOMContentLoaded', function(){
 
   // ────── Build panel ──────
   function build() {
-    if (document.getElementById('author-panel')) return;
+    // The HTML for the panel is static (in the page body, ID
+    // shot-library-panel). All we do here is hide the main aimer,
+    // load saved state, wire event handlers, and render.
+    if (window._authorBuilt) return;
+    window._authorBuilt = true;
+
     hideMainAimer();
     loadLibrary();
 
-    var badge = document.createElement('div');
-    badge.id = 'author-author-badge';
-    badge.textContent = 'AUTHOR';
-    document.body.appendChild(badge);
-
-    panel = document.createElement('div');
-    panel.id = 'author-panel';
-    panel.innerHTML =
-      '<div class="ah">'
-    + '<span>✎ AUTHORING</span>'
-    + '<span id="auth-collapse" class="collapse-btn" title="Collapse panel">▾</span>'
-    + '</div>'
-    + '<div id="auth-body">'
-    + '<div class="sec">'
-    + '<div class="sec-label">GAME</div>'
-    + '<div class="row">'
-    + '<select id="auth-game-sel" style="flex:1;"></select>'
-    + '<button id="auth-game-new" title="New game">+</button>'
-    + '<button id="auth-game-del" class="danger" title="Delete this game">×</button>'
-    + '</div>'
-    + '<div class="row">'
-    + '<input type="text" id="auth-title" placeholder="Game title" style="flex:1;"/>'
-    + '</div>'
-    + '<div class="row">'
-    + '<textarea id="auth-notes" placeholder="Notes for this game..." class="notes"></textarea>'
-    + '</div>'
-    + '</div>'
-    + '<div class="sec">'
-    + '<div class="sec-label">BALLS</div>'
-    + '<div class="row">'
-    + '<button id="auth-add">+ Ball</button>'
-    + '<button id="auth-sub" class="danger" disabled>− Ball</button>'
-    + '</div>'
-    + '<div class="info" id="auth-info">No balls placed.</div>'
-    + '</div>'
-    + '<div class="sec">'
-    + '<div class="shot-num" id="auth-shot-num">Shot 1</div>'
-    + '<div class="info" id="auth-step">Tap a ball to begin.</div>'
-    + '<div class="pgrid">'
-    + '<button class="pkt" data-p="TL" disabled>TL</button>'
-    + '<button class="pkt" data-p="TM" disabled>TM</button>'
-    + '<button class="pkt" data-p="TR" disabled>TR</button>'
-    + '<button class="pkt" data-p="BL" disabled>BL</button>'
-    + '<button class="pkt" data-p="BM" disabled>BM</button>'
-    + '<button class="pkt" data-p="BR" disabled>BR</button>'
-    + '</div>'
-    + '<div class="row">'
-    + '<button id="auth-next" class="primary" disabled>✓ Next Shot</button>'
-    + '<button id="auth-undo" disabled>↶ Undo</button>'
-    + '</div>'
-    + '<div class="row">'
-    + '<button id="auth-clear-shot" class="danger">Clear Shot</button>'
-    + '</div>'
-    + '</div>'
-    + '<div class="sec">'
-    + '<div class="row">'
-    + '<button id="auth-export-one" class="primary">Export This Game</button>'
-    + '</div>'
-    + '<div class="row">'
-    + '<button id="auth-export-all">Export All Games</button>'
-    + '</div>'
-    + '<textarea id="auth-output" placeholder="Export output appears here." style="display:none;"></textarea>'
-    + '</div>'
-    + '</div>';  // /auth-body
-    document.body.appendChild(panel);
-
-    // Defensive: if the panel ends up partly off-screen (rare on small
-    // viewports), snap it back into view so the user can still grab it.
-    setTimeout(function(){
-      var r = panel.getBoundingClientRect();
-      if (r.right < 80 || r.left > window.innerWidth - 80 ||
-          r.bottom < 40 || r.top > window.innerHeight - 40) {
-        panel.style.left = '8px';
-        panel.style.top = '8px';
-        panel.style.right = 'auto';
-      }
-    }, 50);
-
-    // Drag panel by header
-    var hdr = panel.querySelector('.ah');
-    var pd = false, sx, sy, ox, oy;
-    hdr.addEventListener('pointerdown', function(e){
-      // Don't start drag if user is tapping the collapse button
-      if (e.target.id === 'auth-collapse') return;
-      pd = true;
-      sx = e.clientX; sy = e.clientY;
-      var r = panel.getBoundingClientRect();
-      ox = r.left; oy = r.top;
-      try { hdr.setPointerCapture(e.pointerId); } catch(_){}
-    });
-    hdr.addEventListener('pointermove', function(e){
-      if (!pd) return;
-      var nx = ox + e.clientX - sx;
-      var ny = oy + e.clientY - sy;
-      // Keep at least 80px of the panel header visible at all edges so
-      // the user can always grab it back.
-      var w = panel.offsetWidth, h = 40;  // 40 = roughly header height
-      nx = Math.max(-w + 80, Math.min(window.innerWidth - 80, nx));
-      ny = Math.max(0, Math.min(window.innerHeight - h, ny));
-      panel.style.left = nx + 'px';
-      panel.style.top  = ny + 'px';
-      panel.style.right = 'auto';
-    });
-    hdr.addEventListener('pointerup', function(e){
-      pd = false;
-      try { hdr.releasePointerCapture(e.pointerId); } catch(_){}
-    });
+    // Panel reference for any code that wants it (kept for compatibility)
+    panel = document.getElementById('shot-library-panel');
 
     // Button handlers — bind to both pointerdown and click, deduplicated,
     // capture phase, to defeat any event-blocking elsewhere in the app.
@@ -7296,15 +7214,8 @@ document.addEventListener('DOMContentLoaded', function(){
       saveLibrary();
     });
 
-    // Collapse / expand panel
-    var collapseBtn = document.getElementById('auth-collapse');
-    collapseBtn.addEventListener('click', function(e){
-      e.preventDefault(); e.stopPropagation();
-      panel.classList.toggle('collapsed');
-    });
-
     // Pocket buttons
-    panel.querySelectorAll('.pkt').forEach(function(el){
+    panel.querySelectorAll('.auth-pkt').forEach(function(el){
       var last = 0;
       var fn = function(e){
         e.preventDefault(); e.stopPropagation();
@@ -7666,7 +7577,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // Pocket buttons: enabled only when a ball is selected; active class
     // shows current.pocket selection.
-    panel.querySelectorAll('.pkt').forEach(function(el){
+    panel.querySelectorAll('.auth-pkt').forEach(function(el){
       el.disabled = (current.ballIdx == null);
       el.classList.toggle('active', el.dataset.p === current.pocket);
     });
@@ -7867,6 +7778,9 @@ document.addEventListener('DOMContentLoaded', function(){
     var sx, sy;
     var children = grp.children;
     grp.addEventListener('pointerdown', function(e){
+      // Respect the table lock: when locked, balls don't drag — page
+      // can pan instead. Same UX as the main aimer.
+      if (window._tableLocked) return;
       e.preventDefault(); e.stopPropagation();
       dragging = true;
       moved = false;
@@ -7908,6 +7822,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var dragging = false;
     var children = grp.children;
     grp.addEventListener('pointerdown', function(e){
+      if (window._tableLocked) return;
       e.preventDefault(); e.stopPropagation();
       dragging = true;
       try { grp.setPointerCapture(e.pointerId); } catch(_){}
@@ -7934,6 +7849,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function attachGhostDrag(el) {
     var dragging = false;
     el.addEventListener('pointerdown', function(e){
+      if (window._tableLocked) return;
       e.preventDefault(); e.stopPropagation();
       dragging = true;
       el.style.cursor = 'grabbing';
