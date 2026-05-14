@@ -7153,8 +7153,8 @@ document.addEventListener('DOMContentLoaded', function(){
   // CB, OB, arrows, ghost, or path lines on top of our authoring overlay.
   // Hide the dyn group permanently.
   function hideMainAimer() {
-    var dyn = document.getElementById('dyn');
-    if (dyn) dyn.style.display = 'none';
+    // No-op now. The author tool uses the player's #ob and #cb directly
+    // instead of hiding them behind a parallel overlay.
   }
 
   // ────── Build panel ──────
@@ -7600,7 +7600,31 @@ document.addEventListener('DOMContentLoaded', function(){
     if (o) o.remove();
   }
 
+  // New rendering approach: instead of drawing a parallel overlay, we
+  // update the player's S.ob/S.cb to reflect author state and let the
+  // player's render() do the actual drawing. This avoids the parallel-
+  // systems problem that caused the mobile drag bugs.
   function render() {
+    clearOverlay();
+    // Sync the CB position: author's cb → player's S.cb. Always do this
+    // because the CB is always present.
+    if (window.S) {
+      window.S.cb = { x: cb.x, y: cb.y };
+      // Sync the currently-designated OB. If none designated, leave S.ob
+      // alone (player will keep its default or last position).
+      if (current.ballIdx != null && balls[current.ballIdx]) {
+        var ob = balls[current.ballIdx];
+        window.S.ob = { x: ob.x, y: ob.y };
+      }
+    }
+    // Trigger the player's render to redraw the table with our updated S
+    if (typeof window.render === 'function' && window.render !== render) {
+      window.render();
+    }
+  }
+
+  // (Old code kept temporarily for reference during refactor — not called.)
+  function renderAuthorOverlay() {
     clearOverlay();
     var svg = document.getElementById('topsvg');
     if (!svg) return;
