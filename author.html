@@ -5358,6 +5358,9 @@ function swapPanels(){
     if (target.tagName === 'BUTTON' || target.tagName === 'INPUT') return true;
     // Lock buttons (SVG): protected so taps register
     if (target.closest('#rail-lock-btn, #botsvg-lock-btn')) return true;
+    // Authoring overlay: any element inside the authoring overlay group
+    // should be protected so it gets ball-drag instead of page-pan
+    if (target.closest('#author-overlay, #author-panel')) return true;
     // Ball circles inside topsvg — handled by topsvg ball drag (unless locked)
     if (!window._tableLocked && target.closest('#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi')) return true;
     // Rail buttons (TBL/UNIT/TYPE/GRID/SNAP) and dropdowns
@@ -7209,6 +7212,18 @@ document.addEventListener('DOMContentLoaded', function(){
     + '</div>';  // /auth-body
     document.body.appendChild(panel);
 
+    // Defensive: if the panel ends up partly off-screen (rare on small
+    // viewports), snap it back into view so the user can still grab it.
+    setTimeout(function(){
+      var r = panel.getBoundingClientRect();
+      if (r.right < 80 || r.left > window.innerWidth - 80 ||
+          r.bottom < 40 || r.top > window.innerHeight - 40) {
+        panel.style.left = '8px';
+        panel.style.top = '8px';
+        panel.style.right = 'auto';
+      }
+    }, 50);
+
     // Drag panel by header
     var hdr = panel.querySelector('.ah');
     var pd = false, sx, sy, ox, oy;
@@ -7223,8 +7238,15 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     hdr.addEventListener('pointermove', function(e){
       if (!pd) return;
-      panel.style.left = (ox + e.clientX - sx) + 'px';
-      panel.style.top  = (oy + e.clientY - sy) + 'px';
+      var nx = ox + e.clientX - sx;
+      var ny = oy + e.clientY - sy;
+      // Keep at least 80px of the panel header visible at all edges so
+      // the user can always grab it back.
+      var w = panel.offsetWidth, h = 40;  // 40 = roughly header height
+      nx = Math.max(-w + 80, Math.min(window.innerWidth - 80, nx));
+      ny = Math.max(0, Math.min(window.innerHeight - h, ny));
+      panel.style.left = nx + 'px';
+      panel.style.top  = ny + 'px';
       panel.style.right = 'auto';
     });
     hdr.addEventListener('pointerup', function(e){
@@ -7724,6 +7746,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var grp = drawBall(b.x, b.y, num, selected);
       if (b.done) grp.style.opacity = '0.25';
       grp.style.cursor = b.done ? 'default' : 'grab';
+      grp.style.touchAction = 'none';
       attachDrag(grp, i);
       g.appendChild(grp);
     });
@@ -7731,6 +7754,7 @@ document.addEventListener('DOMContentLoaded', function(){
     // ── CB on top of object balls (so it's always grabbable) ──
     var cbGrp = drawCB(cb.x, cb.y);
     cbGrp.style.cursor = 'grab';
+    cbGrp.style.touchAction = 'none';
     attachCbDrag(cbGrp);
     g.appendChild(cbGrp);
 
@@ -7739,6 +7763,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var lg = mkCircle(current.ghost.x, current.ghost.y, BALL_R_AUTH,
         'rgba(125,211,252,0.20)', '#7dd3fc', '2.5', '5,3');
       lg.style.cursor = 'grab';
+      lg.style.touchAction = 'none';
       attachGhostDrag(lg);
       g.appendChild(lg);
     }
