@@ -7299,6 +7299,16 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function nextShot() {
     if (current.ballIdx == null || !current.pocket || !current.ghost) return;
+    // Pull the live ball positions from the player's S — that's where
+    // dragging updates them. Our author state needs to match before we
+    // commit the shot.
+    if (window.S) {
+      if (window.S.cb) { cb.x = window.S.cb.x; cb.y = window.S.cb.y; }
+      if (window.S.ob && balls[current.ballIdx]) {
+        balls[current.ballIdx].x = window.S.ob.x;
+        balls[current.ballIdx].y = window.S.ob.y;
+      }
+    }
     var ob = balls[current.ballIdx];
     var vert  = readSlider('sl-vert', 25, 0);
     var speed = readSlider('sl-spd', 100, 0.5);
@@ -7600,6 +7610,54 @@ document.addEventListener('DOMContentLoaded', function(){
     if (o) o.remove();
   }
 
+  function clearOtherBalls() {
+    var o = document.getElementById('author-other-balls');
+    if (o) o.remove();
+  }
+
+  // Render the balls in the current game that AREN'T the currently-
+  // designated OB. They appear as static circles with pointer-events:none,
+  // so touches pass through them to the felt. To reposition one, the user
+  // selects it via the panel (tap-to-select doesn't work because of
+  // pointer-events:none; we'll add a selector to the panel in a later stage).
+  function renderOtherBalls() {
+    clearOtherBalls();
+    var dyn = document.getElementById('dyn');
+    if (!dyn) return;
+    var g = document.createElementNS(NS, 'g');
+    g.setAttribute('id', 'author-other-balls');
+    g.setAttribute('pointer-events', 'none');
+
+    balls.forEach(function(b, i) {
+      if (i === current.ballIdx) return;  // current OB is rendered as #ob
+      // Decorative circle showing this ball's position
+      var c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', b.x);
+      c.setAttribute('cy', b.y);
+      c.setAttribute('r', 7);
+      c.setAttribute('fill', '#e88040');
+      c.setAttribute('stroke', '#903010');
+      c.setAttribute('stroke-width', '0.6');
+      if (b.done) c.setAttribute('opacity', '0.3');
+      g.appendChild(c);
+      // Ball number
+      var t = document.createElementNS(NS, 'text');
+      t.setAttribute('x', b.x);
+      t.setAttribute('y', b.y + 0.5);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('dominant-baseline', 'middle');
+      t.setAttribute('font-family', 'Lato,sans-serif');
+      t.setAttribute('font-size', '8');
+      t.setAttribute('font-weight', '900');
+      t.setAttribute('fill', '#fff');
+      if (b.done) t.setAttribute('opacity', '0.3');
+      t.textContent = String(i + 1);
+      g.appendChild(t);
+    });
+
+    dyn.appendChild(g);
+  }
+
   // New rendering approach: instead of drawing a parallel overlay, we
   // update the player's S.ob/S.cb to reflect author state and let the
   // player's render() do the actual drawing. This avoids the parallel-
@@ -7621,6 +7679,10 @@ document.addEventListener('DOMContentLoaded', function(){
     if (typeof window.render === 'function' && window.render !== render) {
       window.render();
     }
+    // Draw other balls (non-current, including done) on top of the player's
+    // render. They go in their own group with pointer-events:none so they
+    // don't interfere with #ob/#cb dragging.
+    renderOtherBalls();
   }
 
   // (Old code kept temporarily for reference during refactor — not called.)
