@@ -549,34 +549,6 @@ body { padding-bottom: 80px !important; }
   flex-shrink: 0; touch-action: manipulation;
 }
 .dock-orient-dot:active { background: rgba(240,223,112,0.8); }
-/* ───── AUTHOR PANEL CONTROLS ───── */
-.auth-sec { margin: 8px 0; padding-top: 8px; border-top: 1px solid #3a5a3a; }
-.auth-sec:first-of-type { border-top: none; padding-top: 0; }
-.auth-sec-label { font-size: 10px; font-weight: 900; color: #7a9a4a; letter-spacing: 1.5px; margin-bottom: 4px; }
-.auth-row { display: flex; gap: 6px; margin: 4px 0; align-items: center; }
-.auth-row button { padding: 6px 10px; background: #2a3a2a; color: #e8e8d0; border: 1px solid #4a5a3a; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; touch-action: manipulation; flex: 1; }
-.auth-row button:hover { background: #3a4a3a; }
-.auth-row button:disabled { opacity: 0.4; cursor: not-allowed; }
-.auth-row button.auth-danger { background: #5a2a2a; color: #f0c0c0; border-color: #7a3a3a; }
-.auth-row button.auth-danger:hover { background: #7a3a3a; }
-.auth-row button.auth-primary { background: #5a7a3a; color: #fff; border-color: #7a9a4a; }
-.auth-row button.auth-primary:hover { background: #7a9a4a; }
-#shot-library-panel .auth-info { font-size: 11px; color: #a0c08a; margin: 4px 0; }
-.auth-shot-num { font-size: 14px; font-weight: 900; color: #f0df70; margin: 6px 0 2px;
-  background: rgba(240,223,112,0.08); border: 1px solid rgba(240,223,112,0.3);
-  border-radius: 4px; padding: 4px 8px; text-align: center; }
-.auth-pgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin: 6px 0; }
-.auth-pkt { padding: 6px 0; background: #2a3a2a; color: #e8e8d0; border: 1px solid #4a5a3a; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; touch-action: manipulation; }
-.auth-pkt.active { background: #5a7a3a; border-color: #7a9a4a; color: #fff; }
-.auth-pkt:disabled { opacity: 0.4; cursor: not-allowed; }
-#shot-library-panel input[type="text"], #shot-library-panel select, #shot-library-panel textarea {
-  background: #1a2a1a; color: #e8e8d0; border: 1px solid #4a5a3a; border-radius: 3px;
-  padding: 4px 6px; font-size: 12px; font-family: inherit;
-}
-#shot-library-panel textarea { font-family: inherit; resize: vertical; }
-.auth-notes { font-size: 11px; height: 60px; flex: 1; }
-#auth-output { font-family: Monaco, monospace; font-size: 10px; height: 100px; width: 100%;
-  box-sizing: border-box; margin-top: 6px; }
 </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -5386,13 +5358,6 @@ function swapPanels(){
     if (target.tagName === 'BUTTON' || target.tagName === 'INPUT') return true;
     // Lock buttons (SVG): protected so taps register
     if (target.closest('#rail-lock-btn, #botsvg-lock-btn')) return true;
-    // The Author panel: protected from pan so panel UI works.
-    if (target.closest('#shot-library-panel')) return true;
-    // Author balls and overlay: protected from pan so ball drags work.
-    // This mirrors the player's protection of #ob, #cb, #ob-hi above —
-    // author balls are inside #author-overlay and need the same kind of
-    // pass-through to their drag handlers.
-    if (target.closest('#author-overlay')) return true;
     // Ball circles inside topsvg — handled by topsvg ball drag (unless locked)
     if (!window._tableLocked && target.closest('#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi')) return true;
     // Rail buttons (TBL/UNIT/TYPE/GRID/SNAP) and dropdowns
@@ -5660,84 +5625,40 @@ function vernierAim(dir) {
 
 
 </script>
-<!-- AUTHOR — floating, draggable, built on Learn panel chassis -->
-<div id="shot-library-panel" class="float-panel" style="display:flex;border-color:rgba(240,223,112,0.5);min-width:300px;background:#1a2a1a;top:20px;right:20px;">
+<!-- SHOT LIBRARY — floating, draggable -->
+<div id="shot-library-panel" class="float-panel" style="border-color:rgba(240,223,112,0.5);min-width:300px;">
   <!-- Header -->
   <div id="shot-lib-header" class="float-panel-header" style="background:#1a1400;">
-    <span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">✎ AUTHOR</span>
+    <span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">LEARN</span>
     <div style="display:flex;align-items:center;gap:6px;">
+      <button onclick="showLearnTab('myshots')" style="font-size:9px;font-weight:900;padding:2px 7px;border-radius:10px;border:1px solid rgba(240,223,112,0.5);background:rgba(240,223,112,0.15);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">MY SHOTS ↓</button>
       <button class="min-btn" onclick="minimizePanel('shot-library-panel',this.closest('#shot-lib-header'))" style="background:none;border:1px solid #aaa;border-radius:4px;color:#aaa;font-size:13px;font-weight:900;padding:1px 7px;cursor:pointer;touch-action:manipulation;">—</button>
+      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:#aaa;font-size:22px;line-height:1;cursor:pointer;padding:0 4px;touch-action:manipulation;">✕</button>
     </div>
   </div>
-  <!-- Body: all authoring controls -->
-  <div id="auth-body" class="float-panel-body" style="background:#1a2a1a;color:#e8e8d0;padding:10px;min-height:200px;font-family:Lato,sans-serif;font-size:12px;">
-    <!-- GAME section -->
-    <div class="auth-sec">
-      <div class="auth-sec-label">GAME</div>
-      <div class="auth-row">
-        <select id="auth-game-sel" style="flex:1;"></select>
-        <button id="auth-game-new" title="New game">+</button>
-        <button id="auth-game-del" class="auth-danger" title="Delete this game">×</button>
-      </div>
-      <div class="auth-row">
-        <input type="text" id="auth-title" placeholder="Game title" style="flex:1;"/>
-      </div>
-      <div class="auth-row">
-        <textarea id="auth-notes" placeholder="Notes for this game..." class="auth-notes"></textarea>
-      </div>
-    </div>
-    <!-- BALLS section -->
-    <div class="auth-sec">
-      <div class="auth-sec-label">BALLS</div>
-      <div class="auth-row">
-        <button id="auth-add">+ Ball</button>
-        <button id="auth-sub" class="auth-danger" disabled>− Ball</button>
-      </div>
-      <div class="auth-row">
-        <button id="auth-ball-prev" disabled>◀</button>
-        <span id="auth-ball-current" style="flex:1;text-align:center;font-weight:900;color:#f0df70;">No OB</span>
-        <button id="auth-ball-next" disabled>▶</button>
-      </div>
-      <div class="auth-info" id="auth-info">No balls placed.</div>
-    </div>
-    <!-- SHOT section -->
-    <div class="auth-sec">
-      <div class="auth-shot-num" id="auth-shot-num">Shot 1</div>
-      <div class="auth-info" id="auth-step">Tap a ball to begin.</div>
-      <div class="auth-pgrid">
-        <button class="auth-pkt" data-p="TL" disabled>TL</button>
-        <button class="auth-pkt" data-p="TM" disabled>TM</button>
-        <button class="auth-pkt" data-p="TR" disabled>TR</button>
-        <button class="auth-pkt" data-p="BL" disabled>BL</button>
-        <button class="auth-pkt" data-p="BM" disabled>BM</button>
-        <button class="auth-pkt" data-p="BR" disabled>BR</button>
-      </div>
-      <div class="auth-row">
-        <button id="auth-next" class="auth-primary" disabled>✓ Next Shot</button>
-        <button id="auth-undo" disabled>↶ Undo</button>
-      </div>
-      <div class="auth-row">
-        <button id="auth-clear-shot" class="auth-danger">Clear Shot</button>
-      </div>
-    </div>
-    <!-- EXPORT section -->
-    <div class="auth-sec">
-      <div class="auth-row">
-        <button id="auth-export-one" class="auth-primary">Export This Game</button>
-      </div>
-      <div class="auth-row">
-        <button id="auth-export-all">Export All Games</button>
-      </div>
-      <textarea id="auth-output" placeholder="Export output appears here." style="display:none;"></textarea>
-    </div>
+  <!-- Tab bar -->
+  <div style="display:flex;border-bottom:2px solid #e0e0e0;background:#f0f0f0;">
+    <button id="learn-tab-sequences" onclick="showLearnTab('sequences')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid #1a5a1a;background:#fff;color:#1a5a1a;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">SEQUENCES</button>
+    <button id="learn-tab-notes" onclick="showLearnTab('notes')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">MY NOTES</button>
+    <button id="learn-tab-presets" onclick="showLearnTab('presets')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">LIBRARY</button>
+    <button id="learn-tab-myshots" onclick="showLearnTab('myshots')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">RECORDS</button>
   </div>
-  <!-- Footer: size slider (resize) -->
+  <!-- Sequences tab -->
+  <div id="learn-pane-sequences" class="float-panel-body" style="cursor:default;min-height:200px;"></div>
+  <!-- My Notes tab -->
+  <div id="learn-pane-notes" class="float-panel-body" style="display:none;padding:0;"></div>
+  <!-- Library tab -->
+  <div id="learn-pane-presets" class="float-panel-body" style="display:none;cursor:grab;min-height:200px;"></div>
+  <!-- Records tab -->
+  <div id="learn-pane-myshots" class="float-panel-body" style="display:none;"></div>
+  <!-- Footer: record button + scale -->
   <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-top:2px solid #f0df70;background:#0a0a0a;">
     <div style="display:flex;align-items:center;gap:6px;flex:1;">
       <span style="font-size:9px;font-weight:900;color:#f0df70;letter-spacing:1px;">SIZE</span>
       <input type="range" id="learn-scale" min="50" max="100" value="100" oninput="scalePanel('shot-library-panel','learn-scale','learn-scale-lbl')"
         style="flex:1;height:4px;-webkit-appearance:none;appearance:none;background:#555;border-radius:2px;cursor:pointer;outline:none;accent-color:#f0df70;">
     </div>
+    <button onclick="startRecord()" title="Record this shot" style="font-size:9px;font-weight:900;padding:3px 10px;border-radius:10px;border:1px solid #f0df70;background:rgba(192,160,24,0.2);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:1px;margin-left:10px;">⬤ REC</button>
   </div>
 </div>
 
@@ -7072,968 +6993,811 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     AUTHORING — minimal Round 1: place and remove balls
-     ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- POSITIONS TOOL — minimal layout-only authoring                       -->
+<!-- Add numbered OBs and CBs, drag them into position, screenshot,       -->
+<!-- export a position list. No shot transitions, no ghost, no save —     -->
+<!-- the tool is just a positions diagram editor.                          -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<style>
+  #positions-panel {
+    position: fixed;
+    top: 80px;
+    right: 12px;
+    width: 280px;
+    z-index: 1000;
+    background: #1a2a1a;
+    border: 2px solid #f0df70;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    font-family: Lato, sans-serif;
+    color: #e8e8d0;
+  }
+  #positions-panel-header {
+    background: #f0df70;
+    color: #1a2a1a;
+    padding: 8px 12px;
+    border-radius: 6px 6px 0 0;
+    font-weight: 900;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: grab;
+    user-select: none;
+  }
+  #positions-panel-header.dragging { cursor: grabbing; }
+  #positions-panel-body { padding: 10px; font-size: 12px; }
+  #positions-panel.panel-minimized #positions-panel-body { display: none; }
+  .pos-row { display: flex; gap: 6px; margin-bottom: 6px; }
+  .pos-row button {
+    flex: 1;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 4px;
+    border: 1px solid #4a5a3a;
+    background: #2a3a2a;
+    color: #e8e8d0;
+    cursor: pointer;
+  }
+  .pos-row button.danger { background: #5a2a2a; border-color: #7a3a3a; color: #f0c0c0; }
+  .pos-row button.primary { background: #5a7a3a; border-color: #7a9a4a; }
+  .pos-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pos-sec-label {
+    font-weight: 900;
+    font-size: 10px;
+    color: #f0df70;
+    letter-spacing: 1px;
+    margin: 8px 0 4px 0;
+  }
+  #positions-panel textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    background: #0a1a0a;
+    color: #e8e8d0;
+    border: 1px solid #4a5a3a;
+    border-radius: 4px;
+    font-family: Monaco, monospace;
+    font-size: 11px;
+    resize: vertical;
+    min-height: 60px;
+  }
+  #positions-panel .pos-info { font-size: 11px; color: #a8b896; margin-top: 4px; }
+  .pos-minbtn {
+    background: none;
+    border: 1px solid #1a2a1a;
+    color: #1a2a1a;
+    padding: 0 8px;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+</style>
+
+<div id="positions-panel">
+  <div id="positions-panel-header">
+    <span>📍 POSITIONS</span>
+    <button class="pos-minbtn" id="pos-min">−</button>
+  </div>
+  <div id="positions-panel-body">
+    <div class="pos-sec-label">SEQUENCE</div>
+    <div class="pos-row">
+      <select id="pos-seq-sel" style="flex:1;padding:5px;background:#0a1a0a;color:#e8e8d0;border:1px solid #4a5a3a;border-radius:4px;font-size:12px;"></select>
+      <button id="pos-new" title="Start a new sequence">+</button>
+      <button id="pos-delete" class="danger" title="Delete loaded sequence">×</button>
+    </div>
+    <div class="pos-row">
+      <button id="pos-save" class="primary">Save</button>
+      <button id="pos-save-as">Save As</button>
+    </div>
+    <div class="pos-info" id="pos-status" style="margin-top:2px;">blank</div>
+
+    <div class="pos-sec-label">OBJECT BALLS</div>
+    <div class="pos-row">
+      <button id="pos-add-ob" class="primary">+ OB</button>
+      <button id="pos-sub-ob" class="danger">− OB</button>
+    </div>
+
+    <div class="pos-sec-label">CUE BALL MARKERS</div>
+    <div class="pos-row">
+      <button id="pos-add-cb" class="primary">+ CB</button>
+      <button id="pos-sub-cb" class="danger">− CB</button>
+    </div>
+
+    <div class="pos-sec-label">POCKETS FOR EACH CB</div>
+    <textarea id="pos-pockets" placeholder="CB1: TR\nCB2: BL\nCB3: TL ..."></textarea>
+    <div class="pos-info">Edit freely. This text is part of the export.</div>
+
+    <div class="pos-sec-label">NOTES</div>
+    <textarea id="pos-notes" placeholder="Sequence name, intent, anything..."></textarea>
+
+    <div class="pos-row" style="margin-top:8px;">
+      <button id="pos-export" class="primary">Export</button>
+      <button id="pos-clear" class="danger">Clear All</button>
+    </div>
+
+    <textarea id="pos-export-out" placeholder="Export output appears here..." style="margin-top:6px;display:none;"></textarea>
+  </div>
+</div>
+
 <script>
-(function authoringMinimal(){
-  var BALL_R_AUTH = 8;
-  var TABLE = { left: 30, right: 430, top: 30, bottom: 230 };
+(function(){
   var NS = 'http://www.w3.org/2000/svg';
+  var BALL_R = 8;
+  var TBL = { left: 30, right: 430, top: 30, bottom: 230 };
+  var STORAGE_KEY = 'aimer_positions_v2';
 
   // ────── State model ──────
-  // Library of games saved to localStorage. Each game has its own balls,
-  // CB, shots, title. The library persists across page loads.
+  // Working state: what's currently on the table. Lives in memory and
+  // is mirrored to localStorage's "working" slot on every change so a
+  // refresh doesn't lose work-in-progress.
   //
-  // library = {
-  //   currentIdx: 0,
-  //   games: [
-  //     { title: 'Game 1', balls: [{x,y,done}, ...], cb: {x,y}, shots: [...] },
-  //     ...
-  //   ]
-  // }
+  // Library: saved sequences. Only updated when user explicitly Saves.
   //
-  // The in-memory `balls`, `cb`, `shots`, `currentGameTitle` variables
-  // always reflect library.games[library.currentIdx]. We sync on every
-  // change.
+  // loadedId: which saved sequence the working state was loaded from,
+  // or null if working state is unsaved-from-anywhere.
+  //
+  // dirty: true if working state has changes not yet committed to the
+  // loaded saved sequence (or never saved at all).
 
-  var STORAGE_KEY = 'aimer_author_library_v1';
-  var library = null;     // loaded or initialized in init
-  var balls;              // reference into library.games[currentIdx].balls
-  var cb;                 // reference into library.games[currentIdx].cb
-  var shots;              // reference into library.games[currentIdx].shots
-  var current = { ballIdx: null, pocket: null, ghost: null };
+  var obs = [];
+  var cbs = [];
+  var pocketsText = '';
+  var notesText = '';
+  var library = { sequences: [] };
+  var loadedId = null;
+  var dirty = false;
 
-  function newGame(title) {
-    return {
-      title: title || 'Untitled Game',
-      notes: '',
-      balls: [],
-      cb: { x: 230, y: 130 },
-      shots: []
-    };
+  // ────── Hide the player's own ob/cb and all shot-prediction artifacts ──────
+  function hidePlayerBalls() {
+    [
+      // Balls
+      'ob','ob-shadow','ob-hi',
+      'cb','cb-shadow','cb-hi',
+      // Shot-prediction lines
+      'cb-line','cb-ghost-line','cb-stun','cb-follow','cb-draw',
+      'cb-stun-dot','cb-follow-dot','cb-draw-dot',
+      'cb-landing-ghost','ob-arrow','ob-arrow-ext','ghost-ball',
+      // Labels
+      'snap-lbl-cb','snap-lbl-ob'
+    ].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
   }
 
-  function loadLibrary() {
+  // ────── Persistence ──────
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        library: library,
+        working: {
+          obs: obs, cbs: cbs,
+          pockets: pocketsText, notes: notesText,
+          loadedId: loadedId, dirty: dirty
+        }
+      }));
+    } catch(e){}
+  }
+
+  function load() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        library = JSON.parse(raw);
-        if (library && Array.isArray(library.games) && library.games.length > 0) {
-          if (typeof library.currentIdx !== 'number') library.currentIdx = 0;
-          if (library.currentIdx >= library.games.length) library.currentIdx = 0;
-          // Backfill missing fields for older saves
-          library.games.forEach(function(g){
-            if (typeof g.notes !== 'string') g.notes = '';
-          });
-          bindCurrentGame();
-          return;
-        }
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      if (data.library && Array.isArray(data.library.sequences)) {
+        library = data.library;
       }
-    } catch (e) {}
-    // Fresh start: one empty game
-    library = { currentIdx: 0, games: [ newGame('Game 1') ] };
-    bindCurrentGame();
-  }
-
-  function bindCurrentGame() {
-    var g = library.games[library.currentIdx];
-    balls = g.balls;
-    cb    = g.cb;
-    shots = g.shots;
-  }
-
-  function saveLibrary() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(library)); } catch(e) {}
-  }
-
-  var POCKETS = {
-    TL: {x:30,y:30},  TM: {x:230,y:30},  TR: {x:430,y:30},
-    BL: {x:30,y:230}, BM: {x:230,y:230}, BR: {x:430,y:230}
-  };
-
-
-  // ────── Hide main aimer's dynamic layer ──────
-  // In the authoring tool we don't want the main aimer drawing its own
-  // CB, OB, arrows, ghost, or path lines on top of our authoring overlay.
-  // Hide the dyn group permanently.
-  function hideMainAimer() {
-    // No-op now. The author tool uses the player's #ob and #cb directly
-    // instead of hiding them behind a parallel overlay.
-  }
-
-  // ────── Build panel ──────
-  function build() {
-    // The HTML for the panel is static (in the page body, ID
-    // shot-library-panel). All we do here is hide the main aimer,
-    // load saved state, wire event handlers, and render.
-    if (window._authorBuilt) return;
-    window._authorBuilt = true;
-
-    hideMainAimer();
-    loadLibrary();
-
-    // Panel reference for any code that wants it (kept for compatibility)
-    panel = document.getElementById('shot-library-panel');
-
-    // Button handlers — bind to both pointerdown and click, deduplicated,
-    // capture phase, to defeat any event-blocking elsewhere in the app.
-    bindBtn('auth-add', addBall);
-    bindBtn('auth-sub', removeHighest);
-    bindBtn('auth-clear-shot', clearShot);
-    bindBtn('auth-next', nextShot);
-    bindBtn('auth-undo', undoShot);
-    bindBtn('auth-ball-prev', selectPrevBall);
-    bindBtn('auth-ball-next', selectNextBall);
-
-    // Game-management buttons
-    bindBtn('auth-game-new', newGameClick);
-    bindBtn('auth-game-del', deleteGameClick);
-    bindBtn('auth-export-all', exportAll);
-    bindBtn('auth-export-one', exportOne);
-
-    // Game selector — change picks a different game
-    var sel = document.getElementById('auth-game-sel');
-    sel.addEventListener('change', function(){
-      var idx = parseInt(this.value, 10);
-      if (!isNaN(idx) && idx >= 0 && idx < library.games.length) {
-        library.currentIdx = idx;
-        bindCurrentGame();
-        current = { ballIdx: null, pocket: null, ghost: null };
-        saveLibrary();
-        render(); refreshUI();
+      if (data.working) {
+        var w = data.working;
+        if (Array.isArray(w.obs)) obs = w.obs;
+        if (Array.isArray(w.cbs)) cbs = w.cbs;
+        if (typeof w.pockets === 'string') pocketsText = w.pockets;
+        if (typeof w.notes === 'string') notesText = w.notes;
+        if (w.loadedId) loadedId = w.loadedId;
+        if (w.dirty) dirty = w.dirty;
       }
-    });
+    } catch(e){}
+  }
 
-    // Title input — saves on change
-    var titleInp = document.getElementById('auth-title');
-    titleInp.addEventListener('input', function(){
-      library.games[library.currentIdx].title = this.value || 'Untitled Game';
-      saveLibrary();
-      refreshGameSelector();
-    });
-
-    // Notes input — saves on change
-    var notesInp = document.getElementById('auth-notes');
-    notesInp.addEventListener('input', function(){
-      library.games[library.currentIdx].notes = this.value;
-      saveLibrary();
-    });
-
-    // Pocket buttons
-    panel.querySelectorAll('.auth-pkt').forEach(function(el){
-      var last = 0;
-      var fn = function(e){
-        e.preventDefault(); e.stopPropagation();
-        var now = Date.now();
-        if (now - last < 300) return;
-        last = now;
-        selectPocket(el.dataset.p);
-      };
-      el.addEventListener('pointerdown', fn, true);
-      el.addEventListener('mousedown', fn, true);
-      el.addEventListener('touchstart', fn, true);
-      el.addEventListener('click', fn);
-    });
-
-    // Initial render so CB appears immediately
-    render();
+  // Mark working state as having unsaved changes & persist
+  function markDirty() {
+    dirty = true;
+    persist();
     refreshUI();
   }
 
-  function bindBtn(id, handler) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    var last = 0;
-    var fn = function(e){
-      e.preventDefault(); e.stopPropagation();
-      var now = Date.now();
-      if (now - last < 300) return;
-      last = now;
-      handler();
-    };
-    el.addEventListener('pointerdown', fn, true);
-    el.addEventListener('mousedown', fn, true);
-    el.addEventListener('touchstart', fn, true);
-    el.addEventListener('click', fn);
+  // Fresh blank working state
+  function freshWorking() {
+    obs = [];
+    cbs = [];
+    pocketsText = '';
+    notesText = '';
+    loadedId = null;
+    dirty = false;
+    document.getElementById('pos-pockets').value = '';
+    document.getElementById('pos-notes').value = '';
   }
 
-  // ────── Logic ──────
-  function addBall() {
-    var spread = [
-      [130,80],[330,80],[130,180],[330,180],[230,80],[230,180],
-      [80,130],[380,130],[180,130],[280,130]
-    ];
-    var s = spread[balls.length % spread.length];
-    balls.push({ x: s[0] + Math.random()*8 - 4, y: s[1] + Math.random()*8 - 4 });
-    // If no current OB, auto-select the new ball so user can drag it
-    if (current.ballIdx == null) {
-      current.ballIdx = balls.length - 1;
-    }
-    saveLibrary();
-    render(); refreshUI();
+  // ────── Rendering balls in #dyn ──────
+  function clearMarkers() {
+    var g = document.getElementById('positions-markers');
+    if (g) g.remove();
   }
 
-  function removeHighest() {
-    if (balls.length === 0) return;
-    var lastIdx = balls.length - 1;
-    if (balls[lastIdx].done) {
-      alert('Ball ' + (lastIdx + 1) + ' was used in a shot. Undo first.');
-      return;
-    }
-    if (current.ballIdx === lastIdx) clearShot();
-    balls.pop();
-    saveLibrary();
-    render(); refreshUI();
-  }
-
-  // Pull the currently-dragged positions from the player's S into our
-  // author state. Call this before switching which ball is the current
-  // OB, so the user's drag isn't lost when they cycle to another ball.
-  function syncFromS() {
-    if (!window.S) return;
-    if (window.S.cb) { cb.x = window.S.cb.x; cb.y = window.S.cb.y; }
-    if (window.S.ob && current.ballIdx != null && balls[current.ballIdx]) {
-      balls[current.ballIdx].x = window.S.ob.x;
-      balls[current.ballIdx].y = window.S.ob.y;
-    }
-  }
-
-  function selectBall(idx) {
-    syncFromS();
-    current.ballIdx = idx;
-    if (current.pocket) placeDefaultGhost();
-    saveLibrary();
-    render(); refreshUI();
-  }
-
-  // Cycle to the previous ball (lower index, wrap to last). Skips
-  // "done" balls so the user only cycles among still-playable ones.
-  function selectPrevBall() {
-    if (balls.length === 0) return;
-    var startIdx = (current.ballIdx == null) ? 0 : current.ballIdx;
-    for (var step = 1; step <= balls.length; step++) {
-      var i = (startIdx - step + balls.length) % balls.length;
-      if (!balls[i].done) { selectBall(i); return; }
-    }
-  }
-
-  function selectNextBall() {
-    if (balls.length === 0) return;
-    var startIdx = (current.ballIdx == null) ? -1 : current.ballIdx;
-    for (var step = 1; step <= balls.length; step++) {
-      var i = (startIdx + step) % balls.length;
-      if (!balls[i].done) { selectBall(i); return; }
-    }
-  }
-
-  function selectPocket(pocket) {
-    if (current.ballIdx == null) return;
-    current.pocket = pocket;
-    if (!current.ghost) placeDefaultGhost();
-    saveLibrary();
-    render(); refreshUI();
-  }
-
-  function clearShot() {
-    current = { ballIdx: null, pocket: null, ghost: null };
-    saveLibrary();
-    render(); refreshUI();
-  }
-
-  function nextShot() {
-    if (current.ballIdx == null || !current.pocket || !current.ghost) return;
-    // Pull the live ball positions from the player's S — that's where
-    // dragging updates them. Our author state needs to match before we
-    // commit the shot.
-    if (window.S) {
-      if (window.S.cb) { cb.x = window.S.cb.x; cb.y = window.S.cb.y; }
-      if (window.S.ob && balls[current.ballIdx]) {
-        balls[current.ballIdx].x = window.S.ob.x;
-        balls[current.ballIdx].y = window.S.ob.y;
-      }
-    }
-    var ob = balls[current.ballIdx];
-    var vert  = readSlider('sl-vert', 25, 0);
-    var speed = readSlider('sl-spd', 100, 0.5);
-    var geom = computeGeom(cb, ob, current.pocket);
-    shots.push({
-      ballIdx: current.ballIdx,
-      ob: { x: Math.round(ob.x), y: Math.round(ob.y) },
-      cb: { x: Math.round(cb.x), y: Math.round(cb.y) },
-      pocket: current.pocket,
-      ghost: { x: Math.round(current.ghost.x), y: Math.round(current.ghost.y) },
-      vert: Math.round(vert * 10) / 10,
-      speed: Math.round(speed * 100) / 100,
-      cut: Math.round(geom.cutDeg),
-      rh: geom.rh
-    });
-    // CB jumps to the cyan ghost (where it'll be for the next shot)
-    cb.x = current.ghost.x;
-    cb.y = current.ghost.y;
-    balls[current.ballIdx].done = true;
-    current = { ballIdx: null, pocket: null, ghost: null };
-    saveLibrary();
-    render(); refreshUI();
-  }
-
-  function undoShot() {
-    if (shots.length === 0) return;
-    var s = shots.pop();
-    cb.x = s.cb.x;
-    cb.y = s.cb.y;
-    if (balls[s.ballIdx]) balls[s.ballIdx].done = false;
-    current = {
-      ballIdx: s.ballIdx,
-      pocket: s.pocket,
-      ghost: { x: s.ghost.x, y: s.ghost.y }
-    };
-    saveLibrary();
-    render(); refreshUI();
-  }
-
-  function placeDefaultGhost() {
-    var ob = balls[current.ballIdx];
-    var pk = POCKETS[current.pocket];
-    var dx = pk.x - ob.x, dy = pk.y - ob.y;
-    var L = Math.hypot(dx, dy);
-    if (L === 0) return;
-    // Perpendicular to OB→pocket, ~40 px away from the OB
-    var px = -dy/L, py = dx/L;
-    current.ghost = clamp(ob.x + px*40, ob.y + py*40);
-  }
-
-  // ────── Geometry + cb-path physics ──────
-  // Compute cut angle and the cut direction (rh = right-handed cut).
-  function computeGeom(cb, ob, pocketName) {
-    var pk = POCKETS[pocketName];
-    var cbToOb = Math.atan2(ob.y - cb.y, ob.x - cb.x);
-    var obToPk = Math.atan2(pk.y - ob.y, pk.x - ob.x);
-    var diff = obToPk - cbToOb;
-    while (diff > Math.PI) diff -= 2*Math.PI;
-    while (diff < -Math.PI) diff += 2*Math.PI;
-    var cutDeg = Math.abs(diff) * 180/Math.PI;
-    if (cutDeg > 90) cutDeg = 180 - cutDeg;
-    return {
-      cutDeg: cutDeg,
-      rh: diff > 0,
-      obDepartAngle: obToPk
-    };
-  }
-
-  // Compute the predicted cb-path line from the ghost-ball to the first
-  // rail. Returns {gx, gy, endX, endY, color} or null if the cut is too
-  // shallow to predict meaningfully.
-  // This is the same model the main aimer uses:
-  //   stunAngle  = perpendicular to OB-pocket (tangent direction)
-  //   maxBend    = atan(0.4 / tan(cutRad))   — how far CB can bend off tangent
-  //   speedFactor= 1 - 0.6 * speed          — softer shots bend more
-  //   rollBias   = (distInches - 10) / 26   — longer shots get natural follow
-  //   spinV      = vert + rollBias, clamped
-  //   cbAngle    = stunAngle + sign * spinV * maxBend * speedFactor
-  function computeCbPath(cb, ob, pocketName, vert, speed) {
-    var g = computeGeom(cb, ob, pocketName);
-    if (g.cutDeg < 0.5) return null;
-    var obDepart = g.obDepartAngle;
-    var rh = g.rh;
-
-    // Ghost-ball position (where the CB needs to be at contact)
-    var gx = ob.x - Math.cos(obDepart) * 2 * BALL_R_AUTH;
-    var gy = ob.y - Math.sin(obDepart) * 2 * BALL_R_AUTH;
-
-    // Tangent (stun direction) — perpendicular to OB-pocket on the right
-    // or left side depending on cut direction.
-    var stunAngle = obDepart + Math.PI/2 * (rh ? -1 : 1);
-
-    // Bend math
-    var cutRad = Math.max(0.5, g.cutDeg) * Math.PI/180;
-    var maxBend = Math.atan(0.4 / Math.tan(cutRad));
-    var speedFactor = 1.0 - 0.6 * speed;
-
-    // Which direction the bend goes (toward the OB or away)
-    var toOb = obDepart - stunAngle;
-    while (toOb > Math.PI) toOb -= 2*Math.PI;
-    while (toOb < -Math.PI) toOb += 2*Math.PI;
-    var toObSign = toOb >= 0 ? 1 : -1;
-
-    // Spin: vert slider plus distance-based roll bias
-    var spinSlider = Math.max(-1, Math.min(1, vert / 4));
-    var SVG_PER_INCH = 4;
-    var dCO = Math.hypot(ob.x - cb.x, ob.y - cb.y);
-    var distInches = dCO / SVG_PER_INCH;
-    var rollBias = Math.max(0, Math.min(1.0, (distInches - 10) / 26));
-    var spinV = Math.max(-1, Math.min(1, spinSlider + rollBias));
-
-    var cbAngle = stunAngle + toObSign * spinV * maxBend * speedFactor;
-
-    // Color: white at stun (spinV=0), orange toward follow (+), purple
-    // toward draw (-).
-    var stunC = [255,255,255], followC = [249,115,22], drawC = [192,132,252];
-    var t = Math.abs(spinV);
-    var target = spinV > 0 ? followC : drawC;
-    var r = Math.round(stunC[0] + (target[0]-stunC[0]) * t);
-    var g2 = Math.round(stunC[1] + (target[1]-stunC[1]) * t);
-    var b = Math.round(stunC[2] + (target[2]-stunC[2]) * t);
-    var color = 'rgb(' + r + ',' + g2 + ',' + b + ')';
-
-    // Trace the line with bounces. After hitting a rail, reflect the
-    // direction component perpendicular to that rail.
-    var points = [{x: gx, y: gy}];
-    var px = gx, py = gy;
-    var dx = Math.cos(cbAngle), dy = Math.sin(cbAngle);
-    var BOUNCES = 2;  // initial segment + 2 bounces = 3 segments total
-    for (var i = 0; i <= BOUNCES; i++) {
-      // Distance to each rail along the current direction
-      var tt = Infinity;
-      var hitWall = null;
-      if (dy < 0) { var t1 = (TABLE.top    - py) / dy; if (t1 > 0.001 && t1 < tt) { tt = t1; hitWall = 'top'; } }
-      if (dy > 0) { var t2 = (TABLE.bottom - py) / dy; if (t2 > 0.001 && t2 < tt) { tt = t2; hitWall = 'bottom'; } }
-      if (dx < 0) { var t3 = (TABLE.left   - px) / dx; if (t3 > 0.001 && t3 < tt) { tt = t3; hitWall = 'left'; } }
-      if (dx > 0) { var t4 = (TABLE.right  - px) / dx; if (t4 > 0.001 && t4 < tt) { tt = t4; hitWall = 'right'; } }
-      if (!isFinite(tt) || !hitWall) break;
-      // Step to the rail
-      px = px + dx * tt;
-      py = py + dy * tt;
-      points.push({x: px, y: py});
-      // Reflect for the next segment
-      if (hitWall === 'top' || hitWall === 'bottom') dy = -dy;
-      else                                            dx = -dx;
-    }
-    return {
-      points: points,
-      color: color
-    };
-  }
-
-  // ────── Game management ──────
-  function newGameClick() {
-    var name = prompt('Name for new game:', 'Game ' + (library.games.length + 1));
-    if (!name) return;
-    library.games.push(newGame(name));
-    library.currentIdx = library.games.length - 1;
-    bindCurrentGame();
-    current = { ballIdx: null, pocket: null, ghost: null };
-    saveLibrary();
-    render(); refreshUI();
-  }
-
-  function deleteGameClick() {
-    if (library.games.length === 1) {
-      alert("Can't delete the only game. Add another first.");
-      return;
-    }
-    var g = library.games[library.currentIdx];
-    if (!confirm('Delete "' + g.title + '"? This can\'t be undone.')) return;
-    library.games.splice(library.currentIdx, 1);
-    if (library.currentIdx >= library.games.length) library.currentIdx = library.games.length - 1;
-    bindCurrentGame();
-    current = { ballIdx: null, pocket: null, ghost: null };
-    saveLibrary();
-    render(); refreshUI();
-  }
-
-  // Format a single game as JSON text lines.
-  function formatGameLines(g, lines, isLast) {
-    lines.push('  // ─── ' + g.title + ' ───');
-    lines.push('  {');
-    lines.push("    title: '" + g.title.replace(/'/g, "\\'") + "',");
-    if (g.notes && g.notes.trim()) {
-      lines.push('    notes: ' + JSON.stringify(g.notes) + ',');
-    }
-    lines.push('    shots: [');
-    g.shots.forEach(function(s, si){
-      lines.push('      // Shot ' + (si+1));
-      lines.push('      { ob: {x:' + s.ob.x + ', y:' + s.ob.y + '},');
-      lines.push('        cb: {x:' + s.cb.x + ', y:' + s.cb.y + '},');
-      lines.push("        cut: " + s.cut + ", pocket: '" + s.pocket + "', rh: " + s.rh + ',');
-      lines.push('        vert: ' + s.vert + ', speed: ' + s.speed + ',');
-      lines.push("        ghost: {x:" + s.ghost.x + ', y:' + s.ghost.y + '},');
-      lines.push("        intent: '[prose TBD]' }" + (si < g.shots.length-1 ? ',' : ''));
-    });
-    lines.push('    ]');
-    lines.push('  }' + (isLast ? '' : ','));
-  }
-
-  function showExport(out) {
-    var ta = document.getElementById('auth-output');
-    ta.style.display = 'block';
-    ta.value = out;
-    ta.select();
-    console.log(out);
-  }
-
-  function exportAll() {
-    var lines = [];
-    lines.push('// ═══ Library export ═══');
-    lines.push('// ' + library.games.length + ' game' + (library.games.length === 1 ? '' : 's'));
-    lines.push('[');
-    library.games.forEach(function(g, gi){
-      formatGameLines(g, lines, gi === library.games.length - 1);
-    });
-    lines.push(']');
-    showExport(lines.join('\n'));
-  }
-
-  function exportOne() {
-    var g = library.games[library.currentIdx];
-    var lines = [];
-    lines.push('// ═══ ' + g.title + ' ═══');
-    formatGameLines(g, lines, true);
-    showExport(lines.join('\n'));
-  }
-
-  function refreshGameSelector() {
-    var sel = document.getElementById('auth-game-sel');
-    if (!sel) return;
-    // Rebuild options
-    sel.innerHTML = '';
-    library.games.forEach(function(g, i){
-      var opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = (i+1) + '. ' + g.title;
-      sel.appendChild(opt);
-    });
-    sel.value = library.currentIdx;
-    // Title and notes inputs mirror current game's values
-    var g = library.games[library.currentIdx];
-    var titleInp = document.getElementById('auth-title');
-    if (titleInp && document.activeElement !== titleInp) titleInp.value = g.title;
-    var notesInp = document.getElementById('auth-notes');
-    if (notesInp && document.activeElement !== notesInp) notesInp.value = g.notes || '';
-  }
-
-  function refreshUI() {
-    var info = document.getElementById('auth-info');
-    if (info) {
-      info.textContent = balls.length === 0
-        ? 'No balls placed.'
-        : balls.length + ' ball' + (balls.length === 1 ? '' : 's') + ' placed.';
-    }
-    var sub = document.getElementById('auth-sub');
-    if (sub) sub.disabled = balls.length === 0;
-
-    var shotNum = document.getElementById('auth-shot-num');
-    if (shotNum) shotNum.textContent = 'Shot ' + (shots.length + 1);
-
-    // Count available (non-done) balls
-    var available = balls.filter(function(b){ return !b.done; }).length;
-
-    var step = document.getElementById('auth-step');
-    if (step) {
-      if (balls.length === 0) {
-        step.textContent = 'Add some balls first.';
-      } else if (current.ballIdx == null) {
-        step.textContent = 'Use ◀ ▶ to select an OB.';
-      } else if (!current.pocket) {
-        step.textContent = 'Ball ' + (current.ballIdx + 1) + ' is the OB. Tap a pocket.';
-      } else {
-        step.textContent = 'Drag cyan ghost; adjust sliders.';
-      }
-    }
-
-    // Ball selector
-    var bp = document.getElementById('auth-ball-prev');
-    var bn = document.getElementById('auth-ball-next');
-    var bc = document.getElementById('auth-ball-current');
-    if (bp) bp.disabled = available < 2;
-    if (bn) bn.disabled = available < 2;
-    if (bc) {
-      if (current.ballIdx == null) {
-        bc.textContent = balls.length === 0 ? 'No balls' : 'No OB';
-      } else {
-        bc.textContent = 'OB: Ball ' + (current.ballIdx + 1);
-      }
-    }
-
-    // Pocket buttons: enabled only when a ball is selected; active class
-    // shows current.pocket selection.
-    panel.querySelectorAll('.auth-pkt').forEach(function(el){
-      el.disabled = (current.ballIdx == null);
-      el.classList.toggle('active', el.dataset.p === current.pocket);
-    });
-
-    // Next/Undo buttons
-    var nx = document.getElementById('auth-next');
-    if (nx) nx.disabled = !(current.ballIdx != null && current.pocket && current.ghost);
-    var un = document.getElementById('auth-undo');
-    if (un) un.disabled = shots.length === 0;
-
-    // Sync the game selector and title input
-    refreshGameSelector();
-  }
-
-  // panel reference captured at build time so refreshUI can reach it
-  var panel;
-
-  // ────── Rendering ──────
-  function clearOverlay() {
-    var o = document.getElementById('author-overlay');
-    if (o) o.remove();
-  }
-
-  function clearOtherBalls() {
-    var o = document.getElementById('author-other-balls');
-    if (o) o.remove();
-  }
-
-  // Render the balls in the current game that AREN'T the currently-
-  // designated OB. They appear as static circles with pointer-events:none,
-  // so touches pass through them to the felt. To reposition one, the user
-  // selects it via the panel (tap-to-select doesn't work because of
-  // pointer-events:none; we'll add a selector to the panel in a later stage).
-  function renderOtherBalls() {
-    clearOtherBalls();
+  function renderMarkers() {
+    clearMarkers();
     var dyn = document.getElementById('dyn');
     if (!dyn) return;
     var g = document.createElementNS(NS, 'g');
-    g.setAttribute('id', 'author-other-balls');
-    g.setAttribute('pointer-events', 'none');
+    g.setAttribute('id', 'positions-markers');
 
-    balls.forEach(function(b, i) {
-      if (i === current.ballIdx) return;  // current OB is rendered as #ob
-      // Decorative circle showing this ball's position
-      var c = document.createElementNS(NS, 'circle');
-      c.setAttribute('cx', b.x);
-      c.setAttribute('cy', b.y);
-      c.setAttribute('r', 7);
-      c.setAttribute('fill', '#e88040');
-      c.setAttribute('stroke', '#903010');
-      c.setAttribute('stroke-width', '0.6');
-      if (b.done) c.setAttribute('opacity', '0.3');
-      g.appendChild(c);
-      // Ball number
-      var t = document.createElementNS(NS, 'text');
-      t.setAttribute('x', b.x);
-      t.setAttribute('y', b.y + 0.5);
-      t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('dominant-baseline', 'middle');
-      t.setAttribute('font-family', 'Lato,sans-serif');
-      t.setAttribute('font-size', '8');
-      t.setAttribute('font-weight', '900');
-      t.setAttribute('fill', '#fff');
-      if (b.done) t.setAttribute('opacity', '0.3');
-      t.textContent = String(i + 1);
-      g.appendChild(t);
+    obs.forEach(function(b, i){
+      var sub = makeBallMarker(b, i, 'ob');
+      g.appendChild(sub);
+    });
+    cbs.forEach(function(b, i){
+      var sub = makeBallMarker(b, i, 'cb');
+      g.appendChild(sub);
     });
 
     dyn.appendChild(g);
   }
 
-  // New rendering approach: instead of drawing a parallel overlay, we
-  // update the player's S.ob/S.cb to reflect author state and let the
-  // player's render() do the actual drawing. This avoids the parallel-
-  // systems problem that caused the mobile drag bugs.
-  function render() {
-    clearOverlay();
-    // Sync the CB position: author's cb → player's S.cb. Always do this
-    // because the CB is always present.
-    if (window.S) {
-      window.S.cb = { x: cb.x, y: cb.y };
-      // Sync the currently-designated OB. If none designated, leave S.ob
-      // alone (player will keep its default or last position).
-      if (current.ballIdx != null && balls[current.ballIdx]) {
-        var ob = balls[current.ballIdx];
-        window.S.ob = { x: ob.x, y: ob.y };
-      }
-    }
-    // Trigger the player's render to redraw the table with our updated S
-    if (typeof window.render === 'function' && window.render !== render) {
-      window.render();
-    }
-    // Draw other balls (non-current, including done) on top of the player's
-    // render. They go in their own group with pointer-events:none so they
-    // don't interfere with #ob/#cb dragging.
-    renderOtherBalls();
-  }
+  function makeBallMarker(b, idx, kind) {
+    var sub = document.createElementNS(NS, 'g');
+    sub.setAttribute('data-kind', kind);
+    sub.setAttribute('data-idx', String(idx));
+    sub.style.cursor = 'grab';
+    sub.style.touchAction = 'none';
 
-  // (Old code kept temporarily for reference during refactor — not called.)
-  function renderAuthorOverlay() {
-    clearOverlay();
-    var svg = document.getElementById('topsvg');
-    if (!svg) return;
-    var g = document.createElementNS(NS, 'g');
-    g.setAttribute('id', 'author-overlay');
+    var fill   = (kind === 'ob') ? '#e88040' : '#f4f0d8';
+    var stroke = (kind === 'ob') ? '#903010' : '#888070';
+    var textColor = (kind === 'ob') ? '#fff' : '#1a2a1a';
 
-    // ── Shot designation visuals (drawn BENEATH balls so balls stay tappable) ──
-    if (current.ballIdx != null && current.pocket) {
-      var ob = balls[current.ballIdx];
-      var pk = POCKETS[current.pocket];
-
-      // OB → pocket line (green, dashed)
-      var obLine = mkLine(ob.x, ob.y, pk.x, pk.y, '#4ade80', '6,4');
-      obLine.setAttribute('stroke-width', '1.8');
-      g.appendChild(obLine);
-
-      // Ghost-ball-at-contact: one diameter back from OB along the
-      // OB-pocket line. That's the spot the CB needs to occupy at contact.
-      var odx = pk.x - ob.x, ody = pk.y - ob.y;
-      var ol = Math.hypot(odx, ody);
-      if (ol > 0) {
-        odx /= ol; ody /= ol;
-        var gbx = ob.x - odx * 16;
-        var gby = ob.y - ody * 16;
-        // CB → ghost aim line (yellow dashed)
-        g.appendChild(mkLine(cb.x, cb.y, gbx, gby, '#f0df70', '5,4'));
-        // Gold contact ghost-ball
-        var cgb = mkCircle(gbx, gby, BALL_R_AUTH,
-          'rgba(255,255,255,0.10)', '#f0df70', '1.8', '4,3');
-        g.appendChild(cgb);
-      }
-
-      // CB path prediction (white→orange/purple based on vert), with 2 bounces
-      var vert  = readSlider('sl-vert', 25, 0);
-      var speed = readSlider('sl-spd', 100, 0.5);
-      var path = computeCbPath(cb, ob, current.pocket, vert, speed);
-      if (path && path.points.length >= 2) {
-        var poly = document.createElementNS(NS, 'polyline');
-        var pts = path.points.map(function(p){ return p.x + ',' + p.y; }).join(' ');
-        poly.setAttribute('points', pts);
-        poly.setAttribute('fill', 'none');
-        poly.setAttribute('stroke', path.color);
-        poly.setAttribute('stroke-width', '1.8');
-        poly.setAttribute('stroke-dasharray', '7,4');
-        g.appendChild(poly);
-      }
-    }
-
-    // ── Object balls ──
-    balls.forEach(function(b, i){
-      var num = i + 1;
-      var selected = (i === current.ballIdx);
-      var grp = drawBall(b.x, b.y, num, selected);
-      if (b.done) grp.style.opacity = '0.25';
-      grp.style.cursor = b.done ? 'default' : 'grab';
-      attachDrag(grp, i);
-      g.appendChild(grp);
-    });
-
-    // ── CB on top of object balls (so it's always grabbable) ──
-    var cbGrp = drawCB(cb.x, cb.y);
-    cbGrp.style.cursor = 'grab';
-    attachCbDrag(cbGrp);
-    g.appendChild(cbGrp);
-
-    // ── Cyan landing ghost (drawn last, on top of everything) ──
-    if (current.ghost) {
-      var lg = mkCircle(current.ghost.x, current.ghost.y, BALL_R_AUTH,
-        'rgba(125,211,252,0.20)', '#7dd3fc', '2.5', '5,3');
-      lg.style.cursor = 'grab';
-      attachGhostDrag(lg);
-      g.appendChild(lg);
-    }
-
-    svg.appendChild(g);
-  }
-
-  function mkLine(x1, y1, x2, y2, stroke, dash) {
-    var l = document.createElementNS(NS, 'line');
-    l.setAttribute('x1', x1); l.setAttribute('y1', y1);
-    l.setAttribute('x2', x2); l.setAttribute('y2', y2);
-    l.setAttribute('stroke', stroke);
-    l.setAttribute('stroke-width', '1.4');
-    l.setAttribute('stroke-dasharray', dash);
-    return l;
-  }
-  function mkCircle(x, y, r, fill, stroke, strokeW, dash) {
     var c = document.createElementNS(NS, 'circle');
-    c.setAttribute('cx', x); c.setAttribute('cy', y);
-    c.setAttribute('r', r);
+    c.setAttribute('cx', b.x);
+    c.setAttribute('cy', b.y);
+    c.setAttribute('r', BALL_R);
     c.setAttribute('fill', fill);
     c.setAttribute('stroke', stroke);
-    c.setAttribute('stroke-width', strokeW);
-    if (dash) c.setAttribute('stroke-dasharray', dash);
-    return c;
+    c.setAttribute('stroke-width', '1');
+    sub.appendChild(c);
+
+    var t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', b.x);
+    t.setAttribute('y', b.y + 0.5);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('dominant-baseline', 'middle');
+    t.setAttribute('font-family', 'Lato,sans-serif');
+    t.setAttribute('font-size', '8');
+    t.setAttribute('font-weight', '900');
+    t.setAttribute('fill', textColor);
+    t.setAttribute('pointer-events', 'none');
+    t.textContent = String(idx + 1);
+    sub.appendChild(t);
+
+    // Drag handling
+    var dragging = false;
+    var arr = (kind === 'ob') ? obs : cbs;
+
+    sub.addEventListener('pointerdown', function(e){
+      e.preventDefault(); e.stopPropagation();
+      dragging = true;
+      sub.style.cursor = 'grabbing';
+      try { sub.setPointerCapture(e.pointerId); } catch(_){}
+    });
+    sub.addEventListener('pointermove', function(e){
+      if (!dragging) return;
+      e.preventDefault();
+      var pt = svgPoint(e);
+      if (!pt) return;
+      var x = Math.max(TBL.left + BALL_R, Math.min(TBL.right - BALL_R, pt.x));
+      var y = Math.max(TBL.top + BALL_R, Math.min(TBL.bottom - BALL_R, pt.y));
+      arr[idx].x = x; arr[idx].y = y;
+      c.setAttribute('cx', x); c.setAttribute('cy', y);
+      t.setAttribute('x', x); t.setAttribute('y', y + 0.5);
+    });
+    function endDrag(e){
+      if (!dragging) return;
+      dragging = false;
+      sub.style.cursor = 'grab';
+      try { sub.releasePointerCapture(e.pointerId); } catch(_){}
+      markDirty();
+    }
+    sub.addEventListener('pointerup', endDrag);
+    sub.addEventListener('pointercancel', endDrag);
+
+    return sub;
   }
 
-  function drawCB(x, y) {
-    var grp = document.createElementNS(NS, 'g');
-    var sh = document.createElementNS(NS, 'circle');
-    sh.setAttribute('cx', x+1); sh.setAttribute('cy', y+1); sh.setAttribute('r', BALL_R_AUTH);
-    sh.setAttribute('fill', '#000'); sh.setAttribute('opacity', '0.3');
-    grp.appendChild(sh);
-    var c = document.createElementNS(NS, 'circle');
-    c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', BALL_R_AUTH);
-    c.setAttribute('fill', 'url(#gBall)');
-    c.setAttribute('stroke', '#888'); c.setAttribute('stroke-width', '0.4');
-    grp.appendChild(c);
-    var hi = document.createElementNS(NS, 'circle');
-    hi.setAttribute('cx', x-4); hi.setAttribute('cy', y-4); hi.setAttribute('r', 2.8);
-    hi.setAttribute('fill', '#fff'); hi.setAttribute('opacity', '0.7');
-    grp.appendChild(hi);
-    return grp;
-  }
-
-  function drawBall(x, y, num, selected) {
-    var grp = document.createElementNS(NS, 'g');
-    // Shadow
-    var sh = document.createElementNS(NS, 'circle');
-    sh.setAttribute('cx', x+1); sh.setAttribute('cy', y+1); sh.setAttribute('r', BALL_R_AUTH);
-    sh.setAttribute('fill', '#000'); sh.setAttribute('opacity', '0.3');
-    grp.appendChild(sh);
-    // Body
-    var c = document.createElementNS(NS, 'circle');
-    c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', BALL_R_AUTH);
-    var gradId = 'gOB' + ((num - 1) % 9 + 1);
-    c.setAttribute('fill', 'url(#' + gradId + ')');
-    c.setAttribute('stroke', selected ? '#f0df70' : '#000');
-    c.setAttribute('stroke-width', selected ? '1.5' : '0.5');
-    grp.appendChild(c);
-    // Highlight
-    var hi = document.createElementNS(NS, 'circle');
-    hi.setAttribute('cx', x-4); hi.setAttribute('cy', y-4); hi.setAttribute('r', 2.8);
-    hi.setAttribute('fill', '#fff'); hi.setAttribute('opacity', '0.45');
-    grp.appendChild(hi);
-    // Number disc + text
-    var disc = document.createElementNS(NS, 'circle');
-    disc.setAttribute('cx', x); disc.setAttribute('cy', y+0.5); disc.setAttribute('r', 4);
-    disc.setAttribute('fill', '#fff'); disc.setAttribute('opacity', '0.92');
-    grp.appendChild(disc);
-    var txt = document.createElementNS(NS, 'text');
-    txt.setAttribute('x', x); txt.setAttribute('y', y+0.5);
-    txt.setAttribute('text-anchor', 'middle');
-    txt.setAttribute('dominant-baseline', 'central');
-    txt.setAttribute('font-family', 'Lato,sans-serif');
-    txt.setAttribute('font-size', '5.5');
-    txt.setAttribute('font-weight', '900');
-    txt.setAttribute('fill', '#000');
-    txt.textContent = String(num);
-    grp.appendChild(txt);
-    return grp;
-  }
-
-  // ────── Drag ──────
-  function ptToSvg(e) {
+  // Map a pointer event to SVG coordinates (accounting for current pan/zoom)
+  function svgPoint(e) {
     var svg = document.getElementById('topsvg');
+    if (!svg) return null;
     var pt = svg.createSVGPoint();
-    var src = (e.touches && e.touches[0]) ? e.touches[0] : e;
-    pt.x = src.clientX; pt.y = src.clientY;
-    return pt.matrixTransform(svg.getScreenCTM().inverse());
+    pt.x = e.clientX; pt.y = e.clientY;
+    var ctm = svg.getScreenCTM();
+    if (!ctm) return null;
+    return pt.matrixTransform(ctm.inverse());
   }
-  function clamp(x, y) {
+
+  // ────── Button handlers ──────
+  function addOb() {
+    // Spread new OBs in a grid pattern within the table
+    var n = obs.length;
+    var col = n % 4, row = Math.floor(n / 4) % 3;
+    obs.push({
+      x: 100 + col * 80 + (Math.random()*8 - 4),
+      y: 70 + row * 60 + (Math.random()*8 - 4)
+    });
+    renderMarkers();
+    markDirty();
+    refreshUI();
+  }
+  function subOb() {
+    if (obs.length === 0) return;
+    obs.pop();
+    renderMarkers();
+    markDirty();
+    refreshUI();
+  }
+  function addCb() {
+    var n = cbs.length;
+    // Stack CBs near table center initially
+    cbs.push({
+      x: 200 + n * 12,
+      y: 180 + (n % 3) * 8
+    });
+    renderMarkers();
+    markDirty();
+    refreshUI();
+  }
+  function subCb() {
+    if (cbs.length === 0) return;
+    cbs.pop();
+    renderMarkers();
+    markDirty();
+    refreshUI();
+  }
+  function clearAll() {
+    showConfirm('Clear all OBs and CBs from the table? (Working state only — saved sequences are untouched.)', function(yes){
+      if (!yes) return;
+      obs = []; cbs = [];
+      pocketsText = '';
+      notesText = '';
+      document.getElementById('pos-pockets').value = '';
+      document.getElementById('pos-notes').value = '';
+      renderMarkers();
+      markDirty();
+      refreshUI();
+    });
+  }
+
+  // ────── Custom modal dialogs ──────
+  // Browser prompt/confirm are blocked in some sandboxed iframes.
+  function ensureModalRoot() {
+    var root = document.getElementById('pos-modal-root');
+    if (root) return root;
+    root = document.createElement('div');
+    root.id = 'pos-modal-root';
+    root.style.cssText = 'position:fixed;inset:0;z-index:99999;display:none;'
+      + 'align-items:center;justify-content:center;'
+      + 'background:rgba(0,0,0,0.6);font-family:Lato,sans-serif;';
+    document.body.appendChild(root);
+    return root;
+  }
+  function showModal(opts) {
+    var root = ensureModalRoot();
+    root.innerHTML = '';
+    root.style.display = 'flex';
+    var box = document.createElement('div');
+    box.style.cssText = 'background:#1a2a1a;color:#e8e8d0;border:2px solid #f0df70;'
+      + 'border-radius:8px;padding:20px;min-width:280px;max-width:90vw;';
+    var msg = document.createElement('div');
+    msg.textContent = opts.message;
+    msg.style.cssText = 'font-size:14px;margin-bottom:14px;line-height:1.4;white-space:pre-wrap;';
+    box.appendChild(msg);
+    var input = null;
+    if (opts.hasInput) {
+      input = document.createElement('input');
+      input.type = 'text';
+      input.value = opts.defaultValue || '';
+      input.style.cssText = 'width:100%;padding:6px 8px;background:#0a1a0a;color:#e8e8d0;'
+        + 'border:1px solid #4a5a3a;border-radius:4px;font-size:14px;margin-bottom:14px;box-sizing:border-box;';
+      box.appendChild(input);
+      input.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') { e.preventDefault(); close('__use_input__'); }
+        else if (e.key === 'Escape') { e.preventDefault(); close(null); }
+      });
+    }
+    var btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;';
+    opts.buttons.forEach(function(b){
+      var btn = document.createElement('button');
+      btn.textContent = b.label;
+      var isP = (b.kind === 'primary'), isD = (b.kind === 'danger');
+      btn.style.cssText = 'padding:8px 16px;border-radius:4px;font-size:13px;font-weight:700;'
+        + 'cursor:pointer;border:1px solid ' + (isD ? '#7a3a3a' : (isP ? '#7a9a4a' : '#4a5a3a')) + ';'
+        + 'background:' + (isD ? '#5a2a2a' : (isP ? '#5a7a3a' : '#2a3a2a')) + ';'
+        + 'color:' + (isD ? '#f0c0c0' : '#e8e8d0') + ';';
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        close(b.value);
+      });
+      btnRow.appendChild(btn);
+    });
+    box.appendChild(btnRow);
+    root.appendChild(box);
+    function close(result) {
+      root.style.display = 'none';
+      root.innerHTML = '';
+      if (opts.onResult) {
+        var v = result;
+        if (opts.hasInput && result === '__use_input__') v = input.value;
+        opts.onResult(v);
+      }
+    }
+    if (input) setTimeout(function(){ input.focus(); input.select(); }, 0);
+  }
+  function showPrompt(msg, defaultValue, cb) {
+    showModal({
+      message: msg, defaultValue: defaultValue, hasInput: true,
+      buttons: [
+        { label: 'Cancel', kind: 'default', value: null },
+        { label: 'OK', kind: 'primary', value: '__use_input__' }
+      ],
+      onResult: cb
+    });
+  }
+  function showConfirm(msg, cb) {
+    showModal({
+      message: msg, hasInput: false,
+      buttons: [
+        { label: 'Cancel', kind: 'default', value: false },
+        { label: 'OK', kind: 'danger', value: true }
+      ],
+      onResult: cb
+    });
+  }
+  function showAlert(msg, cb) {
+    showModal({
+      message: msg, hasInput: false,
+      buttons: [{ label: 'OK', kind: 'primary', value: true }],
+      onResult: cb || function(){}
+    });
+  }
+
+  // ────── Save / Open / New / Delete ──────
+
+  function checkUnsavedAndProceed(cb) {
+    if (!dirty) { cb(true); return; }
+    showModal({
+      message: 'You have unsaved changes. Save before continuing?',
+      hasInput: false,
+      buttons: [
+        { label: 'Cancel', kind: 'default', value: 'cancel' },
+        { label: 'Discard', kind: 'danger', value: 'discard' },
+        { label: 'Save', kind: 'primary', value: 'save' }
+      ],
+      onResult: function(choice){
+        if (choice === 'cancel') { cb(false); return; }
+        if (choice === 'discard') { cb(true); return; }
+        if (choice === 'save') { saveCurrent(function(ok){ cb(ok); }); }
+      }
+    });
+  }
+
+  function snapshotWorking() {
     return {
-      x: Math.max(TABLE.left  + BALL_R_AUTH, Math.min(TABLE.right  - BALL_R_AUTH, x)),
-      y: Math.max(TABLE.top   + BALL_R_AUTH, Math.min(TABLE.bottom - BALL_R_AUTH, y))
+      obs: JSON.parse(JSON.stringify(obs)),
+      cbs: JSON.parse(JSON.stringify(cbs)),
+      pockets: pocketsText,
+      notes: notesText
     };
   }
-  function attachDrag(grp, idx) {
-    var dragging = false;
-    var moved = false;
-    var sx, sy;
-    var children = grp.children;
-    grp.addEventListener('pointerdown', function(e){
-      e.preventDefault(); e.stopPropagation();
-      dragging = true;
-      moved = false;
-      var p = ptToSvg(e);
-      sx = p.x; sy = p.y;
-      try { grp.setPointerCapture(e.pointerId); } catch(_){}
-    });
-    grp.addEventListener('pointermove', function(e){
-      if (!dragging) return;
-      var p = ptToSvg(e);
-      if (!moved && (Math.abs(p.x - sx) > 2 || Math.abs(p.y - sy) > 2)) moved = true;
-      if (moved) {
-        var c = clamp(p.x, p.y);
-        balls[idx].x = c.x; balls[idx].y = c.y;
-        if (children[0]) { children[0].setAttribute('cx', c.x+1); children[0].setAttribute('cy', c.y+1); }
-        if (children[1]) { children[1].setAttribute('cx', c.x);   children[1].setAttribute('cy', c.y); }
-        if (children[2]) { children[2].setAttribute('cx', c.x-4); children[2].setAttribute('cy', c.y-4); }
-        if (children[3]) { children[3].setAttribute('cx', c.x);   children[3].setAttribute('cy', c.y+0.5); }
-        if (children[4]) { children[4].setAttribute('x',  c.x);   children[4].setAttribute('y',  c.y+0.5); }
+
+  function saveCurrent(cb) {
+    cb = cb || function(){};
+    if (loadedId) {
+      var s = library.sequences.find(function(s){ return s.id === loadedId; });
+      if (s) {
+        var snap = snapshotWorking();
+        s.obs = snap.obs; s.cbs = snap.cbs;
+        s.pockets = snap.pockets; s.notes = snap.notes;
+        dirty = false;
+        persist();
+        refreshUI();
+        cb(true);
+        return;
       }
+      loadedId = null;
+    }
+    var suggested = 'Sequence ' + (library.sequences.length + 1);
+    showPrompt('Save as:', suggested, function(name){
+      if (!name) { cb(false); return; }
+      var snap = snapshotWorking();
+      var s = {
+        id: 'seq_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+        name: name,
+        obs: snap.obs, cbs: snap.cbs,
+        pockets: snap.pockets, notes: snap.notes
+      };
+      library.sequences.push(s);
+      loadedId = s.id;
+      dirty = false;
+      persist();
+      refreshUI();
+      cb(true);
     });
-    grp.addEventListener('pointerup', function(e){
-      if (!dragging) return;
-      dragging = false;
-      try { grp.releasePointerCapture(e.pointerId); } catch(_){}
-      if (!moved) {
-        if (!balls[idx].done) selectBall(idx);
+  }
+
+  function saveAsClick() {
+    var current = loadedId
+      ? library.sequences.find(function(s){ return s.id === loadedId; })
+      : null;
+    var suggested = current
+      ? (current.name + ' copy')
+      : 'Sequence ' + (library.sequences.length + 1);
+    showPrompt('Save as:', suggested, function(name){
+      if (!name) return;
+      var snap = snapshotWorking();
+      var s = {
+        id: 'seq_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+        name: name,
+        obs: snap.obs, cbs: snap.cbs,
+        pockets: snap.pockets, notes: snap.notes
+      };
+      library.sequences.push(s);
+      loadedId = s.id;
+      dirty = false;
+      persist();
+      refreshUI();
+    });
+  }
+
+  function saveClick() {
+    saveCurrent();
+  }
+
+  function newSequenceClick() {
+    checkUnsavedAndProceed(function(ok){
+      if (!ok) return;
+      freshWorking();
+      renderMarkers();
+      persist();
+      refreshUI();
+    });
+  }
+
+  function openSequenceById(id) {
+    checkUnsavedAndProceed(function(ok){
+      if (!ok) { refreshUI(); return; }
+      var s = library.sequences.find(function(s){ return s.id === id; });
+      if (!s) { refreshUI(); return; }
+      obs = JSON.parse(JSON.stringify(s.obs || []));
+      cbs = JSON.parse(JSON.stringify(s.cbs || []));
+      pocketsText = s.pockets || '';
+      notesText = s.notes || '';
+      document.getElementById('pos-pockets').value = pocketsText;
+      document.getElementById('pos-notes').value = notesText;
+      loadedId = s.id;
+      dirty = false;
+      renderMarkers();
+      persist();
+      refreshUI();
+    });
+  }
+
+  function deleteSequenceClick() {
+    if (!loadedId) {
+      showAlert('Nothing to delete — current working state is not a saved sequence. Pick one from the dropdown first.');
+      return;
+    }
+    var s = library.sequences.find(function(s){ return s.id === loadedId; });
+    if (!s) { loadedId = null; refreshUI(); return; }
+    showConfirm('Delete saved sequence "' + s.name + '"? This can\'t be undone.', function(yes){
+      if (!yes) return;
+      var idx = library.sequences.indexOf(s);
+      if (idx >= 0) library.sequences.splice(idx, 1);
+      loadedId = null;
+      dirty = true;  // working state still has the data but is now unattached
+      persist();
+      refreshUI();
+    });
+  }
+
+  function exportPositions() {
+    var lines = [];
+    lines.push('═══ POSITIONS EXPORT ═══');
+    if (notesText.trim()) {
+      lines.push('');
+      lines.push('Notes:');
+      lines.push(notesText);
+    }
+    lines.push('');
+    lines.push('Object balls (' + obs.length + '):');
+    obs.forEach(function(b, i){
+      lines.push('  OB' + (i+1) + ': (' + Math.round(b.x) + ', ' + Math.round(b.y) + ')');
+    });
+    lines.push('');
+    lines.push('Cue ball markers (' + cbs.length + '):');
+    cbs.forEach(function(b, i){
+      lines.push('  CB' + (i+1) + ': (' + Math.round(b.x) + ', ' + Math.round(b.y) + ')');
+    });
+    lines.push('');
+    lines.push('Pockets per CB:');
+    lines.push(pocketsText || '(none specified)');
+
+    var out = document.getElementById('pos-export-out');
+    if (out) {
+      out.value = lines.join('\n');
+      out.style.display = 'block';
+      out.focus();
+      out.select();
+    }
+  }
+
+  function refreshUI() {
+    var sob = document.getElementById('pos-sub-ob');
+    var scb = document.getElementById('pos-sub-cb');
+    if (sob) sob.disabled = obs.length === 0;
+    if (scb) scb.disabled = cbs.length === 0;
+
+    // Rebuild sequence dropdown
+    var sel = document.getElementById('pos-seq-sel');
+    if (sel) {
+      sel.innerHTML = '';
+      var placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = loadedId ? '— Open saved —' : '(new, unsaved)';
+      sel.appendChild(placeholder);
+      library.sequences.forEach(function(s){
+        var opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.name + (s.id === loadedId && dirty ? ' •' : '');
+        sel.appendChild(opt);
+      });
+      sel.value = loadedId || '';
+    }
+
+    // Save button: disabled if loaded and clean; otherwise enabled
+    var saveBtn = document.getElementById('pos-save');
+    if (saveBtn) saveBtn.disabled = !dirty && loadedId != null;
+
+    // Status text
+    var status = document.getElementById('pos-status');
+    if (status) {
+      if (loadedId) {
+        var s = library.sequences.find(function(s){ return s.id === loadedId; });
+        status.textContent = (s ? s.name : '(missing)') + (dirty ? ' • unsaved changes' : ' • saved');
       } else {
-        saveLibrary();
-        if (idx === current.ballIdx) render();
+        status.textContent = (obs.length + cbs.length) > 0
+          ? 'working state (not saved)'
+          : 'blank';
       }
-    });
+    }
   }
 
-  function attachCbDrag(grp) {
+  // ────── Panel: minimize, drag ──────
+  function setupPanel() {
+    var panel  = document.getElementById('positions-panel');
+    var header = document.getElementById('positions-panel-header');
+    var minBtn = document.getElementById('pos-min');
+
+    // Minimize toggle
+    minBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      panel.classList.toggle('panel-minimized');
+    });
+
+    // Header drag
     var dragging = false;
-    var children = grp.children;
-    grp.addEventListener('pointerdown', function(e){
-      e.preventDefault(); e.stopPropagation();
+    var startX = 0, startY = 0;
+    var origLeft = 0, origTop = 0;
+    header.addEventListener('pointerdown', function(e){
+      if (e.target === minBtn) return;
       dragging = true;
-      try { grp.setPointerCapture(e.pointerId); } catch(_){}
+      header.classList.add('dragging');
+      startX = e.clientX; startY = e.clientY;
+      var r = panel.getBoundingClientRect();
+      origLeft = r.left; origTop = r.top;
+      panel.style.right = 'auto';
+      panel.style.left = origLeft + 'px';
+      panel.style.top  = origTop + 'px';
+      try { header.setPointerCapture(e.pointerId); } catch(_){}
     });
-    grp.addEventListener('pointermove', function(e){
+    header.addEventListener('pointermove', function(e){
       if (!dragging) return;
-      var p = ptToSvg(e);
-      var c = clamp(p.x, p.y);
-      cb.x = c.x; cb.y = c.y;
-      if (children[0]) { children[0].setAttribute('cx', c.x+1); children[0].setAttribute('cy', c.y+1); }
-      if (children[1]) { children[1].setAttribute('cx', c.x);   children[1].setAttribute('cy', c.y); }
-      if (children[2]) { children[2].setAttribute('cx', c.x-4); children[2].setAttribute('cy', c.y-4); }
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      panel.style.left = (origLeft + dx) + 'px';
+      panel.style.top  = (origTop + dy) + 'px';
     });
-    grp.addEventListener('pointerup', function(e){
+    function endHdrDrag(e){
       if (!dragging) return;
       dragging = false;
-      try { grp.releasePointerCapture(e.pointerId); } catch(_){}
-      saveLibrary();
-      render();
+      header.classList.remove('dragging');
+      try { header.releasePointerCapture(e.pointerId); } catch(_){}
+    }
+    header.addEventListener('pointerup', endHdrDrag);
+    header.addEventListener('pointercancel', endHdrDrag);
+  }
+
+  // ────── Bind buttons & textareas ──────
+  function bind() {
+    document.getElementById('pos-add-ob').addEventListener('click', addOb);
+    document.getElementById('pos-sub-ob').addEventListener('click', subOb);
+    document.getElementById('pos-add-cb').addEventListener('click', addCb);
+    document.getElementById('pos-sub-cb').addEventListener('click', subCb);
+    document.getElementById('pos-export').addEventListener('click', exportPositions);
+    document.getElementById('pos-clear').addEventListener('click', clearAll);
+
+    // Sequence management
+    document.getElementById('pos-save').addEventListener('click', saveClick);
+    document.getElementById('pos-save-as').addEventListener('click', saveAsClick);
+    document.getElementById('pos-new').addEventListener('click', newSequenceClick);
+    document.getElementById('pos-delete').addEventListener('click', deleteSequenceClick);
+    document.getElementById('pos-seq-sel').addEventListener('change', function(){
+      var id = this.value;
+      if (!id) { refreshUI(); return; }
+      openSequenceById(id);
+    });
+
+    var pktArea = document.getElementById('pos-pockets');
+    pktArea.value = pocketsText;
+    pktArea.addEventListener('input', function(){
+      pocketsText = this.value;
+      markDirty();
+    });
+
+    var notesArea = document.getElementById('pos-notes');
+    notesArea.value = notesText;
+    notesArea.addEventListener('input', function(){
+      notesText = this.value;
+      markDirty();
     });
   }
 
-  // ────── Cyan landing ghost drag ──────
-  function attachGhostDrag(el) {
-    var dragging = false;
-    el.addEventListener('pointerdown', function(e){
-      e.preventDefault(); e.stopPropagation();
-      dragging = true;
-      el.style.cursor = 'grabbing';
-      try { el.setPointerCapture(e.pointerId); } catch(_){}
-    });
-    el.addEventListener('pointermove', function(e){
-      if (!dragging) return;
-      var p = ptToSvg(e);
-      var c = clamp(p.x, p.y);
-      current.ghost = c;
-      el.setAttribute('cx', c.x); el.setAttribute('cy', c.y);
-    });
-    el.addEventListener('pointerup', function(e){
-      if (!dragging) return;
-      dragging = false;
-      el.style.cursor = 'grab';
-      try { el.releasePointerCapture(e.pointerId); } catch(_){}
-      saveLibrary();
-    });
-  }
-
-  // ────── Sliders ──────
-  // Read a slider value and apply a divisor to map to the model's range.
-  // vert slider goes -100..100; the model wants -4..+4 (divisor=25).
-  // speed slider goes 0..100; the model wants 0..1 (divisor=100).
-  function readSlider(id, divisor, fallback) {
-    var el = document.getElementById(id);
-    if (!el) return fallback;
-    return parseFloat(el.value) / divisor;
-  }
-
-  // Re-render whenever the vert or speed slider changes so the cb-path
-  // line updates live.
-  function watchSliders() {
-    ['sl-vert', 'sl-spd'].forEach(function(id){
-      var el = document.getElementById(id);
-      if (el) el.addEventListener('input', render);
-    });
-  }
+  // ────── Protect markers from page-level pan/drag ──────
+  // The player's pan code uses isProtectedTarget. We don't have access
+  // to that, but our markers stop pointer events with stopPropagation
+  // in their own handlers, so pan shouldn't engage on them.
 
   // ────── Init ──────
+  function init() {
+    load();
+    hidePlayerBalls();
+    setupPanel();
+    bind();
+    renderMarkers();
+    refreshUI();
+
+    // Re-hide the player's balls and re-render our markers whenever the
+    // player renders (it rebuilds #dyn on every render).
+    if (typeof window.render === 'function') {
+      var origRender = window.render;
+      // We can't intercept calls to bare-name render() from inside the
+      // player's script, but we can periodically re-render markers.
+    }
+    // Periodic refresh: every 200ms, ensure our markers are still drawn
+    // (the player rebuilds #dyn on each render and would wipe them).
+    setInterval(function(){
+      if (!document.getElementById('positions-markers')) {
+        renderMarkers();
+      }
+      hidePlayerBalls();
+    }, 200);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){
-      build();
-      watchSliders();
-    });
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    build();
-    watchSliders();
+    init();
   }
 })();
 </script>
