@@ -5629,36 +5629,58 @@ function vernierAim(dir) {
 <div id="shot-library-panel" class="float-panel" style="border-color:rgba(240,223,112,0.5);min-width:300px;">
   <!-- Header -->
   <div id="shot-lib-header" class="float-panel-header" style="background:#1a1400;">
-    <span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">LEARN</span>
+    <span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">📍 POSITIONS</span>
     <div style="display:flex;align-items:center;gap:6px;">
-      <button onclick="showLearnTab('myshots')" style="font-size:9px;font-weight:900;padding:2px 7px;border-radius:10px;border:1px solid rgba(240,223,112,0.5);background:rgba(240,223,112,0.15);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">MY SHOTS ↓</button>
       <button class="min-btn" onclick="minimizePanel('shot-library-panel',this.closest('#shot-lib-header'))" style="background:none;border:1px solid #aaa;border-radius:4px;color:#aaa;font-size:13px;font-weight:900;padding:1px 7px;cursor:pointer;touch-action:manipulation;">—</button>
-      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:#aaa;font-size:22px;line-height:1;cursor:pointer;padding:0 4px;touch-action:manipulation;">✕</button>
     </div>
   </div>
-  <!-- Tab bar -->
-  <div style="display:flex;border-bottom:2px solid #e0e0e0;background:#f0f0f0;">
-    <button id="learn-tab-sequences" onclick="showLearnTab('sequences')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid #1a5a1a;background:#fff;color:#1a5a1a;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">SEQUENCES</button>
-    <button id="learn-tab-notes" onclick="showLearnTab('notes')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">MY NOTES</button>
-    <button id="learn-tab-presets" onclick="showLearnTab('presets')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">LIBRARY</button>
-    <button id="learn-tab-myshots" onclick="showLearnTab('myshots')" style="flex:1;padding:6px 4px;font-size:10px;font-weight:900;border:none;border-bottom:2px solid transparent;background:#f0f0f0;color:#666;cursor:pointer;touch-action:manipulation;letter-spacing:0.3px;">RECORDS</button>
+  <!-- Body: positions tool UI -->
+  <div class="float-panel-body" style="background:#1a2a1a;color:#e8e8d0;padding:10px;min-height:200px;font-family:Lato,sans-serif;font-size:12px;cursor:default;">
+    <div class="pos-sec-label">SEQUENCE</div>
+    <div class="pos-row">
+      <select id="pos-seq-sel" style="flex:1;padding:5px;background:#0a1a0a;color:#e8e8d0;border:1px solid #4a5a3a;border-radius:4px;font-size:12px;"></select>
+      <button id="pos-new" title="Start a new sequence">+</button>
+      <button id="pos-delete" class="danger" title="Delete loaded sequence">×</button>
+    </div>
+    <div class="pos-row">
+      <button id="pos-save" class="primary">Save</button>
+      <button id="pos-save-as">Save As</button>
+    </div>
+    <div class="pos-info" id="pos-status" style="margin-top:2px;">blank</div>
+
+    <div class="pos-sec-label">OBJECT BALLS</div>
+    <div class="pos-row">
+      <button id="pos-add-ob" class="primary">+ OB</button>
+      <button id="pos-sub-ob" class="danger">− OB</button>
+    </div>
+
+    <div class="pos-sec-label">CUE BALL MARKERS</div>
+    <div class="pos-row">
+      <button id="pos-add-cb" class="primary">+ CB</button>
+      <button id="pos-sub-cb" class="danger">− CB</button>
+    </div>
+
+    <div class="pos-sec-label">POCKETS FOR EACH CB</div>
+    <textarea id="pos-pockets" placeholder="CB1: TR&#10;CB2: BL&#10;CB3: TL ..."></textarea>
+    <div class="pos-info">Edit freely. This text is part of the export.</div>
+
+    <div class="pos-sec-label">NOTES</div>
+    <textarea id="pos-notes" placeholder="Sequence name, intent, anything..."></textarea>
+
+    <div class="pos-row" style="margin-top:8px;">
+      <button id="pos-export" class="primary">Export</button>
+      <button id="pos-clear" class="danger">Clear All</button>
+    </div>
+
+    <textarea id="pos-export-out" placeholder="Export output appears here..." style="margin-top:6px;display:none;"></textarea>
   </div>
-  <!-- Sequences tab -->
-  <div id="learn-pane-sequences" class="float-panel-body" style="cursor:default;min-height:200px;"></div>
-  <!-- My Notes tab -->
-  <div id="learn-pane-notes" class="float-panel-body" style="display:none;padding:0;"></div>
-  <!-- Library tab -->
-  <div id="learn-pane-presets" class="float-panel-body" style="display:none;cursor:grab;min-height:200px;"></div>
-  <!-- Records tab -->
-  <div id="learn-pane-myshots" class="float-panel-body" style="display:none;"></div>
-  <!-- Footer: record button + scale -->
+  <!-- Footer: scale slider -->
   <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-top:2px solid #f0df70;background:#0a0a0a;">
     <div style="display:flex;align-items:center;gap:6px;flex:1;">
       <span style="font-size:9px;font-weight:900;color:#f0df70;letter-spacing:1px;">SIZE</span>
       <input type="range" id="learn-scale" min="50" max="100" value="100" oninput="scalePanel('shot-library-panel','learn-scale','learn-scale-lbl')"
         style="flex:1;height:4px;-webkit-appearance:none;appearance:none;background:#555;border-radius:2px;cursor:pointer;outline:none;accent-color:#f0df70;">
     </div>
-    <button onclick="startRecord()" title="Record this shot" style="font-size:9px;font-weight:900;padding:3px 10px;border-radius:10px;border:1px solid #f0df70;background:rgba(192,160,24,0.2);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:1px;margin-left:10px;">⬤ REC</button>
   </div>
 </div>
 
@@ -6996,43 +7018,13 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <!-- ════════════════════════════════════════════════════════════════════ -->
 <!-- POSITIONS TOOL — minimal layout-only authoring                       -->
-<!-- Add numbered OBs and CBs, drag them into position, screenshot,       -->
-<!-- export a position list. No shot transitions, no ghost, no save —     -->
-<!-- the tool is just a positions diagram editor.                          -->
+<!-- The panel uses the player's #shot-library-panel chassis (header drag,-->
+<!-- minimize, scale slider). Only inner-content styles live here.        -->
 <!-- ════════════════════════════════════════════════════════════════════ -->
 
 <style>
-  #positions-panel {
-    position: fixed;
-    top: 80px;
-    right: 12px;
-    width: 280px;
-    z-index: 1000;
-    background: #1a2a1a;
-    border: 2px solid #f0df70;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-    font-family: Lato, sans-serif;
-    color: #e8e8d0;
-  }
-  #positions-panel-header {
-    background: #f0df70;
-    color: #1a2a1a;
-    padding: 8px 12px;
-    border-radius: 6px 6px 0 0;
-    font-weight: 900;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: grab;
-    user-select: none;
-  }
-  #positions-panel-header.dragging { cursor: grabbing; }
-  #positions-panel-body { padding: 10px; font-size: 12px; }
-  #positions-panel.panel-minimized #positions-panel-body { display: none; }
-  .pos-row { display: flex; gap: 6px; margin-bottom: 6px; }
-  .pos-row button {
+  #shot-library-panel .pos-row { display: flex; gap: 6px; margin-bottom: 6px; }
+  #shot-library-panel .pos-row button {
     flex: 1;
     padding: 7px 10px;
     font-size: 12px;
@@ -7042,18 +7034,19 @@ document.addEventListener('DOMContentLoaded', function(){
     background: #2a3a2a;
     color: #e8e8d0;
     cursor: pointer;
+    touch-action: manipulation;
   }
-  .pos-row button.danger { background: #5a2a2a; border-color: #7a3a3a; color: #f0c0c0; }
-  .pos-row button.primary { background: #5a7a3a; border-color: #7a9a4a; }
-  .pos-row button:disabled { opacity: 0.4; cursor: not-allowed; }
-  .pos-sec-label {
+  #shot-library-panel .pos-row button.danger { background: #5a2a2a; border-color: #7a3a3a; color: #f0c0c0; }
+  #shot-library-panel .pos-row button.primary { background: #5a7a3a; border-color: #7a9a4a; }
+  #shot-library-panel .pos-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+  #shot-library-panel .pos-sec-label {
     font-weight: 900;
     font-size: 10px;
     color: #f0df70;
     letter-spacing: 1px;
     margin: 8px 0 4px 0;
   }
-  #positions-panel textarea {
+  #shot-library-panel textarea {
     width: 100%;
     box-sizing: border-box;
     padding: 6px 8px;
@@ -7066,64 +7059,8 @@ document.addEventListener('DOMContentLoaded', function(){
     resize: vertical;
     min-height: 60px;
   }
-  #positions-panel .pos-info { font-size: 11px; color: #a8b896; margin-top: 4px; }
-  .pos-minbtn {
-    background: none;
-    border: 1px solid #1a2a1a;
-    color: #1a2a1a;
-    padding: 0 8px;
-    font-size: 16px;
-    font-weight: 900;
-    cursor: pointer;
-    border-radius: 3px;
-  }
+  #shot-library-panel .pos-info { font-size: 11px; color: #a8b896; margin-top: 4px; }
 </style>
-
-<div id="positions-panel">
-  <div id="positions-panel-header">
-    <span>📍 POSITIONS</span>
-    <button class="pos-minbtn" id="pos-min">−</button>
-  </div>
-  <div id="positions-panel-body">
-    <div class="pos-sec-label">SEQUENCE</div>
-    <div class="pos-row">
-      <select id="pos-seq-sel" style="flex:1;padding:5px;background:#0a1a0a;color:#e8e8d0;border:1px solid #4a5a3a;border-radius:4px;font-size:12px;"></select>
-      <button id="pos-new" title="Start a new sequence">+</button>
-      <button id="pos-delete" class="danger" title="Delete loaded sequence">×</button>
-    </div>
-    <div class="pos-row">
-      <button id="pos-save" class="primary">Save</button>
-      <button id="pos-save-as">Save As</button>
-    </div>
-    <div class="pos-info" id="pos-status" style="margin-top:2px;">blank</div>
-
-    <div class="pos-sec-label">OBJECT BALLS</div>
-    <div class="pos-row">
-      <button id="pos-add-ob" class="primary">+ OB</button>
-      <button id="pos-sub-ob" class="danger">− OB</button>
-    </div>
-
-    <div class="pos-sec-label">CUE BALL MARKERS</div>
-    <div class="pos-row">
-      <button id="pos-add-cb" class="primary">+ CB</button>
-      <button id="pos-sub-cb" class="danger">− CB</button>
-    </div>
-
-    <div class="pos-sec-label">POCKETS FOR EACH CB</div>
-    <textarea id="pos-pockets" placeholder="CB1: TR\nCB2: BL\nCB3: TL ..."></textarea>
-    <div class="pos-info">Edit freely. This text is part of the export.</div>
-
-    <div class="pos-sec-label">NOTES</div>
-    <textarea id="pos-notes" placeholder="Sequence name, intent, anything..."></textarea>
-
-    <div class="pos-row" style="margin-top:8px;">
-      <button id="pos-export" class="primary">Export</button>
-      <button id="pos-clear" class="danger">Clear All</button>
-    </div>
-
-    <textarea id="pos-export-out" placeholder="Export output appears here..." style="margin-top:6px;display:none;"></textarea>
-  </div>
-</div>
 
 <script>
 (function(){
@@ -7186,6 +7123,9 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function load() {
+    // Load only the saved-sequences library. The working state is always
+    // fresh blank at the start of each session — the user explicitly opens
+    // a sequence from the dropdown if they want to resume something.
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
@@ -7193,15 +7133,9 @@ document.addEventListener('DOMContentLoaded', function(){
       if (data.library && Array.isArray(data.library.sequences)) {
         library = data.library;
       }
-      if (data.working) {
-        var w = data.working;
-        if (Array.isArray(w.obs)) obs = w.obs;
-        if (Array.isArray(w.cbs)) cbs = w.cbs;
-        if (typeof w.pockets === 'string') pocketsText = w.pockets;
-        if (typeof w.notes === 'string') notesText = w.notes;
-        if (w.loadedId) loadedId = w.loadedId;
-        if (w.dirty) dirty = w.dirty;
-      }
+      // NOTE: data.working is intentionally ignored on load. We still write
+      // it (so a mid-session refresh recovers), but next full session opens
+      // with a clean table.
     } catch(e){}
   }
 
@@ -7684,50 +7618,6 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }
 
-  // ────── Panel: minimize, drag ──────
-  function setupPanel() {
-    var panel  = document.getElementById('positions-panel');
-    var header = document.getElementById('positions-panel-header');
-    var minBtn = document.getElementById('pos-min');
-
-    // Minimize toggle
-    minBtn.addEventListener('click', function(e){
-      e.stopPropagation();
-      panel.classList.toggle('panel-minimized');
-    });
-
-    // Header drag
-    var dragging = false;
-    var startX = 0, startY = 0;
-    var origLeft = 0, origTop = 0;
-    header.addEventListener('pointerdown', function(e){
-      if (e.target === minBtn) return;
-      dragging = true;
-      header.classList.add('dragging');
-      startX = e.clientX; startY = e.clientY;
-      var r = panel.getBoundingClientRect();
-      origLeft = r.left; origTop = r.top;
-      panel.style.right = 'auto';
-      panel.style.left = origLeft + 'px';
-      panel.style.top  = origTop + 'px';
-      try { header.setPointerCapture(e.pointerId); } catch(_){}
-    });
-    header.addEventListener('pointermove', function(e){
-      if (!dragging) return;
-      var dx = e.clientX - startX, dy = e.clientY - startY;
-      panel.style.left = (origLeft + dx) + 'px';
-      panel.style.top  = (origTop + dy) + 'px';
-    });
-    function endHdrDrag(e){
-      if (!dragging) return;
-      dragging = false;
-      header.classList.remove('dragging');
-      try { header.releasePointerCapture(e.pointerId); } catch(_){}
-    }
-    header.addEventListener('pointerup', endHdrDrag);
-    header.addEventListener('pointercancel', endHdrDrag);
-  }
-
   // ────── Bind buttons & textareas ──────
   function bind() {
     document.getElementById('pos-add-ob').addEventListener('click', addOb);
@@ -7772,18 +7662,19 @@ document.addEventListener('DOMContentLoaded', function(){
   function init() {
     load();
     hidePlayerBalls();
-    setupPanel();
     bind();
     renderMarkers();
     refreshUI();
 
-    // Re-hide the player's balls and re-render our markers whenever the
-    // player renders (it rebuilds #dyn on every render).
-    if (typeof window.render === 'function') {
-      var origRender = window.render;
-      // We can't intercept calls to bare-name render() from inside the
-      // player's script, but we can periodically re-render markers.
+    // The player's shot-library-panel starts hidden (display:none) and
+    // needs an explicit show. We use it as our chassis, so make it
+    // visible at load.
+    var panel = document.getElementById('shot-library-panel');
+    if (panel) {
+      panel.style.display = 'flex';
+      try { window.libraryOpen = true; } catch(_){}
     }
+
     // Periodic refresh: every 200ms, ensure our markers are still drawn
     // (the player rebuilds #dyn on each render and would wipe them).
     setInterval(function(){
