@@ -7123,9 +7123,6 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function load() {
-    // Load only the saved-sequences library. The working state is always
-    // fresh blank at the start of each session — the user explicitly opens
-    // a sequence from the dropdown if they want to resume something.
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
@@ -7133,9 +7130,15 @@ document.addEventListener('DOMContentLoaded', function(){
       if (data.library && Array.isArray(data.library.sequences)) {
         library = data.library;
       }
-      // NOTE: data.working is intentionally ignored on load. We still write
-      // it (so a mid-session refresh recovers), but next full session opens
-      // with a clean table.
+      if (data.working) {
+        var w = data.working;
+        if (Array.isArray(w.obs)) obs = w.obs;
+        if (Array.isArray(w.cbs)) cbs = w.cbs;
+        if (typeof w.pockets === 'string') pocketsText = w.pockets;
+        if (typeof w.notes === 'string') notesText = w.notes;
+        if (w.loadedId) loadedId = w.loadedId;
+        if (w.dirty) dirty = w.dirty;
+      }
     } catch(e){}
   }
 
@@ -7665,15 +7668,6 @@ document.addEventListener('DOMContentLoaded', function(){
     bind();
     renderMarkers();
     refreshUI();
-
-    // The player's shot-library-panel starts hidden (display:none) and
-    // needs an explicit show. We use it as our chassis, so make it
-    // visible at load.
-    var panel = document.getElementById('shot-library-panel');
-    if (panel) {
-      panel.style.display = 'flex';
-      try { window.libraryOpen = true; } catch(_){}
-    }
 
     // Periodic refresh: every 200ms, ensure our markers are still drawn
     // (the player rebuilds #dyn on each render and would wipe them).
