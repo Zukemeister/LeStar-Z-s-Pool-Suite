@@ -7123,6 +7123,9 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function load() {
+    // Load only the saved-sequences library. The working state is always
+    // fresh blank at the start of each session — the user explicitly opens
+    // a sequence from the dropdown if they want to resume something.
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
@@ -7130,15 +7133,9 @@ document.addEventListener('DOMContentLoaded', function(){
       if (data.library && Array.isArray(data.library.sequences)) {
         library = data.library;
       }
-      if (data.working) {
-        var w = data.working;
-        if (Array.isArray(w.obs)) obs = w.obs;
-        if (Array.isArray(w.cbs)) cbs = w.cbs;
-        if (typeof w.pockets === 'string') pocketsText = w.pockets;
-        if (typeof w.notes === 'string') notesText = w.notes;
-        if (w.loadedId) loadedId = w.loadedId;
-        if (w.dirty) dirty = w.dirty;
-      }
+      // NOTE: data.working is intentionally ignored on load. We still write
+      // it (so a mid-session refresh recovers), but next full session opens
+      // with a clean table.
     } catch(e){}
   }
 
@@ -7223,8 +7220,19 @@ document.addEventListener('DOMContentLoaded', function(){
     var dragging = false;
     var arr = (kind === 'ob') ? obs : cbs;
 
+    // Drag offset: where the finger touched relative to the ball center.
+    // This prevents the ball jumping to be centered under the finger.
+    var grabOffsetX = 0, grabOffsetY = 0;
+
     sub.addEventListener('pointerdown', function(e){
       e.preventDefault(); e.stopPropagation();
+      var pt = svgPoint(e);
+      if (pt) {
+        grabOffsetX = arr[idx].x - pt.x;
+        grabOffsetY = arr[idx].y - pt.y;
+      } else {
+        grabOffsetX = 0; grabOffsetY = 0;
+      }
       dragging = true;
       sub.style.cursor = 'grabbing';
       try { sub.setPointerCapture(e.pointerId); } catch(_){}
@@ -7234,8 +7242,10 @@ document.addEventListener('DOMContentLoaded', function(){
       e.preventDefault();
       var pt = svgPoint(e);
       if (!pt) return;
-      var x = Math.max(TBL.left + BALL_R, Math.min(TBL.right - BALL_R, pt.x));
-      var y = Math.max(TBL.top + BALL_R, Math.min(TBL.bottom - BALL_R, pt.y));
+      var rawX = pt.x + grabOffsetX;
+      var rawY = pt.y + grabOffsetY;
+      var x = Math.max(TBL.left + BALL_R, Math.min(TBL.right - BALL_R, rawX));
+      var y = Math.max(TBL.top + BALL_R, Math.min(TBL.bottom - BALL_R, rawY));
       arr[idx].x = x; arr[idx].y = y;
       c.setAttribute('cx', x); c.setAttribute('cy', y);
       t.setAttribute('x', x); t.setAttribute('y', y + 0.5);
@@ -7668,6 +7678,15 @@ document.addEventListener('DOMContentLoaded', function(){
     bind();
     renderMarkers();
     refreshUI();
+
+    // The player's shot-library-panel starts hidden (display:none) and
+    // needs an explicit show. We use it as our chassis, so make it
+    // visible at load.
+    var panel = document.getElementById('shot-library-panel');
+    if (panel) {
+      panel.style.display = 'flex';
+      try { window.libraryOpen = true; } catch(_){}
+    }
 
     // Periodic refresh: every 200ms, ensure our markers are still drawn
     // (the player rebuilds #dyn on each render and would wipe them).
