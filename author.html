@@ -5360,6 +5360,8 @@ function swapPanels(){
     if (target.closest('#rail-lock-btn, #botsvg-lock-btn')) return true;
     // Ball circles inside topsvg — handled by topsvg ball drag (unless locked)
     if (!window._tableLocked && target.closest('#ob, #cb, #ob-shadow, #cb-shadow, #ob-hi')) return true;
+    // Positions tool markers — let the markers' own pointerdown handlers fire
+    if (target.closest('#positions-markers')) return true;
     // Rail buttons (TBL/UNIT/TYPE/GRID/SNAP) and dropdowns
     if (target.closest('#rail-size-btn, #rail-unit-btn, #rail-table-btn, ' +
                        '#rail-grid-btn, #rail-snap-btn, #rail-type-menu')) return true;
