@@ -898,42 +898,84 @@ var FOUNDATIONAL_SHOT = {
 };
 
 var SEQUENCES = [
+  // ──────────────────────────────────────────────────────────────────
+  // TWO-SHOT SETS — Don authored via the Author tool. These demonstrate
+  // basic shot possibilities. They lead up to the four-shot Trial One.
+  // ──────────────────────────────────────────────────────────────────
   {
-    title: 'Sequence 1 — The Vertical Axis',
-    intent: 'Four shots teaching follow with purpose, stop, long follow, and defensive draw. The shots are chained: each one\'s ideal landing is the next one\'s setup. Take each shot on the real table, mark it done, the next one opens.',
+    title: 'Two Shot Set 1',
+    intent: 'Cut into the corner, then follow to the rail for shot two.',
     shots: [
-      // Shot 1: CB 28.f → OB 13 (center) — straight-in to top side pocket
-      // with follow, leaving CB at top rail near 5.5 for shot 2. Same skill
-      // as foundational shot but now with a *purpose* — first taste of
-      // position.
-      { ob: {x:255, y:105}, cb: {x:230, y:205},
-        cut: 0, pocket: 'TM', rh: false,
-        vert: 2, speed: 0.6,
-        intent: 'Straight into the top side pocket with follow. But this time the follow has a job: leave the cue ball on the top rail near where you see it now. That landing is the setup for shot 2. Same stroke as the foundational shot, now serving the next shot.' },
-      // Shot 2: CB 6e → OB 7e — both balls on top rail, short cut into TR
-      // corner. Stop shot to hold position.
-      { ob: {x:405, y:38},  cb: {x:355, y:38},
-        cut: 5, pocket: 'TR', rh: true,
-        vert: 0, speed: 0.45,
-        intent: 'Both balls on the top rail. Short, near-straight into the corner pocket. STOP the cue ball — pure stun, no roll. The cue ball stays near the rail for shot 3.' },
-      // Shot 3: CB ~8b → OB 24h — long shot down the right side to BR corner.
-      // Follow so CB rolls forward toward the spot area for shot 4.
-      { ob: {x:405, y:180}, cb: {x:385, y:50},
-        cut: 20, pocket: 'BR', rh: true,
-        vert: 3, speed: 0.65,
-        intent: 'Long shot down the right side into the corner. Follow, so the cue ball rolls forward to roughly the foot spot. Distance + follow-through. Watch where the cue ball ends up — that\'s your setup for shot 4.' },
-      // Shot 4: CB 14g → OB 30.1.y2 — straight shot into the BOTTOM side
-      // pocket. CB sits where shot 3's follow would naturally have left it.
-      // The cut value here is computed from positions at load time — we
-      // don't bake it in, so the arrow always points at BM regardless of
-      // where the CB happens to be.
-      { ob: {x:287, y:197}, cb: {x:355, y:130},
-        cut: 0, pocket: 'BM', rh: false,
-        vert: 2, speed: 0.55,
-        intent: 'A straight shot into the bottom side pocket — the opposite side from shot 1. Same skill as the foundational shot, now arrived at through position play. Follow into the pocket; it\'s the same scratch-on-purpose stroke. The sequence closes where it began.' }
+      { ob: {x:379, y:81}, cb: {x:348, y:151},
+        cut: 26, pocket: 'TR', rh: true,
+        vert: 1.28, speed: 0.51,
+        intent: 'Cut into corner; follow to rail for shot two.' },
+      { ob: {x:401, y:40}, cb: {x:351, y:38},
+        cut: 30, pocket: 'TR', rh: false,
+        vert: 0, speed: 0.5,
+        intent: 'Shot two drifts to the end rail.' }
+    ]
+  },
+  {
+    title: 'Two Shot Set 2',
+    intent: 'A thin cut and a long follow across the table.',
+    shots: [
+      { ob: {x:378, y:76}, cb: {x:355, y:124},
+        cut: 31, pocket: 'TR', rh: true,
+        vert: 1.64, speed: 0.51,
+        intent: 'Cut to the top right corner with a touch of follow.' },
+      { ob: {x:220, y:44}, cb: {x:314, y:145},
+        cut: 86, pocket: 'TM', rh: true,
+        vert: 1.52, speed: 0.81,
+        intent: 'Follow with just enough to get to the end rail.' }
+    ]
+  },
+  {
+    title: 'Two Shot Set 3',
+    intent: 'Follow to the right rail, then follow to the center.',
+    shots: [
+      { ob: {x:230, y:41}, cb: {x:148, y:142},
+        cut: 47, pocket: 'TM', rh: false,
+        vert: 0, speed: 0.5,
+        intent: 'Follow this shot so the cue ball lands near the right rail.' },
+      { ob: {x:382, y:198}, cb: {x:374, y:83},
+        cut: 59, pocket: 'BR', rh: false,
+        vert: 1.76, speed: 0.81,
+        intent: 'Follow with just enough speed to bring the ball to the center of the table.' }
+    ]
+  },
+  // ──────────────────────────────────────────────────────────────────
+  // Trial One — the four-shot culmination. Follow, stop, and draw to
+  // move the cue ball around the table, each shot setting up the next.
+  // ──────────────────────────────────────────────────────────────────
+  {
+    title: 'Sequence One — Follow, Stop and Draw',
+    intent: 'Sequence One uses follow, stop and draw.',
+    shots: [
+      // Shot 1: OB1(240,106) → CB(230,180) → TM. Follow, soft.
+      { ob: {x:240, y:106}, cb: {x:230, y:180},
+        cut: 18, pocket: 'TM', rh: false,
+        vert: 1.88, speed: 0.5,
+        intent: 'Add follow and shoot softly to get position on the rail behind the two ball.' },
+      // Shot 2: OB2(379,43) → CB(328,41) → TR. Light draw, soft (stop).
+      { ob: {x:379, y:43}, cb: {x:328, y:41},
+        cut: 23, pocket: 'TR', rh: false,
+        vert: -2, speed: 0.33,
+        intent: 'Carefully add a little draw and shoot softly to stop the shot. It will drift toward the three ball.' },
+      // Shot 3: OB3(403,203) → CB(366,61) → BR. Sharper cut, light draw.
+      { ob: {x:403, y:203}, cb: {x:366, y:61},
+        cut: 35, pocket: 'BR', rh: false,
+        vert: -1.52, speed: 0.51,
+        intent: 'Similar to shot two, but with a sharper cut. You are trying to get a straight shot on shot 4. Try it a couple of times until you have the feel.' },
+      // Shot 4: OB4(238,211) → CB(351,145) → BM. Draw to avoid the scratch.
+      { ob: {x:238, y:211}, cb: {x:351, y:145},
+        cut: 42, pocket: 'BM', rh: false,
+        vert: -3.32, speed: 0.5,
+        intent: 'This shot is easy, but it\'s also easy to scratch in the corner. Put a fair amount of draw to keep this from happening (hit low on the cue ball).' }
     ]
   }
 ];
+
 
 // Sequence playback state
 window._seqState = { sequenceIdx: -1, completed: [] };
@@ -1018,27 +1060,46 @@ var MAGAZINE = {
         { done: 'seq1.shot1', label: 'DONE — MOVE TO SHOT 2' },
         { h: 'Shot 2' },
         { p: '[LeStar\'s prose for shot 2. Stop shot into the corner. Stun on a near-straight shot.]' },
-        { set: 'seq1.shot2', label: 'SET UP SHOT 2' },
         { p: '[After.]' },
         { done: 'seq1.shot2', label: 'DONE — MOVE TO SHOT 3' },
         { h: 'Shot 3' },
         { p: '[LeStar\'s prose for shot 3. Long shot to the corner with follow, sending the cue ball toward the spot.]' },
-        { set: 'seq1.shot3', label: 'SET UP SHOT 3' },
         { p: '[After.]' },
         { done: 'seq1.shot3', label: 'DONE — MOVE TO SHOT 4' },
         { h: 'Shot 4' },
         { p: '[LeStar\'s prose for shot 4. Modest cut into the bottom side pocket. Closing the loop — same skill as the warm-up, arrived at by position play.]' },
-        { set: 'seq1.shot4', label: 'SET UP SHOT 4' },
+        { p: '[After. Closing thoughts on the sequence.]' }
+      ]
+    },
+    {
+      title: 'Sequence 2 — Cue Ball Control',
+      blocks: [
+        { p: '[LeStar\'s intro to Sequence 2. Where Sequence 1 introduced the vertical-axis tool kit, this one puts those tools to work — every shot has a CB landing target, and the landings chain. Predict, deliver, set up the next shot.]' },
+        { h: 'Shot 1' },
+        { p: '[LeStar prose: real cut into the top side pocket with strong follow. CB drives into the top rail near diamond 2 and bounces back out about 8 inches. That landing is your setup for shot 2 — predict it before you shoot.]' },
+        { set: 'seq2.shot1', label: 'SET UP SHOT 1' },
+        { p: '[After. Did the CB land where you expected? How far out did it bounce? That distance is the variable to dial in.]' },
+        { done: 'seq2.shot1', label: 'DONE — MOVE TO SHOT 2' },
+        { h: 'Shot 2' },
+        { p: '[LeStar prose: stop shot into the bottom-left corner. A touch of draw kills the natural roll so the CB stays near contact — that contact point is shot 3\'s starting position.]' },
+        { p: '[After.]' },
+        { done: 'seq2.shot2', label: 'DONE — MOVE TO SHOT 3' },
+        { h: 'Shot 3' },
+        { p: '[LeStar prose: long shot up the left side into the top-left corner. Follow drives the CB through contact and on toward the center of the upper half.]' },
+        { p: '[After.]' },
+        { done: 'seq2.shot3', label: 'DONE — MOVE TO SHOT 4' },
+        { h: 'Shot 4' },
+        { p: '[LeStar prose: a near-straight diagonal into the bottom side pocket. Same finishing skill as Seq 1 closed with, from a longer line. Follow into the pocket.]' },
         { p: '[After. Closing thoughts on the sequence.]' }
       ]
     }
-    // Sequences 2-20 are stubs below; rendered as "coming soon" until prose is written.
+    // Sequences 3-20 are stubs below; rendered as "coming soon" until prose is written.
   ]
 };
 
-// Stub out sequences 2-20 with placeholders so they appear in the TOC.
+// Stub out sequences 3-20 with placeholders so they appear in the TOC.
 (function(){
-  for (var i = 2; i <= 20; i++) {
+  for (var i = 3; i <= 20; i++) {
     MAGAZINE.sequences.push({
       title: 'Sequence ' + i,
       stub: true,
@@ -1061,15 +1122,30 @@ function resolveShotRef(ref) {
   return { kind: 'sequence', seqIdx: seqIdx, shotIdx: shotIdx, shot: SEQUENCES[seqIdx].shots[shotIdx] };
 }
 
+// Exit sequence mode: clear all scenery balls, drop sequence state, and
+// load the foundational warm-up shot. This is the user's "back to a clean
+// table" escape hatch — reachable from the dock so the user is never
+// trapped in a sequence layout. The warm-up shot serves as the canonical
+// opening setup.
+function exitSequenceMode() {
+  window._seqState = { sequenceIdx: -1, completed: [] };
+  clearSceneryBalls();
+  if (typeof FOUNDATIONAL_SHOT !== 'undefined' && FOUNDATIONAL_SHOT.shot) {
+    loadShotData(FOUNDATIONAL_SHOT.shot);
+  }
+  // Refresh the magazine view if it's open, so the sequence's active-shot
+  // highlight clears.
+  if (typeof buildSequencesPane === 'function') buildSequencesPane();
+}
+
 // Set up a shot on the table from inline magazine action.
 function magSetShot(ref) {
   var r = resolveShotRef(ref);
   if (!r) return;
   if (r.kind === 'warmup') {
-    // Warm-up: clear any active sequence, load the foundational shot
-    window._seqState = { sequenceIdx: -1, completed: [] };
-    clearSceneryBalls();
-    loadShotData(r.shot);
+    // Warm-up: same effect as exiting sequence mode — clean table at the
+    // foundational position.
+    exitSequenceMode();
   } else {
     // Sequence shot: ensure sequence is open, set the active shot to this one
     // by marking earlier shots completed and this one not.
@@ -1086,9 +1162,13 @@ function magSetShot(ref) {
     }
     loadShotData(r.shot);
     renderSequenceTable(r.seqIdx);
+    // Same fix as magMarkDone: render() inside loadShotData ran before
+    // renderSequenceTable rebuilt the scenery list. Call render() again
+    // so the cue-path draws against the correct scenery state.
+    if (typeof render === 'function') render();
   }
   saveMagazineProgress(ref, 'set');
-  buildMagazine();  // re-render to reflect state
+  buildSequencesPane();  // re-render to reflect state
 }
 
 // Mark a shot done from inline magazine action.
@@ -1115,9 +1195,15 @@ function magMarkDone(ref) {
     }
     if (nextIdx >= 0) loadShotData(seq.shots[nextIdx]);
     renderSequenceTable(r.seqIdx);
+    // The loadShotData → render() happens before renderSequenceTable
+    // rebuilds the scenery obstacle list, so the cue-path render runs
+    // against stale obstacle data. Call render() again now that scenery
+    // is in place. Without this, the user has to push DONE twice — first
+    // press loads positions, second press completes the path drawing.
+    if (typeof render === 'function') render();
     saveMagazineProgress(ref, 'done');
   }
-  buildMagazine();
+  buildSequencesPane();
 }
 
 // Persist magazine progress so the user can resume where they were.
@@ -1167,7 +1253,112 @@ function isShotActive(ref) {
 }
 
 // Build the sequences pane: render the magazine document.
-function buildSequencesPane() { buildMagazine(); }
+function buildSequencesPane() {
+  var el = document.getElementById('learn-pane-sequences');
+  if (!el) return;
+
+  var openIdx = (window._seqState && window._seqState.sequenceIdx >= 0)
+    ? window._seqState.sequenceIdx : -1;
+
+  var h = '';
+  h += '<div style="padding:12px;">';
+  h += '<div style="font-size:13px;font-weight:900;color:#1a5a1a;margin-bottom:10px;letter-spacing:0.5px;">SEQUENCES</div>';
+
+  if (!SEQUENCES.length) {
+    h += '<div style="color:#888;font-size:12px;">No sequences yet.</div>';
+  }
+
+  for (var i = 0; i < SEQUENCES.length; i++) {
+    var seq = SEQUENCES[i];
+    var isOpen = (i === openIdx);
+    var nShots = seq.shots.length;
+
+    // Sequence header card
+    h += '<div style="border:1px solid ' + (isOpen ? '#1a5a1a' : '#d0d0c0') + ';border-radius:6px;margin-bottom:8px;overflow:hidden;background:' + (isOpen ? '#f0f7f0' : '#fafaf5') + ';">';
+
+    // Title row — tap to open/close
+    h += '<div onclick="toggleSequence(' + i + ')" style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">';
+    h += '<div style="flex:1;">';
+    h += '<div style="font-weight:800;font-size:13px;color:#1a3a1a;">' + (isOpen ? '▼ ' : '▸ ') + escapeSeqHTML(seq.title) + '</div>';
+    if (seq.intent) {
+      h += '<div style="font-size:11px;color:#667;margin-top:3px;line-height:1.4;">' + escapeSeqHTML(seq.intent) + '</div>';
+    }
+    h += '</div>';
+    h += '<div style="font-size:11px;color:#999;margin-left:8px;white-space:nowrap;">' + nShots + ' shot' + (nShots===1?'':'s') + '</div>';
+    h += '</div>';
+
+    // Expanded body — shot list
+    if (isOpen) {
+      h += '<div style="padding:0 12px 12px 12px;">';
+      for (var j = 0; j < nShots; j++) {
+        var shot = seq.shots[j];
+        var done = window._seqState.completed[j];
+        var isActive = false;
+        // active = first not-done shot
+        var firstNotDone = -1;
+        for (var k = 0; k < nShots; k++) { if (!window._seqState.completed[k]) { firstNotDone = k; break; } }
+        isActive = (j === firstNotDone);
+
+        h += '<div style="border-top:1px solid #e0e0d5;padding:8px 0;">';
+        h += '<div style="display:flex;align-items:center;gap:8px;">';
+        // Shot number badge
+        h += '<div style="width:22px;height:22px;border-radius:50%;background:' + (done ? '#1a5a1a' : (isActive ? '#f0df70' : '#ccc')) + ';color:' + (done ? '#fff' : '#333') + ';display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;flex-shrink:0;">' + (done ? '✓' : (j+1)) + '</div>';
+        // Shot name/desc
+        var shotTitle = shot.name ? shot.name : ('Shot ' + (j+1));
+        h += '<div style="flex:1;font-size:12px;font-weight:700;color:#1a3a1a;">' + escapeSeqHTML(shotTitle) + '</div>';
+        // Set up button
+        h += '<button onclick="magSetShot(\'seq' + (i+1) + '.shot' + (j+1) + '\')" style="padding:5px 10px;font-size:11px;font-weight:700;border-radius:4px;border:1px solid #1a5a1a;background:#1a5a1a;color:#fff;cursor:pointer;">Set Up</button>';
+        h += '</div>';
+        // Shot intent/notes
+        if (shot.intent) {
+          h += '<div style="font-size:11px;color:#556;margin-top:5px;margin-left:30px;line-height:1.4;">' + escapeSeqHTML(shot.intent) + '</div>';
+        }
+        h += '</div>';
+      }
+      // Exit / reset row
+      h += '<div style="border-top:1px solid #e0e0d5;padding-top:10px;margin-top:4px;display:flex;gap:6px;">';
+      h += '<button onclick="resetSequence(' + i + ')" style="flex:1;padding:6px;font-size:11px;font-weight:700;border-radius:4px;border:1px solid #999;background:#fff;color:#666;cursor:pointer;">Reset</button>';
+      h += '<button onclick="exitSequenceMode();buildSequencesPane();" style="flex:1;padding:6px;font-size:11px;font-weight:700;border-radius:4px;border:1px solid #999;background:#fff;color:#666;cursor:pointer;">Clear Table</button>';
+      h += '</div>';
+      h += '</div>';
+    }
+
+    h += '</div>';
+  }
+
+  h += '</div>';
+  el.innerHTML = h;
+}
+
+function escapeSeqHTML(s) {
+  return String(s || '').replace(/[&<>"']/g, function(c){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+
+function toggleSequence(idx) {
+  if (window._seqState && window._seqState.sequenceIdx === idx) {
+    // Already open — close it (clear table)
+    exitSequenceMode();
+  } else {
+    // Open this sequence and set up its first shot
+    window._seqState = {
+      sequenceIdx: idx,
+      completed: SEQUENCES[idx].shots.map(function(){ return false; })
+    };
+    magSetShot('seq' + (idx+1) + '.shot1');
+  }
+  buildSequencesPane();
+}
+
+function resetSequence(idx) {
+  window._seqState = {
+    sequenceIdx: idx,
+    completed: SEQUENCES[idx].shots.map(function(){ return false; })
+  };
+  magSetShot('seq' + (idx+1) + '.shot1');
+  buildSequencesPane();
+}
 
 function buildMagazine() {
   var el = document.getElementById('learn-pane-sequences');
@@ -1261,13 +1452,13 @@ function markShotDone(i) {
   if (!s || s.sequenceIdx < 0) return;
   magMarkDone('seq' + (s.sequenceIdx+1) + '.shot' + (i+1));
 }
-function resetSequence() {
+function resetSequenceOld() {
   var s = window._seqState;
   if (!s || s.sequenceIdx < 0) return;
   s.completed = SEQUENCES[s.sequenceIdx].shots.map(function(){ return false; });
   loadShotData(SEQUENCES[s.sequenceIdx].shots[0]);
   renderSequenceTable(s.sequenceIdx);
-  buildMagazine();
+  buildSequencesPane();
 }
 function undoLastShot() {
   var s = window._seqState;
@@ -1277,7 +1468,7 @@ function undoLastShot() {
       s.completed[i] = false;
       loadShotData(SEQUENCES[s.sequenceIdx].shots[i]);
       renderSequenceTable(s.sequenceIdx);
-      buildMagazine();
+      buildSequencesPane();
       return;
     }
   }
@@ -1398,6 +1589,33 @@ function loadShotData(shot) {
     if (sp) sp.value = String(Math.round(shot.speed * 100));
   }
   if (typeof justShot !== 'undefined') justShot = false;
+  // Refresh the slider indicator light. Programmatic .value assignments
+  // above don't fire 'oninput', so the indicator wouldn't otherwise know
+  // that vert/speed have moved off neutral. This is what activates the
+  // bright-blue warning when a sequence shot loads with non-default
+  // sliders.
+  if (typeof window._updateSliderIndicator === 'function') {
+    window._updateSliderIndicator();
+  }
+  // Auto-enable Cue Ball Path when loading sequence shots. In sequence
+  // context the CB path is the pedagogy — it shows the student where the
+  // CB is supposed to go after contact, with the landing-ghost marking
+  // the predicted stop. We don't override the user's preference in
+  // non-sequence contexts (warmup, free play).
+  if (window._seqState && window._seqState.sequenceIdx >= 0
+      && typeof cbPathOn !== 'undefined' && !cbPathOn) {
+    cbPathOn = true;
+    var _cpBtn = document.getElementById('btn-cbpath');
+    if (_cpBtn) {
+      _cpBtn.classList.add('on');
+      _cpBtn.style.lineHeight = '1.3';
+      _cpBtn.innerHTML = 'CUE PATH<br>ON';
+    }
+    var _cpDock = document.getElementById('dock-cuepath');
+    if (_cpDock) _cpDock.classList.add('active');
+    var _cpLeg = document.getElementById('cb-path-legend');
+    if (_cpLeg) _cpLeg.setAttribute('opacity', '1');
+  }
   render();
 }
 
@@ -1506,8 +1724,9 @@ function renderSequenceTable(seqIdx) {
   }
 
   for (var j = 0; j < seq.shots.length; j++) {
-    if (s.completed[j]) continue;       // pocketed/done — don't draw
     if (j === activeIdx) continue;      // active — drawn separately below
+    // Skip completed shots — they're pocketed and shouldn't be drawn.
+    if (s.completed[j]) continue;
     var shot = seq.shots[j];
     drawBall(shot.ob.x, shot.ob.y, j + 1, false);
     // Add to obstruction list
@@ -2389,13 +2608,21 @@ if ('serviceWorker' in navigator) {
           <circle id="cb-stun-dot"   cx="0" cy="0" r="5" opacity="0"/>
           <circle id="cb-follow-dot" cx="0" cy="0" r="5" opacity="0"/>
           <circle id="cb-draw-dot"   cx="0" cy="0" r="5" opacity="0"/>
+          <!-- CB landing ghost: sits along the path at the predicted stop
+               position (depends on speed). Line continues past it to show
+               headroom for a harder stroke. -->
+          <circle id="cb-landing-ghost" cx="0" cy="0" r="8" fill="rgba(125,211,252,0.20)" stroke="#7dd3fc" stroke-width="2.5" stroke-dasharray="5,3" opacity="0" style="cursor:grab;" pointer-events="all"/>
           <circle id="ghost-ball" cx="0" cy="0" r="8" fill="rgba(255,255,255,0.10)" stroke="#f0df70" stroke-width="1.8" stroke-dasharray="4,3" opacity="0"/>
           <!-- Contact point dot on OB surface -->
           <circle id="cp-dot-table" cx="0" cy="0" r="4" fill="#ffffff" stroke="#ff6600" stroke-width="1.5" opacity="0"/>
           <!-- CB Path legend (shown when cbPathOn) — interactive vert + speed bars -->
-          <g id="cb-path-legend" opacity="0">
+          <g id="cb-path-legend" transform="translate(0,0)" opacity="0">
             <rect x="338" y="172" width="92" height="84" rx="4" fill="rgba(0,0,0,0.55)"/>
             <text x="384" y="184" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.55)">CUE BALL PATH</text>
+            <!-- Drag handle: invisible rect over the header text area.
+                 cursor=move; pointer-events=all so it captures the drag
+                 before the underlying slider bars do. -->
+            <rect id="cb-path-legend-drag" x="338" y="172" width="92" height="16" fill="transparent" style="cursor:move;" pointer-events="all"/>
             <defs>
               <linearGradient id="cb-path-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%"   stop-color="#c084fc" stop-opacity="0.55"/>
@@ -2703,6 +2930,9 @@ if ('serviceWorker' in navigator) {
         </g>
         <!-- Gold dashed ring on CB -->
         <circle id="bot-cb-gold" cx="230" cy="148" r="82" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="0"/>
+        <!-- Gold dashed ring on OB — visible only when edge stripes (ears) are on,
+             same color/dash as bot-cb-gold for visual parity. -->
+        <circle id="bot-ob-gold" cx="230" cy="148" r="82" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="0"/>
         <!-- Contact Point label -->
         <text id="bot-contact-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#4ade80" opacity="0">Contact Point</text>
         <!-- Contact point line — always on top -->
@@ -3409,7 +3639,7 @@ function renderTable(d) {
   const cbdx = ob.x - cb.x, cbdy = ob.y - cb.y;
 
   // Arrow and ghost suppressed right after a shot until user moves something
-  if (justShot) { sV('ob-arrow', false); sV('ghost-ball', false); ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.opacity='0';}); return; }
+  if (justShot) { sV('ob-arrow', false); sV('ghost-ball', false); ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot','cb-landing-ghost'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.opacity='0';}); return; }
 
   // OB departure arrow
   let cutDeg = S.diagCutDeg !== null ? S.diagCutDeg : 0;
@@ -3817,6 +4047,38 @@ function renderTable(d) {
     ['cb-stun','cb-follow','cb-draw','cb-stun-dot','cb-follow-dot','cb-draw-dot']
       .forEach(id => { const el = document.getElementById(id); if (el) el.style.opacity = '0'; });
   }
+
+  // ── CB LANDING GHOST ─────────────────────────────────────────────
+  // Marks the AUTHORED TARGET for where the CB should end up after this
+  // shot — the next sequence shot's CB starting position. Fixed in place;
+  // independent of cbPathOn and cut angle so it shows even on near-
+  // straight shots and even when the path is off. Hidden outside of
+  // sequences or on the last shot of a sequence.
+  (function(){
+    var el = document.getElementById('cb-landing-ghost');
+    if (!el) return;
+    var nextCb = null;
+    if (window._seqState && window._seqState.sequenceIdx >= 0
+        && Array.isArray(SEQUENCES) && SEQUENCES[window._seqState.sequenceIdx]) {
+      var seq = SEQUENCES[window._seqState.sequenceIdx];
+      var aIdx = -1;
+      for (var i = 0; i < seq.shots.length; i++) {
+        if (!window._seqState.completed[i]) { aIdx = i; break; }
+      }
+      if (aIdx >= 0 && aIdx + 1 < seq.shots.length) {
+        nextCb = seq.shots[aIdx + 1].cb;
+      }
+    }
+    if (nextCb) {
+      el.setAttribute('cx', nextCb.x);
+      el.setAttribute('cy', nextCb.y);
+      el.setAttribute('r',  BALL_R);
+      el.setAttribute('opacity', '1');
+      if (el.parentNode) el.parentNode.appendChild(el);
+    } else {
+      el.setAttribute('opacity', '0');
+    }
+  })();
 }
 
 // ── DIAGRAM ────────────────────────────────────────────────────
@@ -3902,8 +4164,13 @@ function drawBot(d) {
   $('revClipRect').setAttribute('height', 2*r);
 
   sC('bot-cb', ccx, ocy);
-  // When edges mode is on, fade the CB to clear so the stripes tell the whole story.
-  const _cbOpacity = window._edgeStripes ? 0 : Math.max(0.15, ghostOpacity);
+  // Edges mode used to fade the CB to clear, on the theory that the
+  // stripes would tell the whole story. But the CB carries Twixt's
+  // translucent white background — without it, turning on edges while
+  // Twixt is also active wipes out Twixt's visible field. Keep the CB
+  // visible at all times; the ears are always edges *of* the ball and
+  // benefit from the ball being there as a visual reference.
+  const _cbOpacity = Math.max(0.15, ghostOpacity);
   const _botCb = $('bot-cb'); if (_botCb) _botCb.setAttribute('opacity', _cbOpacity);
   const _percTh = document.getElementById('perc-thumb');
   if (_percTh) _percTh.setAttribute('opacity', Math.max(0.15, ghostOpacity));
@@ -3934,6 +4201,15 @@ function drawBot(d) {
   if (_cLbl) { _cLbl.setAttribute('x',_contactX); _cLbl.setAttribute('opacity','1'); }
   const _gbg = $('bot-cb-gold');
   if (_gbg) { _gbg.setAttribute('cx',ccx); _gbg.setAttribute('cy',ocy); _gbg.setAttribute('r',r); _gbg.setAttribute('opacity','1'); }
+  // Gold ring on OB — only when edges (ears) are on, to draw the eye to
+  // the OB the same way bot-cb-gold draws it to the CB.
+  const _gog = $('bot-ob-gold');
+  if (_gog) {
+    _gog.setAttribute('cx', ocx);
+    _gog.setAttribute('cy', ocy);
+    _gog.setAttribute('r',  r);
+    _gog.setAttribute('opacity', window._edgeStripes ? '1' : '0');
+  }
   $('bot-edge-line').setAttribute('x1', edgeX); $('bot-edge-line').setAttribute('x2', edgeX);
   $('bot-edge-line').setAttribute('y1','0'); $('bot-edge-line').setAttribute('y2','230');
   $('bot-edge-line').setAttribute('opacity', op);
@@ -4957,6 +5233,139 @@ function swapPanels(){
   }
 
 }
+
+// ── AUTHORING: drag the cyan landing-ghost to set next shot's CB ────────
+// This is an authoring tool. The cyan ghost normally marks the next
+// sequence shot's CB starting position (read from SEQUENCES data). Make
+// it draggable so the author can position it visually on the cb-stun /
+// cb-follow lines, then read off the coordinates for the SEQUENCES code.
+// The drag writes to the in-memory SEQUENCES data; the change is NOT
+// persisted across reloads (intentional — final positions get hardcoded
+// in the source file). On pointerup, the new coords are logged to the
+// console for the author to copy.
+(function(){
+  function attachGhostDrag() {
+    var ghost = document.getElementById('cb-landing-ghost');
+    var topsvg = document.getElementById('topsvg');
+    if (!ghost || !topsvg) return;
+    var dragging = false;
+    function ptToSvg(e) {
+      var pt = topsvg.createSVGPoint();
+      var src = (e.touches && e.touches[0]) ? e.touches[0] : e;
+      pt.x = src.clientX; pt.y = src.clientY;
+      return pt.matrixTransform(topsvg.getScreenCTM().inverse());
+    }
+    function nextShotRef() {
+      if (!window._seqState || window._seqState.sequenceIdx < 0) return null;
+      var seq = SEQUENCES[window._seqState.sequenceIdx];
+      if (!seq) return null;
+      var aIdx = -1;
+      for (var i = 0; i < seq.shots.length; i++) {
+        if (!window._seqState.completed[i]) { aIdx = i; break; }
+      }
+      if (aIdx < 0 || aIdx + 1 >= seq.shots.length) return null;
+      return { seqIdx: window._seqState.sequenceIdx, shotIdx: aIdx + 1, shot: seq.shots[aIdx + 1] };
+    }
+    ghost.addEventListener('pointerdown', function(e){
+      if (!nextShotRef()) return;
+      e.preventDefault();
+      e.stopPropagation();
+      dragging = true;
+      ghost.style.cursor = 'grabbing';
+      try { ghost.setPointerCapture(e.pointerId); } catch(_){}
+    });
+    ghost.addEventListener('pointermove', function(e){
+      if (!dragging) return;
+      var ref = nextShotRef();
+      if (!ref) return;
+      var p = ptToSvg(e);
+      // Clamp to table bounds (ball center can't go past one radius from cushion)
+      var x = Math.max(TL.left + BALL_R, Math.min(TL.right - BALL_R, p.x));
+      var y = Math.max(TL.top  + BALL_R, Math.min(TL.bottom - BALL_R, p.y));
+      ghost.setAttribute('cx', x);
+      ghost.setAttribute('cy', y);
+      // Live-update next shot's CB in memory
+      ref.shot.cb = { x: Math.round(x), y: Math.round(y) };
+    });
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      ghost.style.cursor = 'grab';
+      try { ghost.releasePointerCapture(e.pointerId); } catch(_){}
+      var ref = nextShotRef();
+      if (ref) {
+        // Log for the author to copy into the source
+        console.log('Sequence ' + (ref.seqIdx+1) + ' shot ' + (ref.shotIdx+1) +
+                    ' CB → {x:' + ref.shot.cb.x + ', y:' + ref.shot.cb.y + '}');
+      }
+    }
+    ghost.addEventListener('pointerup', endDrag);
+    ghost.addEventListener('pointercancel', endDrag);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachGhostDrag);
+  } else {
+    attachGhostDrag();
+  }
+})();
+
+// ── Draggable CUE BALL PATH legend ──────────────────────────────────
+// The legend box can sit over a spot the user wants to drag the ghost
+// to. Make it movable via its header strip. Translation persists in
+// memory only (not across reloads).
+(function(){
+  function attachLegendDrag() {
+    var handle = document.getElementById('cb-path-legend-drag');
+    var group  = document.getElementById('cb-path-legend');
+    var topsvg = document.getElementById('topsvg');
+    if (!handle || !group || !topsvg) return;
+    var dragging = false;
+    var startX = 0, startY = 0;
+    var origTx = 0, origTy = 0;
+    function getTranslate() {
+      var t = group.getAttribute('transform') || 'translate(0,0)';
+      var m = t.match(/translate\(\s*(-?[\d.]+)[\s,]+(-?[\d.]+)\s*\)/);
+      return m ? [parseFloat(m[1]), parseFloat(m[2])] : [0, 0];
+    }
+    function ptToSvg(e) {
+      var pt = topsvg.createSVGPoint();
+      var src = (e.touches && e.touches[0]) ? e.touches[0] : e;
+      pt.x = src.clientX; pt.y = src.clientY;
+      return pt.matrixTransform(topsvg.getScreenCTM().inverse());
+    }
+    handle.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      dragging = true;
+      var p = ptToSvg(e);
+      startX = p.x; startY = p.y;
+      var t = getTranslate();
+      origTx = t[0]; origTy = t[1];
+      try { handle.setPointerCapture(e.pointerId); } catch(_){}
+    });
+    handle.addEventListener('pointermove', function(e){
+      if (!dragging) return;
+      var p = ptToSvg(e);
+      var tx = origTx + (p.x - startX);
+      var ty = origTy + (p.y - startY);
+      group.setAttribute('transform', 'translate(' + tx + ',' + ty + ')');
+    });
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      try { handle.releasePointerCapture(e.pointerId); } catch(_){}
+    }
+    handle.addEventListener('pointerup', endDrag);
+    handle.addEventListener('pointercancel', endDrag);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachLegendDrag);
+  } else {
+    attachLegendDrag();
+  }
+})();
+
+
 </script>
 
 </div><!-- /outer-wrap -->
@@ -5241,6 +5650,46 @@ function positionPanelAtDock(panel) {
   });
 }
 
+// Keep a floating panel within the viewport. Drag/resize/window-resize all
+// route through here so the panel can never escape off-screen.
+function clampPanelToViewport(panel) {
+  if (!panel || panel.style.display === 'none') return;
+  var MIN_VISIBLE = 40; // px of header that must remain on-screen
+  var vw = window.innerWidth;
+  var vh = window.innerHeight;
+  // Shrink width if the panel is wider than the viewport
+  var w = panel.offsetWidth;
+  if (w > vw - 8) {
+    panel.style.width = (vw - 8) + 'px';
+    w = panel.offsetWidth;
+  }
+  var rect = panel.getBoundingClientRect();
+  var headerEl = panel.querySelector('.float-panel-header');
+  var headerH = headerEl ? headerEl.offsetHeight : MIN_VISIBLE;
+  var minLeft = MIN_VISIBLE - w;          // panel must extend ≥40px into viewport from left
+  var maxLeft = vw - MIN_VISIBLE;         // panel left edge ≤ vw - 40
+  var minTop  = 0;                        // header top can't go above viewport
+  var maxTop  = vh - Math.min(headerH, MIN_VISIBLE);
+  var newLeft = Math.max(minLeft, Math.min(maxLeft, rect.left));
+  var newTop  = Math.max(minTop,  Math.min(maxTop,  rect.top));
+  if (newLeft !== rect.left) panel.style.left = newLeft + 'px';
+  if (newTop  !== rect.top)  panel.style.top  = newTop  + 'px';
+}
+
+// Recovery: reset the LEARN panel to its default dock position. Opens it if
+// closed. Reachable via the ↺ slot in the dock when the panel has somehow
+// drifted off-screen or the user just wants to re-anchor.
+function resetLearnPanelPosition() {
+  var panel = document.getElementById('shot-library-panel');
+  if (!panel) return;
+  if (panel.style.display === 'none') {
+    if (typeof toggleShotLibrary === 'function') toggleShotLibrary();
+    return;
+  }
+  positionPanelAtDock(panel);
+  if (typeof bringToTop === 'function') bringToTop('shot-library-panel');
+}
+
 function forceMinimizePanel(panelId, headerId) {
   const panel = document.getElementById(panelId);
   const hdr   = document.getElementById(headerId);
@@ -5357,6 +5806,7 @@ function vernierAim(dir) {
       var nx=origLeft+dx;
       var ny=origTop+dy;
       panel.style.left=nx+'px'; panel.style.top=ny+'px';
+      clampPanelToViewport(panel);
     });
     header.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
     header.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
@@ -5379,6 +5829,7 @@ function vernierAim(dir) {
         if (!didDrag) return;
         panel.style.left=origLeft+dx+'px';
         panel.style.top=origTop+dy+'px';
+        clampPanelToViewport(panel);
       });
       footer.addEventListener('pointerup',     function(e){ if(e.pointerId===activePtr) activePtr=null; });
       footer.addEventListener('pointercancel', function(e){ if(e.pointerId===activePtr) activePtr=null; });
@@ -5403,6 +5854,7 @@ function vernierAim(dir) {
         if (!didDrag) return;
         panel.style.left=origLeft+dx+'px';
         panel.style.top=origTop+dy+'px';
+        clampPanelToViewport(panel);
       });
       list.addEventListener('pointerup',     function(e){ listDragActive=false; activePtr=null; });
       list.addEventListener('pointercancel', function(e){ listDragActive=false; activePtr=null; });
@@ -5430,10 +5882,16 @@ function vernierAim(dir) {
         // overflow-y:auto so long content scrolls within the 80vh cap.
         // Legacy: if old shot list element exists, keep its sizing too
         if (list) { var hh=document.getElementById('shot-lib-header').offsetHeight||44; list.style.maxHeight=Math.max(60,window.innerHeight-hh-100)+'px'; }
+        clampPanelToViewport(panel);
       });
       resizeHandle.addEventListener('pointerup',     function(e){ resizing=false; resizePtr=null; });
       resizeHandle.addEventListener('pointercancel', function(e){ resizing=false; resizePtr=null; });
     }
+
+    // Re-clamp on viewport changes (orientation, window resize, soft keyboard)
+    window.addEventListener('resize', function(){
+      clampPanelToViewport(panel);
+    }, {passive:true});
   });
 
   // Hook into toggleShotLibrary to position on first open
@@ -5764,6 +6222,24 @@ function toggleSlidersPanel() {
         <line x1="13"  y1="14" x2="16.5" y2="14" stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
       </svg>
     </div>
+    <div class="dock-slot" id="dock-learn-recover" title="Reset LEARN panel position — brings the panel back if it has drifted off-screen." style="opacity:0.85;">
+      <svg width="20" height="20" viewBox="0 0 22 22" style="pointer-events:none;">
+        <!-- anticlockwise reset arrow -->
+        <path d="M 17 11 A 6 6 0 1 0 11 17" fill="none" stroke="#f0df70" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M 11 14 L 11 17 L 14 17" fill="none" stroke="#f0df70" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="dock-slot" id="dock-exit-sequence" title="Exit sequence — clears scenery balls and returns the table to the opening warm-up setup. Use this any time you want to leave a sequence and play freely." style="opacity:0.85;">
+      <svg width="20" height="20" viewBox="0 0 22 22" style="pointer-events:none;">
+        <!-- door frame -->
+        <rect x="4" y="3" width="10" height="16" rx="0.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linejoin="round"/>
+        <!-- door knob -->
+        <circle cx="11.5" cy="11" r="0.9" fill="#f0df70"/>
+        <!-- exit arrow pointing out through the door -->
+        <line x1="11" y1="11" x2="20" y2="11" stroke="#f0df70" stroke-width="1.8" stroke-linecap="round"/>
+        <polyline points="17,8 20,11 17,14" fill="none" stroke="#f0df70" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
     <div class="dock-slot active" id="dock-lockall" title="Lock all — toggles the lock state of the table, perception, and sliders panels together. Tap once to lock everything (so any touch pans the table); tap again to unlock everything.">
       <svg width="22" height="22" viewBox="0 0 22 22" style="pointer-events:none;">
         <!-- Padlock body -->
@@ -5902,6 +6378,8 @@ function toggleSlidersPanel() {
     bind('dock-hand', function(){ window._panLocked=false; document.getElementById('dock-hand').classList.add('active'); document.getElementById('dock-ball').classList.remove('active'); });
     bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); document.getElementById('dock-hand').classList.remove('active'); });
     bind('dock-learn',    function(){ var on=!_open.learn;   toggleShotLibrary();  setActive('learn',  on); });
+    bind('dock-learn-recover', function(){ resetLearnPanelPosition(); });
+    bind('dock-exit-sequence', function(){ exitSequenceMode(); });
     bind('dock-lockall',  function(){
       // Determine target state: if ANY lock is currently off, lock all.
       // Otherwise (all locked), unlock all.
