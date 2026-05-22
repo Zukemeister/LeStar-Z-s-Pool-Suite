@@ -3548,14 +3548,32 @@ function render() {
   const _displayFrac = Math.min(1, _fracMag);
   var aimP = Math.round(_displayFrac * 100);
 
+  // ── PERCEPTION-BALL READOUTS — driven by the SAME geometry the diagram
+  //    draws (drawBot's aimF), NOT the hump-biased _compFrac. The hump bias
+  //    is a teaching nudge applied only to the cue-ball path direction; it is
+  //    deliberately NOT drawn into the ghost ball / contact line / edge
+  //    crescents (see drawBot). Driving CONTACT / INSIDE / OUTSIDE / TWIXT
+  //    off _compFrac made the numbers diverge from the picture (e.g. a 14°
+  //    cut drew a ~25% quarter-ball hit but read 36%). These four readouts
+  //    now mirror drawBot exactly: pure geometry + throw + RC, hump excluded.
+  const _percFracSigned = Math.abs(d.diagFraction) + _throwDelta + _rcSigned;
+  const _percFracMag = Math.min(1, Math.abs(_percFracSigned));
+  const _percRhReadout = (_percFracSigned < 0) ? !S._diagDragRh : S._diagDragRh;
+
   const _rang = $('r-ang'); if (_rang) _rang.textContent = (cutDeg < 1.0 ? '0' : Zdeg) + '°' + _dir;
-  // Use _compFrac (1.5x corrected) as the accurate fraction source
+  // CONTACT — how far in from the cut-side edge the contact point sits.
+  // 50% = dead center (straight-in), 0% = edge (90° cut). = (1 − fraction)·50.
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = Math.round((1 - _compFrac) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (_rhEffectiveReadout ? ' L' : ' R')); }
-  const _aimP = Math.round(_compFrac * 100);
-  const _raim = $('r-aim'); if (_raim) _raim.textContent = _aimP + '%';
-  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = _aimP + '%';
-  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = Math.max(0,100-_aimP) + '%';
+  if (_cpEl) { const _cpPct = Math.round((1 - _percFracMag) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (_percRhReadout ? ' L' : ' R')); }
+  // INSIDE EDGE / OUTSIDE EDGE — the two non-overlap crescents. For two equal
+  // balls offset along the line of centers the crescents are mirror images,
+  // so both widths equal the cut fraction. They are equal BY GEOMETRY (this
+  // is correct), and both track the diagram's drawn crescents.
+  const _edgeP = Math.round(_percFracMag * 100);
+  const _raim = $('r-aim'); if (_raim) _raim.textContent = _edgeP + '%';
+  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = _edgeP + '%';
+  // TWIXT — the overlap lens between the two balls = 1 − fraction.
+  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = Math.max(0, 100 - _edgeP) + '%';
 
   // Distance readout
   const distEl = $('r-dist');
@@ -4104,13 +4122,15 @@ function drawBot(d) {
   // Allow the signed sum to go negative (RC slider indicating contact on the
   // opposite side of OB center). When it does, flip the render side and use
   // the magnitude. Critical for straight-in shots where diagFraction=0.
-  // Hump-curve bias (compFrac vs diagFraction) shifts the contact thinner
-  // in the mid cut range. Same convention as the readouts.
   // The ghost ball position in the perception view is PURE GEOMETRY plus
-  // throw and RC adjustments. The hump-curve bias is applied only to the
-  // numerical READOUTS, not to the visual ghost position. This way, when
-  // the user drags the ghost to the OB outside edge (aimF=1, cut=90°),
-  // the table's blue line and the perception ball agree.
+  // throw and RC adjustments. The hump-curve bias (compFrac) is NOT applied
+  // here — and, as of the readout fix, it is not applied to the CONTACT /
+  // INSIDE / OUTSIDE / TWIXT readouts either. Those readouts use the same
+  // |diagFraction| + throw + RC combination as this aimF, so the displayed
+  // numbers always match the drawn ball overlap. (The hump bias survives only
+  // on the cue-ball PATH direction and in the SHOT ATTRIBUTES panel.) This way
+  // when the user drags the ghost to the OB outside edge (aimF=1, cut=90°),
+  // the table's blue line, the perception ball, AND the readouts all agree.
   let _aimFSigned = Math.abs(d.diagFraction) + _diagThrowDelta + _diagRcSigned;
   let _rhEffective = rh;
   if (_aimFSigned < 0) { _aimFSigned = -_aimFSigned; _rhEffective = !rh; }
