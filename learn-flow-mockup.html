@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Learn Flow Mockup</title>
+<style>
+  :root{
+    --gold:#f0df70;
+    --gold-dim:rgba(240,223,112,0.5);
+    --felt:#1a4a1a;
+    --felt2:#2d6a2d;
+    --ink:#1a1400;
+    --paper:#fbfaf5;
+    --paper-ink:#2a2a24;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#000;
+    font-family:"Lato","Helvetica Neue",sans-serif;color:#fff;}
+  body{display:flex;flex-direction:column;}
+
+  /* ── THE APP (table view) ───────────────────────────── */
+  #app{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:flex-start;padding:14px 10px 90px;}
+  .app-title{font-size:11px;letter-spacing:3px;color:var(--gold);
+    font-weight:900;margin:6px 0 12px;opacity:0.85;}
+  .table-wrap{width:100%;max-width:460px;}
+  svg{width:100%;height:auto;display:block;}
+
+  .shot-readout{margin-top:18px;text-align:center;font-size:13px;
+    color:rgba(255,255,255,0.7);line-height:1.6;max-width:340px;}
+  .shot-readout b{color:var(--gold);font-weight:700;}
+  .shot-readout .empty{color:rgba(255,255,255,0.35);font-style:italic;}
+
+  /* ── DOCK ───────────────────────────────────────────── */
+  #dock{position:fixed;left:0;right:0;bottom:0;z-index:40;
+    display:flex;justify-content:center;gap:10px;
+    padding:12px 12px calc(12px + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg,transparent,rgba(0,0,0,0.55) 40%);}
+  .dock-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;
+    width:64px;height:60px;border-radius:16px;border:1px solid rgba(255,255,255,0.14);
+    background:rgba(20,24,20,0.92);color:#cfcfc6;font-size:9px;font-weight:900;
+    letter-spacing:0.5px;cursor:pointer;transition:transform .12s,background .15s,border-color .15s;}
+  .dock-btn .ic{font-size:20px;line-height:1;margin-bottom:3px;}
+  .dock-btn:active{transform:scale(0.93);}
+  .dock-btn.learn{border-color:var(--gold-dim);color:var(--gold);}
+  .dock-btn.learn.active{background:var(--gold);color:var(--ink);border-color:var(--gold);}
+
+  /* ── FULL-SCREEN READER ─────────────────────────────── */
+  #reader{position:fixed;inset:0;z-index:60;background:var(--paper);
+    color:var(--paper-ink);display:flex;flex-direction:column;
+    transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+    will-change:transform;}
+  #reader.open{transform:translateY(0);}
+
+  .reader-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+    background:var(--ink);padding:10px 12px calc(10px);
+    padding-top:calc(10px + env(safe-area-inset-top));}
+  .reader-badge{background:var(--gold);color:var(--ink);border-radius:20px;
+    padding:3px 16px;font-size:12px;font-weight:900;letter-spacing:1.5px;}
+  .reader-close{background:none;border:none;color:#bbb;font-size:26px;line-height:1;
+    cursor:pointer;padding:0 6px;}
+
+  .reader-tabs{flex:0 0 auto;display:flex;background:#efeee7;border-bottom:1px solid #ddd;}
+  .reader-tabs button{flex:1;padding:9px 4px;font-size:10px;font-weight:900;
+    border:none;background:none;color:#8a8a80;letter-spacing:0.4px;cursor:pointer;
+    border-bottom:2px solid transparent;}
+  .reader-tabs button.on{color:#1a5a1a;border-bottom-color:#1a5a1a;background:#fff;}
+
+  .reader-body{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding:20px 20px 60px;}
+  .reader-body h2{font-family:Georgia,"Times New Roman",serif;font-size:22px;
+    font-weight:700;color:#1a1400;margin:30px 0 6px;letter-spacing:0.2px;}
+  .reader-body h2:first-child{margin-top:4px;}
+  .reader-body .kicker{font-size:10px;font-weight:900;letter-spacing:2px;
+    color:#b08a10;text-transform:uppercase;margin-bottom:18px;}
+  .reader-body p{font-size:16px;line-height:1.62;margin:0 0 16px;color:#33332c;}
+  .reader-body .shot-tag{font-family:Georgia,serif;font-style:italic;font-size:15px;
+    color:#1a5a1a;margin:22px 0 8px;font-weight:700;}
+
+  .act{display:block;width:100%;text-align:center;border:none;border-radius:12px;
+    padding:15px;font-size:14px;font-weight:900;letter-spacing:1px;cursor:pointer;
+    margin:14px 0 22px;transition:transform .1s,filter .15s;}
+  .act:active{transform:scale(0.98);}
+  .act.setup{background:#1a5a1a;color:#fff;box-shadow:0 3px 12px rgba(26,90,26,0.35);}
+  .act.done{background:#fff;color:#1a5a1a;border:2px solid #1a5a1a;}
+  .act.done.completed{background:#eaf5ea;color:#7aa87a;border-color:#bcd9bc;}
+  .act.nextseq{background:var(--ink);color:var(--gold);border:1px solid var(--gold);}
+
+  .resume-flash{position:fixed;left:50%;top:18px;transform:translateX(-50%);
+    background:rgba(26,20,0,0.95);color:var(--gold);font-size:12px;font-weight:700;
+    padding:8px 18px;border-radius:20px;z-index:70;opacity:0;transition:opacity .3s;
+    pointer-events:none;letter-spacing:0.5px;}
+  .resume-flash.show{opacity:1;}
+
+  .hint{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);
+    background:rgba(0,0,0,0.8);color:#ddd;font-size:11px;padding:7px 14px;
+    border-radius:14px;z-index:45;max-width:80%;text-align:center;line-height:1.4;
+    transition:opacity .4s;}
+</style>
+</head>
+<body>
+
+<!-- ── APP / TABLE ─────────────────────────────────────── -->
+<div id="app">
+  <div class="app-title">LESTAR Z'S AIMER</div>
+  <div class="table-wrap">
+    <svg viewBox="0 -18 460 278" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="tFelt" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2d6a2d"/><stop offset="1" stop-color="#1a4a1a"/>
+        </linearGradient>
+        <radialGradient id="gOB" cx="38%" cy="34%" r="68%">
+          <stop offset="0" stop-color="#ffd24d"/><stop offset="0.55" stop-color="#f0a000"/>
+          <stop offset="1" stop-color="#8a5a00"/>
+        </radialGradient>
+        <radialGradient id="gBall" cx="38%" cy="34%" r="68%">
+          <stop offset="0" stop-color="#ffffff"/><stop offset="0.6" stop-color="#e8e8dc"/>
+          <stop offset="1" stop-color="#b8b8a8"/>
+        </radialGradient>
+      </defs>
+      <!-- rails -->
+      <rect x="0" y="-18" width="460" height="278" rx="14" fill="#3d2b1f"/>
+      <!-- felt -->
+      <rect x="30" y="30" width="400" height="200" fill="url(#tFelt)"/>
+      <!-- cushions -->
+      <rect x="30" y="26" width="400" height="6" fill="#1a6830"/>
+      <rect x="30" y="228" width="400" height="6" fill="#1a6830"/>
+      <rect x="26" y="30" width="6" height="200" fill="#1a6830"/>
+      <rect x="428" y="30" width="6" height="200" fill="#1a6830"/>
+      <!-- pockets -->
+      <circle cx="30" cy="30" r="11" fill="#060a06"/>
+      <circle cx="430" cy="30" r="11" fill="#060a06"/>
+      <circle cx="30" cy="230" r="11" fill="#060a06"/>
+      <circle cx="430" cy="230" r="11" fill="#060a06"/>
+      <ellipse cx="230" cy="30" rx="14" ry="9" fill="#060a06"/>
+      <ellipse cx="230" cy="230" rx="14" ry="9" fill="#060a06"/>
+      <!-- diamonds -->
+      <g fill="#c8a84b">
+        <circle cx="130" cy="20" r="2.2"/><circle cx="230" cy="20" r="2.2"/><circle cx="330" cy="20" r="2.2"/>
+        <circle cx="130" cy="240" r="2.2"/><circle cx="230" cy="240" r="2.2"/><circle cx="330" cy="240" r="2.2"/>
+      </g>
+      <!-- balls + aim line (updated by JS) -->
+      <g id="shot-layer" opacity="0">
+        <line id="aim-line" x1="0" y1="0" x2="0" y2="0" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.8"/>
+        <circle id="ob-ball" cx="0" cy="0" r="8" fill="url(#gOB)" stroke="#903010" stroke-width="1"/>
+        <circle id="cb-ball" cx="0" cy="0" r="8" fill="url(#gBall)" stroke="#ccccbb" stroke-width="1"/>
+      </g>
+    </svg>
+  </div>
+  <div class="shot-readout" id="shot-readout">
+    <span class="empty">No shot loaded. Tap LEARN, read, then tap SET UP on a shot.</span>
+  </div>
+</div>
+
+<!-- ── DOCK ────────────────────────────────────────────── -->
+<div id="dock">
+  <div class="dock-btn" onclick="flashHint('Other dock buttons are just here for context.')"><span class="ic">⊕</span>GRID</div>
+  <div class="dock-btn learn" id="dock-learn" onclick="toggleReader()"><span class="ic">📖</span>LEARN</div>
+  <div class="dock-btn" onclick="flashHint('Other dock buttons are just here for context.')"><span class="ic">↗</span>CUE PATH</div>
+</div>
+
+<!-- ── FULL-SCREEN READER ──────────────────────────────── -->
+<div id="reader">
+  <div class="reader-head">
+    <span class="reader-badge">LEARN</span>
+    <button class="reader-close" onclick="toggleReader()">✕</button>
+  </div>
+  <div class="reader-tabs">
+    <button class="on">SEQUENCES</button>
+    <button onclick="flashHint('Tabs are stubbed in the mockup.')">MY NOTES</button>
+    <button onclick="flashHint('Tabs are stubbed in the mockup.')">LIBRARY</button>
+    <button onclick="flashHint('Tabs are stubbed in the mockup.')">RECORDS</button>
+  </div>
+  <div class="reader-body" id="reader-body"><!-- magazine injected here --></div>
+</div>
+
+<div class="resume-flash" id="resume-flash">Resumed where you left off ▸</div>
+
+<script>
+/* ── mock magazine content (abbreviated; real app has full prose) ── */
+var MAG = [
+  {h:'Warm-Up Shot', kicker:'Before the sequences'},
+  {p:'Set the cue ball and an object ball on a straight line between the two side pockets. You can make the object ball without thinking. But where did the cue ball go? Shoot it a couple of times and watch the cue ball, not the object ball.'},
+  {p:'Now hit it high — with follow — and notice the cue ball chase the object ball toward the pocket. That is one of your tools.'},
+  {set:'warmup', label:'SET UP THE WARM-UP SHOT'},
+  {p:'After you have shot it a few times: did the cue ball follow into the pocket? If it went wide, that was your stroke, not your aim. Smooth and committed.'},
+  {done:'warmup', label:'DONE — ON TO SEQUENCE ONE'},
+
+  {h:'Sequence One — Follow, Stop and Draw', kicker:'The vertical axis'},
+  {p:'This sequence chains four shots. Each one leaves the cue ball where the next one needs it. The stroke now has a job: not just to pocket the ball, but to land the cue ball on a spot.'},
+  {shot:'Shot 1'},
+  {p:'A soft follow shot into the side. Send the cue ball up to the rail behind the next object ball.'},
+  {set:'seq1.shot1', label:'SET UP SHOT 1'},
+  {p:'Where did it end up? You want it near the rail, lined up for a cut to the corner.'},
+  {done:'seq1.shot1', label:'DONE — MOVE TO SHOT 2'},
+  {shot:'Shot 2'},
+  {p:'A stop shot into the corner. A touch of draw, soft speed, so the cue ball stalls and drifts toward the three ball.'},
+  {set:'seq1.shot2', label:'SET UP SHOT 2'},
+  {p:'Did it stop where you wanted? Stun on a near-straight shot is mostly speed control.'},
+  {done:'seq1.shot2', label:'DONE — MOVE TO SHOT 3'},
+  {shot:'Shot 3'},
+  {p:'A sharper cut with light draw. You are trying to leave yourself a straight shot on shot four.'},
+  {set:'seq1.shot3', label:'SET UP SHOT 3'},
+  {p:'Straight on the last ball? Then the position work paid off.'},
+  {done:'seq1.shot3', label:'DONE — MOVE TO SHOT 4'},
+  {shot:'Shot 4'},
+  {p:'Easy shot, easy scratch. Put a fair amount of draw on it to keep the cue ball out of the corner.'},
+  {set:'seq1.shot4', label:'SET UP SHOT 4'},
+  {p:'That closes the loop — the same skill as the warm-up, arrived at by position play.'},
+  {done:'seq1.shot4', label:'DONE — SEQUENCE COMPLETE'},
+  {nextseq:'Next Sequence ▸'}
+];
+
+/* fake shot geometry per ref, in table svg coords */
+var SHOTS = {
+  'warmup':   {ob:{x:230,y:120}, cb:{x:230,y:200}, label:'Warm-up · straight-in follow · soft'},
+  'seq1.shot1':{ob:{x:240,y:106},cb:{x:230,y:180}, label:'Shot 1 · 18° cut · follow · soft'},
+  'seq1.shot2':{ob:{x:379,y:43}, cb:{x:328,y:41},  label:'Shot 2 · 23° cut · light draw · soft (stop)'},
+  'seq1.shot3':{ob:{x:403,y:203},cb:{x:366,y:61},  label:'Shot 3 · 35° cut · light draw'},
+  'seq1.shot4':{ob:{x:238,y:211},cb:{x:351,y:145}, label:'Shot 4 · 42° cut · heavy draw'}
+};
+
+var completed = {};
+var readerOpen = false;
+var lastScroll = 0;
+var hasOpenedBefore = false;
+
+/* ── build the magazine DOM ── */
+function buildMag(){
+  var body = document.getElementById('reader-body');
+  var html = '';
+  MAG.forEach(function(b){
+    if(b.h){ html += '<div class="kicker">'+(b.kicker||'')+'</div><h2>'+b.h+'</h2>'; }
+    else if(b.shot){ html += '<div class="shot-tag">'+b.shot+'</div>'; }
+    else if(b.p){ html += '<p>'+b.p+'</p>'; }
+    else if(b.set){ html += '<button class="act setup" onclick="doSetup(\''+b.set+'\')">'+b.label+'</button>'; }
+    else if(b.done){ html += '<button class="act done" id="done-'+b.done+'" onclick="doDone(\''+b.done+'\')">'+b.label+'</button>'; }
+    else if(b.nextseq){ html += '<button class="act nextseq" onclick="flashHint(\'Would scroll to the next sequence.\')">'+b.nextseq+'</button>'; }
+  });
+  body.innerHTML = html;
+}
+
+/* ── open / close reader (the dock toggle) ── */
+function toggleReader(){
+  readerOpen = !readerOpen;
+  var r = document.getElementById('reader');
+  var btn = document.getElementById('dock-learn');
+  if(readerOpen){
+    r.classList.add('open');
+    btn.classList.add('active');
+    // resume scroll position
+    requestAnimationFrame(function(){
+      document.getElementById('reader-body').scrollTop = lastScroll;
+      if(hasOpenedBefore && lastScroll > 40) showResume();
+    });
+    hasOpenedBefore = true;
+  } else {
+    lastScroll = document.getElementById('reader-body').scrollTop;
+    r.classList.remove('open');
+    btn.classList.remove('active');
+  }
+}
+
+/* ── SET UP: load shot into table AND close reader ── */
+function doSetup(ref){
+  var s = SHOTS[ref];
+  if(s){
+    placeShot(s);
+    document.getElementById('shot-readout').innerHTML =
+      '<b>'+s.label+'</b><br>Reader closed — table is yours. Tap <b>LEARN</b> to read on.';
+  }
+  lastScroll = document.getElementById('reader-body').scrollTop;  // remember spot
+  // close the overlay so you drop onto the full table
+  readerOpen = false;
+  document.getElementById('reader').classList.remove('open');
+  document.getElementById('dock-learn').classList.remove('active');
+}
+
+/* ── DONE: mark complete ── */
+function doDone(ref){
+  completed[ref] = true;
+  var btn = document.getElementById('done-'+ref);
+  if(btn){ btn.classList.add('completed'); btn.textContent = '✓ DONE'; }
+  // gently nudge scroll to next block
+  if(btn){ btn.scrollIntoView({behavior:'smooth', block:'center'}); }
+}
+
+/* ── place balls + aim line on the table ── */
+function placeShot(s){
+  var layer = document.getElementById('shot-layer');
+  document.getElementById('ob-ball').setAttribute('cx', s.ob.x);
+  document.getElementById('ob-ball').setAttribute('cy', s.ob.y);
+  document.getElementById('cb-ball').setAttribute('cx', s.cb.x);
+  document.getElementById('cb-ball').setAttribute('cy', s.cb.y);
+  var ln = document.getElementById('aim-line');
+  ln.setAttribute('x1', s.cb.x); ln.setAttribute('y1', s.cb.y);
+  ln.setAttribute('x2', s.ob.x); ln.setAttribute('y2', s.ob.y);
+  layer.setAttribute('opacity','1');
+}
+
+function showResume(){
+  var f = document.getElementById('resume-flash');
+  f.classList.add('show');
+  setTimeout(function(){ f.classList.remove('show'); }, 1400);
+}
+
+var hintTimer;
+function flashHint(msg){
+  var existing = document.querySelector('.hint');
+  if(existing) existing.remove();
+  var h = document.createElement('div');
+  h.className='hint'; h.textContent=msg;
+  document.body.appendChild(h);
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(function(){ h.style.opacity='0'; setTimeout(function(){h.remove();},400); }, 2200);
+}
+
+buildMag();
+</script>
+</body>
+</html>
