@@ -47,11 +47,16 @@
   .dock-btn.learn.active{background:var(--gold);color:var(--ink);border-color:var(--gold);}
 
   /* ── FULL-SCREEN READER ─────────────────────────────── */
-  #reader{position:fixed;inset:0;z-index:60;background:var(--paper);
-    color:var(--paper-ink);display:flex;flex-direction:column;
-    transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
-    will-change:transform;}
-  #reader.open{transform:translateY(0);}
+  /* Visibility is driven by display (bulletproof on mobile Safari); the
+     slide-up is a progressive enhancement layered on top. Even if the
+     transform/transition does nothing, an open reader is simply visible
+     and a closed one is fully gone — it can never sit invisibly in the way. */
+  #reader{position:fixed;left:0;top:0;right:0;
+    width:100%;height:100vh;height:100dvh;z-index:60;background:var(--paper);
+    color:var(--paper-ink);display:none;flex-direction:column;
+    transform:translateY(8%);opacity:0;
+    transition:transform .26s cubic-bezier(.4,0,.2,1),opacity .26s ease;}
+  #reader.open{display:flex;transform:translateY(0);opacity:1;}
 
   .reader-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
     background:var(--ink);padding:10px 12px calc(10px);
@@ -247,18 +252,29 @@ function toggleReader(){
   var r = document.getElementById('reader');
   var btn = document.getElementById('dock-learn');
   if(readerOpen){
-    r.classList.add('open');
+    // Step 1: make it displayed at its pre-animation state (off by a hair,
+    // transparent). Step 2, next frame: add .open to animate in. If the
+    // browser skips the animation, it's still fully visible — visibility is
+    // never gated on the transition firing.
+    r.style.display = 'flex';
     btn.classList.add('active');
-    // resume scroll position
     requestAnimationFrame(function(){
-      document.getElementById('reader-body').scrollTop = lastScroll;
-      if(hasOpenedBefore && lastScroll > 40) showResume();
+      requestAnimationFrame(function(){
+        r.classList.add('open');
+        document.getElementById('reader-body').scrollTop = lastScroll;
+        if(hasOpenedBefore && lastScroll > 40) showResume();
+      });
     });
     hasOpenedBefore = true;
   } else {
     lastScroll = document.getElementById('reader-body').scrollTop;
     r.classList.remove('open');
     btn.classList.remove('active');
+    // hide after the slide-out; also a hard fallback in case transitionend
+    // never fires on this browser.
+    var hide = function(){ if(!readerOpen) r.style.display = 'none'; };
+    r.addEventListener('transitionend', hide, {once:true});
+    setTimeout(hide, 320);
   }
 }
 
@@ -271,10 +287,9 @@ function doSetup(ref){
       '<b>'+s.label+'</b><br>Reader closed — table is yours. Tap <b>LEARN</b> to read on.';
   }
   lastScroll = document.getElementById('reader-body').scrollTop;  // remember spot
-  // close the overlay so you drop onto the full table
-  readerOpen = false;
-  document.getElementById('reader').classList.remove('open');
-  document.getElementById('dock-learn').classList.remove('active');
+  // close the overlay so you drop onto the full table — reuse the robust
+  // close so the inline display:flex gets cleared the same way.
+  if(readerOpen){ toggleReader(); }
 }
 
 /* ── DONE: mark complete ── */

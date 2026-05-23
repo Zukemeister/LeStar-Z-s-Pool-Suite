@@ -468,6 +468,24 @@ body { padding-bottom: 80px !important; }
 #sliders-block.float-panel { background: rgba(10,15,10,0.97) !important; overflow: hidden !important; }
 #sliders-block.float-panel, #sliders-block.float-panel * { box-sizing: border-box; }
 
+/* ── LEARN panel = full-screen reader (phone-first) ──────────────
+   The Learn panel (#shot-library-panel) is no longer a draggable
+   floating box. It's a fixed full-screen overlay: read full-screen,
+   act, it gets out of the way, tap LEARN to return. Nothing to drag,
+   resize, or knock off-screen. Only this panel is affected; the
+   sliders panel keeps its floating behavior. */
+#shot-library-panel.float-panel {
+  left: 0; top: 0; right: 0; bottom: 0;
+  width: 100%; height: 100vh; height: 100dvh;
+  max-width: none; min-width: 0; max-height: none;
+  border: none; border-radius: 0;
+  box-shadow: none;
+  transform: none !important;   /* never offset by old drag positioning */
+  touch-action: auto;
+}
+#shot-library-panel.float-panel .float-panel-header { cursor: default; touch-action: auto; }
+#shot-library-panel.float-panel .float-panel-body { -webkit-overflow-scrolling: touch; }
+
 #sl-scale { -webkit-appearance:none; appearance:none; cursor:pointer; }
 #sl-scale::-webkit-slider-thumb {
   -webkit-appearance:none; width:10px; height:10px;
@@ -1169,6 +1187,14 @@ function magSetShot(ref) {
   }
   saveMagazineProgress(ref, 'set');
   buildSequencesPane();  // re-render to reflect state
+  // Full-screen reader flow: setting up a shot closes the reader so the
+  // user drops straight onto the full table to shoot. Reopening LEARN
+  // resumes where they left off (magResumeIfAny / saved scroll). Guard so
+  // calls that arrive while the reader is already closed do nothing.
+  if (typeof libraryOpen !== 'undefined' && libraryOpen
+      && typeof toggleShotLibrary === 'function') {
+    toggleShotLibrary();
+  }
 }
 
 // Mark a shot done from inline magazine action.
@@ -1613,8 +1639,6 @@ function loadShotData(shot) {
     }
     var _cpDock = document.getElementById('dock-cuepath');
     if (_cpDock) _cpDock.classList.add('active');
-    var _cpLeg = document.getElementById('cb-path-legend');
-    if (_cpLeg) _cpLeg.setAttribute('opacity', '1');
   }
   render();
 }
@@ -2070,12 +2094,10 @@ function toggleShotLibrary() {
   if (panel) {
     panel.style.display = libraryOpen ? 'flex' : 'none';
     if (libraryOpen) {
-      // Default to Sequences tab on open. The other tabs remain accessible.
+      // Full-screen reader: no positioning needed (CSS pins it to the
+      // viewport). Default to Sequences tab; other tabs remain accessible.
       showLearnTab(_learnTab || 'sequences');
       bringToTop('shot-library-panel');
-      requestAnimationFrame(function(){
-        positionPanelAtDock(panel);
-      });
       // Resume reading where the user left off, if they were in the magazine.
       if ((_learnTab || 'sequences') === 'sequences' && typeof magResumeIfAny === 'function') {
         setTimeout(magResumeIfAny, 100);
@@ -2615,41 +2637,6 @@ if ('serviceWorker' in navigator) {
           <circle id="ghost-ball" cx="0" cy="0" r="8" fill="rgba(255,255,255,0.10)" stroke="#f0df70" stroke-width="1.8" stroke-dasharray="4,3" opacity="0"/>
           <!-- Contact point dot on OB surface -->
           <circle id="cp-dot-table" cx="0" cy="0" r="4" fill="#ffffff" stroke="#ff6600" stroke-width="1.5" opacity="0"/>
-          <!-- CB Path legend (shown when cbPathOn) — interactive vert + speed bars -->
-          <g id="cb-path-legend" transform="translate(0,0)" opacity="0">
-            <rect x="338" y="172" width="92" height="84" rx="4" fill="rgba(0,0,0,0.55)"/>
-            <text x="384" y="184" text-anchor="middle" font-family="Lato,sans-serif" font-size="8" font-weight="700" fill="rgba(255,255,255,0.55)">CUE BALL PATH</text>
-            <!-- Drag handle: invisible rect over the header text area.
-                 cursor=move; pointer-events=all so it captures the drag
-                 before the underlying slider bars do. -->
-            <rect id="cb-path-legend-drag" x="338" y="172" width="92" height="16" fill="transparent" style="cursor:move;" pointer-events="all"/>
-            <defs>
-              <linearGradient id="cb-path-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"   stop-color="#c084fc" stop-opacity="0.55"/>
-                <stop offset="50%"  stop-color="#ffffff" stop-opacity="0.45"/>
-                <stop offset="100%" stop-color="#f97316" stop-opacity="0.55"/>
-              </linearGradient>
-              <linearGradient id="cb-speed-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"   stop-color="#5b8cff" stop-opacity="0.45"/>
-                <stop offset="50%"  stop-color="#ffe080" stop-opacity="0.45"/>
-                <stop offset="100%" stop-color="#ff7050" stop-opacity="0.55"/>
-              </linearGradient>
-            </defs>
-            <!-- VERT bar -->
-            <rect id="cb-path-bar" x="346" y="190" width="76" height="9" rx="4" fill="url(#cb-path-grad)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" style="cursor:pointer;touch-action:none;"/>
-            <line x1="384" y1="188" x2="384" y2="201" stroke="rgba(255,255,255,0.35)" stroke-width="0.7"/>
-            <circle id="cb-path-thumb" cx="384" cy="194" r="3.5" fill="rgba(255,255,255,0.85)" stroke="rgba(0,0,0,0.5)" stroke-width="0.7" style="pointer-events:none;"/>
-            <text x="346" y="211" font-family="Lato,sans-serif" font-size="6" font-weight="700" fill="rgba(192,132,252,0.7)">DRAW</text>
-            <text x="384" y="211" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" font-weight="700" fill="rgba(255,255,255,0.5)">STUN</text>
-            <text x="422" y="211" text-anchor="end" font-family="Lato,sans-serif" font-size="6" font-weight="700" fill="rgba(249,115,22,0.7)">FOLLOW</text>
-            <!-- SPEED bar -->
-            <rect id="cb-speed-bar" x="346" y="220" width="76" height="9" rx="4" fill="url(#cb-speed-grad)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" style="cursor:pointer;touch-action:none;"/>
-            <circle id="cb-speed-thumb" cx="384" cy="224" r="3.5" fill="rgba(255,255,255,0.85)" stroke="rgba(0,0,0,0.5)" stroke-width="0.7" style="pointer-events:none;"/>
-            <text x="346" y="241" font-family="Lato,sans-serif" font-size="6" font-weight="700" fill="rgba(91,140,255,0.7)">SOFT</text>
-            <text x="384" y="241" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" font-weight="700" fill="rgba(255,224,128,0.7)">MED</text>
-            <text x="422" y="241" text-anchor="end" font-family="Lato,sans-serif" font-size="6" font-weight="700" fill="rgba(255,112,80,0.7)">FIRM</text>
-            <text x="384" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="6" font-style="italic" font-weight="400" fill="rgba(255,255,255,0.35)">approx. — tap to adjust</text>
-          </g>
           <!-- Object ball -->
           <circle id="ob-shadow" cx="231" cy="151" r="8" fill="#000" opacity="0.32"/>
           <circle id="ob"        cx="230" cy="150" r="8" fill="url(#gOB)" stroke="#903010" stroke-width="1" cursor="grab"/>
@@ -3166,8 +3153,6 @@ function toggleCbPath() {
     btn.style.lineHeight = '1.3';
     btn.innerHTML = cbPathOn ? 'CUE PATH<br>ON' : 'CUE PATH<br>OFF';
   }
-  const leg = document.getElementById('cb-path-legend');
-  if (leg) leg.setAttribute('opacity', cbPathOn ? '1' : '0');
   render();
 }
 
@@ -3218,10 +3203,7 @@ function toggleCbPath() {
       bar.addEventListener('pointercancel', function(){ dragging = false; });
     });
   }
-  // Vert: t in [0,1] → vert in [-4, +4].  sl-vert range is ±100, scale ×25.
-  attachBar('cb-path-bar',  'sl-vert', function(t){ return (t * 2 - 1) * 4; }, 25);
-  // Speed: t in [0,1] → speed in [0, 1].  sl-spd range is 0..100, scale ×100.
-  attachBar('cb-speed-bar', 'sl-spd',  function(t){ return t; },                100);
+  // (CB-path on-table vert/speed bars removed — use the main sliders panel.)
 })();
 
 // (Drag handler removed — box is now position:absolute inside .top-box.)
@@ -3960,14 +3942,24 @@ function renderTable(d) {
     const _SVG_PER_INCH = 400 / (S.tableSize === 9 ? 100 : (S.tableSize === 7 ? 78 : 100));
     const _distInches = _dCO / _SVG_PER_INCH;
     const _rollBias = Math.max(0, Math.min(1.0, (_distInches - 10) / 26));
-    const _spinV = Math.max(-1, Math.min(1, _spinSlider + _rollBias));
-    // Update thumbs on the legend's interactive bars (x = 346..422, center 384)
-    // Thumb tracks the SLIDER value, not the biased _spinV — the user's
-    // intent is what they set, not what the cloth adds.
-    const _thumb = document.getElementById('cb-path-thumb');
-    if (_thumb) _thumb.setAttribute('cx', String(384 + _spinSlider * 38));
-    const _spdThumb = document.getElementById('cb-speed-thumb');
-    if (_spdThumb) _spdThumb.setAttribute('cx', String(346 + (S.speed || 0) * 76));
+    // Apply the roll bias as a NEUTRAL-POINT SHIFT, not an additive term that
+    // gets clamped. Earlier code did `min(1, _spinSlider + _rollBias)`, which
+    // saturated the follow (right) side: once slider + bias ≥ 1 the line
+    // stopped responding, so at typical distances the entire upper half of the
+    // slider was dead while draw (left) still worked. Instead, let the bias
+    // define where "stun" sits, then map the slider across the FULL remaining
+    // travel on each side of that neutral point. The slider always spans
+    // full-draw → full-follow; the cloth's induced forward roll just moves the
+    // center-ball landing spot toward follow with distance.
+    let _spinV;
+    if (_spinSlider >= 0) {
+      // follow side: from neutral (_rollBias) up to +1
+      _spinV = _rollBias + _spinSlider * (1 - _rollBias);
+    } else {
+      // draw side: from neutral (_rollBias) down to −1
+      _spinV = _rollBias + _spinSlider * (1 + _rollBias);
+    }
+    _spinV = Math.max(-1, Math.min(1, _spinV));
     // Linear deflection in [-_maxBend, +_maxBend], scaled by speed
     const _cbAngle = stunAngle + _toObSign * _spinV * _maxBend * _speedFactor;
 
@@ -5329,62 +5321,6 @@ function swapPanels(){
   }
 })();
 
-// ── Draggable CUE BALL PATH legend ──────────────────────────────────
-// The legend box can sit over a spot the user wants to drag the ghost
-// to. Make it movable via its header strip. Translation persists in
-// memory only (not across reloads).
-(function(){
-  function attachLegendDrag() {
-    var handle = document.getElementById('cb-path-legend-drag');
-    var group  = document.getElementById('cb-path-legend');
-    var topsvg = document.getElementById('topsvg');
-    if (!handle || !group || !topsvg) return;
-    var dragging = false;
-    var startX = 0, startY = 0;
-    var origTx = 0, origTy = 0;
-    function getTranslate() {
-      var t = group.getAttribute('transform') || 'translate(0,0)';
-      var m = t.match(/translate\(\s*(-?[\d.]+)[\s,]+(-?[\d.]+)\s*\)/);
-      return m ? [parseFloat(m[1]), parseFloat(m[2])] : [0, 0];
-    }
-    function ptToSvg(e) {
-      var pt = topsvg.createSVGPoint();
-      var src = (e.touches && e.touches[0]) ? e.touches[0] : e;
-      pt.x = src.clientX; pt.y = src.clientY;
-      return pt.matrixTransform(topsvg.getScreenCTM().inverse());
-    }
-    handle.addEventListener('pointerdown', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      dragging = true;
-      var p = ptToSvg(e);
-      startX = p.x; startY = p.y;
-      var t = getTranslate();
-      origTx = t[0]; origTy = t[1];
-      try { handle.setPointerCapture(e.pointerId); } catch(_){}
-    });
-    handle.addEventListener('pointermove', function(e){
-      if (!dragging) return;
-      var p = ptToSvg(e);
-      var tx = origTx + (p.x - startX);
-      var ty = origTy + (p.y - startY);
-      group.setAttribute('transform', 'translate(' + tx + ',' + ty + ')');
-    });
-    function endDrag(e) {
-      if (!dragging) return;
-      dragging = false;
-      try { handle.releasePointerCapture(e.pointerId); } catch(_){}
-    }
-    handle.addEventListener('pointerup', endDrag);
-    handle.addEventListener('pointercancel', endDrag);
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', attachLegendDrag);
-  } else {
-    attachLegendDrag();
-  }
-})();
-
 
 </script>
 
@@ -5482,10 +5418,6 @@ function swapPanels(){
     // Rail buttons (TBL/UNIT/TYPE/GRID/SNAP) and dropdowns
     if (target.closest('#rail-size-btn, #rail-unit-btn, #rail-table-btn, ' +
                        '#rail-grid-btn, #rail-snap-btn, #rail-type-menu')) return true;
-    // Cue path bars and box (protected only when interactive, i.e. neither
-    // the table nor the sliders are locked).
-    if (!window._tableLocked && !window._slidersLocked &&
-        target.closest('#cb-path-legend, #cb-path-bar, #cb-speed-bar')) return true;
     // Perception interactive elements (unless perception is locked)
     if (!window._perceptionLocked && target.closest('#perc-svg, #perc-row, #perc-invite-btn')) return true;
     // Sliders block: protected only when not locked. When locked, fall
@@ -5744,15 +5676,14 @@ function vernierAim(dir) {
 
 
 </script>
-<!-- SHOT LIBRARY — floating, draggable -->
+<!-- LEARN — full-screen reader overlay -->
 <div id="shot-library-panel" class="float-panel" style="border-color:rgba(240,223,112,0.5);min-width:300px;">
   <!-- Header -->
   <div id="shot-lib-header" class="float-panel-header" style="background:#1a1400;">
     <span style="display:inline-flex;align-items:center;background:#f0df70;border-radius:20px;padding:2px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#1a1400;pointer-events:none;">LEARN</span>
     <div style="display:flex;align-items:center;gap:6px;">
       <button onclick="showLearnTab('myshots')" style="font-size:9px;font-weight:900;padding:2px 7px;border-radius:10px;border:1px solid rgba(240,223,112,0.5);background:rgba(240,223,112,0.15);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">MY SHOTS ↓</button>
-      <button class="min-btn" onclick="minimizePanel('shot-library-panel',this.closest('#shot-lib-header'))" style="background:none;border:1px solid #aaa;border-radius:4px;color:#aaa;font-size:13px;font-weight:900;padding:1px 7px;cursor:pointer;touch-action:manipulation;">—</button>
-      <button onclick="toggleShotLibrary()" style="background:none;border:none;color:#aaa;font-size:22px;line-height:1;cursor:pointer;padding:0 4px;touch-action:manipulation;">✕</button>
+      <button onclick="toggleShotLibrary()" aria-label="Close" style="background:none;border:none;color:#ccc;font-size:26px;line-height:1;cursor:pointer;padding:2px 10px;touch-action:manipulation;">✕</button>
     </div>
   </div>
   <!-- Tab bar -->
@@ -5770,24 +5701,38 @@ function vernierAim(dir) {
   <div id="learn-pane-presets" class="float-panel-body" style="display:none;cursor:grab;min-height:200px;"></div>
   <!-- Records tab -->
   <div id="learn-pane-myshots" class="float-panel-body" style="display:none;"></div>
-  <!-- Footer: record button + scale -->
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;border-top:2px solid #f0df70;background:#0a0a0a;">
-    <div style="display:flex;align-items:center;gap:6px;flex:1;">
-      <span style="font-size:9px;font-weight:900;color:#f0df70;letter-spacing:1px;">SIZE</span>
-      <input type="range" id="learn-scale" min="50" max="100" value="100" oninput="scalePanel('shot-library-panel','learn-scale','learn-scale-lbl')"
-        style="flex:1;height:4px;-webkit-appearance:none;appearance:none;background:#555;border-radius:2px;cursor:pointer;outline:none;accent-color:#f0df70;">
-    </div>
-    <button onclick="startRecord()" title="Record this shot" style="font-size:9px;font-weight:900;padding:3px 10px;border-radius:10px;border:1px solid #f0df70;background:rgba(192,160,24,0.2);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:1px;margin-left:10px;">⬤ REC</button>
+  <!-- Footer: record button -->
+  <div style="display:flex;justify-content:flex-end;align-items:center;padding:4px 8px;border-top:2px solid #f0df70;background:#0a0a0a;">
+    <button onclick="startRecord()" title="Record this shot" style="font-size:9px;font-weight:900;padding:3px 10px;border-radius:10px;border:1px solid #f0df70;background:rgba(192,160,24,0.2);color:#f0df70;cursor:pointer;touch-action:manipulation;letter-spacing:1px;">⬤ REC</button>
   </div>
 </div>
 
 <script>
-// Shot library panel — position under table on first open, then draggable + resizable
+// Shot library (LEARN) panel — now a fixed FULL-SCREEN overlay.
+// The old draggable/resizable/position-under-table apparatus is disabled:
+// a full-screen reader has nothing to drag, resize, or position, and those
+// pointer handlers only fought the reader's own scrolling. Kept as an inert
+// stub so any external callers (toggleShotLibrary hook, resize listener)
+// don't throw.
 (function(){
-  var panel, header, startX, startY, origLeft, origTop, didDrag, activePtr=null;
-  var positioned = false;
+  var panel;
+  function positionUnderTable() { /* no-op: panel is full-screen */ }
 
-  function positionUnderTable() {
+  window.addEventListener('load', function(){
+    panel = document.getElementById('shot-library-panel');
+    if (!panel) return;
+    // Full-screen overlay: skip all drag/footer/resize/list-edge wiring.
+    return;
+  });
+
+  // toggleShotLibrary no longer needs repositioning; leave the original as-is.
+})();
+</script>
+
+<script id="_dead-learn-drag" type="text/plain">
+// (Former Learn-panel drag/resize implementation — retired when the panel
+//  became a full-screen overlay. Preserved here as inert text, not script,
+//  in case the geometry is ever useful again.)
     var topBox = document.querySelector('.svg-box.top-box');
     if (!topBox || !panel) return;
     var r = topBox.getBoundingClientRect();
@@ -6242,13 +6187,6 @@ function toggleSlidersPanel() {
         <line x1="13"  y1="14" x2="16.5" y2="14" stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
       </svg>
     </div>
-    <div class="dock-slot" id="dock-learn-recover" title="Reset LEARN panel position — brings the panel back if it has drifted off-screen." style="opacity:0.85;">
-      <svg width="20" height="20" viewBox="0 0 22 22" style="pointer-events:none;">
-        <!-- anticlockwise reset arrow -->
-        <path d="M 17 11 A 6 6 0 1 0 11 17" fill="none" stroke="#f0df70" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M 11 14 L 11 17 L 14 17" fill="none" stroke="#f0df70" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
     <div class="dock-slot" id="dock-exit-sequence" title="Exit sequence — clears scenery balls and returns the table to the opening warm-up setup. Use this any time you want to leave a sequence and play freely." style="opacity:0.85;">
       <svg width="20" height="20" viewBox="0 0 22 22" style="pointer-events:none;">
         <!-- door frame -->
@@ -6398,7 +6336,6 @@ function toggleSlidersPanel() {
     bind('dock-hand', function(){ window._panLocked=false; document.getElementById('dock-hand').classList.add('active'); document.getElementById('dock-ball').classList.remove('active'); });
     bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); document.getElementById('dock-hand').classList.remove('active'); });
     bind('dock-learn',    function(){ var on=!_open.learn;   toggleShotLibrary();  setActive('learn',  on); });
-    bind('dock-learn-recover', function(){ resetLearnPanelPosition(); });
     bind('dock-exit-sequence', function(){ exitSequenceMode(); });
     bind('dock-lockall',  function(){
       // Determine target state: if ANY lock is currently off, lock all.
