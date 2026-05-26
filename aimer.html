@@ -2680,8 +2680,8 @@ if ('serviceWorker' in navigator) {
       <g id="rail-table-btn" onclick="toggleTypeMenu(event)" style="cursor:pointer;touch-action:manipulation;">
         <title>Game type — pick POOL or SNOOKER. Switching auto-sets a sensible default size for that game.</title>
         <rect x="361" y="-13" width="48" height="11" rx="2.5" fill="rgba(160,208,160,0.55)" stroke="rgba(160,208,160,0.95)" stroke-width="0.8"/>
-        <text x="364" y="-7" text-anchor="start" dominant-baseline="central" font-family="Lato,sans-serif" font-size="5" font-weight="900" fill="#000" pointer-events="none" letter-spacing="0.3">TYPE</text>
-        <text id="rail-table-lbl" x="386" y="-7" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="7" font-weight="900" fill="#000" pointer-events="none">POOL</text>
+        <text x="363" y="-7" text-anchor="start" dominant-baseline="central" font-family="Lato,sans-serif" font-size="4.5" font-weight="900" fill="#000" pointer-events="none" letter-spacing="0.2">TYPE</text>
+        <text id="rail-table-lbl" x="390" y="-7" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="#000" pointer-events="none">POOL</text>
         <polygon id="rail-table-arrow" points="402,-11 407,-11 404.5,-4" fill="#000" pointer-events="none"/>
       </g>
       <!-- TYPE dropdown menu -->
@@ -5115,7 +5115,6 @@ function edgeZoomReset() {
   <button id="sliders-lock-btn" title="Lock sliders — disables slider drags so you can pan freely from any point in this section." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
   <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);display:flex;align-items:center;justify-content:flex-end;padding:4px 6px;">
     <div style="display:flex;gap:4px;align-items:center;">
-      <button id="sliders-detach-btn" title="Detach sliders — pop out as a floating panel you can drag." style="background:rgba(58,176,255,0.12);border:1px solid rgba(58,176,255,0.35);border-radius:5px;color:#3ab0ff;font-size:11px;font-weight:900;padding:2px 7px;cursor:pointer;touch-action:manipulation;">↗</button>
       <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
     </div>
   </div>
@@ -6494,6 +6493,30 @@ function toggleSlidersPanel() {
       if (typeof window._repositionFloatingLocks === 'function') {
         window._repositionFloatingLocks();
       }
+      // --- PANIC RECOVERY: force any panel back to its docked, normal layout ---
+      // Undoes a floated/detached or minimized panel state so a scrambled
+      // layout always recovers with one Reset tap. NOTE: 'float-panel' is the
+      // panel's NORMAL class (its docked styling), so we do NOT remove it —
+      // we only strip the fixed-position inline styles that detach() adds and
+      // any minimized state or inserted drag handle.
+      try {
+        ['sliders-block','shot-library-panel'].forEach(function(pid){
+          var p = document.getElementById(pid);
+          if (!p) return;
+          p.classList.remove('panel-minimized');
+          var st = p.style;
+          // Only clear the props detach() sets; leave background/border intact.
+          if (st.position === 'fixed') {
+            ['position','left','top','right','bottom','width','maxHeight',
+             'zIndex','boxShadow','transform','overflow','display','flexDirection']
+              .forEach(function(prop){ try { st[prop] = ''; } catch(e){} });
+          }
+          // Remove any drag handle detach() inserted at the top
+          var dh = p.querySelector(':scope > div[style*="cursor:grab"]');
+          if (dh && dh.parentNode) dh.parentNode.removeChild(dh);
+        });
+        if (typeof window._redockAllPanels === 'function') window._redockAllPanels();
+      } catch(e) { /* recovery is best-effort; never block Reset */ }
     });
     bind('dock-cuepath', function(){ toggleCbPath(); setActive('cuepath', cbPathOn); });
 
@@ -7046,7 +7069,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   })();
 
-  _makeDetachable('sliders-block', 'sliders-detach-btn');
+  // Sliders detach feature removed — it could float the panel out of the layout
+  // with no clean recovery. Sliders stay docked in their normal position.
 
   // When sliders are locked, also disable the slider inputs so dragging
   // a thumb doesn't fire onSliders. Keep this in sync via the lock button.
