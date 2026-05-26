@@ -383,7 +383,8 @@ body { padding-bottom: 80px !important; }
 }
 .dock-slot.active { border-color: rgba(255,255,255,0.85); transform: scale(1.12); }
 .dock-slot .dline { border-radius: 1px; pointer-events: none; display: block; }
-#dock-minimize { width: 36px; height: 5px; background: rgba(240,223,112,0.35); border-radius: 3px; cursor: pointer; touch-action: manipulation; }
+#dock-minimize { width: 36px; height: 5px; background: rgba(240,223,112,0.35); border-radius: 3px; cursor: pointer; touch-action: manipulation; flex-shrink: 0; }
+#dock-bar.vertical #dock-minimize { width: 24px; height: 6px; margin: 2px 0 4px 0; }
 #dock-mini {
   display: none; width: 36px; height: 36px; border-radius: 50%;
   background: rgba(10,15,10,0.88); border: 1.5px solid rgba(240,223,112,0.55);
@@ -6145,6 +6146,7 @@ function toggleSlidersPanel() {
   </div>
   <div id="dock-bar" class="vertical">
     <div class="dock-orient-dot" id="dock-dot-start" style="pointer-events:auto;touch-action:manipulation;"></div>
+    <div id="dock-minimize" title="Minimize dock"></div>
 
     <div class="dock-slot active" id="dock-ball" title="Ball mode (default) — drag balls with one finger, pan with two fingers, pinch to zoom.">
       <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
@@ -6246,7 +6248,6 @@ function toggleSlidersPanel() {
     </div>
 
     <div class="dock-orient-dot" id="dock-dot-end" style="pointer-events:auto;touch-action:manipulation;"></div>
-    <div id="dock-minimize" title="Minimize dock"></div>
   </div>
 </div>
 
@@ -6522,7 +6523,7 @@ function toggleSlidersPanel() {
 
 
     bind('dock-minimize', function(){ dockCollapse(); });
-    bind('dock-mini',     function(){ dockExpand(); });
+    // dock-mini expand is handled by its pointer handler below (tap = expand, drag = move)
 
     var bar = document.getElementById('dock-bar');
     var dock = document.getElementById('dock');
@@ -6546,6 +6547,34 @@ function toggleSlidersPanel() {
     });
     bar.addEventListener('pointerup',function(e){if(e.pointerId===ptr)ptr=null;});
     bar.addEventListener('pointercancel',function(){ptr=null;});
+
+    // Make the minimized dock symbol (dock-mini) draggable too, so it can be
+    // repositioned while collapsed. A small move = drag; a tap = expand.
+    var mini = document.getElementById('dock-mini');
+    if (mini) {
+      var msx, msy, mox, moy, mDragging=false, mPtr=null, mXfm=true, mMoved=false;
+      mini.addEventListener('pointerdown', function(e){
+        var r=dock.getBoundingClientRect();
+        if(mXfm){dock.style.transform='none';dock.style.left=r.left+'px';dock.style.top=r.top+'px';dock.style.bottom='auto';mXfm=false;}
+        msx=e.clientX;msy=e.clientY;mox=r.left;moy=r.top;mDragging=false;mMoved=false;mPtr=e.pointerId;
+        mini.setPointerCapture(e.pointerId);
+      });
+      mini.addEventListener('pointermove', function(e){
+        if(mPtr===null||e.pointerId!==mPtr)return;
+        var dx=e.clientX-msx,dy=e.clientY-msy;
+        if(!mDragging&&Math.hypot(dx,dy)>6){mDragging=true;mMoved=true;}
+        if(!mDragging)return;
+        dock.style.left=(mox+dx)+'px';
+        dock.style.top=(moy+dy)+'px';
+      });
+      mini.addEventListener('pointerup', function(e){
+        if(e.pointerId!==mPtr)return;
+        mPtr=null;
+        // Only expand if it was a tap, not a drag
+        if(!mMoved){ if(typeof dockExpand==='function') dockExpand(); }
+      });
+      mini.addEventListener('pointercancel', function(){mPtr=null;});
+    }
 
     // snapDockToTable disabled — dock now defaults to vertical right-edge,
     // handled by the orient-toggle initial-position block earlier.
