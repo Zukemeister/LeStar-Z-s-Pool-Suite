@@ -942,8 +942,8 @@ var SEQUENCES = [
         cut: 31, pocket: 'TR', rh: true,
         vert: 1.64, speed: 0.51,
         intent: 'Cut to the top right corner with a touch of follow.' },
-      { ob: {x:220, y:44}, cb: {x:314, y:145},
-        cut: 86, pocket: 'TM', rh: true,
+      { ob: {x:220, y:44}, cb: {x:207, y:173},
+        cut: 30, pocket: 'TM', rh: false,
         vert: 1.52, speed: 0.81,
         intent: 'Follow with just enough to get to the end rail.' }
     ]
@@ -1289,6 +1289,11 @@ function buildSequencesPane() {
   var h = '';
   h += '<div style="padding:12px;">';
   h += '<div style="font-size:13px;font-weight:900;color:#1a5a1a;margin-bottom:10px;letter-spacing:0.5px;">SEQUENCES</div>';
+
+  // Exit Sequence — moved here from the dock. Shown when a sequence is active.
+  if (openIdx >= 0) {
+    h += '<button onclick="exitSequenceMode();buildSequencesPane();" style="width:100%;padding:8px;font-size:12px;font-weight:800;border-radius:5px;border:1px solid #1a5a1a;background:#1a5a1a;color:#fff;cursor:pointer;margin-bottom:12px;">Exit Sequence &mdash; back to open table</button>';
+  }
 
   if (!SEQUENCES.length) {
     h += '<div style="color:#888;font-size:12px;">No sequences yet.</div>';
@@ -2697,11 +2702,6 @@ if ('serviceWorker' in navigator) {
         <rect x="338" y="246" width="34" height="14" rx="3" fill="rgba(74,222,128,0.55)" stroke="rgba(74,222,128,0.7)" stroke-width="0.7"/>
         <text x="355" y="254" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#000" pointer-events="none">GRID</text>
       </g>
-      <g id="rail-snap-btn" onclick="toggleSnap()" style="cursor:pointer;touch-action:manipulation;">
-        <title>Snap to grid — when on, dragging a ball locks it to the nearest grid intersection.</title>
-        <rect x="388" y="246" width="34" height="14" rx="3" fill="rgba(240,223,112,0.55)" stroke="rgba(240,223,112,0.7)" stroke-width="0.7"/>
-        <text x="405" y="254" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#000" pointer-events="none">SNAP</text>
-      </g>
 </svg>
     </div>
 
@@ -3078,7 +3078,7 @@ const S = {
 let drag = null;
 let diagDrag = false;
 let mapOn = true;
-let snapOn = true;
+let snapOn = false;  // snap-to and position pills removed; balls rest where placed
 
 function isZoomed() {
   var w = document.getElementById('zoom-wrap');
@@ -4950,17 +4950,29 @@ function buildSnapPoints() {
       const cx = x0 + DX/2;
       const cy = y0 + DY/2;
 
-      // Center
-      add(cx, cy, String(n));
-      // Perimeter clockwise from lower-left: a-h (clamped inside felt)
-      const pa = sc(x0,      y0+DY); add(pa.x, pa.y, n+'a');
-      const pb = sc(x0,      cy);    add(pb.x, pb.y, n+'b');
-      const pc = sc(x0,      y0);    add(pc.x, pc.y, n+'c');
-      const pd = sc(cx,      y0);    add(pd.x, pd.y, n+'d');
-      const pe = sc(x0+DX,   y0);    add(pe.x, pe.y, n+'e');
-      const pf = sc(x0+DX,   cy);    add(pf.x, pf.y, n+'f');
-      const pg = sc(x0+DX,   y0+DY); add(pg.x, pg.y, n+'g');
-      const ph = sc(cx,      y0+DY); add(ph.x, ph.y, n+'h');
+      // Mini-box-center grid: each 50x50 cell -> 4 quadrants (A=TL,B=TR,C=BL,D=BR)
+      // -> each quadrant a 5x5 grid of 25 mini boxes (each 5x5 units).
+      // Snap lands on the mini-box CENTER; label is at QUADRANT level (e.g. "11.B").
+      // Precise within-box position is read from the diagram, not the label.
+      const QW = DX/2, QH = DY/2;       // quadrant size 25x25
+      const MW = QW/5, MH = QH/5;       // mini size 5x5
+      const quads = [
+        {L:'A', qx:x0,      qy:y0},      // top-left
+        {L:'B', qx:x0+QW,   qy:y0},      // top-right
+        {L:'C', qx:x0,      qy:y0+QH},   // bottom-left
+        {L:'D', qx:x0+QW,   qy:y0+QH}    // bottom-right
+      ];
+      for (const q of quads) {
+        const label = n + '.' + q.L;
+        for (let mr = 0; mr < 5; mr++) {
+          for (let mc = 0; mc < 5; mc++) {
+            const mx = q.qx + mc*MW + MW/2;
+            const my = q.qy + mr*MH + MH/2;
+            const p = sc(mx, my);
+            add(p.x, p.y, label);
+          }
+        }
+      }
     }
   }
   return pts;
@@ -4979,9 +4991,9 @@ function nearestSnap(x, y) {
 }
 
 function applySnap(x, y) {
-  if (!snapOn || !SNAP_POINTS || SNAP_POINTS.length === 0) return {x, y, label: null};
-  const pt = nearestSnap(x, y);
-  if (pt) return {x: pt.x, y: pt.y, label: pt.label};
+  // Snap-to and position pills removed: balls always rest exactly where placed,
+  // and no position label is generated. Position is read from the diagram; the
+  // coordinate naming lives in the Author side.
   return {x, y, label: null};
 }
 
@@ -6135,27 +6147,6 @@ function toggleSlidersPanel() {
   <div id="dock-bar" class="vertical">
     <div class="dock-orient-dot" id="dock-dot-start" style="pointer-events:auto;touch-action:manipulation;"></div>
 
-    <div class="dock-slot" id="dock-hand" title="Single-finger pan mode — for accessibility. Most users can pan with two fingers anywhere on the table without this button.">
-      <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
-        <!-- Up arrow -->
-        <line x1="10" y1="2" x2="10" y2="9" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
-        <polyline points="7.5,4.5 10,2 12.5,4.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Down arrow -->
-        <line x1="10" y1="11" x2="10" y2="18" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
-        <polyline points="7.5,15.5 10,18 12.5,15.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Left arrow -->
-        <line x1="2" y1="10" x2="9" y2="10" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
-        <polyline points="4.5,7.5 2,10 4.5,12.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Right arrow -->
-        <line x1="11" y1="10" x2="18" y2="10" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
-        <polyline points="15.5,7.5 18,10 15.5,12.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Center dot -->
-        <circle cx="10" cy="10" r="1.5" fill="#f0df70"/>
-      </svg>
-    
-    
-    
-    </div>
     <div class="dock-slot active" id="dock-ball" title="Ball mode (default) — drag balls with one finger, pan with two fingers, pinch to zoom.">
       <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
         <defs>
@@ -6187,15 +6178,20 @@ function toggleSlidersPanel() {
         <line x1="13"  y1="14" x2="16.5" y2="14" stroke="#f0df70" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
       </svg>
     </div>
-    <div class="dock-slot" id="dock-exit-sequence" title="Exit sequence — clears scenery balls and returns the table to the opening warm-up setup. Use this any time you want to leave a sequence and play freely." style="opacity:0.85;">
-      <svg width="20" height="20" viewBox="0 0 22 22" style="pointer-events:none;">
-        <!-- door frame -->
-        <rect x="4" y="3" width="10" height="16" rx="0.5" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linejoin="round"/>
-        <!-- door knob -->
-        <circle cx="11.5" cy="11" r="0.9" fill="#f0df70"/>
-        <!-- exit arrow pointing out through the door -->
-        <line x1="11" y1="11" x2="20" y2="11" stroke="#f0df70" stroke-width="1.8" stroke-linecap="round"/>
-        <polyline points="17,8 20,11 17,14" fill="none" stroke="#f0df70" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="dock-slot" id="dock-manual" title="Manual — illustrated guide to the app and what each part does.">
+      <svg width="22" height="22" viewBox="0 0 22 22" style="pointer-events:none;">
+        <circle cx="11" cy="11" r="9" fill="none" stroke="#f0df70" stroke-width="1.6"/>
+        <circle cx="11" cy="6.3" r="1.15" fill="#f0df70"/>
+        <line x1="11" y1="9.6" x2="11" y2="16" stroke="#f0df70" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="dock-slot" id="dock-manifesto" title="Manifesto — LeStar Z's philosophy and the thinking behind the system.">
+      <svg width="22" height="22" viewBox="0 0 22 22" style="pointer-events:none;">
+        <path d="M4 9 L13 5 L13 17 L4 13 Z" fill="none" stroke="#f0df70" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M4 9 L2.5 9.6 L2.5 12.4 L4 13 Z" fill="#f0df70" stroke="#f0df70" stroke-width="1" stroke-linejoin="round"/>
+        <line x1="7" y1="14.2" x2="8" y2="18" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M15.5 8 Q17.5 11 15.5 14" fill="none" stroke="#f0df70" stroke-width="1.3" stroke-linecap="round" opacity="0.85"/>
+        <path d="M17.5 6.5 Q20.5 11 17.5 15.5" fill="none" stroke="#f0df70" stroke-width="1.3" stroke-linecap="round" opacity="0.6"/>
       </svg>
     </div>
     <div class="dock-slot active" id="dock-lockall" title="Lock all — toggles the lock state of the table, perception, and sliders panels together. Tap once to lock everything (so any touch pans the table); tap again to unlock everything.">
@@ -6266,6 +6262,46 @@ function toggleSlidersPanel() {
     if (el) el.classList.toggle('active', on);
   }
 
+  // Opens an external illustrated page (Manual or Manifesto) as an overlay to the
+  // LEFT of the working dock, which stays visible. Destinations are external files
+  // (set via MANUAL_URL / MANIFESTO_URL). Degrades gracefully if the file is absent.
+  window.openExternalDoc = function(url, titleText) {
+    var existing = document.getElementById('ext-doc-overlay');
+    if (existing) { existing.remove(); return; }  // tapping again closes it
+    var ov = document.createElement('div');
+    ov.id = 'ext-doc-overlay';
+    ov.style.cssText = 'position:fixed;top:0;left:0;bottom:0;right:62px;z-index:9000;'
+      + 'background:#27331f;display:flex;flex-direction:column;';
+    var bar = document.createElement('div');
+    bar.style.cssText = 'flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;'
+      + 'padding:10px 14px;border-bottom:1px solid #4a5a3a;color:#f0df70;font-weight:800;font-size:15px;';
+    bar.innerHTML = '<span>' + (titleText || 'Document') + '</span>'
+      + '<span id="ext-doc-close" style="cursor:pointer;font-size:22px;line-height:1;padding:0 6px;">&times;</span>';
+    var frameWrap = document.createElement('div');
+    frameWrap.style.cssText = 'flex:1 1 auto;position:relative;overflow:auto;';
+    var fr = document.createElement('iframe');
+    fr.src = url;
+    fr.style.cssText = 'width:100%;height:100%;border:0;background:#27331f;';
+    fr.onerror = function(){ showMissing(); };
+    function showMissing(){
+      frameWrap.innerHTML = '<div style="padding:30px;color:#cfddcf;font-size:14px;line-height:1.6;">'
+        + 'This section is not built yet.<br><br>'
+        + 'It will open <code style="color:#f0df70;">' + url + '</code> once that page exists.'
+        + '</div>';
+    }
+    frameWrap.appendChild(fr);
+    ov.appendChild(bar); ov.appendChild(frameWrap);
+    document.body.appendChild(ov);
+    document.getElementById('ext-doc-close').addEventListener('click', function(){ ov.remove(); });
+    // If the iframe can't load the file (e.g. not present), show the placeholder.
+    setTimeout(function(){
+      try {
+        var d = fr.contentDocument;
+        if (!d || (d.body && d.body.innerHTML.trim()==='' && !fr.src)) showMissing();
+      } catch(e) { /* cross-origin or loaded fine — leave as is */ }
+    }, 400);
+  };
+
   window.dockCollapse = function() {
     var bar=document.getElementById('dock-bar'), mini=document.getElementById('dock-mini');
     if (bar)  bar.style.display='none';
@@ -6333,10 +6369,14 @@ function toggleSlidersPanel() {
       if(d1) d1.addEventListener('click', function(e){ e.stopPropagation(); tog(); });
       if(d2) d2.addEventListener('click', function(e){ e.stopPropagation(); tog(); });
     })();
-    bind('dock-hand', function(){ window._panLocked=false; document.getElementById('dock-hand').classList.add('active'); document.getElementById('dock-ball').classList.remove('active'); });
-    bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); document.getElementById('dock-hand').classList.remove('active'); });
+    bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); });
     bind('dock-learn',    function(){ var on=!_open.learn;   toggleShotLibrary();  setActive('learn',  on); });
-    bind('dock-exit-sequence', function(){ exitSequenceMode(); });
+    // Manual and Manifesto open external illustrated pages (destinations TBD).
+    // Point MANUAL_URL / MANIFESTO_URL at the real pages once they exist.
+    var MANUAL_URL = 'manual/manual_home.html';
+    var MANIFESTO_URL = 'manifesto/manifesto_home.html';
+    bind('dock-manual', function(){ openExternalDoc(MANUAL_URL, 'Manual'); });
+    bind('dock-manifesto', function(){ openExternalDoc(MANIFESTO_URL, 'Manifesto'); });
     bind('dock-lockall',  function(){
       // Determine target state: if ANY lock is currently off, lock all.
       // Otherwise (all locked), unlock all.
@@ -6417,7 +6457,7 @@ function toggleSlidersPanel() {
       if (typeof angleOn !== 'undefined') { try { angleOn = true; } catch(e){} }
       if (typeof cbPathOn !== 'undefined') { try { cbPathOn = true; } catch(e){} }
       if (typeof mapOn !== 'undefined')   { try { mapOn = true; } catch(e){} }
-      if (typeof snapOn !== 'undefined')  { try { snapOn = true; } catch(e){} }
+      if (typeof snapOn !== 'undefined')  { try { snapOn = false; } catch(e){} }
       if (typeof ghostOpacity !== 'undefined') { try { ghostOpacity = 0.5; } catch(e){} }
       // Reset twixt/edge stripe box visual indicators
       var twBox = document.getElementById('r-twixt-box');
