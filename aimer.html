@@ -385,6 +385,12 @@ body { padding-bottom: 80px !important; }
 .dock-slot .dline { border-radius: 1px; pointer-events: none; display: block; }
 #dock-minimize { width: 36px; height: 5px; background: rgba(240,223,112,0.35); border-radius: 3px; cursor: pointer; touch-action: manipulation; flex-shrink: 0; }
 #dock-bar.vertical #dock-minimize { width: 24px; height: 6px; margin: 2px 0 4px 0; }
+
+/* Hide the fine mini-grid: keep the big cell numbers (1-32) but remove the
+   fine sub-square lines and 0.5-step labels. The naming system is at the
+   cell+quadrant level, so the visible grid should match it. */
+#map2-layer line { display: none !important; }
+#map2-layer text[font-size="6.5"] { display: none !important; }
 #dock-mini {
   display: none; width: 36px; height: 36px; border-radius: 50%;
   background: rgba(10,15,10,0.88); border: 1.5px solid rgba(240,223,112,0.55);
@@ -2417,6 +2423,21 @@ if ('serviceWorker' in navigator) {
           <line x1="30" y1="80"  x2="430" y2="80"  stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
           <line x1="30" y1="130" x2="430" y2="130" stroke="#7dd3fc" stroke-width="1.2" opacity="0.75"/>
           <line x1="30" y1="180" x2="430" y2="180" stroke="#7dd3fc" stroke-width="0.8" opacity="0.55"/>
+          <!-- Quadrant lines: subdivide each cell into 4 (A=TL, B=TR, C=BL, D=BR) -->
+          <g id="quadrant-lines">
+            <line x1="55"  y1="30" x2="55"  y2="230" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="105" y1="30" x2="105" y2="230" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="155" y1="30" x2="155" y2="230" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="205" y1="30" x2="205" y2="230" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="255" y1="30" x2="255" y2="230" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="305" y1="30" x2="305" y2="230" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="355" y1="30" x2="355" y2="230" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="405" y1="30" x2="405" y2="230" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="30" y1="55"  x2="430" y2="55"  stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="30" y1="105" x2="430" y2="105" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="30" y1="155" x2="430" y2="155" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+            <line x1="30" y1="205" x2="430" y2="205" stroke="#7dd3fc" stroke-width="0.7" stroke-dasharray="2 2" opacity="0.7"/>
+          </g>
           <circle cx="230" cy="130" r="3" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.6"/>
           <circle cx="230" cy="130" r="0.8" fill="#7dd3fc" opacity="0.6"/>
           <text x="236" y="128" font-family="Lato,sans-serif" font-size="6" fill="#7dd3fc" opacity="0.6">CENTER</text>
