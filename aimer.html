@@ -925,7 +925,7 @@ var FOUNDATIONAL_SHOT = {
 var SEQUENCES = [
   // ──────────────────────────────────────────────────────────────────
   // TWO-SHOT SETS — Don authored via the Author tool. These demonstrate
-  // basic shot possibilities. They lead up to the four-shot Trial One.
+  // basic shot possibilities. They lead up to the four-shot sequence.
   // ──────────────────────────────────────────────────────────────────
   {
     title: 'Two Shot Set 1',
@@ -970,33 +970,62 @@ var SEQUENCES = [
     ]
   },
   // ──────────────────────────────────────────────────────────────────
-  // Trial One — the four-shot culmination. Follow, stop, and draw to
-  // move the cue ball around the table, each shot setting up the next.
+  // 4 Shot Sequence One — the four-shot culmination. Follow, stop, and
+  // draw to move the cue ball around the table, each shot setting up the next.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: 'Sequence One — Follow, Stop and Draw',
-    intent: 'Sequence One uses follow, stop and draw.',
+    title: "4 Shot Sequence One",
+    intent: "Sequence One uses follow, stop and draw.",
     shots: [
-      // Shot 1: OB1(240,106) → CB(230,180) → TM. Follow, soft.
-      { ob: {x:240, y:106}, cb: {x:230, y:180},
-        cut: 18, pocket: 'TM', rh: false,
-        vert: 1.88, speed: 0.5,
-        intent: 'Add follow and shoot softly to get position on the rail behind the two ball.' },
-      // Shot 2: OB2(379,43) → CB(328,41) → TR. Light draw, soft (stop).
-      { ob: {x:379, y:43}, cb: {x:328, y:41},
-        cut: 23, pocket: 'TR', rh: false,
-        vert: -2, speed: 0.33,
-        intent: 'Carefully add a little draw and shoot softly to stop the shot. It will drift toward the three ball.' },
-      // Shot 3: OB3(403,203) → CB(366,61) → BR. Sharper cut, light draw.
-      { ob: {x:403, y:203}, cb: {x:366, y:61},
-        cut: 35, pocket: 'BR', rh: false,
-        vert: -1.52, speed: 0.51,
-        intent: 'Similar to shot two, but with a sharper cut. You are trying to get a straight shot on shot 4. Try it a couple of times until you have the feel.' },
-      // Shot 4: OB4(238,211) → CB(351,145) → BM. Draw to avoid the scratch.
-      { ob: {x:238, y:211}, cb: {x:351, y:145},
-        cut: 42, pocket: 'BM', rh: false,
-        vert: -3.32, speed: 0.5,
-        intent: 'This shot is easy, but it\'s also easy to scratch in the corner. Put a fair amount of draw to keep this from happening (hit low on the cue ball).' }
+      // Shot 1: OB1(237.72698646186532,108.4418274294875) → CB(230,180) → TM
+      { ob: {x:237.72698646186532, y:108.4418274294875}, cb: {x:230, y:180},
+        cut: 15, pocket: "TM", rh: false,
+        vert: 1.32, speed: 0.23,
+        intent: "Shot 1, follow gently to the rail. Shot 2. Could do a stop, or could follow to the rail. 3. Have to roll forward to reach positon on the 4. Shot 4. You have to be gentle, not allowing the cueball to follow the object ball into the pocket." },
+      // Shot 2: OB2(386.57806335790843,39) → CB(328,42) → TR
+      { ob: {x:386.57806335790843, y:39}, cb: {x:328, y:42},
+        cut: 12, pocket: "TR", rh: false,
+        vert: -1.68, speed: 0.5,
+        intent: "" },
+      // Shot 3: OB3(416.1944096602492,213.41295726653547) → CB(374,67) → BR
+      { ob: {x:416.1944096602492, y:213.41295726653547}, cb: {x:374, y:67},
+        cut: 26, pocket: "BR", rh: false,
+        vert: 1.88, speed: 0.85,
+        intent: "" },
+      // Shot 4: OB4 moved a half ball (4u) left → (280.45,196.09) for a slight cut → BM (pocket 5)
+      { ob: {x:280.45015101498643, y:196.09379977782268}, cb: {x:365, y:146},
+        cut: 0, pocket: "BM", rh: false,
+        vert: 0.76, speed: 0.45,
+        intent: "" }
+    ]
+  },
+  // ──────────────────────────────────────────────────────────────────
+  // Game 4 — the looping challenge. Same four shots as 4 Shot Sequence
+  // One, but shot 4 loops back to shot 1: the blue ghost on shot 4 shows
+  // shot 1's CB start as the loop-back target. Run the sequence 5 times.
+  // ──────────────────────────────────────────────────────────────────
+  {
+    title: "Game 4",
+    intent: "Game 4: run 4 Shot Sequence One five times through. After shot 4, land the cue ball back at shot 1's start (the blue ghost) and go again.",
+    loops: true,
+    laps: 5,
+    shots: [
+      { ob: {x:237.72698646186532, y:108.4418274294875}, cb: {x:230, y:180},
+        cut: 15, pocket: "TM", rh: false,
+        vert: 1.32, speed: 0.23,
+        intent: "Shot 1, follow gently to the rail. Shot 2. Could do a stop, or could follow to the rail. 3. Have to roll forward to reach positon on the 4. Shot 4. You have to be gentle, not allowing the cueball to follow the object ball into the pocket." },
+      { ob: {x:386.57806335790843, y:39}, cb: {x:328, y:42},
+        cut: 12, pocket: "TR", rh: false,
+        vert: -1.68, speed: 0.5,
+        intent: "" },
+      { ob: {x:416.1944096602492, y:213.41295726653547}, cb: {x:374, y:67},
+        cut: 26, pocket: "BR", rh: false,
+        vert: 1.88, speed: 0.85,
+        intent: "" },
+      { ob: {x:280.45015101498643, y:196.09379977782268}, cb: {x:365, y:146},
+        cut: 0, pocket: "BM", rh: false,
+        vert: 0.76, speed: 0.45,
+        intent: "" }
     ]
   }
 ];
@@ -2301,13 +2330,22 @@ if ('serviceWorker' in navigator) {
   var dock=document.getElementById('dock');
   var bar=document.getElementById('dock-bar');
   if(!dock||!bar) return;
-  bar.classList.remove('vertical');
-  dock.style.transform='none'; dock.style.bottom='auto';
-  var tbl=document.getElementById('topsvg')||document.getElementById('zoom-wrap');
-  var tr=tbl?tbl.getBoundingClientRect():{left:0,top:0,width:window.innerWidth,height:window.innerHeight};
-  var dw=dock.offsetWidth||180, dh=dock.offsetHeight||50;
-  dock.style.left=Math.round(tr.left+tr.width/2-dw/2)+'px';
-  dock.style.top=Math.round(tr.top+tr.height/2-dh/2)+'px';
+  // Pure recovery: always return the dock to its default startup state —
+  // vertical orientation, expanded (not minimized), full size, right edge,
+  // vertically centered. No matter where or how it got lost.
+  bar.classList.add('vertical');
+  if (typeof dockExpand === 'function') dockExpand();
+  // Clear any scaling / transforms / inline sizing the dock might carry
+  ['transform','width','height','maxWidth','maxHeight','fontSize'].forEach(function(p){
+    try { dock.style[p] = ''; bar.style[p] = ''; } catch(e){}
+  });
+  dock.style.transform='none';
+  dock.style.bottom='auto';
+  dock.style.right='auto';
+  // Reflow so offsetWidth/Height are correct, then position right-edge centered.
+  void dock.offsetWidth;
+  dock.style.left=(window.innerWidth - dock.offsetWidth - 8)+'px';
+  dock.style.top=Math.round(window.innerHeight/2 - dock.offsetHeight/2)+'px';
 })()" style="padding:4px 9px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-size:10px;font-weight:900;letter-spacing:0.5px;cursor:pointer;touch-action:manipulation;white-space:nowrap;flex-shrink:0;">DOCK</button>
       </div>
     </div>
@@ -2831,9 +2869,6 @@ if ('serviceWorker' in navigator) {
     <button id="perc-zero-btn" style="font-family:Lato,sans-serif;font-size:11px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(255,140,0,0.2);border:1px solid #ff8c00;color:#ff8c00;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;">ZERO</button>
   </div>
 </div>
-    <div id="perc-invite-row" style="display:flex;align-items:center;justify-content:center;padding:0 8px 6px;margin-top:-4px;">
-      <button id="perc-invite-btn" onclick="toggleSlidersPanel()" title="Spin and speed — opens a panel with sliders for English (sidespin), vert (draw/follow), and stroke speed. These affect the cue ball path display." style="background:none;border:none;font-family:Lato,sans-serif;font-size:11px;font-weight:900;color:#3ab0ff;cursor:pointer;padding:2px 8px;letter-spacing:0.08em;touch-action:manipulation;text-decoration:underline dotted rgba(58,176,255,0.5);text-underline-offset:2px;">(ADD SPIN AND SPEED?)</button>
-    </div>
     </div><!-- /perc-block -->
     <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;touch-action:none;">
       <button id="botsvg-lock-btn" title="Lock perception — disables ball drag so you can pan freely from any point in this section." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
@@ -4099,6 +4134,10 @@ function renderTable(d) {
       }
       if (aIdx >= 0 && aIdx + 1 < seq.shots.length) {
         nextCb = seq.shots[aIdx + 1].cb;
+      } else if (aIdx >= 0 && seq.loops && seq.shots.length > 0) {
+        // Looping Game: the last shot's ghost points back to shot 1's CB
+        // start, showing the loop-back target.
+        nextCb = seq.shots[0].cb;
       }
     }
     if (nextCb) {
@@ -5131,14 +5170,11 @@ function edgeZoomReset() {
 <span id="r-throw" style="display:none"></span>
 </div><!-- /zoom-wrap -->
 
-  <div id="sliders-block" class="float-panel" style="background:rgba(10,15,10,0.97) !important;border-color:rgba(200,144,240,0.4);">
+  <div id="sliders-block" class="float-panel" style="display:flex;background:rgba(10,15,10,0.97) !important;border-color:rgba(200,144,240,0.4);">
 
   <!-- Header: lock button replaces title; minimize stays as small button -->
   <button id="sliders-lock-btn" title="Lock sliders — disables slider drags so you can pan freely from any point in this section." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
   <div id="sliders-handle" class="float-panel-header" style="background:#0a0a0a;border-bottom:1px solid rgba(200,144,240,0.2);display:flex;align-items:center;justify-content:flex-end;padding:4px 6px;">
-    <div style="display:flex;gap:4px;align-items:center;">
-      <button onclick="toggleSlidersPanel()" style="background:none;border:none;color:rgba(240,223,112,0.5);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;touch-action:manipulation;">✕</button>
-    </div>
   </div>
 
   <!-- Two-column body: sliders left (more space), angle diagram right (smaller) -->
@@ -5944,7 +5980,7 @@ function vernierAim(dir) {
 
 
 <script>
-var _slidersPanelOpen = false;
+var _slidersPanelOpen = true;  // Sliders panel is permanently visible; toggle UI removed.
 var _slidersPositioned = false;
 
 
@@ -6077,31 +6113,17 @@ function toggleSlidersPanel() {
 }
 
 (function(){
-  var panel, header, startX, startY, origLeft, origTop, didDrag=false, activePtr=null;
+  // Sliders-panel drag REMOVED. The whole header strip used to be a draggable
+  // zone, with no obvious visual cue, so users accidentally moved the panel
+  // and had no clean way to put it back. The panel now sits where it belongs,
+  // permanently. Also clear any leftover inline positioning that might be
+  // remembered from before this change, so the panel returns to its proper spot.
   window.addEventListener('load', function(){
-
-    panel  = document.getElementById('sliders-block');
-    header = document.getElementById('sliders-handle');
-    if (!panel || !header) return;
-    header.addEventListener('pointerdown', function(e){
-      if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
-      e.preventDefault();
-      panel.style.transform = 'none';
-      var r=panel.getBoundingClientRect();
-      panel.style.left=r.left+'px'; panel.style.top=r.top+'px';
-      startX=e.clientX; startY=e.clientY;
-      origLeft=r.left; origTop=r.top;
-      didDrag=false; activePtr=e.pointerId;
-      try{ header.setPointerCapture(e.pointerId); }catch(x){}
+    var panel = document.getElementById('sliders-block');
+    if (!panel) return;
+    ['left','top','right','bottom','transform','transition'].forEach(function(prop){
+      try { panel.style[prop] = ''; } catch(e){}
     });
-    header.addEventListener('pointermove', function(e){
-      if (activePtr===null||e.pointerId!==activePtr) return;
-      var _vs=window._vpScale||1, dx=(e.clientX-startX)/_vs, dy=(e.clientY-startY)/_vs;
-      if (!didDrag&&Math.hypot(dx,dy)>8){ didDrag=true; panel.style.transition='none'; }
-      if (didDrag){ panel.style.left=(origLeft+dx)+'px'; panel.style.top=(origTop+dy)+'px'; }
-    });
-    header.addEventListener('pointerup', function(e){ activePtr=null; });
-    header.addEventListener('pointercancel', function(e){ activePtr=null; });
   });
 })();
 
@@ -6527,13 +6549,18 @@ function toggleSlidersPanel() {
           if (!p) return;
           p.classList.remove('panel-minimized');
           var st = p.style;
-          // Only clear the props detach() sets; leave background/border intact.
+          // Always clear positioning props that a drag could have set, so a
+          // stuck panel always recovers with one Reset tap. Leave background/
+          // border/etc. intact — only positioning is wiped.
+          ['left','top','right','bottom','transform','transition'].forEach(function(prop){
+            try { st[prop] = ''; } catch(e){}
+          });
+          // Also clear the heavier float-detach props if present (legacy path).
           if (st.position === 'fixed') {
-            ['position','left','top','right','bottom','width','maxHeight',
-             'zIndex','boxShadow','transform','overflow','display','flexDirection']
+            ['position','width','maxHeight','zIndex','boxShadow','overflow','display','flexDirection']
               .forEach(function(prop){ try { st[prop] = ''; } catch(e){} });
           }
-          // Remove any drag handle detach() inserted at the top
+          // Remove any drag handle a legacy detach() may have inserted at the top
           var dh = p.querySelector(':scope > div[style*="cursor:grab"]');
           if (dh && dh.parentNode) dh.parentNode.removeChild(dh);
         });
