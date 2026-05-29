@@ -5306,20 +5306,35 @@ setTimeout(positionToolbar, 100); // fallback
 
 
 // ── TOOLBAR POSITIONING handled by CSS (position relative in flex row) ──
-// Swap panels
-let panelsSwapped=false;
+// Swap panels — six-state cycle through all permutations of Table (T),
+// Perception (P), and Sliders (S). Each tap swaps one adjacent pair, so the
+// transitions feel small and predictable. After six taps you're back to the
+// starting arrangement.
+//   State 0: T P S   (default)
+//   State 1: P T S   (swap T↔P)
+//   State 2: P S T   (swap T↔S)
+//   State 3: S P T   (swap P↔S)
+//   State 4: S T P   (swap P↔T)
+//   State 5: T S P   (swap S↔T)
+//   then back to T P S (swap P↔S in the visible tail)
+let _swapState = 0;
 function swapPanels(){
-  panelsSwapped=!panelsSwapped;
-  const table = document.getElementById('block-ball-wrap');
-  const perc  = document.getElementById('perception-section');
-  if (!table || !perc) return;
-  const parent = table.parentNode;
-  if(panelsSwapped){
-    parent.insertBefore(perc, table);
-  } else {
-    parent.insertBefore(table, perc);
-  }
-
+  _swapState = (_swapState + 1) % 6;
+  var table = document.getElementById('block-ball-wrap');
+  var perc  = document.getElementById('perception-section');
+  var slid  = document.getElementById('sliders-block');
+  if (!table || !perc || !slid) return;
+  var parent = table.parentNode;
+  if (!parent) return;
+  var perms = [
+    [table, perc, slid],   // 0: T P S
+    [perc, table, slid],   // 1: P T S
+    [perc, slid, table],   // 2: P S T
+    [slid, perc, table],   // 3: S P T
+    [slid, table, perc],   // 4: S T P
+    [table, slid, perc]    // 5: T S P
+  ];
+  perms[_swapState].forEach(function(el){ parent.appendChild(el); });
 }
 
 // ── AUTHORING: drag the cyan landing-ghost to set next shot's CB ────────
