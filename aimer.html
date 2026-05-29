@@ -566,7 +566,7 @@ body { padding-bottom: 80px !important; }
 .tg-orange:not(.on) { filter: brightness(0.8); }
 
 
-#dock-bar.vertical { flex-direction: column; border-radius: 28px; padding: 14px 8px; max-height: 80vh; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+#dock-bar.vertical { flex-direction: column; border-radius: 28px; padding: 14px 8px; max-height: calc(100vh - 30px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
 #dock-bar.vertical::-webkit-scrollbar { display: none; }
 .dock-orient-dot {
   width: 14px; height: 14px; border-radius: 50%;
@@ -2332,20 +2332,27 @@ if ('serviceWorker' in navigator) {
   if(!dock||!bar) return;
   // Pure recovery: always return the dock to its default startup state —
   // vertical orientation, expanded (not minimized), full size, right edge,
-  // vertically centered. No matter where or how it got lost.
+  // top-clamped so it can never clip off-screen.
   bar.classList.add('vertical');
   if (typeof dockExpand === 'function') dockExpand();
-  // Clear any scaling / transforms / inline sizing the dock might carry
   ['transform','width','height','maxWidth','maxHeight','fontSize'].forEach(function(p){
     try { dock.style[p] = ''; bar.style[p] = ''; } catch(e){}
   });
   dock.style.transform='none';
   dock.style.bottom='auto';
   dock.style.right='auto';
-  // Reflow so offsetWidth/Height are correct, then position right-edge centered.
   void dock.offsetWidth;
+  var vH = window.innerHeight;
+  var dH = dock.offsetHeight;
+  // Try vertically centered first; if too tall, anchor to a small top margin
+  // and let the CSS max-height + overflow handle the rest.
+  var topMargin = 12;
+  var ideal = Math.round(vH/2 - dH/2);
+  var clamped = Math.max(topMargin, Math.min(ideal, vH - dH - topMargin));
+  // If the dock is taller than the viewport, just anchor at top.
+  if (dH >= vH - 2*topMargin) clamped = topMargin;
   dock.style.left=(window.innerWidth - dock.offsetWidth - 8)+'px';
-  dock.style.top=Math.round(window.innerHeight/2 - dock.offsetHeight/2)+'px';
+  dock.style.top = clamped + 'px';
 })()" style="padding:4px 9px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-size:10px;font-weight:900;letter-spacing:0.5px;cursor:pointer;touch-action:manipulation;white-space:nowrap;flex-shrink:0;">DOCK</button>
       </div>
     </div>
@@ -6191,21 +6198,8 @@ function toggleSlidersPanel() {
     <div class="dock-orient-dot" id="dock-dot-start" style="pointer-events:auto;touch-action:manipulation;"></div>
     <div id="dock-minimize" title="Minimize dock"></div>
 
-    <div class="dock-slot active" id="dock-ball" title="Ball mode (default) — drag balls with one finger, pan with two fingers, pinch to zoom.">
-      <svg width="20" height="20" viewBox="0 0 20 20" style="pointer-events:none;">
-        <defs>
-          <radialGradient id="dock-ob-g" cx="35%" cy="28%" r="65%">
-            <stop offset="0%" stop-color="#ff9090"/>
-            <stop offset="35%" stop-color="#ee2020"/>
-            <stop offset="80%" stop-color="#aa0808"/>
-            <stop offset="100%" stop-color="#6a0808"/>
-          </radialGradient>
-        </defs>
-        <circle cx="10" cy="10" r="9" fill="url(#dock-ob-g)"/>
-        <circle cx="7" cy="7" r="2.5" fill="rgba(255,255,255,0.35)"/>
-      </svg>
-    
-    </div>
+
+
     <div class="dock-slot" id="dock-learn" title="Learning panel — opens lessons and shot library.">
       <svg width="22" height="22" viewBox="0 0 22 22" style="pointer-events:none;">
         <!-- left page -->
@@ -6391,15 +6385,20 @@ function toggleSlidersPanel() {
         var bar=document.getElementById('dock-bar');
         if(!dock||!bar) return;
         bar.classList.add('vertical');
-        // If layout isn't ready yet, try again next frame
         if (dock.offsetWidth === 0 || dock.offsetHeight === 0) {
           requestAnimationFrame(applyInitialDockPosition);
           return;
         }
         dock.style.transform='none';
         dock.style.bottom='auto';
+        var vH = window.innerHeight;
+        var dH = dock.offsetHeight;
+        var topMargin = 12;
+        var ideal = Math.round(vH/2 - dH/2);
+        var clamped = Math.max(topMargin, Math.min(ideal, vH - dH - topMargin));
+        if (dH >= vH - 2*topMargin) clamped = topMargin;
         dock.style.left=(window.innerWidth - dock.offsetWidth - 8)+'px';
-        dock.style.top=Math.round(window.innerHeight/2 - dock.offsetHeight/2)+'px';
+        dock.style.top = clamped + 'px';
       }
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', applyInitialDockPosition);
@@ -6412,7 +6411,6 @@ function toggleSlidersPanel() {
       if(d1) d1.addEventListener('click', function(e){ e.stopPropagation(); tog(); });
       if(d2) d2.addEventListener('click', function(e){ e.stopPropagation(); tog(); });
     })();
-    bind('dock-ball', function(){ window._panLocked=true;  document.getElementById('dock-ball').classList.add('active'); });
     bind('dock-learn',    function(){ var on=!_open.learn;   toggleShotLibrary();  setActive('learn',  on); });
     // Manual and Manifesto open external illustrated pages (destinations TBD).
     // Point MANUAL_URL / MANIFESTO_URL at the real pages once they exist.
