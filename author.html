@@ -8142,6 +8142,21 @@ window._copyShotData = function() {
   }
 
   // ── UI Panel ────────────────────────────────────────────────────────────
+  // Track minimized state separately from sequence state (so it's user-pref,
+  // not sequence data). Default minimized — table-first view; expand only when
+  // the user wants to author. Persists across page loads.
+  var MINI_KEY = 'aimer_composer_minimized_v1';
+  function isMinimized() {
+    try {
+      var v = localStorage.getItem(MINI_KEY);
+      // Default true (start minimized) if nothing stored.
+      return v === null ? true : (v === 'true');
+    } catch(e){ return true; }
+  }
+  function setMinimized(v) {
+    try { localStorage.setItem(MINI_KEY, v ? 'true' : 'false'); } catch(e){}
+  }
+
   function buildPanel() {
     var existing = document.getElementById('composer-panel');
     if (existing) return existing;
@@ -8151,37 +8166,88 @@ window._copyShotData = function() {
       'background:rgba(10,15,10,0.97)',
       'border-top:2px solid #7dd3fc',
       'border-bottom:2px solid #7dd3fc',
-      'padding:10px',
       'font-family:Lato,sans-serif',
       'color:#fff',
       'width:100%',
       'box-sizing:border-box',
       'display:flex',
-      'flex-direction:column',
-      'gap:8px'
+      'flex-direction:column'
     ].join(';');
     panel.innerHTML = [
-      // Row 1: title + COPY SEQUENCE / SAVE / LIBRARY / CLEAR
-      '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">',
-        '<span style="font-size:14px;font-weight:900;color:#7dd3fc;letter-spacing:0.08em;">COMPOSER</span>',
-        '<input id="comp-title" type="text" placeholder="Sequence title" style="flex:1;min-width:160px;padding:6px 10px;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;font-size:15px;font-weight:700;">',
-        '<button id="comp-copy" title="Export the current sequence as JSON to paste into the chat." style="padding:7px 14px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:5px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.05em;">COPY SEQUENCE</button>',
-        '<button id="comp-save" title="Save the current sequence to the library under its title." style="padding:7px 12px;background:rgba(125,211,252,0.25);color:#7dd3fc;border:1px solid #7dd3fc;border-radius:5px;font-weight:900;font-size:13px;cursor:pointer;">SAVE</button>',
-        '<button id="comp-library" title="Open the library of saved sequences." style="padding:7px 12px;background:rgba(125,211,252,0.15);color:#7dd3fc;border:1px solid rgba(125,211,252,0.6);border-radius:5px;font-weight:700;font-size:13px;cursor:pointer;">LIBRARY</button>',
-        '<button id="comp-reset" title="Wipe composer and start fresh." style="padding:6px 10px;background:rgba(200,80,80,0.4);color:#fff;border:1px solid rgba(200,80,80,0.7);border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;">CLEAR</button>',
+      // ── HEADER BAR ── Always visible. Shows summary + min/max button.
+      '<div id="comp-header" style="display:flex;align-items:center;gap:10px;padding:6px 10px;cursor:pointer;user-select:none;background:rgba(125,211,252,0.08);border-bottom:1px solid rgba(125,211,252,0.25);">',
+        '<span style="font-size:12px;font-weight:900;color:#7dd3fc;letter-spacing:0.1em;flex-shrink:0;">COMPOSER</span>',
+        '<span id="comp-summary" style="flex:1;min-width:0;font-size:12px;color:#cfe7f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span>',
+        '<button id="comp-toggle" title="Show/hide the composer" style="background:rgba(125,211,252,0.2);color:#7dd3fc;border:1px solid #7dd3fc;border-radius:4px;font-weight:900;font-size:14px;cursor:pointer;width:30px;height:24px;line-height:1;padding:0;flex-shrink:0;">▾</button>',
       '</div>',
-      '<div id="comp-tabs" style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;"></div>',
-      '<div id="comp-save-status" style="font-size:11px;color:#9ae6b4;text-align:left;min-height:14px;"></div>',
-      '<textarea id="comp-intent" placeholder="Notes for the active shot (LeStar Z teaching prose)" style="width:100%;min-height:48px;padding:8px;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;font-size:14px;font-family:Lato,sans-serif;resize:vertical;box-sizing:border-box;line-height:1.35;"></textarea>'
+      // ── BODY ── Hidden when minimized.
+      '<div id="comp-body" style="padding:10px;display:flex;flex-direction:column;gap:8px;">',
+        // Row 1: title + COPY SEQUENCE / SAVE / LIBRARY / CLEAR
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">',
+          '<input id="comp-title" type="text" placeholder="Sequence title" style="flex:1;min-width:160px;padding:6px 10px;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;font-size:15px;font-weight:700;">',
+          '<button id="comp-copy" title="Export the current sequence as JSON to paste into the chat." style="padding:7px 14px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:5px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.05em;">COPY SEQUENCE</button>',
+          '<button id="comp-save" title="Save the current sequence to the library under its title." style="padding:7px 12px;background:rgba(125,211,252,0.25);color:#7dd3fc;border:1px solid #7dd3fc;border-radius:5px;font-weight:900;font-size:13px;cursor:pointer;">SAVE</button>',
+          '<button id="comp-library" title="Open the library of saved sequences." style="padding:7px 12px;background:rgba(125,211,252,0.15);color:#7dd3fc;border:1px solid rgba(125,211,252,0.6);border-radius:5px;font-weight:700;font-size:13px;cursor:pointer;">LIBRARY</button>',
+          '<button id="comp-reset" title="Wipe composer and start fresh." style="padding:6px 10px;background:rgba(200,80,80,0.4);color:#fff;border:1px solid rgba(200,80,80,0.7);border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;">CLEAR</button>',
+        '</div>',
+        '<div id="comp-tabs" style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;"></div>',
+        '<div id="comp-save-status" style="font-size:11px;color:#9ae6b4;text-align:left;min-height:14px;"></div>',
+        '<textarea id="comp-intent" placeholder="Notes for the active shot (LeStar Z teaching prose)" style="width:100%;min-height:48px;padding:8px;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;font-size:14px;font-family:Lato,sans-serif;resize:vertical;box-sizing:border-box;line-height:1.35;"></textarea>',
+      '</div>'
     ].join('');
     document.body.appendChild(panel);
+    // Apply initial minimized state
+    applyMinimizedState();
+    // Header click toggles
+    var header = panel.querySelector('#comp-header');
+    if (header) {
+      header.addEventListener('click', function(e){
+        // Avoid double-toggle if the button itself was clicked (button has own handler)
+        if (e.target && e.target.id === 'comp-toggle') return;
+        toggleMinimized();
+      });
+    }
+    var toggleBtn = panel.querySelector('#comp-toggle');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function(e){
+        e.stopPropagation();
+        toggleMinimized();
+      });
+    }
     return panel;
+  }
+
+  function applyMinimizedState() {
+    var body = document.getElementById('comp-body');
+    var btn = document.getElementById('comp-toggle');
+    if (!body || !btn) return;
+    var min = isMinimized();
+    body.style.display = min ? 'none' : 'flex';
+    btn.textContent = min ? '▴' : '▾';
+    btn.title = min ? 'Expand composer' : 'Minimize composer';
+  }
+
+  function toggleMinimized() {
+    setMinimized(!isMinimized());
+    applyMinimizedState();
+    updateSummary();
+  }
+
+  // Update the header summary line so the minimized view shows useful info.
+  function updateSummary() {
+    var el = document.getElementById('comp-summary');
+    if (!el) return;
+    var title = (_comp.title || '').trim() || '(untitled)';
+    var n = _comp.shots.length;
+    var active = _comp.activeShot + 1;
+    el.textContent = title + ' · Shot ' + active + ' of ' + n;
   }
 
   function renderUI() {
     var panel = buildPanel();
     var titleInput = document.getElementById('comp-title');
     if (titleInput && titleInput.value !== _comp.title) titleInput.value = _comp.title;
+    updateSummary();
 
     var tabsDiv = document.getElementById('comp-tabs');
     if (tabsDiv) {
@@ -8262,6 +8328,7 @@ window._copyShotData = function() {
       titleInput.addEventListener('input', function(){
         _comp.title = titleInput.value;
         save();
+        updateSummary();
       });
     }
     var intentBox = document.getElementById('comp-intent');
