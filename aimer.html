@@ -1027,6 +1027,72 @@ var SEQUENCES = [
         vert: 0.76, speed: 0.45,
         intent: "" }
     ]
+  },
+  // ──────────────────────────────────────────────────────────────────
+  // Sequence Two — variant of Sequence One. Shot 1 captured from author;
+  // shots 2, 3, 4 still drafts pending capture.
+  // ──────────────────────────────────────────────────────────────────
+  {
+    title: "Sequence Two",
+    intent: "A variant of Sequence One — repeat until you can run it cleanly five times in a row.",
+    shots: [
+      // Shot 1: captured CB(231.24,179.22) → OB(237.96,106.28) → TM. Follow + medium speed.
+      // Landing target at (314.07, 80.67).
+      { ob: {x:237.96, y:106.28}, cb: {x:231.24, y:179.22},
+        cut: 15.9, pocket: "TM", rh: false,
+        vert: 2.64, speed: 0.65,
+        intent: "Hit follow and medium speed for shape — you want the cue ball to come up to around the 14/15 cell boundary for shot 2." },
+      // Shot 2: DRAFT — pending real capture from author.
+      { ob: {x:420, y:220}, cb: {x:273, y:88},
+        cut: 0, pocket: "BR", rh: false,
+        vert: 0, speed: 0.55,
+        intent: "A thin cut left lets the cue run down toward the bottom rail and back up — set up your shape on the 3." },
+      // Shot 3: DRAFT — pending real capture from author.
+      { ob: {x:420, y:38}, cb: {x:415, y:130},
+        cut: 0, pocket: "TR", rh: false,
+        vert: 0.8, speed: 0.5,
+        intent: "Cut left with a little follow. Try it a few times to see what works best for landing position on the 4." },
+      // Shot 4: DRAFT — pending real capture from author.
+      { ob: {x:237, y:105}, cb: {x:230, y:180},
+        cut: 0, pocket: "TM", rh: false,
+        vert: 0, speed: 0.4,
+        intent: "Shoot stop, if you got good shape. If shape is off, this becomes a thin cut that's easy to miss." }
+    ]
+  },
+  // ──────────────────────────────────────────────────────────────────
+  // Composer Test 1 — Don's first sequence from the new composer tool.
+  // Round-trip test #2 (replaces first attempt): 3 shots, pocket set on
+  // all three, ANGLE adjustments on shots 1 and 2. NOTE: pathAngleAdjust
+  // is captured but the ship aimer doesn't yet apply that override on
+  // playback — port the ANGLE infrastructure separately if/when needed.
+  // ──────────────────────────────────────────────────────────────────
+  {
+    title: "Composer Test 1",
+    intent: "First sequence exported from the composer — round-trip test.",
+    shots: [
+      // Shot 1: CB(230,180) → OB(300.04,85.62) → TR. ANGLE +10°.
+      { ob: {x:300.04, y:85.62}, cb: {x:230, y:180},
+        cut: 35.21, pocket: "TR", rh: true,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 10,
+        landing: {x:377.17, y:157.38},
+        intent: "" },
+      // Shot 2: CB inherits shot 1's landing (377.17,157.38) → OB(392.05,103.96) → TR. ANGLE -33°.
+      { ob: {x:392.05, y:103.96}, cb: {x:377.17, y:157.38},
+        cut: 21.36, pocket: "TR", rh: true,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: -33,
+        landing: {x:334.95, y:105.05},
+        intent: "" },
+      // Shot 3: CB inherits shot 2's landing (334.95,105.05) → OB(260.07,190.16) → BM.
+      // Last shot: ghost shows the authored final landing target.
+      { ob: {x:260.07, y:190.16}, cb: {x:334.95, y:105.05},
+        cut: 12.42, pocket: "BM", rh: false,
+        vert: 0, speed: 1.0,
+        pathAngleAdjust: 0,
+        landing: {x:82.44, y:173.56},
+        intent: "" }
+    ]
   }
 ];
 
@@ -1655,6 +1721,8 @@ function loadShotData(shot) {
     var sp = document.getElementById('sl-spd');
     if (sp) sp.value = String(Math.round(shot.speed * 100));
   }
+  // ANGLE override from composer-authored data (defaults to 0 if absent).
+  S.pathAngleAdjust = (typeof shot.pathAngleAdjust === 'number') ? shot.pathAngleAdjust : 0;
   if (typeof justShot !== 'undefined') justShot = false;
   // Refresh the slider indicator light. Programmatic .value assignments
   // above don't fire 'oninput', so the indicator wouldn't otherwise know
@@ -3138,6 +3206,9 @@ const S = {
   rotation: 0,
   tableSize: 9,   // feet: 7, 9, 10, 12
   metric: false,
+  pathAngleAdjust: 0,  // composer-authored override: rotates first segment
+                       // of cue-ball path by N degrees. Set per shot from
+                       // shot.pathAngleAdjust during sequence load.
 };
 let drag = null;
 let diagDrag = false;
@@ -3982,7 +4053,17 @@ function renderTable(d) {
     // steady-state path (full deflection); at fast speeds it shoots away
     // along the tangent before spin reasserts itself.  Scale from 1.0 at
     // speed=0 (soft) to 0.4 at speed=1 (firm).
-    const _speedFactor = 1.0 - 0.6 * (S.speed || 0);
+    //
+    // BUT: at very small cut angles, the theoretical maxBend is huge (a 1°
+    // cut has maxBend ≈ 87°), so the same speed-dampening that's barely
+    // noticeable at 30° cut produces a 20+° angular error at 1° cut — the
+    // CB appears to leave at a steep angle instead of tracking the OB.
+    // Geometrically, a near-straight follow shot's CB simply can't depart
+    // much from the OB's line; the contact constrains it. So we ramp the
+    // speed-dampening in proportional to cut angle: full dampening at 15°+
+    // (current behavior, working well), almost no dampening near 0°.
+    const _cutDamp = Math.min(1, cutDeg / 15);
+    const _speedFactor = 1.0 - 0.6 * (S.speed || 0) * _cutDamp;
     // Sign of "toward OB": which side of the tangent the OB sits on
     let _toOb = obDepartAngle - stunAngle;
     while (_toOb >  Math.PI) _toOb -= 2*Math.PI;
@@ -4025,7 +4106,13 @@ function renderTable(d) {
     }
     _spinV = Math.max(-1, Math.min(1, _spinV));
     // Linear deflection in [-_maxBend, +_maxBend], scaled by speed
-    const _cbAngle = stunAngle + _toObSign * _spinV * _maxBend * _speedFactor;
+    var _cbAngle = stunAngle + _toObSign * _spinV * _maxBend * _speedFactor;
+    // ANGLE override: rotate the first segment by S.pathAngleAdjust degrees so
+    // the displayed path matches what the composer authored. Bounces below
+    // follow geometrically from the rotated endpoint.
+    if (typeof S.pathAngleAdjust === 'number' && S.pathAngleAdjust !== 0) {
+      _cbAngle += S.pathAngleAdjust * Math.PI / 180;
+    }
 
     // Color blend: white (stun) → orange (#f97316) at +1 follow,
     //              white (stun) → light purple (#c084fc) at −1 draw
@@ -4145,6 +4232,12 @@ function renderTable(d) {
         // Looping Game: the last shot's ghost points back to shot 1's CB
         // start, showing the loop-back target.
         nextCb = seq.shots[0].cb;
+      } else if (aIdx >= 0 && seq.shots[aIdx] && seq.shots[aIdx].landing) {
+        // Last shot of a non-looping sequence: show the composer-authored
+        // landing target ("where the CB should end up if you ran this
+        // perfectly"). The ghost stays useful on every shot, not just
+        // shots that have a next.
+        nextCb = seq.shots[aIdx].landing;
       }
     }
     if (nextCb) {
