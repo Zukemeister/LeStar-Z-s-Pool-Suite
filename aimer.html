@@ -1755,18 +1755,28 @@ function loadShotData(shot) {
   S.ob = { x: _clampX(shot.ob.x), y: _clampY(shot.ob.y) };
   S.cb = { x: _clampX(shot.cb.x), y: _clampY(shot.cb.y) };
   S.pocket = shot.pocket || null;
-  // Auto-compute cut + direction from the actual ball positions and the
-  // intended pocket. This guarantees the arrow points AT the pocket — the
-  // cut number stored on the shot is only a sanity check / display hint.
-  if (shot.pocket && typeof computeCutFromPositions === 'function') {
+  // Honor the authored cut value. The composer says "the cut is N degrees" —
+  // Aimer should display exactly that. NOTE: the composer's `rh` flag uses the
+  // convention rh=true means "right cut" (OB departs right), but the playback
+  // `S._diagDragRh` flag is interpreted with the opposite sign (true = left).
+  // Flip on the way in. Only fall back to computing-from-positions when no
+  // cut value was authored (legacy sequences without explicit cuts).
+  if (typeof shot.cut === 'number') {
+    S.diagCutDeg = shot.cut;
+    S._diagDragRh = !!shot.rh;
+    // Authored cut is the source of truth — mark it as user-adjusted so the
+    // render's geometry-based recompute doesn't overwrite it.
+    S._userAdjustedDiag = true;
+  } else if (shot.pocket && typeof computeCutFromPositions === 'function') {
     var _c = computeCutFromPositions(S.cb, S.ob, shot.pocket);
     S.diagCutDeg = _c.cutDeg;
     S._diagDragRh = _c.rh;
+    S._userAdjustedDiag = false;
   } else {
-    S.diagCutDeg = shot.cut || 0;
-    S._diagDragRh = shot.rh !== undefined ? shot.rh : (shot.ob.x > shot.cb.x);
+    S.diagCutDeg = 0;
+    S._diagDragRh = (shot.ob.x > shot.cb.x);
+    S._userAdjustedDiag = false;
   }
-  S._userAdjustedDiag = false;
   if (shot.vert !== undefined) {
     S.vert = shot.vert;
     var sv = document.getElementById('sl-vert');

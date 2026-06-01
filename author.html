@@ -8162,26 +8162,29 @@ window._copyShotData = function() {
     if (existing) return existing;
     var panel = document.createElement('div');
     panel.id = 'composer-panel';
+    // The composer is now a fixed overlay — never takes document-flow space.
+    // Two visual modes (controlled by applyMinimizedState):
+    //   MINIMIZED: small floating button bottom-right
+    //   EXPANDED:  panel slides up from bottom-right, overlays viewport
     panel.style.cssText = [
-      'background:rgba(10,15,10,0.97)',
-      'border-top:2px solid #7dd3fc',
-      'border-bottom:2px solid #7dd3fc',
+      'position:fixed',
+      'z-index:9500',
       'font-family:Lato,sans-serif',
       'color:#fff',
-      'width:100%',
       'box-sizing:border-box',
-      'display:flex',
-      'flex-direction:column'
+      // Initial styling is set by applyMinimizedState
+      'transition:none'
     ].join(';');
     panel.innerHTML = [
-      // ── HEADER BAR ── Always visible. Shows summary + min/max button.
-      '<div id="comp-header" style="display:flex;align-items:center;gap:10px;padding:6px 10px;cursor:pointer;user-select:none;background:rgba(125,211,252,0.08);border-bottom:1px solid rgba(125,211,252,0.25);">',
-        '<span style="font-size:12px;font-weight:900;color:#7dd3fc;letter-spacing:0.1em;flex-shrink:0;">COMPOSER</span>',
-        '<span id="comp-summary" style="flex:1;min-width:0;font-size:12px;color:#cfe7f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span>',
-        '<button id="comp-toggle" title="Show/hide the composer" style="background:rgba(125,211,252,0.2);color:#7dd3fc;border:1px solid #7dd3fc;border-radius:4px;font-weight:900;font-size:14px;cursor:pointer;width:30px;height:24px;line-height:1;padding:0;flex-shrink:0;">▾</button>',
+      // ── HEADER BAR ── In minimized mode this IS the whole widget (small
+      // floating button). In expanded mode it sits at the top of the panel.
+      '<div id="comp-header" style="display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;">',
+        '<span id="comp-header-label" style="font-weight:900;color:#7dd3fc;letter-spacing:0.1em;flex-shrink:0;">COMPOSER</span>',
+        '<span id="comp-summary" style="flex:1;min-width:0;color:#cfe7f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>',
+        '<button id="comp-toggle" title="Show/hide the composer" style="background:rgba(125,211,252,0.2);color:#7dd3fc;border:1px solid #7dd3fc;border-radius:4px;font-weight:900;cursor:pointer;line-height:1;padding:0;flex-shrink:0;">▴</button>',
       '</div>',
       // ── BODY ── Hidden when minimized.
-      '<div id="comp-body" style="padding:10px;display:flex;flex-direction:column;gap:8px;">',
+      '<div id="comp-body" style="padding:10px;display:flex;flex-direction:column;gap:8px;background:rgba(10,15,10,0.97);border-top:1px solid rgba(125,211,252,0.3);">',
         // Row 1: title + COPY SEQUENCE / SAVE / LIBRARY / CLEAR
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">',
           '<input id="comp-title" type="text" placeholder="Sequence title" style="flex:1;min-width:160px;padding:6px 10px;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;font-size:15px;font-weight:700;">',
@@ -8196,13 +8199,11 @@ window._copyShotData = function() {
       '</div>'
     ].join('');
     document.body.appendChild(panel);
-    // Apply initial minimized state
     applyMinimizedState();
     // Header click toggles
     var header = panel.querySelector('#comp-header');
     if (header) {
       header.addEventListener('click', function(e){
-        // Avoid double-toggle if the button itself was clicked (button has own handler)
         if (e.target && e.target.id === 'comp-toggle') return;
         toggleMinimized();
       });
@@ -8218,13 +8219,74 @@ window._copyShotData = function() {
   }
 
   function applyMinimizedState() {
+    var panel = document.getElementById('composer-panel');
+    var header = document.getElementById('comp-header');
+    var headerLabel = document.getElementById('comp-header-label');
+    var summary = document.getElementById('comp-summary');
     var body = document.getElementById('comp-body');
     var btn = document.getElementById('comp-toggle');
-    if (!body || !btn) return;
+    if (!panel || !header || !body || !btn) return;
     var min = isMinimized();
-    body.style.display = min ? 'none' : 'flex';
-    btn.textContent = min ? '▴' : '▾';
-    btn.title = min ? 'Expand composer' : 'Minimize composer';
+    if (min) {
+      // MINIMIZED: small floating button in the bottom-right corner. Only the
+      // header is visible. Compact. Doesn't show full summary text — too small.
+      panel.style.bottom = '12px';
+      panel.style.right = '12px';
+      panel.style.left = 'auto';
+      panel.style.top = 'auto';
+      panel.style.width = 'auto';
+      panel.style.maxWidth = 'none';
+      panel.style.background = 'rgba(10,15,10,0.97)';
+      panel.style.border = '2px solid #7dd3fc';
+      panel.style.borderRadius = '24px';
+      panel.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
+      panel.style.padding = '0';
+      panel.style.overflow = 'hidden';
+      header.style.padding = '8px 12px';
+      header.style.background = 'transparent';
+      header.style.borderBottom = 'none';
+      if (headerLabel) headerLabel.style.fontSize = '12px';
+      if (summary) {
+        summary.style.fontSize = '11px';
+        summary.style.maxWidth = '140px';
+      }
+      btn.style.fontSize = '14px';
+      btn.style.width = '26px';
+      btn.style.height = '22px';
+      btn.textContent = '▴';
+      btn.title = 'Expand composer';
+      body.style.display = 'none';
+    } else {
+      // EXPANDED: panel slides up from the bottom-right, overlays viewport.
+      // On wide screens it's anchored bottom-right with a max-width; on phone
+      // it fills the width with a small margin so it doesn't look cramped.
+      panel.style.bottom = '12px';
+      panel.style.right = '12px';
+      panel.style.left = '12px';
+      panel.style.top = 'auto';
+      panel.style.maxWidth = '720px';
+      panel.style.marginLeft = 'auto';
+      panel.style.background = 'rgba(10,15,10,0.97)';
+      panel.style.border = '2px solid #7dd3fc';
+      panel.style.borderRadius = '10px';
+      panel.style.boxShadow = '0 6px 20px rgba(0,0,0,0.6)';
+      panel.style.padding = '0';
+      panel.style.overflow = 'visible';
+      header.style.padding = '8px 12px';
+      header.style.background = 'rgba(125,211,252,0.10)';
+      header.style.borderBottom = '1px solid rgba(125,211,252,0.3)';
+      if (headerLabel) headerLabel.style.fontSize = '13px';
+      if (summary) {
+        summary.style.fontSize = '12px';
+        summary.style.maxWidth = 'none';
+      }
+      btn.style.fontSize = '14px';
+      btn.style.width = '30px';
+      btn.style.height = '24px';
+      btn.textContent = '▾';
+      btn.title = 'Minimize composer';
+      body.style.display = 'flex';
+    }
   }
 
   function toggleMinimized() {
