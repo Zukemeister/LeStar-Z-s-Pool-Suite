@@ -934,11 +934,15 @@ var SEQUENCES = [
       { ob: {x:379, y:81}, cb: {x:348, y:151},
         cut: 26, pocket: 'TR', rh: true,
         vert: 1.28, speed: 0.51,
+        pathAngleAdjust: 0,
+        landing: {x:351.77, y:46.65},
         intent: 'Cut into corner; follow to rail for shot two.' },
-      { ob: {x:401, y:40}, cb: {x:351, y:38},
-        cut: 30, pocket: 'TR', rh: false,
+      { ob: {x:401.52, y:39}, cb: {x:351.77, y:46.65},
+        cut: 0, pocket: 'TR', rh: false,
         vert: 0, speed: 0.5,
-        intent: 'Shot two drifts to the end rail.' }
+        pathAngleAdjust: 0,
+        landing: {x:385.26, y:39.78},
+        intent: '' }
     ]
   },
   {
@@ -948,10 +952,14 @@ var SEQUENCES = [
       { ob: {x:378, y:76}, cb: {x:355, y:124},
         cut: 31, pocket: 'TR', rh: true,
         vert: 1.64, speed: 0.51,
+        pathAngleAdjust: 0,
+        landing: {x:244.11, y:121.9},
         intent: 'Cut to the top right corner with a touch of follow.' },
-      { ob: {x:220, y:44}, cb: {x:207, y:173},
-        cut: 30, pocket: 'TM', rh: false,
+      { ob: {x:220, y:44}, cb: {x:244.11, y:121.9},
+        cut: 35.22, pocket: 'TM', rh: true,
         vert: 1.52, speed: 0.81,
+        pathAngleAdjust: 0,
+        landing: {x:77.98, y:97.06},
         intent: 'Follow with just enough to get to the end rail.' }
     ]
   },
@@ -962,10 +970,14 @@ var SEQUENCES = [
       { ob: {x:230, y:41}, cb: {x:148, y:142},
         cut: 47, pocket: 'TM', rh: false,
         vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:374, y:83},
         intent: 'Follow this shot so the cue ball lands near the right rail.' },
       { ob: {x:382, y:198}, cb: {x:374, y:83},
         cut: 59, pocket: 'BR', rh: false,
         vert: 1.76, speed: 0.81,
+        pathAngleAdjust: 0,
+        landing: {x:312.02, y:73.41},
         intent: 'Follow with just enough speed to bring the ball to the center of the table.' }
     ]
   },
@@ -977,25 +989,29 @@ var SEQUENCES = [
     title: "4 Shot Sequence One",
     intent: "Sequence One uses follow, stop and draw.",
     shots: [
-      // Shot 1: OB1(237.72698646186532,108.4418274294875) → CB(230,180) → TM
-      { ob: {x:237.72698646186532, y:108.4418274294875}, cb: {x:230, y:180},
+      { ob: {x:237.73, y:108.44}, cb: {x:230, y:180},
         cut: 15, pocket: "TM", rh: false,
         vert: 1.32, speed: 0.23,
+        pathAngleAdjust: 0,
+        landing: {x:338.87, y:44.29},
         intent: "Shot 1, follow gently to the rail. Shot 2. Could do a stop, or could follow to the rail. 3. Have to roll forward to reach positon on the 4. Shot 4. You have to be gentle, not allowing the cueball to follow the object ball into the pocket." },
-      // Shot 2: OB2(386.57806335790843,39) → CB(328,42) → TR
-      { ob: {x:386.57806335790843, y:39}, cb: {x:328, y:42},
-        cut: 12, pocket: "TR", rh: false,
-        vert: -1.68, speed: 0.5,
+      { ob: {x:386.58, y:39}, cb: {x:338.87, y:44.29},
+        cut: 6.69, pocket: "TR", rh: true,
+        vert: -0.56, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:367.3, y:75.58},
         intent: "" },
-      // Shot 3: OB3(416.1944096602492,213.41295726653547) → CB(374,67) → BR
-      { ob: {x:416.1944096602492, y:213.41295726653547}, cb: {x:374, y:67},
+      { ob: {x:416.19, y:213.41}, cb: {x:367.3, y:75.58},
         cut: 26, pocket: "BR", rh: false,
         vert: 1.88, speed: 0.85,
+        pathAngleAdjust: 0,
+        landing: {x:370.05, y:142.38},
         intent: "" },
-      // Shot 4: OB4 moved a half ball (4u) left → (280.45,196.09) for a slight cut → BM (pocket 5)
-      { ob: {x:280.45015101498643, y:196.09379977782268}, cb: {x:365, y:146},
-        cut: 0, pocket: "BM", rh: false,
+      { ob: {x:280.45, y:196.09}, cb: {x:370.05, y:142.38},
+        cut: 4.86, pocket: "BM", rh: false,
         vert: 0.76, speed: 0.45,
+        pathAngleAdjust: 0,
+        landing: {x:223.41, y:182.06},
         intent: "" }
     ]
   },
@@ -1010,21 +1026,29 @@ var SEQUENCES = [
     loops: true,
     laps: 5,
     shots: [
-      { ob: {x:237.72698646186532, y:108.4418274294875}, cb: {x:230, y:180},
+      { ob: {x:237.73, y:108.44}, cb: {x:230, y:180},
         cut: 15, pocket: "TM", rh: false,
         vert: 1.32, speed: 0.23,
+        pathAngleAdjust: -16,
+        landing: {x:321.31, y:47.98},
         intent: "Shot 1, follow gently to the rail. Shot 2. Could do a stop, or could follow to the rail. 3. Have to roll forward to reach positon on the 4. Shot 4. You have to be gentle, not allowing the cueball to follow the object ball into the pocket." },
-      { ob: {x:386.57806335790843, y:39}, cb: {x:328, y:42},
-        cut: 12, pocket: "TR", rh: false,
+      { ob: {x:388.28, y:44.88}, cb: {x:321.31, y:47.98},
+        cut: 15.54, pocket: "TR", rh: false,
         vert: -1.68, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:378.56, y:80.03},
         intent: "" },
-      { ob: {x:416.1944096602492, y:213.41295726653547}, cb: {x:374, y:67},
+      { ob: {x:416.19, y:213.41}, cb: {x:378.56, y:80.03},
         cut: 26, pocket: "BR", rh: false,
         vert: 1.88, speed: 0.85,
+        pathAngleAdjust: 0,
+        landing: {x:360.69, y:147.05},
         intent: "" },
-      { ob: {x:280.45015101498643, y:196.09379977782268}, cb: {x:365, y:146},
+      { ob: {x:280.45, y:196.09}, cb: {x:360.69, y:147.05},
         cut: 0, pocket: "BM", rh: false,
         vert: 0.76, speed: 0.45,
+        pathAngleAdjust: 0,
+        landing: {x:244.61, y:217.67},
         intent: "" }
     ]
   },
@@ -1103,24 +1127,25 @@ var SEQUENCES = [
   // ──────────────────────────────────────────────────────────────────
   // Six Ball Run — mirror of aimer.html. First real authored sequence.
   // Six-shot position-play drill: 1 (TL), 2 (TL), 3 (BM), 4 (BR), 5 (BR), 6 (BL).
+  // Iteration 2: starting CB and shots 1-2 eased.
   // ──────────────────────────────────────────────────────────────────
   {
     title: "Six Ball Run",
     intent: "Six-ball position-play drill. Each shot teaches shape on the next.",
     shots: [
-      { ob: {x:133.39, y:132.27}, cb: {x:188.03, y:184.06},
+      { ob: {x:103.61, y:141.59}, cb: {x:149, y:211.94},
         cut: 0, pocket: "TL", rh: false,
         vert: -1.84, speed: 0.65,
         pathAngleAdjust: 0,
-        landing: {x:150.63, y:148.35},
+        landing: {x:111.84, y:156.18},
         intent: "Hit low and firm, so you have a reasonable shot on the 2." },
-      { ob: {x:51.76, y:81.45}, cb: {x:150.63, y:148.35},
+      { ob: {x:43.21, y:85.08}, cb: {x:111.84, y:156.18},
         cut: 37.72, pocket: "TL", rh: true,
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
-        landing: {x:152.65, y:82.66},
+        landing: {x:127.65, y:77.19},
         intent: "When shooting 2, keep 4. in mind. You don't want to get too close to 4." },
-      { ob: {x:231.31, y:222}, cb: {x:152.65, y:82.66},
+      { ob: {x:231.31, y:222}, cb: {x:127.65, y:77.19},
         cut: 16.7, pocket: "BM", rh: true,
         vert: -1.36, speed: 0.36,
         pathAngleAdjust: 16,
@@ -1144,6 +1169,129 @@ var SEQUENCES = [
         pathAngleAdjust: 0,
         landing: {x:229.51, y:128.3},
         intent: "Don't let this run too far — you don't want to scratch." }
+    ]
+  },
+  {
+    title: "6-2 Sequence A: Six Shots",
+    intent: "",
+    loops: true,
+    shots: [
+      { ob: {x:68.17, y:105.43}, cb: {x:89.72, y:179.38},
+        cut: 11.14, pocket: "TL", rh: false,
+        vert: 2.04, speed: 0.72,
+        pathAngleAdjust: 0,
+        landing: {x:170.38, y:104.94},
+        intent: "Follow and bounce out for the 2-ball." },
+      { ob: {x:224.27, y:39}, cb: {x:170.38, y:104.94},
+        cut: 0, pocket: "TM", rh: false,
+        vert: -2.28, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:211.85, y:51.8},
+        intent: "Stop it cold for shape on the three." },
+      { ob: {x:224.16, y:215.83}, cb: {x:211.85, y:51.8},
+        cut: 12.42, pocket: "BM", rh: true,
+        vert: -0.96, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:313.22, y:194.95},
+        intent: "You have some choice here; hit it thin enough so the cueball goes to  the rail and bounces out a little. five or six inches off the rail will give you more control of the shot on the 4-ball, and thusly a better shot on the 5." },
+      { ob: {x:163.21, y:218.01}, cb: {x:313.22, y:194.95},
+        cut: 5.57, pocket: "BL", rh: true,
+        vert: -1.04, speed: 0.34,
+        pathAngleAdjust: 0,
+        landing: {x:156.14, y:202.1},
+        intent: "You should stop this for best position on the 5. " },
+      { ob: {x:115.87, y:142.53}, cb: {x:156.14, y:202.1},
+        cut: 0, pocket: "TL", rh: false,
+        vert: 3.04, speed: 0.48,
+        pathAngleAdjust: 0,
+        landing: {x:65.38, y:81.53},
+        intent: "Probably, if you stopped on the rail, you won't be able to draw; rolling is probably your only choice, but don't roll too far or you will have a very hard shot on the 5.." },
+      { ob: {x:44.93, y:212.99}, cb: {x:65.38, y:81.53},
+        cut: 20.55, pocket: "BL", rh: true,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:90.39, y:180.12},
+        intent: "Try to shoot this so the cueball sets up for shot 1. Run the whole sequence again from that position as your startiing point." }
+    ]
+  },
+  {
+    title: "6-2 Sequence B, 6 shots",
+    intent: "",
+    loops: true,
+    shots: [
+      { ob: {x:129.49, y:133.21}, cb: {x:181.63, y:185.62},
+        cut: 0, pocket: "TL", rh: false,
+        vert: -1.28, speed: 0.58,
+        pathAngleAdjust: 0,
+        landing: {x:139.84, y:144.51},
+        intent: "Straight in. Stop it by hitting a little low on the cueball." },
+      { ob: {x:230.2, y:46.61}, cb: {x:139.84, y:144.51},
+        cut: 42.27, pocket: "TM", rh: false,
+        vert: 1.32, speed: 0.16,
+        pathAngleAdjust: 0,
+        landing: {x:379.82, y:78.43},
+        intent: "Delicate shot for shape on the 3. Easy does it!" },
+      { ob: {x:416.94, y:215.28}, cb: {x:379.82, y:78.43},
+        cut: 29.34, pocket: "BR", rh: false,
+        vert: -1.44, speed: 0.61,
+        pathAngleAdjust: 0,
+        landing: {x:337.58, y:137.21},
+        intent: "You're thinking of how to get the best shape on the 4. Hit a little low on the cueball to widen the travel path." },
+      { ob: {x:273.09, y:88.74}, cb: {x:337.58, y:137.21},
+        cut: 21.72, pocket: "TM", rh: true,
+        vert: 1.68, speed: 0.27,
+        pathAngleAdjust: 0,
+        landing: {x:181.45, y:97.67},
+        intent: "Hit high on the cueball for follow, but easy does it.  You want a nearly straight shot on the 5-ball." },
+      { ob: {x:214.18, y:211.54}, cb: {x:181.45, y:97.67},
+        cut: 24.81, pocket: "BM", rh: false,
+        vert: -1, speed: 0.44,
+        pathAngleAdjust: 0,
+        landing: {x:160.67, y:188.33},
+        intent: "Hit a little low and bounce out for shape on the 6-ball." },
+      { ob: {x:67.03, y:212.25}, cb: {x:160.67, y:188.33},
+        cut: 4.75, pocket: "BL", rh: false,
+        vert: 2.28, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:180.8, y:186.25},
+        intent: "This needs a little follow and enough speed to get back for position on the 1. Then start the sequence again. Do that until you miss." }
+    ]
+  },
+  {
+    title: "6_5_26 Spin 1",
+    intent: "",
+    shots: [
+      { ob: {x:350.73, y:39.26}, cb: {x:280.4, y:78.26},
+        cut: 29.78, pocket: "TR", rh: true,
+        vert: -3.92, speed: 0.51, spin: -3.12,
+        pathAngleAdjust: -23,
+        landing: {x:230.1, y:168.79},
+        intent: "Low and lots of left spin. The goal is to back up the rail for shape on the 2 into the side. Let the spin do the work." },
+      { ob: {x:230.52, y:58.31}, cb: {x:230.1, y:168.79},
+        cut: 0, pocket: "TM", rh: false,
+        vert: -1.76, speed: 0.24,
+        pathAngleAdjust: 0,
+        landing: {x:230.99, y:73.95},
+        intent: "If Shot 1 brought you to the right place, your job is easy: just low and gentle for a stop shot." }
+    ]
+  },
+  {
+    title: "6_5_26 Spin 2",
+    intent: "",
+    shots: [
+      { ob: {x:350.73, y:39.26}, cb: {x:199.88, y:121.49},
+        cut: 29.78, pocket: "TR", rh: true,
+        vert: -3.92, speed: 0.72, spin: -4,
+        pathAngleAdjust: -28,
+        rcBias: 0.142,
+        landing: {x:270.79, y:171.68},
+        intent: "Again, low and lots of left spin. Still the same goal--shape for Shot 2 into the side. This time you're farther away and you're still using lots of spin and draw, but now you're added power. This make the aiming different. You have to aim thinner." },
+      { ob: {x:230.52, y:58.31}, cb: {x:270.79, y:171.68},
+        cut: 0, pocket: "TM", rh: false,
+        vert: -1.76, speed: 0.24,
+        pathAngleAdjust: 0,
+        landing: {x:230.99, y:73.95},
+        intent: "If Shot 1 brought you to the right place, your job is easy: just low and gentle for a stop shot." }
     ]
   }
 ];
@@ -1300,7 +1448,7 @@ function resolveShotRef(ref) {
 // trapped in a sequence layout. The warm-up shot serves as the canonical
 // opening setup.
 function exitSequenceMode() {
-  window._seqState = { sequenceIdx: -1, completed: [] };
+  window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1 };
   clearSceneryBalls();
   if (typeof FOUNDATIONAL_SHOT !== 'undefined' && FOUNDATIONAL_SHOT.shot) {
     loadShotData(FOUNDATIONAL_SHOT.shot);
@@ -1308,6 +1456,7 @@ function exitSequenceMode() {
   // Refresh the magazine view if it's open, so the sequence's active-shot
   // highlight clears.
   if (typeof buildSequencesPane === 'function') buildSequencesPane();
+  if (typeof window._seqNavRefresh === 'function') window._seqNavRefresh();
 }
 
 // Set up a shot on the table from inline magazine action.
@@ -1529,20 +1678,24 @@ function toggleSequence(idx) {
     // Open this sequence and set up its first shot
     window._seqState = {
       sequenceIdx: idx,
-      completed: SEQUENCES[idx].shots.map(function(){ return false; })
+      completed: SEQUENCES[idx].shots.map(function(){ return false; }),
+      currentLap: 1
     };
     magSetShot('seq' + (idx+1) + '.shot1');
   }
   buildSequencesPane();
+  if (typeof window._seqNavRefresh === 'function') window._seqNavRefresh();
 }
 
 function resetSequence(idx) {
   window._seqState = {
     sequenceIdx: idx,
-    completed: SEQUENCES[idx].shots.map(function(){ return false; })
+    completed: SEQUENCES[idx].shots.map(function(){ return false; }),
+    currentLap: 1
   };
   magSetShot('seq' + (idx+1) + '.shot1');
   buildSequencesPane();
+  if (typeof window._seqNavRefresh === 'function') window._seqNavRefresh();
 }
 
 function buildMagazine() {
@@ -1737,15 +1890,31 @@ function undoLastShot() {
 // Shared shot loader (used by foundational + sequence shots)
 function loadShotData(shot) {
   if (!shot) return;
-  window._perceptionOffset = 0;
-  window._rcMultiplier = 0;
+  // In aimer_work, the slider IS the authoring slider — the thumb shows the
+  // authored value (whereas in user-facing aimer.html, the thumb sits at 0
+  // and represents user offset on top of silently-applied authored values).
+  var _authBias = +(shot.rcBias || 0);
+  var _authMult = +(shot.rcMult || 0);
+  var _authLocked = !!shot.rcLocked;
+  window._perceptionOffset = _authBias;
+  window._rcMultiplier = _authMult;
+  window._rcLocked = _authLocked;
+  window._authoredRcBias = _authBias;
+  window._authoredRcMult = _authMult;
+  window._authoredRcLocked = _authLocked;
+  window._userRcOffset = 0;
+  window._pathAngleOffset = 0;
   window._percBase = 0;
   window._percCompFrac = undefined;
   window._percCompRh = undefined;
   var t = document.getElementById('perc-thumb');
-  if (t) t.setAttribute('cx', '170');
+  if (t) {
+    var thumbX = 170 + (_authBias * 300);  // RC_SCALE = 300 in aimer.html
+    if (thumbX < 20) thumbX = 20; else if (thumbX > 320) thumbX = 320;
+    t.setAttribute('cx', String(thumbX));
+  }
   var ind = document.getElementById('perc-on-indicator');
-  if (ind) ind.style.display = 'none';
+  if (ind) ind.style.display = (_authBias !== 0 || _authMult !== 0) ? '' : 'none';
   var _clampX = function(x){ return Math.max(TL.left+BALL_R, Math.min(TL.right-BALL_R, x)); };
   var _clampY = function(y){ return Math.max(TL.top+BALL_R,  Math.min(TL.bottom-BALL_R, y)); };
   S.ob = { x: _clampX(shot.ob.x), y: _clampY(shot.ob.y) };
@@ -1906,11 +2075,41 @@ function renderSequenceTable(seqIdx) {
     g.appendChild(txt);
   }
 
+  function drawCompletedBall(cx, cy, num) {
+    // "Already-pocketed" marker — ghosted gray ball showing where the
+    // student has been. Mirrored from aimer.html.
+    var sh = document.createElementNS(ns, 'circle');
+    sh.setAttribute('cx', cx);
+    sh.setAttribute('cy', cy);
+    sh.setAttribute('r', BALL_R);
+    sh.setAttribute('fill', '#bbb');
+    sh.setAttribute('opacity', '0.70');
+    sh.setAttribute('stroke', '#222');
+    sh.setAttribute('stroke-width', '0.7');
+    g.appendChild(sh);
+    var txt = document.createElementNS(ns, 'text');
+    txt.setAttribute('x', cx);
+    txt.setAttribute('y', cy + 0.5);
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('dominant-baseline', 'central');
+    txt.setAttribute('font-family', 'Lato,sans-serif');
+    txt.setAttribute('font-size', '5.5');
+    txt.setAttribute('font-weight', '900');
+    txt.setAttribute('fill', '#000');
+    txt.setAttribute('opacity', '1');
+    txt.setAttribute('pointer-events', 'none');
+    txt.textContent = String(num);
+    g.appendChild(txt);
+  }
+
   for (var j = 0; j < seq.shots.length; j++) {
     if (j === activeIdx) continue;      // active — drawn separately below
-    // Skip completed shots — they're pocketed and shouldn't be drawn.
-    if (s.completed[j]) continue;
     var shot = seq.shots[j];
+    if (s.completed[j]) {
+      // Completed → muted gray "already shot" marker, NOT in obstacle list.
+      drawCompletedBall(shot.ob.x, shot.ob.y, j + 1);
+      continue;
+    }
     drawBall(shot.ob.x, shot.ob.y, j + 1, false);
     // Add to obstruction list
     window._sceneryObstacles.push({ x: shot.ob.x, y: shot.ob.y, num: j + 1 });
@@ -2484,6 +2683,18 @@ if ('serviceWorker' in navigator) {
 
     <!-- TABLE -->
     <div class="svg-box top-box" style="position:relative;">
+      <!-- Sequence-nav strip (mirrored from aimer.html). Appears at top of
+           viewport when a sequence is active. BACK / indicator / READ / NEXT. -->
+      <div id="seq-nav-strip" style="display:none;position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(0,0,0,0.85);border:1px solid rgba(125,211,252,0.6);border-radius:8px;padding:6px 8px;align-items:center;gap:6px;font-family:Lato,sans-serif;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.5);">
+        <button id="seq-back-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(125,211,252,0.18);color:#7dd3fc;border:1px solid #7dd3fc;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">◀ BACK</button>
+        <div id="seq-nav-indicator" style="font-size:12px;font-weight:900;color:#fff;letter-spacing:0.04em;padding:0 6px;text-align:center;min-width:130px;line-height:1.15;"></div>
+        <button id="seq-read-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(240,223,112,0.18);color:#f0df70;border:1px solid #f0df70;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">READ</button>
+        <button id="seq-next-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(125,211,252,0.18);color:#7dd3fc;border:1px solid #7dd3fc;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">NEXT ▶</button>
+      </div>
+      <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:299;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:16px 20px;max-width:560px;width:90vw;max-height:70vh;overflow-y:auto;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
+        <div id="seq-read-seq-intent" style="font-size:13px;color:#7dd3fc;font-weight:900;letter-spacing:0.04em;margin-bottom:10px;border-bottom:1px solid rgba(125,211,252,0.3);padding-bottom:8px;"></div>
+        <div id="seq-read-shot-intent" style="white-space:pre-wrap;"></div>
+      </div>
       <button id="rail-lock-btn" title="Lock table — disables ball drags so you can pan freely from any point on the table." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
       <button id="slider-indicator-btn" title="Sliders status — bright blue when speed, spin, or vert is set away from default. Tap to scroll to the sliders panel." style="position:fixed;left:0;top:0;z-index:200;width:30px;height:24px;padding:0;border-radius:4px;background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.2);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;visibility:hidden;">
         <svg width="20" height="20" viewBox="0 0 22 22" style="pointer-events:none;display:block;">
@@ -2824,6 +3035,14 @@ if ('serviceWorker' in navigator) {
                position (depends on speed). Line continues past it to show
                headroom for a harder stroke. -->
           <circle id="cb-landing-ghost" cx="0" cy="0" r="8" fill="rgba(125,211,252,0.20)" stroke="#7dd3fc" stroke-width="2.5" stroke-dasharray="5,3" opacity="0" style="cursor:grab;" pointer-events="all"/>
+          <!-- Start-point marker. Shows where this run began — i.e., shot 1's
+               CB position. Visible on every shot of every sequence so the
+               author/student always knows their origin point. Static,
+               non-draggable; tracks shot 1's CB (cb0 in composer mode). -->
+          <g id="loop-target-marker" opacity="0" pointer-events="none">
+            <circle cx="0" cy="0" r="8" fill="none" stroke="#e02020" stroke-width="2.5"/>
+            <circle cx="0" cy="0" r="3" fill="none" stroke="#e02020" stroke-width="2"/>
+          </g>
           <circle id="ghost-ball" cx="0" cy="0" r="8" fill="rgba(255,255,255,0.10)" stroke="#f0df70" stroke-width="1.8" stroke-dasharray="4,3" opacity="0"/>
           <!-- Contact point dot on OB surface -->
           <circle id="cp-dot-table" cx="0" cy="0" r="4" fill="#ffffff" stroke="#ff6600" stroke-width="1.5" opacity="0"/>
@@ -3953,14 +4172,15 @@ function renderTable(d) {
   // doesn't count as an obstruction.
   var _arrStartX = ox + odx * (BALL_R + 2);
   var _arrStartY = oy + ody * (BALL_R + 2);
-  var _arrClip = clipRayToObstacles(_arrStartX, _arrStartY, odx, ody, arrT - (BALL_R + 2));
+  // Aim arrow is a teaching tool showing intent (CB-to-OB-to-pocket aim
+  // line). It should reach the table edge regardless of whether other
+  // balls happen to sit along the way. The player can see intervening
+  // balls and adjust in real play; clipping the arrow at scenery makes
+  // the display visually wrong (looks like the arrow stops short of the
+  // pocket). Bypass clipRayToObstacles for the aim arrow.
+  var _arrClip = { t: arrT - (BALL_R + 2), blocked: false, blockedBy: null };
   var _arrEndT = arrT;
   var _arrBlocked = false, _arrBlockedBy = null;
-  if (_arrClip.blocked) {
-    _arrEndT = (BALL_R + 2) + _arrClip.t;
-    _arrBlocked = true;
-    _arrBlockedBy = _arrClip.blockedBy;
-  }
   sL('ob-arrow', _arrStartX, _arrStartY,
                  ox + odx*_arrEndT, oy + ody*_arrEndT);
   sV('ob-arrow', true);
@@ -4343,6 +4563,31 @@ function renderTable(d) {
     el.setAttribute('r',  BALL_R);
     el.setAttribute('opacity', '1');
     if (el.parentNode) el.parentNode.appendChild(el);
+    // Start-point marker: show shot 1's CB position on every shot. When in
+    // active sequence playback, use that sequence's shot 1; otherwise (in
+    // composer mode) use _comp.cb0 (tracks author dragging shot 1's CB).
+    var loopMk = document.getElementById('loop-target-marker');
+    if (loopMk) {
+      var loopCb = null;
+      // Playback mode wins — if we're walking a sequence, use ITS cb0
+      if (window._seqState && window._seqState.sequenceIdx >= 0
+          && Array.isArray(SEQUENCES) && SEQUENCES[window._seqState.sequenceIdx]
+          && SEQUENCES[window._seqState.sequenceIdx].shots
+          && SEQUENCES[window._seqState.sequenceIdx].shots[0]
+          && SEQUENCES[window._seqState.sequenceIdx].shots[0].cb) {
+        loopCb = SEQUENCES[window._seqState.sequenceIdx].shots[0].cb;
+      // Otherwise composer mode — track the in-progress composition
+      } else if (window._comp && window._comp.cb0) {
+        loopCb = window._comp.cb0;
+      }
+      if (loopCb) {
+        loopMk.setAttribute('transform', 'translate(' + loopCb.x + ',' + loopCb.y + ')');
+        loopMk.setAttribute('opacity', '1');
+        if (loopMk.parentNode) loopMk.parentNode.appendChild(loopMk);
+      } else {
+        loopMk.setAttribute('opacity', '0');
+      }
+    }
   })();
 }
 
@@ -5557,12 +5802,11 @@ function swapPanels(){
       return { seqIdx: window._seqState.sequenceIdx, shotIdx: aIdx + 1, shot: seq.shots[aIdx + 1] };
     }
     ghost.addEventListener('pointerdown', function(e){
-      // GUARD: if a sequence is currently loaded (playback mode), the ghost
-      // is locked — it represents authored content (the LeStar target), not
-      // user choice. Only allow drag in authoring mode (no sequence loaded).
-      var inSequence = (window._seqState && typeof window._seqState.sequenceIdx === 'number'
-                        && window._seqState.sequenceIdx >= 0);
-      if (inSequence) return;
+      // The composer is the authoring environment for aimer_work; the ghost
+      // ALWAYS represents the active shot's landing target the author is
+      // setting. (Older guard checked _seqState to lock the ghost during
+      // playback; that conflicted with composer authoring once a sequence
+      // had been previewed in playback at some point during the session.)
       e.preventDefault();
       e.stopPropagation();
       dragging = true;
@@ -6986,6 +7230,161 @@ window.addEventListener('load', function(){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
+  // ── Sequence-nav strip (BACK / indicator / READ / NEXT) ───────────────
+  // Mirrored from aimer.html. Persistent navigation UI for an active
+  // sequence. The strip and its logic are identical to the user-facing
+  // version so the composer's playback view matches the ship file's.
+  (function(){
+    var strip   = document.getElementById('seq-nav-strip');
+    var indEl   = document.getElementById('seq-nav-indicator');
+    var backBtn = document.getElementById('seq-back-btn');
+    var nextBtn = document.getElementById('seq-next-btn');
+    var readBtn = document.getElementById('seq-read-btn');
+    var overlay = document.getElementById('seq-read-overlay');
+    var ovSeqEl = document.getElementById('seq-read-seq-intent');
+    var ovShotEl= document.getElementById('seq-read-shot-intent');
+    if (!strip || !backBtn || !nextBtn || !readBtn || !overlay) return;
+
+    function getActiveShotIdx() {
+      var s = window._seqState;
+      if (!s || s.sequenceIdx < 0) return -1;
+      var seq = SEQUENCES[s.sequenceIdx];
+      if (!seq) return -1;
+      for (var i = 0; i < seq.shots.length; i++) {
+        if (!s.completed[i]) return i;
+      }
+      return seq.shots.length - 1;
+    }
+
+    function isSeqActive() {
+      return !!(window._seqState && window._seqState.sequenceIdx >= 0
+                && SEQUENCES[window._seqState.sequenceIdx]);
+    }
+
+    function refresh() {
+      if (!isSeqActive()) {
+        strip.style.display = 'none';
+        overlay.style.display = 'none';
+        return;
+      }
+      var seq = SEQUENCES[window._seqState.sequenceIdx];
+      var idx = getActiveShotIdx();
+      strip.style.display = 'flex';
+      var indicator = (seq.title || 'Sequence');
+      if (seq.loops) {
+        var totalLaps = (typeof seq.laps === 'number' && seq.laps > 0) ? seq.laps : null;
+        var curLap = window._seqState.currentLap || 1;
+        if (totalLaps) {
+          indicator += ' · Lap ' + curLap + ' of ' + totalLaps;
+        } else {
+          indicator += ' · Lap ' + curLap;
+        }
+      }
+      indicator += ' · Shot ' + (idx + 1) + ' of ' + seq.shots.length;
+      indEl.textContent = indicator;
+      var canBack = idx > 0;
+      backBtn.disabled = !canBack;
+      backBtn.style.opacity = canBack ? '1' : '0.35';
+      backBtn.style.cursor = canBack ? 'pointer' : 'default';
+      var isLastShot = idx >= seq.shots.length - 1;
+      var isLastLap;
+      if (!seq.loops) {
+        isLastLap = true;
+      } else if (typeof seq.laps === 'number' && seq.laps > 0) {
+        isLastLap = (window._seqState.currentLap || 1) >= seq.laps;
+      } else {
+        isLastLap = false;
+      }
+      if (isLastShot && isLastLap) {
+        nextBtn.textContent = 'DONE';
+      } else {
+        nextBtn.textContent = 'NEXT ▶';
+      }
+      var shotIntent = (seq.shots[idx] && seq.shots[idx].intent) || '';
+      var hasProse = shotIntent.trim().length > 0;
+      readBtn.disabled = !hasProse;
+      readBtn.style.opacity = hasProse ? '1' : '0.4';
+      readBtn.style.cursor = hasProse ? 'pointer' : 'default';
+      if (overlay.style.display !== 'none') {
+        showOverlayContent(seq, idx);
+      }
+    }
+
+    function showOverlayContent(seq, idx) {
+      if (idx === 0 && seq.intent) {
+        ovSeqEl.textContent = seq.intent;
+        ovSeqEl.style.display = 'block';
+      } else {
+        ovSeqEl.style.display = 'none';
+      }
+      ovShotEl.textContent = (seq.shots[idx] && seq.shots[idx].intent) || '';
+    }
+
+    function advance() {
+      if (!isSeqActive()) return;
+      var seq = SEQUENCES[window._seqState.sequenceIdx];
+      var idx = getActiveShotIdx();
+      var isLastShot = idx >= seq.shots.length - 1;
+      window._seqState.completed[idx] = true;
+      if (isLastShot) {
+        if (seq.loops) {
+          var totalLaps = (typeof seq.laps === 'number' && seq.laps > 0) ? seq.laps : null;
+          var curLap = window._seqState.currentLap || 1;
+          if (totalLaps && curLap >= totalLaps) {
+            window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1 };
+          } else {
+            for (var i = 0; i < seq.shots.length; i++) window._seqState.completed[i] = false;
+            window._seqState.currentLap = curLap + 1;
+            loadShotData(seq.shots[0]);
+          }
+        } else {
+          window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1 };
+        }
+      } else {
+        loadShotData(seq.shots[idx + 1]);
+      }
+      if (typeof renderSequenceTable === 'function' && isSeqActive()) {
+        renderSequenceTable(window._seqState.sequenceIdx);
+      }
+      if (typeof render === 'function') render();
+      refresh();
+    }
+
+    function back() {
+      if (!isSeqActive()) return;
+      var seq = SEQUENCES[window._seqState.sequenceIdx];
+      var idx = getActiveShotIdx();
+      if (idx <= 0) return;
+      window._seqState.completed[idx - 1] = false;
+      loadShotData(seq.shots[idx - 1]);
+      if (typeof renderSequenceTable === 'function') {
+        renderSequenceTable(window._seqState.sequenceIdx);
+      }
+      if (typeof render === 'function') render();
+      refresh();
+    }
+
+    function toggleRead() {
+      if (!isSeqActive()) return;
+      if (readBtn.disabled) return;
+      if (overlay.style.display === 'none' || overlay.style.display === '') {
+        var seq = SEQUENCES[window._seqState.sequenceIdx];
+        var idx = getActiveShotIdx();
+        showOverlayContent(seq, idx);
+        overlay.style.display = 'block';
+      } else {
+        overlay.style.display = 'none';
+      }
+    }
+
+    backBtn.addEventListener('click', function(e){ e.preventDefault(); back(); });
+    nextBtn.addEventListener('click', function(e){ e.preventDefault(); advance(); });
+    readBtn.addEventListener('click', function(e){ e.preventDefault(); toggleRead(); });
+
+    window._seqNavRefresh = refresh;
+    refresh();
+  })();
+
   var zb = document.getElementById('perc-zero-btn');
   if (zb) {
     zb.addEventListener('click', function(e){
@@ -7702,12 +8101,15 @@ window._copyShotData = function() {
     var dragging = false, ptr = null;
     function startDrag(e) {
       e.preventDefault();
+      e.stopPropagation();
       dragging = true; ptr = e.pointerId;
       try { svg.setPointerCapture(e.pointerId); } catch(_){}
       doMove(e);
     }
     function doMove(e) {
       if (!dragging) return;
+      e.preventDefault();
+      e.stopPropagation();
       var p = svgPt(e);
       var deg = xToAngle(p.x);
       // Snap to whole degrees for usability
@@ -7721,6 +8123,7 @@ window._copyShotData = function() {
     function endDrag(e) {
       if (!dragging) return;
       dragging = false;
+      if (e) { e.preventDefault(); e.stopPropagation(); }
       try { svg.releasePointerCapture(e.pointerId); } catch(_){}
     }
     svg.addEventListener('pointerdown', startDrag);
@@ -7806,7 +8209,12 @@ window._copyShotData = function() {
     };
   }
 
+  // Expose _comp on window so code outside this closure (the marker-render
+  // in particular) can read _comp.cb0 to position the start-point marker
+  // during composer authoring. The local `_comp` reference is kept for
+  // existing closure code; window._comp is the cross-closure access point.
   var _comp = blankSequence();
+  window._comp = _comp;
 
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(_comp)); } catch(e){}
@@ -7819,58 +8227,9 @@ window._copyShotData = function() {
       if (parsed && parsed.shots && parsed.shots.length) {
         _comp = parsed;
         if (_comp.activeShot >= _comp.shots.length) _comp.activeShot = 0;
+        window._comp = _comp;
       }
     } catch(e){}
-  }
-
-  // ── LIBRARY — named saved sequences ──────────────────────────────────────
-  // Separate from the "currently being composed" auto-save above. Each entry
-  // is keyed by its title. Saving under an existing title UPDATES that entry
-  // (so iteration on a sequence stays under one name); to keep older
-  // versions, rename the title before saving.
-  var LIB_KEY = 'aimer_composer_library_v1';
-  function loadLibrary() {
-    try {
-      var raw = localStorage.getItem(LIB_KEY);
-      if (!raw) return {};
-      var parsed = JSON.parse(raw);
-      return (parsed && typeof parsed === 'object') ? parsed : {};
-    } catch(e){ return {}; }
-  }
-  function saveLibrary(lib) {
-    try { localStorage.setItem(LIB_KEY, JSON.stringify(lib)); } catch(e){}
-  }
-  function saveToLibrary() {
-    var title = (_comp.title || '').trim();
-    if (!title || title === 'New Sequence') {
-      alert('Give the sequence a real title before saving to the library.');
-      return false;
-    }
-    var lib = loadLibrary();
-    var overwriting = !!lib[title];
-    if (overwriting && !confirm('"' + title + '" already exists in the library. Overwrite it?')) {
-      return false;
-    }
-    // Deep-clone so future edits don't mutate the saved entry
-    lib[title] = JSON.parse(JSON.stringify(_comp));
-    saveLibrary(lib);
-    return true;
-  }
-  function loadFromLibrary(title) {
-    var lib = loadLibrary();
-    var entry = lib[title];
-    if (!entry) return false;
-    _comp = JSON.parse(JSON.stringify(entry));
-    if (_comp.activeShot >= _comp.shots.length) _comp.activeShot = 0;
-    save();
-    return true;
-  }
-  function deleteFromLibrary(title) {
-    var lib = loadLibrary();
-    if (!(title in lib)) return false;
-    delete lib[title];
-    saveLibrary(lib);
-    return true;
   }
 
   // ── Translation: SEQUENCES playback format → composer format ────────────
@@ -7917,23 +8276,6 @@ window._copyShotData = function() {
     return out;
   }
 
-  // SAVE-AS-from-playback: take a SEQUENCES entry and add it to the library.
-  // Refuses if a library entry with the same title already exists, to avoid
-  // overwriting hand-tuned work with an approximation.
-  function importFromPlayback(playSeq) {
-    var translated = translatePlaybackToComposer(playSeq);
-    if (!translated) return { ok:false, reason:'translation failed' };
-    var title = (translated.title || '').trim();
-    if (!title) return { ok:false, reason:'no title' };
-    var lib = loadLibrary();
-    if (lib[title]) {
-      return { ok:false, reason:'exists', title:title };
-    }
-    lib[title] = translated;
-    saveLibrary(lib);
-    return { ok:true, title:title };
-  }
-
   // ── Shot ↔ Aimer state syncing ──────────────────────────────────────────
   // Push the active shot's data into S so Aimer renders it as the "current
   // shot." Other shots' OBs are drawn separately (see drawOtherOBs).
@@ -7969,20 +8311,31 @@ window._copyShotData = function() {
       if (slSpn)  slSpn.value  = String(Math.round((S.spin  || 0) * 100));
       if (slVert) slVert.value = String(Math.round((S.vert  || 0) * 25));
     } catch(e){}
-    // Reset Reality Check thumb to center (cut=0 → no override). RC's visual
-    // thumb is at #perc-thumb; the perception offset is in window._perceptionOffset.
+    // Restore Reality Check state from the shot's authored values. If the
+    // shot has captured rcBias/rcMult/rcLocked from authoring, apply them so
+    // the composer view shows the same picture the user will see at playback.
+    // (The thumb position reflects the bias; the lock button reflects locked.)
     try {
+      var rcBias = +(shot.rcBias || 0);
+      var rcMult = +(shot.rcMult || 0);
+      var rcLocked = !!shot.rcLocked;
+      window._perceptionOffset = rcBias;
+      window._rcMultiplier = rcMult;
+      window._rcLocked = rcLocked;
       var pTh = document.getElementById('perc-thumb');
-      if (pTh && (!shot.cut || shot.cut === 0)) {
-        pTh.setAttribute('cx', '170');  // center of perc-svg viewBox
+      if (pTh) {
+        // Slider: x=170 → 0, range ±10 over ±150 px
+        var thumbX = 170 + (rcBias * 15);
+        if (thumbX < 20) thumbX = 20; else if (thumbX > 320) thumbX = 320;
+        pTh.setAttribute('cx', String(thumbX));
       }
-      // Hide the RC ON-indicator unless this shot has an override
       var pInd = document.getElementById('perc-on-indicator');
-      if (pInd) pInd.style.display = (shot.cut && shot.cut !== 0) ? 'block' : 'none';
-      // Zero the perception offset state so it doesn't bleed into the new shot
-      if (!shot.cut || shot.cut === 0) {
-        window._perceptionOffset = 0;
-        window._rcMultiplier = 0;
+      if (pInd) pInd.style.display = (rcBias !== 0 || rcMult !== 0) ? 'block' : 'none';
+      var lockBtn = document.getElementById('perc-lock-btn');
+      if (lockBtn) {
+        lockBtn.textContent = rcLocked ? 'LOCKED' : 'LOCK';
+        lockBtn.style.background = rcLocked ? '#ff8c00' : 'rgba(255,140,0,0.2)';
+        lockBtn.style.color      = rcLocked ? '#1a1400' : '#ff8c00';
       }
     } catch(e){}
     // Position the blue ghost at the shot's landing
@@ -8023,6 +8376,13 @@ window._copyShotData = function() {
     shot.cut = S.diagCutDeg || 0;
     shot.rh = !!S._diagDragRh;
     shot.pathAngleAdjust = S.pathAngleAdjust || 0;
+    // Capture Reality Check state (author's table-calibrated correction). This
+    // bakes the RC values into the shot so the user sees the author's honest
+    // read with their own RC slider at zero; their slider becomes a delta on
+    // top, not a replacement.
+    shot.rcBias = +(window._perceptionOffset || 0);
+    shot.rcMult = +(window._rcMultiplier || 0);
+    shot.rcLocked = !!window._rcLocked;
     // CB position: if user dragged it, write it back to the chain.
     // Shot 1's CB writes to cb0; shot N>1's CB writes to shot N-1's landing.
     var liveCB = { x: S.cb.x, y: S.cb.y };
@@ -8185,16 +8545,14 @@ window._copyShotData = function() {
       '</div>',
       // ── BODY ── Hidden when minimized.
       '<div id="comp-body" style="padding:10px;display:flex;flex-direction:column;gap:8px;background:rgba(10,15,10,0.97);border-top:1px solid rgba(125,211,252,0.3);">',
-        // Row 1: title + COPY SEQUENCE / SAVE / LIBRARY / CLEAR
+        // Row 1: title + COPY SEQUENCE / OPEN / CLEAR
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">',
           '<input id="comp-title" type="text" placeholder="Sequence title" style="flex:1;min-width:160px;padding:6px 10px;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;font-size:15px;font-weight:700;">',
           '<button id="comp-copy" title="Export the current sequence as JSON to paste into the chat." style="padding:7px 14px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:5px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.05em;">COPY SEQUENCE</button>',
-          '<button id="comp-save" title="Save the current sequence to the library under its title." style="padding:7px 12px;background:rgba(125,211,252,0.25);color:#7dd3fc;border:1px solid #7dd3fc;border-radius:5px;font-weight:900;font-size:13px;cursor:pointer;">SAVE</button>',
-          '<button id="comp-library" title="Open the library of saved sequences." style="padding:7px 12px;background:rgba(125,211,252,0.15);color:#7dd3fc;border:1px solid rgba(125,211,252,0.6);border-radius:5px;font-weight:700;font-size:13px;cursor:pointer;">LIBRARY</button>',
+          '<button id="comp-library" title="Open a sequence from Aimer to edit." style="padding:7px 12px;background:rgba(125,211,252,0.15);color:#7dd3fc;border:1px solid rgba(125,211,252,0.6);border-radius:5px;font-weight:700;font-size:13px;cursor:pointer;">OPEN</button>',
           '<button id="comp-reset" title="Wipe composer and start fresh." style="padding:6px 10px;background:rgba(200,80,80,0.4);color:#fff;border:1px solid rgba(200,80,80,0.7);border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;">CLEAR</button>',
         '</div>',
         '<div id="comp-tabs" style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;"></div>',
-        '<div id="comp-save-status" style="font-size:11px;color:#9ae6b4;text-align:left;min-height:14px;"></div>',
         '<textarea id="comp-intent" placeholder="Notes for the active shot (LeStar Z teaching prose)" style="width:100%;min-height:48px;padding:8px;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;font-size:14px;font-family:Lato,sans-serif;resize:vertical;box-sizing:border-box;line-height:1.35;"></textarea>',
       '</div>'
     ].join('');
@@ -8408,25 +8766,11 @@ window._copyShotData = function() {
         exportSequence();
       });
     }
-    var saveBtn = document.getElementById('comp-save');
-    if (saveBtn) {
-      saveBtn.addEventListener('click', function(e){
-        e.preventDefault();
-        pullLiveIntoActiveShot();
-        if (saveToLibrary()) {
-          var st = document.getElementById('comp-save-status');
-          if (st) {
-            st.textContent = '✓ Saved "' + _comp.title + '" to library';
-            setTimeout(function(){ if (st) st.textContent = ''; }, 2500);
-          }
-        }
-      });
-    }
     var libBtn = document.getElementById('comp-library');
     if (libBtn) {
       libBtn.addEventListener('click', function(e){
         e.preventDefault();
-        showLibraryPanel();
+        showOpenPanel();
       });
     }
     var resetBtn = document.getElementById('comp-reset');
@@ -8435,6 +8779,7 @@ window._copyShotData = function() {
         e.preventDefault();
         if (!confirm('Clear the composer? This deletes the current sequence you are building. (Saved library entries are NOT affected.)')) return;
         _comp = blankSequence();
+        window._comp = _comp;
         save();
         syncActiveShotToAimer();
         renderUI();
@@ -8443,24 +8788,24 @@ window._copyShotData = function() {
   }
 
   // ── Library overlay ──────────────────────────────────────────────────────
-  function showLibraryPanel() {
+  // ── OPEN overlay ─────────────────────────────────────────────────────────
+  // Lists sequences from the file's SEQUENCES array (the single source of
+  // truth). Tapping a sequence loads it into the composer for editing.
+  // No library, no localStorage drift — every load reads fresh from the file.
+  function showOpenPanel() {
     var existing = document.getElementById('comp-lib-overlay');
     if (existing) existing.remove();
-    var lib = loadLibrary();
-    var titles = Object.keys(lib).sort();
     var ov = document.createElement('div');
     ov.id = 'comp-lib-overlay';
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
 
-    // Section 1: saved library entries
-    var savedHtml = '';
-    if (titles.length === 0) {
-      savedHtml = '<div style="color:#aaa;text-align:center;padding:24px 10px;font-size:13px;font-style:italic;">No saved sequences yet. Title your current sequence and tap SAVE to add it — or SAVE AS one of the Aimer sequences below.</div>';
-    } else {
-      savedHtml = titles.map(function(t){
-        var entry = lib[t];
-        var nshots = (entry.shots && entry.shots.length) || 0;
-        var preview = (entry.intent || '').slice(0, 70);
+    var entriesHtml = '';
+    if (typeof SEQUENCES !== 'undefined' && Array.isArray(SEQUENCES) && SEQUENCES.length) {
+      entriesHtml = SEQUENCES.map(function(seq, idx){
+        if (!seq || !seq.title || !seq.shots) return '';
+        var t = seq.title;
+        var nshots = seq.shots.length;
+        var preview = (seq.intent || '').slice(0, 70);
         var tEsc = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         var pEsc = preview.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         return [
@@ -8469,98 +8814,44 @@ window._copyShotData = function() {
               '<div style="font-size:14px;font-weight:900;color:#fff;">' + tEsc + '</div>',
               '<div style="font-size:11px;color:#aaa;margin-top:2px;">' + nshots + ' shot' + (nshots === 1 ? '' : 's') + (preview ? ' · ' + pEsc : '') + '</div>',
             '</div>',
-            '<button class="lib-load-btn" data-title="' + tEsc + '" style="padding:6px 12px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;">LOAD</button>',
-            '<button class="lib-del-btn" data-title="' + tEsc + '" title="Delete this entry" style="padding:6px 9px;background:rgba(200,80,80,0.5);color:#fff;border:1px solid rgba(200,80,80,0.8);border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;">×</button>',
+            '<button class="lib-open-btn" data-seqidx="' + idx + '" style="padding:6px 14px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;">OPEN</button>',
           '</div>'
         ].join('');
       }).join('');
-    }
-
-    // Section 2: imported-from-Aimer (read from the playback SEQUENCES array)
-    var importHtml = '';
-    if (typeof SEQUENCES !== 'undefined' && Array.isArray(SEQUENCES) && SEQUENCES.length) {
-      importHtml = SEQUENCES.map(function(seq, idx){
-        if (!seq || !seq.title || !seq.shots) return '';
-        var t = seq.title;
-        var nshots = seq.shots.length;
-        var alreadyInLib = !!lib[t];
-        var tEsc = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        var btn = alreadyInLib
-          ? '<button disabled title="A library entry with this title already exists. Edit that entry, or delete it first to re-import." style="padding:6px 10px;background:rgba(80,80,80,0.4);color:#888;border:1px solid rgba(255,255,255,0.15);border-radius:4px;font-weight:700;font-size:12px;cursor:not-allowed;">IN LIB</button>'
-          : '<button class="lib-import-btn" data-seqidx="' + idx + '" title="Copy this sequence into the library so you can edit it." style="padding:6px 10px;background:rgba(125,211,252,0.25);color:#7dd3fc;border:1px solid #7dd3fc;border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;">SAVE AS</button>';
-        return [
-          '<div style="display:flex;align-items:center;gap:8px;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);">',
-            '<div style="flex:1;min-width:0;">',
-              '<div style="font-size:13px;font-weight:700;color:#ddd;">' + tEsc + '</div>',
-              '<div style="font-size:11px;color:#888;margin-top:2px;">' + nshots + ' shot' + (nshots === 1 ? '' : 's') + '</div>',
-            '</div>',
-            btn,
-          '</div>'
-        ].join('');
-      }).join('');
+    } else {
+      entriesHtml = '<div style="color:#aaa;text-align:center;padding:24px 10px;font-size:13px;font-style:italic;">No sequences in this file.</div>';
     }
 
     ov.innerHTML =
       '<div style="background:#1a361a;border:2px solid #7dd3fc;border-radius:10px;padding:16px;max-width:560px;width:100%;font-family:Lato,sans-serif;color:#fff;max-height:85vh;display:flex;flex-direction:column;">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
-          '<div style="font-size:15px;font-weight:900;color:#7dd3fc;letter-spacing:0.06em;">SEQUENCE LIBRARY</div>' +
+          '<div style="font-size:15px;font-weight:900;color:#7dd3fc;letter-spacing:0.06em;">OPEN A SEQUENCE</div>' +
           '<button id="cl-close" style="background:none;border:none;color:#fff;font-size:24px;line-height:1;cursor:pointer;padding:0 4px;">&times;</button>' +
         '</div>' +
-        '<div style="flex:1;overflow-y:auto;border:1px solid rgba(255,255,255,0.2);border-radius:4px;background:#0a0a0a;">' +
-          '<div style="background:rgba(125,211,252,0.10);padding:6px 10px;font-size:11px;font-weight:900;color:#7dd3fc;letter-spacing:0.08em;border-bottom:1px solid rgba(125,211,252,0.3);">YOUR SAVED SEQUENCES</div>' +
-          savedHtml +
-          (importHtml ?
-            '<div style="background:rgba(255,255,255,0.05);padding:6px 10px;font-size:11px;font-weight:900;color:#aaa;letter-spacing:0.08em;border-bottom:1px solid rgba(255,255,255,0.15);border-top:1px solid rgba(255,255,255,0.15);">FROM AIMER (TAP SAVE AS TO MAKE EDITABLE)</div>' +
-            importHtml
-            : '') +
-        '</div>' +
-        '<div style="margin-top:10px;font-size:11px;color:#aaa;text-align:center;line-height:1.4;">SAVE updates an entry with the same title. To version, rename the title before saving. SAVE AS imports an Aimer sequence; older ones without authored landings will have approximate hand-offs that you can refine.</div>' +
+        '<div style="flex:1;overflow-y:auto;border:1px solid rgba(255,255,255,0.2);border-radius:4px;background:#0a0a0a;">' + entriesHtml + '</div>' +
+        '<div style="margin-top:10px;font-size:11px;color:#aaa;text-align:center;line-height:1.4;">Loading replaces the current composer state. COPY SEQUENCE first if you have unsaved work.</div>' +
       '</div>';
     document.body.appendChild(ov);
     document.getElementById('cl-close').onclick = function(){ ov.remove(); };
     ov.onclick = function(e){ if (e.target === ov) ov.remove(); };
-    // Wire LOAD buttons
-    ov.querySelectorAll('.lib-load-btn').forEach(function(b){
-      b.addEventListener('click', function(){
-        var t = b.getAttribute('data-title');
-        if (!t) return;
-        var hasContent = _comp.shots.length > 1
-          || (_comp.title && _comp.title !== 'New Sequence')
-          || (_comp.shots[0] && _comp.shots[0].intent);
-        if (hasContent && !confirm('Loading will replace your current composer state. The current sequence is NOT saved unless you tap SAVE first. Continue?')) return;
-        if (loadFromLibrary(t)) {
-          ov.remove();
-          syncActiveShotToAimer();
-          renderUI();
-        }
-      });
-    });
-    // Wire DELETE buttons
-    ov.querySelectorAll('.lib-del-btn').forEach(function(b){
-      b.addEventListener('click', function(){
-        var t = b.getAttribute('data-title');
-        if (!t) return;
-        if (!confirm('Delete "' + t + '" from the library? This cannot be undone.')) return;
-        if (deleteFromLibrary(t)) {
-          ov.remove();
-          showLibraryPanel();
-        }
-      });
-    });
-    // Wire SAVE AS (import-from-Aimer) buttons
-    ov.querySelectorAll('.lib-import-btn').forEach(function(b){
+
+    // Wire OPEN buttons — translate playback format to composer format and load
+    ov.querySelectorAll('.lib-open-btn').forEach(function(b){
       b.addEventListener('click', function(){
         var idx = parseInt(b.getAttribute('data-seqidx'), 10);
         if (isNaN(idx) || !SEQUENCES[idx]) return;
-        var res = importFromPlayback(SEQUENCES[idx]);
-        if (res.ok) {
-          ov.remove();
-          showLibraryPanel();  // reopen to show the newly-added entry
-        } else if (res.reason === 'exists') {
-          alert('A library entry titled "' + res.title + '" already exists. Edit or delete it first to re-import.');
-        } else {
-          alert('Import failed.');
-        }
+        var hasContent = _comp.shots.length > 1
+          || (_comp.title && _comp.title !== 'New Sequence')
+          || (_comp.shots[0] && _comp.shots[0].intent);
+        if (hasContent && !confirm('Loading will replace your current composer state. The current sequence is NOT saved unless you COPY SEQUENCE first. Continue?')) return;
+        var translated = translatePlaybackToComposer(SEQUENCES[idx]);
+        if (!translated) { alert('Could not load sequence.'); return; }
+        _comp = translated;
+        window._comp = _comp;
+        save();
+        ov.remove();
+        syncActiveShotToAimer();
+        renderUI();
       });
     });
   }
@@ -8582,6 +8873,9 @@ window._copyShotData = function() {
           cut: +(s.cut || 0).toFixed(2),
           rh: !!s.rh,
           pathAngleAdjust: +(s.pathAngleAdjust || 0).toFixed(2),
+          rcBias: +(s.rcBias || 0).toFixed(3),
+          rcMult: +(s.rcMult || 0).toFixed(3),
+          rcLocked: !!s.rcLocked,
           landing: s.landing ? { x: +s.landing.x.toFixed(2), y: +s.landing.y.toFixed(2) } : null,
           intent: s.intent || ''
         };
