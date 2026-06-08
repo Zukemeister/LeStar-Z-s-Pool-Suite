@@ -928,7 +928,7 @@ var SEQUENCES = [
   // basic shot possibilities. They lead up to the four-shot sequence.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: 'Two Shot Set 1',
+    title: '01. Two Shot Set 1',
     intent: 'Cut into the corner, then follow to the rail for shot two.',
     shots: [
       { ob: {x:379, y:81}, cb: {x:348, y:151},
@@ -936,17 +936,17 @@ var SEQUENCES = [
         vert: 1.28, speed: 0.51,
         pathAngleAdjust: 0,
         landing: {x:351.77, y:46.65},
-        intent: 'Cut into corner; follow to rail for shot two.' },
+        intent: "Cut this into the corner, noting where the 2-ball sits, and decide what gives you the best position on that 2-ball. You could hit high on the cueball and thusly follow it to the rail.  Try it. That might be too delicate, so if you find that is too hard, try hitting it low--draw-- and harder. It will come up the rail further, and give you bigger margins for getting usable position. Shoot it many times until it is natural." },
       { ob: {x:401.52, y:39}, cb: {x:351.77, y:46.65},
         cut: 0, pocket: 'TR', rh: false,
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:385.26, y:39.78},
-        intent: '' }
+        intent: "Simple stop shot--if you played the 1-ball correctly. Did you?" }
     ]
   },
   {
-    title: 'Two Shot Set 2',
+    title: '02. Two Shot Set 2',
     intent: 'A thin cut and a long follow across the table.',
     shots: [
       { ob: {x:378, y:76}, cb: {x:355, y:124},
@@ -954,17 +954,17 @@ var SEQUENCES = [
         vert: 1.64, speed: 0.51,
         pathAngleAdjust: 0,
         landing: {x:244.11, y:121.9},
-        intent: 'Cut to the top right corner with a touch of follow.' },
+        intent: "The 2-ball is in a  challenging position. How to get there? To get the 2-ball in the side, you need to direct the cueball off the 1-ball into two rails and out. Be careful about not scratching in the bottom middle pocket, Pocket 5. You can direct the position of the bounces by hitting higher or lower. Try both and see what happens." },
       { ob: {x:220, y:44}, cb: {x:244.11, y:121.9},
         cut: 35.22, pocket: 'TM', rh: true,
         vert: 1.52, speed: 0.81,
         pathAngleAdjust: 0,
         landing: {x:77.98, y:97.06},
-        intent: 'Follow with just enough to get to the end rail.' }
+        intent: "Follow with just enough to get to the end rail safely." }
     ]
   },
   {
-    title: 'Two Shot Set 3',
+    title: '03. Two Shot Set 3',
     intent: 'Follow to the right rail, then follow to the center.',
     shots: [
       { ob: {x:230, y:41}, cb: {x:148, y:142},
@@ -972,7 +972,7 @@ var SEQUENCES = [
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:374, y:83},
-        intent: 'Follow this shot so the cue ball lands near the right rail.' },
+        intent: "Follow this shot, but you have a choice: push it to the rail and let it bounce out, or hit very softly and keep it well above the two. Either way, you don't want to be on the side rail, and the shot gets very hard that way." },
       { ob: {x:382, y:198}, cb: {x:374, y:83},
         cut: 59, pocket: 'BR', rh: false,
         vert: 1.76, speed: 0.81,
@@ -986,33 +986,33 @@ var SEQUENCES = [
   // draw to move the cue ball around the table, each shot setting up the next.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "4 Shot Sequence One",
+    title: "04. 4 Shot Sequence One",
     intent: "Sequence One uses follow, stop and draw.",
     shots: [
       { ob: {x:237.73, y:108.44}, cb: {x:230, y:180},
         cut: 15, pocket: "TM", rh: false,
         vert: 1.32, speed: 0.23,
-        pathAngleAdjust: 0,
-        landing: {x:338.87, y:44.29},
-        intent: "Shot 1, follow gently to the rail. Shot 2. Could do a stop, or could follow to the rail. 3. Have to roll forward to reach positon on the 4. Shot 4. You have to be gentle, not allowing the cueball to follow the object ball into the pocket." },
-      { ob: {x:386.58, y:39}, cb: {x:338.87, y:44.29},
+        pathAngleAdjust: -15,
+        landing: {x:320.5, y:46},
+        intent: "Follow gently to the rail by hitting high on the cueball. You don't want to go too far." },
+      { ob: {x:386.58, y:39}, cb: {x:320.5, y:46},
         cut: 6.69, pocket: "TR", rh: true,
         vert: -0.56, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:367.3, y:75.58},
-        intent: "" },
+        intent: "Depending on how Shot 1 went, you could stop the cue, or you could possible follow to the rail and back up.  The goal is to leave yourself with an easy way to get shape on the 4. You want to wind up about a diamond off the side rail, but if that doesn't happen, improvise." },
       { ob: {x:416.19, y:213.41}, cb: {x:367.3, y:75.58},
         cut: 26, pocket: "BR", rh: false,
         vert: 1.88, speed: 0.85,
         pathAngleAdjust: 0,
         landing: {x:370.05, y:142.38},
-        intent: "" },
+        intent: "This is your crux shot. Follow it gently for a straight-in shot on the 4-ball. If you don't get close, go back and do it a few--or a few dozen--more times until it works." },
       { ob: {x:280.45, y:196.09}, cb: {x:370.05, y:142.38},
         cut: 4.86, pocket: "BM", rh: false,
         vert: 0.76, speed: 0.45,
         pathAngleAdjust: 0,
         landing: {x:223.41, y:182.06},
-        intent: "" }
+        intent: "If you can, make this cueball roll to where the cueball was for shot one--that's the red target symbol you see. If not, what prevented you from doing it?" }
     ]
   },
   // ──────────────────────────────────────────────────────────────────
@@ -1021,78 +1021,36 @@ var SEQUENCES = [
   // shot 1's CB start as the loop-back target. Run the sequence 5 times.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "Game 4",
+    title: "05. Game 4",
     intent: "Game 4: run 4 Shot Sequence One five times through. After shot 4, land the cue ball back at shot 1's start (the blue ghost) and go again.",
     loops: true,
     laps: 5,
+    mode: "game",
     shots: [
       { ob: {x:237.73, y:108.44}, cb: {x:230, y:180},
         cut: 15, pocket: "TM", rh: false,
         vert: 1.32, speed: 0.23,
         pathAngleAdjust: -16,
         landing: {x:321.31, y:47.98},
-        intent: "Shot 1, follow gently to the rail. Shot 2. Could do a stop, or could follow to the rail. 3. Have to roll forward to reach positon on the 4. Shot 4. You have to be gentle, not allowing the cueball to follow the object ball into the pocket." },
-      { ob: {x:388.28, y:44.88}, cb: {x:321.31, y:47.98},
+        intent: "This sequence looks easy, but there is opportunity to make it hard. Start off by rolling to the rail and out.  Think ahead to shot 4, where you need to get from the 4-ball to a good position on the 1-ball to start the sequence again. Here, on this shot, go gently to the rail and out, so you have lots of control on the cue when you pocket the 2-ball. If you need to use the rake, grab it, don't be shy." },
+      { ob: {x:414.03, y:42.7}, cb: {x:321.31, y:47.98},
         cut: 15.54, pocket: "TR", rh: false,
-        vert: -1.68, speed: 0.5,
+        vert: 1.68, speed: 0.5,
         pathAngleAdjust: 0,
-        landing: {x:378.56, y:80.03},
-        intent: "" },
-      { ob: {x:416.19, y:213.41}, cb: {x:378.56, y:80.03},
+        landing: {x:387.92, y:106.59},
+        intent: "You can use follow--that's a high hit on the cueball--to go to the rail and out, but how far is too far? You need to be able to come off the 3-ball and have both an easy shot into the side with the 4-ball, and at the same time be able to roll the cueball to the starting config." },
+      { ob: {x:416.19, y:213.41}, cb: {x:387.92, y:106.59},
         cut: 26, pocket: "BR", rh: false,
-        vert: 1.88, speed: 0.85,
+        vert: -0.6, speed: 0.24,
         pathAngleAdjust: 0,
-        landing: {x:360.69, y:147.05},
-        intent: "" },
-      { ob: {x:280.45, y:196.09}, cb: {x:360.69, y:147.05},
-        cut: 0, pocket: "BM", rh: false,
-        vert: 0.76, speed: 0.45,
+        landing: {x:364.68, y:178.7},
+        intent: "You should try this shot several differeent ways.  When an object ball is in a cornet like this, and the rails and the points of the rail are in play, the cueball can run like a mad squirrel, or it could go nowhere.  Depending on the cueball position resulting from Shot 2, the likely correct way is a light half-ball hit (see the shot diagram.). This is the crux of the game--make the 3 (easy), get shape on the 4 (delicate), roll to somewhere that allows you to easily pocket the 1-ball on the next lap." },
+      { ob: {x:251.9, y:214.03}, cb: {x:364.68, y:178.7},
+        cut: 23.91, pocket: "BM", rh: false,
+        vert: -1.32, speed: 0.13,
         pathAngleAdjust: 0,
-        landing: {x:244.61, y:217.67},
-        intent: "" }
-    ]
-  },
-  // ──────────────────────────────────────────────────────────────────
-  // Sequence Two — variant of Sequence One. Shot 1 same as Seq1.shot1
-  // but lands CB at 14.B top-right. Shot 2 is an OB sitting dead in
-  // pocket 4 (BR), thin left cut making CB run up the right rail to
-  // around the 6.5 diamond. Shot 3 to OB in pocket 3 (TR), CB returns
-  // to about 20.D for a straight shot on shot 4. Shot 4 at 14.A/C area,
-  // a stop shot if shape is good. Designed to be repeated until clean
-  // five times (not a true Game loop — too easy to mis-shape shot 4).
-  // NOTE: Don's draft; positions need visual confirmation on the table,
-  // especially shot 2 geometry and shot 4 starting CB/pocket.
-  // ──────────────────────────────────────────────────────────────────
-  {
-    title: "Sequence Two",
-    intent: "A variant of Sequence One — repeat until you can run it cleanly five times in a row.",
-    shots: [
-      // Shot 1: CB(231.24,179.22) → OB(237.96,106.28) → TM. Follow + medium speed.
-      // Landing target at (314.07, 80.67) — cell 14/15 top boundary.
-      { ob: {x:237.96, y:106.28}, cb: {x:231.24, y:179.22},
-        cut: 15.9, pocket: "TM", rh: false,
-        vert: 2.64, speed: 0.65,
-        intent: "Hit follow and medium speed for shape — you want the cue ball to come up to around the 14/15 cell boundary for shot 2." },
-      // Shot 2: OB dead in pocket 4 (BR ~420,220). CB from where shot 1 landed (~273,88).
-      // Thin left cut; CB runs up the right rail to ~diamond 6.5.
-      // NOTE: "thin left cut → CB up the right rail" — geometry needs confirmation.
-      { ob: {x:420, y:220}, cb: {x:273, y:88},
-        cut: 0, pocket: "BR", rh: false,
-        vert: 0, speed: 0.55,
-        intent: "A thin cut left lets the cue run down toward the bottom rail and back up — set up your shape on the 3." },
-      // Shot 3: CB from shot 2's landing somewhere on the right rail.
-      // OB sits deep in pocket 3 (TR ~420,38). Cut left with a little follow.
-      // CB ends up at ~20.D left (~207,165) for a straight shot at shot 4.
-      { ob: {x:420, y:38}, cb: {x:415, y:130},
-        cut: 0, pocket: "TR", rh: false,
-        vert: 0.8, speed: 0.5,
-        intent: "Cut left with a little follow. Try it a few times to see what works best for landing position on the 4." },
-      // Shot 4: OB at 14.A/C left side (~237,105). Straight shot, stop.
-      // Pocket guess: TM (top middle) since OB is just below the top rail.
-      { ob: {x:237, y:105}, cb: {x:230, y:180},
-        cut: 0, pocket: "TM", rh: false,
-        vert: 0, speed: 0.4,
-        intent: "Shoot stop, if you got good shape. If shape is off, this becomes a thin cut that's easy to miss." }
+        landing: {x:228.83, y:178.63},
+        intent: "Depending on how you wound up after the 3-ball shot, you  should see if you can get to the starting position (the red bull's eye). If not,  best would be to draw the cue back and stay in the right half of the table, so the 1 goes in the side. If your shot is too thin for that, consider using follow to send the cueball to the left rail and back up." }
     ]
   },
   // ──────────────────────────────────────────────────────────────────
@@ -1101,21 +1059,21 @@ var SEQUENCES = [
   // composer's LIBRARY → FROM AIMER section.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "Composer Test 1",
+    title: "07. Composer Test 1",
     intent: "First sequence exported from the composer — round-trip test.",
     shots: [
-      { ob: {x:300.04, y:85.62}, cb: {x:230, y:180},
-        cut: 35.21, pocket: "TR", rh: true,
-        vert: 0, speed: 0.5,
-        pathAngleAdjust: 20,
-        landing: {x:377.17, y:157.38},
-        intent: "Not sure about the cue ball angle" },
-      { ob: {x:392.05, y:103.96}, cb: {x:377.17, y:157.38},
+      { ob: {x:294.58, y:100.91}, cb: {x:215.64, y:165.64},
+        cut: 12.55, pocket: "TR", rh: true,
+        vert: 2.48, speed: 0.5,
+        pathAngleAdjust: 10,
+        landing: {x:378.89, y:155.39},
+        intent: "Follow (high hit on the cueball) to make it roll to this position for an easy shot on the 2-ball." },
+      { ob: {x:392.05, y:103.96}, cb: {x:378.89, y:155.39},
         cut: 21.36, pocket: "TR", rh: true,
-        vert: -1.24, speed: 0.65,
+        vert: -2.16, speed: 0.65,
         pathAngleAdjust: 1,
         landing: {x:327.22, y:78.85},
-        intent: "This looks right." },
+        intent: "Hit low on the cue to make the cueball run uptable and give you a clean shot at the 3-ball." },
       { ob: {x:260.07, y:190.16}, cb: {x:327.22, y:78.85},
         cut: 7.43, pocket: "BM", rh: true,
         vert: -0.92, speed: 0.65,
@@ -1130,7 +1088,7 @@ var SEQUENCES = [
   // Iteration 2: starting CB and shots 1-2 eased.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "Six Ball Run",
+    title: "08. Six Ball Run",
     intent: "Six-ball position-play drill. Each shot teaches shape on the next.",
     shots: [
       { ob: {x:103.61, y:141.59}, cb: {x:149, y:211.94},
@@ -1140,23 +1098,23 @@ var SEQUENCES = [
         landing: {x:111.84, y:156.18},
         intent: "Hit low and firm, so you have a reasonable shot on the 2." },
       { ob: {x:43.21, y:85.08}, cb: {x:111.84, y:156.18},
-        cut: 37.72, pocket: "TL", rh: true,
-        vert: 0, speed: 0.5,
+        cut: 41.18, pocket: "TL", rh: true,
+        vert: 1.04, speed: 0.76,
         pathAngleAdjust: 0,
-        landing: {x:127.65, y:77.19},
-        intent: "When shooting 2, keep 4. in mind. You don't want to get too close to 4." },
-      { ob: {x:231.31, y:222}, cb: {x:127.65, y:77.19},
-        cut: 16.7, pocket: "BM", rh: true,
+        landing: {x:173.27, y:61.93},
+        intent: "When shooting 2, keep 4. in mind. You don't want to get too close to the 4-ball after shooting the 3-ball, so while shooting the 2-ball, make sure to bring the cueball nearly to the center of the table." },
+      { ob: {x:231.31, y:222}, cb: {x:173.27, y:61.93},
+        cut: 18.99, pocket: "BM", rh: true,
         vert: -1.36, speed: 0.36,
         pathAngleAdjust: 16,
         landing: {x:262.3, y:220.39},
-        intent: "You don't want to let the CB run; you need an angle on the 4 to get to 5 and then to 6." },
+        intent: "Easy does it here. You don't want to let the CB run; you need an angle on the 4 to get to 5 and then to 6, so make it roll close to the rail near pocket 5." },
       { ob: {x:356.22, y:208.4}, cb: {x:262.3, y:220.39},
         cut: 28.22, pocket: "BR", rh: true,
         vert: -1.92, speed: 0.78,
         pathAngleAdjust: 25,
         landing: {x:389.15, y:92.25},
-        intent: "Carefully pull the CB back so you have a reasonable shot on the 5." },
+        intent: "Carefully pull the CB back so you have a reasonable shot on the 5. That means hit low, and with some force. Try this shot a few dozen times; it's a good one to develop your instincts--which is our goal here, to help you build INSTINCT." },
       { ob: {x:405.26, y:187.1}, cb: {x:389.15, y:92.25},
         cut: 21.72, pocket: "BR", rh: false,
         vert: 0, speed: 0.5,
@@ -1168,11 +1126,11 @@ var SEQUENCES = [
         vert: 1.32, speed: 0.67,
         pathAngleAdjust: 0,
         landing: {x:229.51, y:128.3},
-        intent: "Don't let this run too far — you don't want to scratch." }
+        intent: "Don't let this run too far — you don't want to scratch. Looks easy, but any long shot needs careful aiming and care in general. If you accidentally put spin on it, the shot will go off the intended line. Things can go very bad in that six feet of table." }
     ]
   },
   {
-    title: "6-2 Sequence A: Six Shots",
+    title: "09. 6-2 Sequence A: Six Shots",
     intent: "",
     loops: true,
     shots: [
@@ -1215,7 +1173,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: "6-2 Sequence B, 6 shots",
+    title: "10. 6-2 Sequence B, 6 shots",
     intent: "",
     loops: true,
     shots: [
@@ -1258,7 +1216,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: "6_5_26 Spin 1",
+    title: "11. 6_5_26 Spin 1",
     intent: "",
     shots: [
       { ob: {x:350.73, y:39.26}, cb: {x:280.4, y:78.26},
@@ -1276,7 +1234,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: "6_5_26 Spin 2",
+    title: "12. 6_5_26 Spin 2",
     intent: "",
     shots: [
       { ob: {x:350.73, y:39.26}, cb: {x:199.88, y:121.49},
@@ -1295,7 +1253,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: "6-5-26 Spin 1.",
+    title: "13. 6-5-26 Spin 1.",
     intent: "",
     shots: [
       { ob: {x:354.84, y:42.46}, cb: {x:277.44, y:129.29},
@@ -1313,7 +1271,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: "6-5-26 Spin 2.",
+    title: "14. 6-5-26 Spin 2.",
     intent: "",
     shots: [
       { ob: {x:354.84, y:42.46}, cb: {x:230.78, y:133.19},
@@ -1332,7 +1290,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: "6-5-26 Spin 3.",
+    title: "15. 6-5-26 Spin 3.",
     intent: "",
     shots: [
       { ob: {x:354.84, y:42.46}, cb: {x:230.91, y:129.4},
@@ -1726,6 +1684,20 @@ function escapeSeqHTML(s) {
   });
 }
 
+function ensureCuePathOn() {
+  if (typeof cbPathOn !== 'undefined' && !cbPathOn) {
+    cbPathOn = true;
+    var _cpBtn = document.getElementById('btn-cbpath');
+    if (_cpBtn) {
+      _cpBtn.classList.add('on');
+      _cpBtn.style.lineHeight = '1.3';
+      _cpBtn.innerHTML = 'CUE PATH<br>ON';
+    }
+    var _cpDock = document.getElementById('dock-cuepath');
+    if (_cpDock) _cpDock.classList.add('active');
+  }
+}
+
 function toggleSequence(idx) {
   if (window._seqState && window._seqState.sequenceIdx === idx) {
     // Already open — close it (clear table)
@@ -1737,6 +1709,7 @@ function toggleSequence(idx) {
       completed: SEQUENCES[idx].shots.map(function(){ return false; }),
       currentLap: 1
     };
+    ensureCuePathOn();
     magSetShot('seq' + (idx+1) + '.shot1');
   }
   buildSequencesPane();
@@ -1749,6 +1722,7 @@ function resetSequence(idx) {
     completed: SEQUENCES[idx].shots.map(function(){ return false; }),
     currentLap: 1
   };
+  ensureCuePathOn();
   magSetShot('seq' + (idx+1) + '.shot1');
   buildSequencesPane();
   if (typeof window._seqNavRefresh === 'function') window._seqNavRefresh();
@@ -2006,23 +1980,6 @@ function loadShotData(shot) {
   // sliders.
   if (typeof window._updateSliderIndicator === 'function') {
     window._updateSliderIndicator();
-  }
-  // Auto-enable Cue Ball Path when loading sequence shots. In sequence
-  // context the CB path is the pedagogy — it shows the student where the
-  // CB is supposed to go after contact, with the landing-ghost marking
-  // the predicted stop. We don't override the user's preference in
-  // non-sequence contexts (warmup, free play).
-  if (window._seqState && window._seqState.sequenceIdx >= 0
-      && typeof cbPathOn !== 'undefined' && !cbPathOn) {
-    cbPathOn = true;
-    var _cpBtn = document.getElementById('btn-cbpath');
-    if (_cpBtn) {
-      _cpBtn.classList.add('on');
-      _cpBtn.style.lineHeight = '1.3';
-      _cpBtn.innerHTML = 'CUE PATH<br>ON';
-    }
-    var _cpDock = document.getElementById('dock-cuepath');
-    if (_cpDock) _cpDock.classList.add('active');
   }
   render();
 }
@@ -2742,10 +2699,12 @@ if ('serviceWorker' in navigator) {
       <!-- Sequence-nav strip (mirrored from aimer.html). Appears at top of
            viewport when a sequence is active. BACK / indicator / READ / NEXT. -->
       <div id="seq-nav-strip" style="display:none;position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(0,0,0,0.85);border:1px solid rgba(125,211,252,0.6);border-radius:8px;padding:6px 8px;align-items:center;gap:6px;font-family:Lato,sans-serif;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.5);">
+        <button id="seq-prev-seq-btn" title="Previous sequence — jump to shot 1 of the previous sequence in the list." style="font-size:13px;font-weight:900;padding:6px 8px;border-radius:5px;background:rgba(125,211,252,0.10);color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">⏮</button>
         <button id="seq-back-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(125,211,252,0.18);color:#7dd3fc;border:1px solid #7dd3fc;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">◀ BACK</button>
         <div id="seq-nav-indicator" style="font-size:12px;font-weight:900;color:#fff;letter-spacing:0.04em;padding:0 6px;text-align:center;min-width:130px;line-height:1.15;"></div>
         <button id="seq-read-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(240,223,112,0.18);color:#f0df70;border:1px solid #f0df70;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">READ</button>
         <button id="seq-next-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(125,211,252,0.18);color:#7dd3fc;border:1px solid #7dd3fc;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">NEXT ▶</button>
+        <button id="seq-next-seq-btn" title="Next sequence — jump to shot 1 of the next sequence in the list." style="font-size:13px;font-weight:900;padding:6px 8px;border-radius:5px;background:rgba(125,211,252,0.10);color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">⏭</button>
       </div>
       <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:299;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:16px 20px;max-width:560px;width:90vw;max-height:70vh;overflow-y:auto;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
         <div id="seq-read-seq-intent" style="font-size:13px;color:#7dd3fc;font-weight:900;letter-spacing:0.04em;margin-bottom:10px;border-bottom:1px solid rgba(125,211,252,0.3);padding-bottom:8px;"></div>
@@ -3857,11 +3816,14 @@ const svg = $('topsvg');
 // finger position on touch-down.
 let _ballGrabDx = 0, _ballGrabDy = 0;
 svg.addEventListener('pointerdown', e => {
-  if (window._tableLocked) return;  // table locked: no ball grabs, fall through to pan
+  // Game-mode placement: allow CB drag specifically (not OB) even when
+  // table is locked, so the player can position the cue ball between laps.
+  var _placementCbDrag = !!(window._seqState && window._seqState.placeCbMode);
+  if (window._tableLocked && !_placementCbDrag) return;  // table locked: no ball grabs, fall through to pan
   const p = svgPt(e);
   // Ball drag works regardless of pan/ball mode. The wrapper-level pan handler
   // ignores touches that started on a ball; the ball handler picks them up.
-  if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) {
+  if (!_placementCbDrag && Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) {
     e.preventDefault(); e.stopPropagation();
     drag = 'ob';
     _ballGrabDx = p.x - S.ob.x;
@@ -7296,6 +7258,8 @@ document.addEventListener('DOMContentLoaded', function(){
     var backBtn = document.getElementById('seq-back-btn');
     var nextBtn = document.getElementById('seq-next-btn');
     var readBtn = document.getElementById('seq-read-btn');
+    var prevSeqBtn = document.getElementById('seq-prev-seq-btn');
+    var nextSeqBtn = document.getElementById('seq-next-seq-btn');
     var overlay = document.getElementById('seq-read-overlay');
     var ovSeqEl = document.getElementById('seq-read-seq-intent');
     var ovShotEl= document.getElementById('seq-read-shot-intent');
@@ -7325,6 +7289,7 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       var seq = SEQUENCES[window._seqState.sequenceIdx];
       var idx = getActiveShotIdx();
+      var inPlacement = !!window._seqState.placeCbMode;
       strip.style.display = 'flex';
       var indicator = (seq.title || 'Sequence');
       if (seq.loops) {
@@ -7336,9 +7301,13 @@ document.addEventListener('DOMContentLoaded', function(){
           indicator += ' · Lap ' + curLap;
         }
       }
-      indicator += ' · Shot ' + (idx + 1) + ' of ' + seq.shots.length;
+      if (inPlacement) {
+        indicator += ' · Place CB, then NEXT';
+      } else {
+        indicator += ' · Shot ' + (idx + 1) + ' of ' + seq.shots.length;
+      }
       indEl.textContent = indicator;
-      var canBack = idx > 0;
+      var canBack = idx > 0 && !inPlacement;
       backBtn.disabled = !canBack;
       backBtn.style.opacity = canBack ? '1' : '0.35';
       backBtn.style.cursor = canBack ? 'pointer' : 'default';
@@ -7351,16 +7320,30 @@ document.addEventListener('DOMContentLoaded', function(){
       } else {
         isLastLap = false;
       }
-      if (isLastShot && isLastLap) {
+      if (inPlacement) {
+        nextBtn.textContent = 'COMMIT ▶';
+      } else if (isLastShot && isLastLap) {
         nextBtn.textContent = 'DONE';
       } else {
         nextBtn.textContent = 'NEXT ▶';
       }
       var shotIntent = (seq.shots[idx] && seq.shots[idx].intent) || '';
-      var hasProse = shotIntent.trim().length > 0;
+      var hasProse = shotIntent.trim().length > 0 && !inPlacement;
       readBtn.disabled = !hasProse;
       readBtn.style.opacity = hasProse ? '1' : '0.4';
       readBtn.style.cursor = hasProse ? 'pointer' : 'default';
+      if (prevSeqBtn) {
+        var canPrevSeq = window._seqState.sequenceIdx > 0 && !inPlacement;
+        prevSeqBtn.disabled = !canPrevSeq;
+        prevSeqBtn.style.opacity = canPrevSeq ? '1' : '0.35';
+        prevSeqBtn.style.cursor = canPrevSeq ? 'pointer' : 'default';
+      }
+      if (nextSeqBtn) {
+        var canNextSeq = window._seqState.sequenceIdx < SEQUENCES.length - 1 && !inPlacement;
+        nextSeqBtn.disabled = !canNextSeq;
+        nextSeqBtn.style.opacity = canNextSeq ? '1' : '0.35';
+        nextSeqBtn.style.cursor = canNextSeq ? 'pointer' : 'default';
+      }
       if (overlay.style.display !== 'none') {
         showOverlayContent(seq, idx);
       }
@@ -7382,19 +7365,34 @@ document.addEventListener('DOMContentLoaded', function(){
       var idx = getActiveShotIdx();
       var isLastShot = idx >= seq.shots.length - 1;
       window._seqState.completed[idx] = true;
-      if (isLastShot) {
+      // Game-mode placement commit
+      if (window._seqState.placeCbMode) {
+        var seq0 = SEQUENCES[window._seqState.sequenceIdx];
+        var placedX = S.cb.x, placedY = S.cb.y;
+        window._seqState.placeCbMode = false;
+        var s0 = seq0.shots[0];
+        var overriddenShot = Object.assign({}, s0, { cb: { x: placedX, y: placedY } });
+        loadShotData(overriddenShot);
+        for (var i = 0; i < seq0.shots.length; i++) window._seqState.completed[i] = false;
+      } else if (isLastShot) {
         if (seq.loops) {
           var totalLaps = (typeof seq.laps === 'number' && seq.laps > 0) ? seq.laps : null;
           var curLap = window._seqState.currentLap || 1;
           if (totalLaps && curLap >= totalLaps) {
-            window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1 };
+            window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1, placeCbMode: false };
           } else {
-            for (var i = 0; i < seq.shots.length; i++) window._seqState.completed[i] = false;
             window._seqState.currentLap = curLap + 1;
-            loadShotData(seq.shots[0]);
+            if (seq.mode === 'game') {
+              // GAME MODE: enter CB placement state, don't reset completed yet.
+              window._seqState.placeCbMode = true;
+            } else {
+              // SEQUENCE MODE: idealized restart.
+              for (var i = 0; i < seq.shots.length; i++) window._seqState.completed[i] = false;
+              loadShotData(seq.shots[0]);
+            }
           }
         } else {
-          window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1 };
+          window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1, placeCbMode: false };
         }
       } else {
         loadShotData(seq.shots[idx + 1]);
@@ -7433,9 +7431,56 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     }
 
+    function jumpToSequence(targetIdx) {
+      if (targetIdx < 0 || targetIdx >= SEQUENCES.length) return;
+      // Cue Path defaults ON for any new sequence the user opens.
+      if (typeof ensureCuePathOn === 'function') ensureCuePathOn();
+      if (typeof toggleSequence === 'function') {
+        if (window._seqState && window._seqState.sequenceIdx === targetIdx) return;
+        if (window._seqState && window._seqState.sequenceIdx >= 0) {
+          window._seqState = {
+            sequenceIdx: targetIdx,
+            completed: SEQUENCES[targetIdx].shots.map(function(){ return false; }),
+            currentLap: 1
+          };
+          if (typeof magSetShot === 'function') {
+            magSetShot('seq' + (targetIdx+1) + '.shot1');
+          } else {
+            loadShotData(SEQUENCES[targetIdx].shots[0]);
+          }
+          if (typeof buildSequencesPane === 'function') buildSequencesPane();
+        } else {
+          toggleSequence(targetIdx);
+          return;
+        }
+      } else {
+        window._seqState = {
+          sequenceIdx: targetIdx,
+          completed: SEQUENCES[targetIdx].shots.map(function(){ return false; }),
+          currentLap: 1
+        };
+        loadShotData(SEQUENCES[targetIdx].shots[0]);
+      }
+      if (typeof renderSequenceTable === 'function') {
+        renderSequenceTable(targetIdx);
+      }
+      if (typeof render === 'function') render();
+      refresh();
+    }
+
     backBtn.addEventListener('click', function(e){ e.preventDefault(); back(); });
     nextBtn.addEventListener('click', function(e){ e.preventDefault(); advance(); });
     readBtn.addEventListener('click', function(e){ e.preventDefault(); toggleRead(); });
+    if (prevSeqBtn) prevSeqBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      if (!isSeqActive()) return;
+      jumpToSequence(window._seqState.sequenceIdx - 1);
+    });
+    if (nextSeqBtn) nextSeqBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      if (!isSeqActive()) return;
+      jumpToSequence(window._seqState.sequenceIdx + 1);
+    });
 
     window._seqNavRefresh = refresh;
     refresh();
@@ -8609,16 +8654,56 @@ window._copyShotData = function() {
           '<button id="comp-reset" title="Wipe composer and start fresh." style="padding:6px 10px;background:rgba(200,80,80,0.4);color:#fff;border:1px solid rgba(200,80,80,0.7);border-radius:4px;font-weight:900;font-size:12px;cursor:pointer;">CLEAR</button>',
         '</div>',
         '<div id="comp-tabs" style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;"></div>',
+        // Row 2: text-size controls. A−/A+ adjust the intent textarea
+        // font size only; the rest of the composer chrome is unchanged.
+        '<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#aab;">',
+          '<span style="opacity:0.7;">Text size</span>',
+          '<button id="comp-text-smaller" title="Smaller intent text" style="padding:2px 8px;background:rgba(125,211,252,0.15);color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);border-radius:4px;font-weight:900;font-size:13px;cursor:pointer;line-height:1;">A−</button>',
+          '<button id="comp-text-larger" title="Larger intent text" style="padding:2px 8px;background:rgba(125,211,252,0.15);color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);border-radius:4px;font-weight:900;font-size:15px;cursor:pointer;line-height:1;">A+</button>',
+          '<span id="comp-text-size-readout" style="opacity:0.7;min-width:28px;text-align:right;">14px</span>',
+        '</div>',
         '<textarea id="comp-intent" placeholder="Notes for the active shot (LeStar Z teaching prose)" style="width:100%;min-height:48px;padding:8px;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;font-size:14px;font-family:Lato,sans-serif;resize:vertical;box-sizing:border-box;line-height:1.35;"></textarea>',
-      '</div>'
+      '</div>',
+      // ── RESIZE HANDLE ── Bottom-right corner. Drag to scale the whole panel
+      // (transform: scale, so text and controls grow together). Only visible
+      // when expanded. A double-arrow visual hints at drag direction.
+      '<div id="comp-resize" title="Drag to resize the composer (text scales with the panel). Double-click to reset." style="position:absolute;bottom:0;right:0;width:18px;height:18px;cursor:nwse-resize;display:none;align-items:center;justify-content:center;color:#7dd3fc;font-size:12px;line-height:1;user-select:none;pointer-events:auto;">⇲</div>'
     ].join('');
     document.body.appendChild(panel);
     applyMinimizedState();
+    // Apply the user's saved intent-text size (if any) on panel creation.
+    applyIntentFontSize();
+    // ── A−/A+ text size buttons ──────────────────────────────────────
+    // Adjust the intent textarea's font size only. Range 12-24px in 1px
+    // steps. Persists in localStorage.
+    var smaller = panel.querySelector('#comp-text-smaller');
+    var larger  = panel.querySelector('#comp-text-larger');
+    if (smaller) {
+      smaller.addEventListener('click', function(e){
+        e.stopPropagation();
+        var cur = getIntentFontSize();
+        setIntentFontSize(Math.max(12, cur - 1));
+      });
+    }
+    if (larger) {
+      larger.addEventListener('click', function(e){
+        e.stopPropagation();
+        var cur = getIntentFontSize();
+        setIntentFontSize(Math.min(24, cur + 1));
+      });
+    }
     // Header click toggles
     var header = panel.querySelector('#comp-header');
     if (header) {
       header.addEventListener('click', function(e){
         if (e.target && e.target.id === 'comp-toggle') return;
+        // Suppress click-to-toggle if a header DRAG just completed (the
+        // pointer moved more than the click threshold). Drag handler sets
+        // a transient flag we read here.
+        if (panel._suppressNextClick) {
+          panel._suppressNextClick = false;
+          return;
+        }
         toggleMinimized();
       });
     }
@@ -8629,7 +8714,200 @@ window._copyShotData = function() {
         toggleMinimized();
       });
     }
+    // ── DRAG-TO-MOVE on the header (only when expanded) ───────────────
+    // The header click already toggles minimize/expand. We intercept
+    // pointerdown on the header and watch for movement: a real drag
+    // (>4px) repositions the panel and suppresses the subsequent click.
+    // A click (≤4px movement) falls through to the existing toggle.
+    if (header) {
+      var dragState = null;
+      header.addEventListener('pointerdown', function(e){
+        if (isMinimized()) return;          // only drag when expanded
+        if (e.target && (e.target.id === 'comp-toggle' || e.target.tagName === 'BUTTON')) return;
+        // Initialize drag — capture starting pointer + current panel rect
+        var rect = panel.getBoundingClientRect();
+        dragState = {
+          startX: e.clientX,
+          startY: e.clientY,
+          baseLeft: rect.left,
+          baseTop:  rect.top,
+          moved: false
+        };
+        try { header.setPointerCapture(e.pointerId); } catch(_) {}
+      });
+      header.addEventListener('pointermove', function(e){
+        if (!dragState) return;
+        var dx = e.clientX - dragState.startX;
+        var dy = e.clientY - dragState.startY;
+        if (!dragState.moved && Math.hypot(dx, dy) < 4) return;
+        dragState.moved = true;
+        // Once we're truly dragging, switch the panel to absolute
+        // left/top positioning (it was bottom-right anchored). Constrain
+        // to viewport with a small margin.
+        var newLeft = dragState.baseLeft + dx;
+        var newTop  = dragState.baseTop + dy;
+        var vw = window.innerWidth, vh = window.innerHeight;
+        // Keep at least the header visible
+        var minVisible = 40;
+        var scaledW = panel.getBoundingClientRect().width;
+        var scaledH = panel.getBoundingClientRect().height;
+        newLeft = Math.max(minVisible - scaledW, Math.min(newLeft, vw - minVisible));
+        newTop  = Math.max(0, Math.min(newTop, vh - minVisible));
+        panel.style.left   = newLeft + 'px';
+        panel.style.top    = newTop + 'px';
+        panel.style.right  = 'auto';
+        panel.style.bottom = 'auto';
+        panel.style.marginLeft = '0';
+      });
+      header.addEventListener('pointerup', function(e){
+        if (!dragState) return;
+        if (dragState.moved) {
+          panel._suppressNextClick = true;
+          persistComposerState();
+        }
+        try { header.releasePointerCapture(e.pointerId); } catch(_) {}
+        dragState = null;
+      });
+      header.addEventListener('pointercancel', function(e){
+        try { header.releasePointerCapture(e.pointerId); } catch(_) {}
+        dragState = null;
+      });
+    }
+    // ── RESIZE on the corner handle (only when expanded) ─────────────
+    // The handle resizes the panel's actual width and height. The intent
+    // textarea inside absorbs extra vertical room so the user can see
+    // more of their teaching prose without scrolling. Text size stays
+    // unchanged — only the layout grows. Double-click resets to defaults.
+    var resizeHandle = panel.querySelector('#comp-resize');
+    if (resizeHandle) {
+      var resizeState = null;
+      resizeHandle.addEventListener('pointerdown', function(e){
+        if (isMinimized()) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var rect = panel.getBoundingClientRect();
+        resizeState = {
+          startX: e.clientX,
+          startY: e.clientY,
+          baseW: rect.width,
+          baseH: rect.height
+        };
+        try { resizeHandle.setPointerCapture(e.pointerId); } catch(_) {}
+      });
+      resizeHandle.addEventListener('pointermove', function(e){
+        if (!resizeState) return;
+        var dx = e.clientX - resizeState.startX;
+        var dy = e.clientY - resizeState.startY;
+        var newW = Math.max(320, Math.min(window.innerWidth  - 24, resizeState.baseW + dx));
+        var newH = Math.max(140, Math.min(window.innerHeight - 24, resizeState.baseH + dy));
+        panel.style.width  = newW + 'px';
+        panel.style.height = newH + 'px';
+        // Override the default max-width that the expand path sets so it
+        // doesn't clamp our drag larger than 720.
+        panel.style.maxWidth = 'none';
+        // Resize the intent textarea to fill the remaining vertical space
+        // inside the body. Other rows (title row, tabs) have fixed heights.
+        resizeIntentBoxToFit();
+      });
+      resizeHandle.addEventListener('pointerup', function(e){
+        if (!resizeState) return;
+        try { resizeHandle.releasePointerCapture(e.pointerId); } catch(_) {}
+        resizeState = null;
+        persistComposerState();
+      });
+      resizeHandle.addEventListener('pointercancel', function(e){
+        try { resizeHandle.releasePointerCapture(e.pointerId); } catch(_) {}
+        resizeState = null;
+      });
+      // Double-click to reset to default size (and clear width/height
+      // overrides so the panel returns to its expand-mode default).
+      resizeHandle.addEventListener('dblclick', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        panel.style.width = '';
+        panel.style.height = '';
+        panel.style.maxWidth = '720px';
+        var intentBox = document.getElementById('comp-intent');
+        if (intentBox) intentBox.style.height = '';
+        persistComposerState();
+      });
+    }
     return panel;
+  }
+
+  // ── COMPOSER PERSISTENCE & SIZING ──────────────────────────────────
+  // The user can move and resize the expanded composer. Position is
+  // stored as {left, top}; size as {width, height}. Both persist to
+  // localStorage so the layout survives page reloads. When minimized,
+  // position/size are ignored (the floating button always sits
+  // bottom-right at default size). The intent textarea automatically
+  // grows to fill any extra vertical space so the user can read more
+  // teaching prose without scrolling.
+  var COMP_LAYOUT_KEY = 'aimer_composer_layout_v1';
+  var COMP_FONT_SIZE_KEY = 'aimer_composer_intent_font_size_v1';
+  function getIntentFontSize() {
+    try {
+      var raw = localStorage.getItem(COMP_FONT_SIZE_KEY);
+      var n = raw ? parseInt(raw, 10) : 14;
+      if (!isFinite(n)) n = 14;
+      return Math.max(12, Math.min(24, n));
+    } catch(_) { return 14; }
+  }
+  function setIntentFontSize(px) {
+    try { localStorage.setItem(COMP_FONT_SIZE_KEY, String(px)); } catch(_) {}
+    applyIntentFontSize();
+  }
+  function applyIntentFontSize() {
+    var box = document.getElementById('comp-intent');
+    var readout = document.getElementById('comp-text-size-readout');
+    var px = getIntentFontSize();
+    if (box) box.style.fontSize = px + 'px';
+    if (readout) readout.textContent = px + 'px';
+  }
+  function resizeIntentBoxToFit() {
+    var panel = document.getElementById('composer-panel');
+    var body = document.getElementById('comp-body');
+    var intentBox = document.getElementById('comp-intent');
+    if (!panel || !body || !intentBox) return;
+    // Compute available vertical space in the body. body's total height
+    // is panel.height minus the header. The intent textarea should be
+    // body.height minus the title row and tabs row heights and gaps.
+    var bodyRect = body.getBoundingClientRect();
+    var intentRect = intentBox.getBoundingClientRect();
+    // Sum of other children's heights inside body
+    var otherChildrenH = 0;
+    var children = body.children;
+    for (var i = 0; i < children.length; i++) {
+      if (children[i] === intentBox) continue;
+      otherChildrenH += children[i].getBoundingClientRect().height;
+    }
+    // Gap between flex children (body uses gap:8px)
+    var gaps = Math.max(0, children.length - 1) * 8;
+    // Padding of body (10px top + 10px bottom)
+    var bodyPad = 20;
+    var available = bodyRect.height - otherChildrenH - gaps - bodyPad;
+    if (available < 48) available = 48;  // never shrink below textarea minimum
+    intentBox.style.height = available + 'px';
+  }
+  function persistComposerState() {
+    try {
+      var panel = document.getElementById('composer-panel');
+      if (!panel) return;
+      var state = {
+        left:   panel.style.left   || null,
+        top:    panel.style.top    || null,
+        width:  panel.style.width  || null,
+        height: panel.style.height || null
+      };
+      localStorage.setItem(COMP_LAYOUT_KEY, JSON.stringify(state));
+    } catch(_) {}
+  }
+  function loadComposerState() {
+    try {
+      var raw = localStorage.getItem(COMP_LAYOUT_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch(_) { return null; }
   }
 
   function applyMinimizedState() {
@@ -8639,17 +8917,22 @@ window._copyShotData = function() {
     var summary = document.getElementById('comp-summary');
     var body = document.getElementById('comp-body');
     var btn = document.getElementById('comp-toggle');
+    var resizeHandle = document.getElementById('comp-resize');
     if (!panel || !header || !body || !btn) return;
     var min = isMinimized();
     if (min) {
       // MINIMIZED: small floating button in the bottom-right corner. Only the
       // header is visible. Compact. Doesn't show full summary text — too small.
+      // Position & size are forced back to defaults — the minimized state
+      // ignores any user-saved layout (it's supposed to be unobtrusive).
       panel.style.bottom = '12px';
       panel.style.right = '12px';
       panel.style.left = 'auto';
       panel.style.top = 'auto';
       panel.style.width = 'auto';
+      panel.style.height = 'auto';
       panel.style.maxWidth = 'none';
+      panel.style.transform = 'none';
       panel.style.background = 'rgba(10,15,10,0.97)';
       panel.style.border = '2px solid #7dd3fc';
       panel.style.borderRadius = '24px';
@@ -8670,25 +8953,47 @@ window._copyShotData = function() {
       btn.textContent = '▴';
       btn.title = 'Expand composer';
       body.style.display = 'none';
+      if (resizeHandle) resizeHandle.style.display = 'none';
     } else {
       // EXPANDED: panel slides up from the bottom-right, overlays viewport.
       // On wide screens it's anchored bottom-right with a max-width; on phone
       // it fills the width with a small margin so it doesn't look cramped.
-      panel.style.bottom = '12px';
-      panel.style.right = '12px';
-      panel.style.left = '12px';
-      panel.style.top = 'auto';
-      panel.style.maxWidth = '720px';
-      panel.style.marginLeft = 'auto';
+      // If the user has previously moved or resized the panel, restore that
+      // layout instead of the default bottom-right anchor.
+      var saved = loadComposerState();
+      if (saved && saved.left && saved.top) {
+        // User-positioned: use absolute left/top, no bottom/right anchoring
+        panel.style.left = saved.left;
+        panel.style.top = saved.top;
+        panel.style.right = 'auto';
+        panel.style.bottom = 'auto';
+        panel.style.marginLeft = '0';
+      } else {
+        // Default: anchor bottom-right with margin so it stretches on mobile
+        panel.style.bottom = '12px';
+        panel.style.right = '12px';
+        panel.style.left = '12px';
+        panel.style.top = 'auto';
+        panel.style.marginLeft = 'auto';
+      }
+      // Restore saved size if present; otherwise fall back to default max-width
+      if (saved && saved.width)  panel.style.width  = saved.width;  else panel.style.width  = '';
+      if (saved && saved.height) panel.style.height = saved.height; else panel.style.height = '';
+      // Only apply max-width when the user hasn't set their own width
+      panel.style.maxWidth = (saved && saved.width) ? 'none' : '720px';
+      panel.style.transform = 'none';
+      panel.style.transformOrigin = 'top left';
       panel.style.background = 'rgba(10,15,10,0.97)';
       panel.style.border = '2px solid #7dd3fc';
       panel.style.borderRadius = '10px';
       panel.style.boxShadow = '0 6px 20px rgba(0,0,0,0.6)';
       panel.style.padding = '0';
       panel.style.overflow = 'visible';
+      panel.style.position = 'fixed';
       header.style.padding = '8px 12px';
       header.style.background = 'rgba(125,211,252,0.10)';
       header.style.borderBottom = '1px solid rgba(125,211,252,0.3)';
+      header.style.cursor = 'move';
       if (headerLabel) headerLabel.style.fontSize = '13px';
       if (summary) {
         summary.style.fontSize = '12px';
@@ -8700,6 +9005,13 @@ window._copyShotData = function() {
       btn.textContent = '▾';
       btn.title = 'Minimize composer';
       body.style.display = 'flex';
+      if (resizeHandle) resizeHandle.style.display = 'flex';
+      // After expand, size the intent textarea to fit any saved height.
+      // setTimeout 0 lets the browser apply the styles first so getBoundingClientRect
+      // returns the correct numbers.
+      if (saved && saved.height) {
+        setTimeout(function(){ resizeIntentBoxToFit(); }, 0);
+      }
     }
   }
 

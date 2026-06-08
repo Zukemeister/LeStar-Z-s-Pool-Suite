@@ -928,7 +928,7 @@ var SEQUENCES = [
   // basic shot possibilities. They lead up to the four-shot sequence.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: 'Two Shot Set 1',
+    title: '01. Two Shot Set 1',
     intent: 'Cut into the corner, then follow to the rail for shot two.',
     shots: [
       // Shot 1: CB(348,151) → OB(379,81) → TR. Cut 26° R, follow.
@@ -937,18 +937,18 @@ var SEQUENCES = [
         vert: 1.28, speed: 0.51,
         pathAngleAdjust: 0,
         landing: {x:351.77, y:46.65},
-        intent: 'Cut into corner; follow to rail for shot two.' },
+        intent: "Cut this into the corner, noting where the 2-ball sits, and decide what gives you the best position on that 2-ball. You could hit high on the cueball and thusly follow it to the rail.  Try it. That might be too delicate, so if you find that is too hard, try hitting it low--draw-- and harder. It will come up the rail further, and give you bigger margins for getting usable position. Shoot it many times until it is natural." },
       // Shot 2: CB inherits shot 1's landing (351.77,46.65) → OB(401.52,39) → TR.
       { ob: {x:401.52, y:39}, cb: {x:351.77, y:46.65},
         cut: 0, pocket: 'TR', rh: false,
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:385.26, y:39.78},
-        intent: '' }
+        intent: "Simple stop shot--if you played the 1-ball correctly. Did you?" }
     ]
   },
   {
-    title: 'Two Shot Set 2',
+    title: '02. Two Shot Set 2',
     intent: 'A thin cut and a long follow across the table.',
     shots: [
       // Shot 1: CB(355,124) → OB(378,76) → TR. Cut 31° R, follow.
@@ -957,18 +957,18 @@ var SEQUENCES = [
         vert: 1.64, speed: 0.51,
         pathAngleAdjust: 0,
         landing: {x:244.11, y:121.9},
-        intent: 'Cut to the top right corner with a touch of follow.' },
+        intent: "The 2-ball is in a  challenging position. How to get there? To get the 2-ball in the side, you need to direct the cueball off the 1-ball into two rails and out. Be careful about not scratching in the bottom middle pocket, Pocket 5. You can direct the position of the bounces by hitting higher or lower. Try both and see what happens." },
       // Shot 2: CB inherits shot 1's landing (244.11,121.9) → OB(220,44) → TM. Cut 35.22° R, hard follow.
       { ob: {x:220, y:44}, cb: {x:244.11, y:121.9},
         cut: 35.22, pocket: 'TM', rh: true,
         vert: 1.52, speed: 0.81,
         pathAngleAdjust: 0,
         landing: {x:77.98, y:97.06},
-        intent: 'Follow with just enough to get to the end rail.' }
+        intent: "Follow with just enough to get to the end rail safely." }
     ]
   },
   {
-    title: 'Two Shot Set 3',
+    title: '03. Two Shot Set 3',
     intent: 'Follow to the right rail, then follow to the center.',
     shots: [
       // Shot 1: CB(148,142) → OB(230,41) → TM. Thin cut 47° L, no follow/draw, medium speed.
@@ -977,7 +977,7 @@ var SEQUENCES = [
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:374, y:83},
-        intent: 'Follow this shot so the cue ball lands near the right rail.' },
+        intent: "Follow this shot, but you have a choice: push it to the rail and let it bounce out, or hit very softly and keep it well above the two. Either way, you don't want to be on the side rail, and the shot gets very hard that way." },
       // Shot 2: CB inherits shot 1's landing (374,83) → OB(382,198) → BR. Very thin cut 59° L, heavy follow, hard speed.
       { ob: {x:382, y:198}, cb: {x:374, y:83},
         cut: 59, pocket: 'BR', rh: false,
@@ -992,37 +992,37 @@ var SEQUENCES = [
   // draw to move the cue ball around the table, each shot setting up the next.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "4 Shot Sequence One",
+    title: "04. 4 Shot Sequence One",
     intent: "Sequence One uses follow, stop and draw.",
     shots: [
-      // Shot 1: CB(230,180) → OB(237.73,108.44) → TM. Gentle follow.
+      // Shot 1: CB(230,180) → OB(237.73,108.44) → TM. Gentle follow, pathAngleAdjust -15°.
       { ob: {x:237.73, y:108.44}, cb: {x:230, y:180},
         cut: 15, pocket: "TM", rh: false,
         vert: 1.32, speed: 0.23,
-        pathAngleAdjust: 0,
-        landing: {x:338.87, y:44.29},
-        intent: "Shot 1, follow gently to the rail. Shot 2. Could do a stop, or could follow to the rail. 3. Have to roll forward to reach positon on the 4. Shot 4. You have to be gentle, not allowing the cueball to follow the object ball into the pocket." },
-      // Shot 2: CB inherits (338.87,44.29) → OB(386.58,39) → TR. Soft draw, slight right cut.
-      { ob: {x:386.58, y:39}, cb: {x:338.87, y:44.29},
+        pathAngleAdjust: -15,
+        landing: {x:320.5, y:46},
+        intent: "Follow gently to the rail by hitting high on the cueball. You don't want to go too far." },
+      // Shot 2: CB inherits (320.5,46) → OB(386.58,39) → TR. Soft draw, slight right cut.
+      { ob: {x:386.58, y:39}, cb: {x:320.5, y:46},
         cut: 6.69, pocket: "TR", rh: true,
         vert: -0.56, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:367.3, y:75.58},
-        intent: "" },
-      // Shot 3: CB inherits (367.3,75.58) → OB(416.19,213.41) → BR. Hard follow.
+        intent: "Depending on how Shot 1 went, you could stop the cue, or you could possible follow to the rail and back up.  The goal is to leave yourself with an easy way to get shape on the 4. You want to wind up about a diamond off the side rail, but if that doesn't happen, improvise." },
+      // Shot 3: CB inherits (367.3,75.58) → OB(416.19,213.41) → BR. Hard follow — the crux shot.
       { ob: {x:416.19, y:213.41}, cb: {x:367.3, y:75.58},
         cut: 26, pocket: "BR", rh: false,
         vert: 1.88, speed: 0.85,
         pathAngleAdjust: 0,
         landing: {x:370.05, y:142.38},
-        intent: "" },
-      // Shot 4: CB inherits (370.05,142.38) → OB(280.45,196.09) → BM. Slight cut, gentle follow.
+        intent: "This is your crux shot. Follow it gently for a straight-in shot on the 4-ball. If you don't get close, go back and do it a few--or a few dozen--more times until it works." },
+      // Shot 4: CB inherits (370.05,142.38) → OB(280.45,196.09) → BM. Slight cut, gentle follow, lands at shot 1 CB target (red bullseye).
       { ob: {x:280.45, y:196.09}, cb: {x:370.05, y:142.38},
         cut: 4.86, pocket: "BM", rh: false,
         vert: 0.76, speed: 0.45,
         pathAngleAdjust: 0,
         landing: {x:223.41, y:182.06},
-        intent: "" }
+        intent: "If you can, make this cueball roll to where the cueball was for shot one--that's the red target symbol you see. If not, what prevented you from doing it?" }
     ]
   },
   // ──────────────────────────────────────────────────────────────────
@@ -1031,70 +1031,40 @@ var SEQUENCES = [
   // shot 1's CB start as the loop-back target. Run the sequence 5 times.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "Game 4",
+    title: "05. Game 4",
     intent: "Game 4: run 4 Shot Sequence One five times through. After shot 4, land the cue ball back at shot 1's start (the blue ghost) and go again.",
     loops: true,
     laps: 5,
+    mode: "game",
     shots: [
-      // Shot 1: CB(230,180) → OB(237.73,108.44) → TM. Gentle follow, with authored path-angle override of -16°.
+      // Shot 1: CB(230,180) → OB(237.73,108.44) → TM. Gentle follow, pathAngleAdjust -16°. (Unchanged geometry; rich teaching intent.)
       { ob: {x:237.73, y:108.44}, cb: {x:230, y:180},
         cut: 15, pocket: "TM", rh: false,
         vert: 1.32, speed: 0.23,
         pathAngleAdjust: -16,
         landing: {x:321.31, y:47.98},
-        intent: "Shot 1, follow gently to the rail. Shot 2. Could do a stop, or could follow to the rail. 3. Have to roll forward to reach positon on the 4. Shot 4. You have to be gentle, not allowing the cueball to follow the object ball into the pocket." },
-      // Shot 2: CB inherits (321.31,47.98) → OB(388.28,44.88) → TR. Draw with slight cut.
-      { ob: {x:388.28, y:44.88}, cb: {x:321.31, y:47.98},
+        intent: "This sequence looks easy, but there is opportunity to make it hard. Start off by rolling to the rail and out.  Think ahead to shot 4, where you need to get from the 4-ball to a good position on the 1-ball to start the sequence again. Here, on this shot, go gently to the rail and out, so you have lots of control on the cue when you pocket the 2-ball. If you need to use the rake, grab it, don't be shy." },
+      // Shot 2: CB inherits (321.31,47.98) → OB(414.03,42.7) → TR. Now uses follow (was draw); simpler shot for shape on the 3.
+      { ob: {x:414.03, y:42.7}, cb: {x:321.31, y:47.98},
         cut: 15.54, pocket: "TR", rh: false,
-        vert: -1.68, speed: 0.5,
+        vert: 1.68, speed: 0.5,
         pathAngleAdjust: 0,
-        landing: {x:378.56, y:80.03},
-        intent: "" },
-      // Shot 3: CB inherits (378.56,80.03) → OB(416.19,213.41) → BR. Hard follow.
-      { ob: {x:416.19, y:213.41}, cb: {x:378.56, y:80.03},
+        landing: {x:387.92, y:106.59},
+        intent: "You can use follow--that's a high hit on the cueball--to go to the rail and out, but how far is too far? You need to be able to come off the 3-ball and have both an easy shot into the side with the 4-ball, and at the same time be able to roll the cueball to the starting config." },
+      // Shot 3: CB inherits (387.92,106.59) → OB(416.19,213.41) → BR. Now gentle draw at low speed (was heavy follow at high speed) — the crux of the game.
+      { ob: {x:416.19, y:213.41}, cb: {x:387.92, y:106.59},
         cut: 26, pocket: "BR", rh: false,
-        vert: 1.88, speed: 0.85,
+        vert: -0.6, speed: 0.24,
         pathAngleAdjust: 0,
-        landing: {x:360.69, y:147.05},
-        intent: "" },
-      // Shot 4: CB inherits (360.69,147.05) → OB(280.45,196.09) → BM. Straight, gentle follow.
-      { ob: {x:280.45, y:196.09}, cb: {x:360.69, y:147.05},
-        cut: 0, pocket: "BM", rh: false,
-        vert: 0.76, speed: 0.45,
+        landing: {x:364.68, y:178.7},
+        intent: "You should try this shot several differeent ways.  When an object ball is in a cornet like this, and the rails and the points of the rail are in play, the cueball can run like a mad squirrel, or it could go nowhere.  Depending on the cueball position resulting from Shot 2, the likely correct way is a light half-ball hit (see the shot diagram.). This is the crux of the game--make the 3 (easy), get shape on the 4 (delicate), roll to somewhere that allows you to easily pocket the 1-ball on the next lap." },
+      // Shot 4: CB inherits (364.68,178.7) → OB(251.9,214.03) → BM. Cut with light draw, lands near shot 1's CB (red bullseye) for the game-mode loop.
+      { ob: {x:251.9, y:214.03}, cb: {x:364.68, y:178.7},
+        cut: 23.91, pocket: "BM", rh: false,
+        vert: -1.32, speed: 0.13,
         pathAngleAdjust: 0,
-        landing: {x:244.61, y:217.67},
-        intent: "" }
-    ]
-  },
-  // ──────────────────────────────────────────────────────────────────
-  // Sequence Two — variant of Sequence One. Shot 1 captured from author;
-  // shots 2, 3, 4 still drafts pending capture.
-  // ──────────────────────────────────────────────────────────────────
-  {
-    title: "Sequence Two",
-    intent: "A variant of Sequence One — repeat until you can run it cleanly five times in a row.",
-    shots: [
-      // Shot 1: captured CB(231.24,179.22) → OB(237.96,106.28) → TM. Follow + medium speed.
-      // Landing target at (314.07, 80.67).
-      { ob: {x:237.96, y:106.28}, cb: {x:231.24, y:179.22},
-        cut: 15.9, pocket: "TM", rh: false,
-        vert: 2.64, speed: 0.65,
-        intent: "Hit follow and medium speed for shape — you want the cue ball to come up to around the 14/15 cell boundary for shot 2." },
-      // Shot 2: DRAFT — pending real capture from author.
-      { ob: {x:420, y:220}, cb: {x:273, y:88},
-        cut: 0, pocket: "BR", rh: false,
-        vert: 0, speed: 0.55,
-        intent: "A thin cut left lets the cue run down toward the bottom rail and back up — set up your shape on the 3." },
-      // Shot 3: DRAFT — pending real capture from author.
-      { ob: {x:420, y:38}, cb: {x:415, y:130},
-        cut: 0, pocket: "TR", rh: false,
-        vert: 0.8, speed: 0.5,
-        intent: "Cut left with a little follow. Try it a few times to see what works best for landing position on the 4." },
-      // Shot 4: DRAFT — pending real capture from author.
-      { ob: {x:237, y:105}, cb: {x:230, y:180},
-        cut: 0, pocket: "TM", rh: false,
-        vert: 0, speed: 0.4,
-        intent: "Shoot stop, if you got good shape. If shape is off, this becomes a thin cut that's easy to miss." }
+        landing: {x:228.83, y:178.63},
+        intent: "Depending on how you wound up after the 3-ball shot, you  should see if you can get to the starting position (the red bull's eye). If not,  best would be to draw the cue back and stay in the right half of the table, so the 1 goes in the side. If your shot is too thin for that, consider using follow to send the cueball to the left rail and back up." }
     ]
   },
   // ──────────────────────────────────────────────────────────────────
@@ -1105,28 +1075,24 @@ var SEQUENCES = [
   // playback — port the ANGLE infrastructure separately if/when needed.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "Composer Test 1",
+    title: "07. Composer Test 1",
     intent: "First sequence exported from the composer — round-trip test.",
     shots: [
-      // Shot 1: CB(230,180) → OB(300.04,85.62) → TR. ANGLE +20°.
-      // Author note flagged uncertainty about whether +20° fully matches reality.
-      { ob: {x:300.04, y:85.62}, cb: {x:230, y:180},
-        cut: 35.21, pocket: "TR", rh: true,
-        vert: 0, speed: 0.5,
-        pathAngleAdjust: 20,
-        landing: {x:377.17, y:157.38},
-        intent: "Not sure about the cue ball angle" },
-      // Shot 2: CB inherits shot 1's landing (377.17,157.38) → OB(392.05,103.96) → TR.
-      // Draw (vert -1.24) + medium-hard speed (0.65). ANGLE +1°. Author: "This looks right."
-      { ob: {x:392.05, y:103.96}, cb: {x:377.17, y:157.38},
+      // Shot 1: CB(215.64,165.64) → OB(294.58,100.91) → TR. Follow, pathAngleAdjust +10°.
+      { ob: {x:294.58, y:100.91}, cb: {x:215.64, y:165.64},
+        cut: 12.55, pocket: "TR", rh: true,
+        vert: 2.48, speed: 0.5,
+        pathAngleAdjust: 10,
+        landing: {x:378.89, y:155.39},
+        intent: "Follow (high hit on the cueball) to make it roll to this position for an easy shot on the 2-ball." },
+      // Shot 2: CB inherits (378.89,155.39) → OB(392.05,103.96) → TR. Draw with cut, +1° calibration.
+      { ob: {x:392.05, y:103.96}, cb: {x:378.89, y:155.39},
         cut: 21.36, pocket: "TR", rh: true,
-        vert: -1.24, speed: 0.65,
+        vert: -2.16, speed: 0.65,
         pathAngleAdjust: 1,
         landing: {x:327.22, y:78.85},
-        intent: "This looks right." },
-      // Shot 3: CB inherits shot 2's landing (327.22,78.85) → OB(260.07,190.16) → BM.
-      // Soft draw (vert -0.92, speed 0.65) at 7.43° right-hand cut, ANGLE -12°.
-      // Small CB movement — lands just past the OB at (286.76, 199.44).
+        intent: "Hit low on the cue to make the cueball run uptable and give you a clean shot at the 3-ball." },
+      // Shot 3: CB inherits (327.22,78.85) → OB(260.07,190.16) → BM. Soft draw, slight cut, -12° calibration.
       { ob: {x:260.07, y:190.16}, cb: {x:327.22, y:78.85},
         cut: 7.43, pocket: "BM", rh: true,
         vert: -0.92, speed: 0.65,
@@ -1143,38 +1109,37 @@ var SEQUENCES = [
   // 3-6 unchanged from v1 because they were working as designed.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "Six Ball Run",
+    title: "08. Six Ball Run",
     intent: "Six-ball position-play drill. Each shot teaches shape on the next.",
     shots: [
       // Shot 1: CB(149,212) → OB1(103.61,141.59) → TL. Low draw, firm.
-      // Eased: closer first OB to the TL pocket and CB further down-left.
       { ob: {x:103.61, y:141.59}, cb: {x:149, y:211.94},
         cut: 0, pocket: "TL", rh: false,
         vert: -1.84, speed: 0.65,
         pathAngleAdjust: 0,
         landing: {x:111.84, y:156.18},
         intent: "Hit low and firm, so you have a reasonable shot on the 2." },
-      // Shot 2: CB inherits (111.84,156.18) → OB2(43.21,85.08) → TL. Cut 37.72° right.
+      // Shot 2: CB inherits (111.84,156.18) → OB2(43.21,85.08) → TL. Cut with follow, firmer; CB ends near center for shot-3 setup.
       { ob: {x:43.21, y:85.08}, cb: {x:111.84, y:156.18},
-        cut: 37.72, pocket: "TL", rh: true,
-        vert: 0, speed: 0.5,
+        cut: 41.18, pocket: "TL", rh: true,
+        vert: 1.04, speed: 0.76,
         pathAngleAdjust: 0,
-        landing: {x:127.65, y:77.19},
-        intent: "When shooting 2, keep 4. in mind. You don't want to get too close to 4." },
-      // Shot 3: CB inherits (127.65,77.19) → OB3(231.31,222) → BM. Draw, soft. ANGLE +16°.
-      { ob: {x:231.31, y:222}, cb: {x:127.65, y:77.19},
-        cut: 16.7, pocket: "BM", rh: true,
+        landing: {x:173.27, y:61.93},
+        intent: "When shooting 2, keep 4. in mind. You don't want to get too close to the 4-ball after shooting the 3-ball, so while shooting the 2-ball, make sure to bring the cueball nearly to the center of the table." },
+      // Shot 3: CB inherits (173.27,61.93) → OB3(231.31,222) → BM. Draw, soft. ANGLE +16°.
+      { ob: {x:231.31, y:222}, cb: {x:173.27, y:61.93},
+        cut: 18.99, pocket: "BM", rh: true,
         vert: -1.36, speed: 0.36,
         pathAngleAdjust: 16,
         landing: {x:262.3, y:220.39},
-        intent: "You don't want to let the CB run; you need an angle on the 4 to get to 5 and then to 6." },
-      // Shot 4: CB inherits (262.3,220.39) → OB4(356.22,208.4) → BR. Strong draw, hard. ANGLE +25°.
+        intent: "Easy does it here. You don't want to let the CB run; you need an angle on the 4 to get to 5 and then to 6, so make it roll close to the rail near pocket 5." },
+      // Shot 4: CB inherits (262.3,220.39) → OB4(356.22,208.4) → BR. Strong draw, hard. ANGLE +25°. The instinct-builder shot.
       { ob: {x:356.22, y:208.4}, cb: {x:262.3, y:220.39},
         cut: 28.22, pocket: "BR", rh: true,
         vert: -1.92, speed: 0.78,
         pathAngleAdjust: 25,
         landing: {x:389.15, y:92.25},
-        intent: "Carefully pull the CB back so you have a reasonable shot on the 5." },
+        intent: "Carefully pull the CB back so you have a reasonable shot on the 5. That means hit low, and with some force. Try this shot a few dozen times; it's a good one to develop your instincts--which is our goal here, to help you build INSTINCT." },
       // Shot 5: CB inherits (389.15,92.25) → OB5(405.26,187.1) → BR. Stun, medium.
       { ob: {x:405.26, y:187.1}, cb: {x:389.15, y:92.25},
         cut: 21.72, pocket: "BR", rh: false,
@@ -1182,13 +1147,13 @@ var SEQUENCES = [
         pathAngleAdjust: 0,
         landing: {x:292.25, y:137.56},
         intent: "Almost anywhere is good postion on the 6, so relax and make the shot." },
-      // Shot 6: CB inherits (292.25,137.56) → OB6(50.51,212.11) → BL. Follow, medium-firm.
+      // Shot 6: CB inherits (292.25,137.56) → OB6(50.51,212.11) → BL. Follow, medium-firm. Six-foot table-length shot.
       { ob: {x:50.51, y:212.11}, cb: {x:292.25, y:137.56},
         cut: 15, pocket: "BL", rh: false,
         vert: 1.32, speed: 0.67,
         pathAngleAdjust: 0,
         landing: {x:229.51, y:128.3},
-        intent: "Don't let this run too far — you don't want to scratch." }
+        intent: "Don't let this run too far — you don't want to scratch. Looks easy, but any long shot needs careful aiming and care in general. If you accidentally put spin on it, the shot will go off the intended line. Things can go very bad in that six feet of table." }
     ]
   },
   // ──────────────────────────────────────────────────────────────────
@@ -1199,7 +1164,7 @@ var SEQUENCES = [
   // scratch avoidance.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "6-2 Sequence A: Six Shots",
+    title: "09. 6-2 Sequence A: Six Shots",
     intent: "",
     loops: true,
     shots: [
@@ -1253,7 +1218,7 @@ var SEQUENCES = [
   // when to stop.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "6-2 Sequence B, 6 shots",
+    title: "10. 6-2 Sequence B, 6 shots",
     intent: "",
     loops: true,
     shots: [
@@ -1307,7 +1272,7 @@ var SEQUENCES = [
   // stop-shot into side) authored from progressively farther CB starts.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "6_5_26 Spin 1",
+    title: "11. 6_5_26 Spin 1",
     intent: "",
     shots: [
       // Shot 1: CB(280.4,78.26) → OB1(350.73,39.26) → TR. Heavy draw + left spin, path-angle override -23°.
@@ -1327,7 +1292,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: "6_5_26 Spin 2",
+    title: "12. 6_5_26 Spin 2",
     intent: "",
     shots: [
       // Shot 1: CB(199.88,121.49) → OB1(350.73,39.26) → TR. Same shape goal as Spin 1 but from farther — more power, more spin, thinner aim. RC bias 0.142 baked in.
@@ -1356,7 +1321,7 @@ var SEQUENCES = [
   // shape outcome.
   // ──────────────────────────────────────────────────────────────────
   {
-    title: "6-5-26 Spin 1.",
+    title: "13. 6-5-26 Spin 1.",
     intent: "",
     shots: [
       // Shot 1: CB(277.44,129.29) → OB1(354.84,42.46) → TR. Heavy draw + left spin, pathAngleAdjust -22°.
@@ -1376,7 +1341,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: "6-5-26 Spin 2.",
+    title: "14. 6-5-26 Spin 2.",
     intent: "",
     shots: [
       // Shot 1: CB(230.78,133.19) → OB1(354.84,42.46) → TR. Same shot from farther — more power, more spin, thinner aim. RC bias 0.129.
@@ -1397,7 +1362,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: "6-5-26 Spin 3.",
+    title: "15. 6-5-26 Spin 3.",
     intent: "",
     shots: [
       // Shot 1: CB(230.91,129.4) → OB1(354.84,42.46) → TR. Even farther, even more spin, even more correction. RC bias 0.129.
@@ -1793,6 +1758,23 @@ function escapeSeqHTML(s) {
   });
 }
 
+// Helper: turn Cue Path ON and update the button visual. Called when a
+// sequence is first opened so the curriculum visual is there by default.
+// The user is still free to toggle it off afterwards.
+function ensureCuePathOn() {
+  if (typeof cbPathOn !== 'undefined' && !cbPathOn) {
+    cbPathOn = true;
+    var _cpBtn = document.getElementById('btn-cbpath');
+    if (_cpBtn) {
+      _cpBtn.classList.add('on');
+      _cpBtn.style.lineHeight = '1.3';
+      _cpBtn.innerHTML = 'CUE PATH<br>ON';
+    }
+    var _cpDock = document.getElementById('dock-cuepath');
+    if (_cpDock) _cpDock.classList.add('active');
+  }
+}
+
 function toggleSequence(idx) {
   if (window._seqState && window._seqState.sequenceIdx === idx) {
     // Already open — close it (clear table)
@@ -1804,6 +1786,7 @@ function toggleSequence(idx) {
       completed: SEQUENCES[idx].shots.map(function(){ return false; }),
       currentLap: 1
     };
+    ensureCuePathOn();
     magSetShot('seq' + (idx+1) + '.shot1');
   }
   buildSequencesPane();
@@ -1816,6 +1799,7 @@ function resetSequence(idx) {
     completed: SEQUENCES[idx].shots.map(function(){ return false; }),
     currentLap: 1
   };
+  ensureCuePathOn();
   magSetShot('seq' + (idx+1) + '.shot1');
   buildSequencesPane();
   if (typeof window._seqNavRefresh === 'function') window._seqNavRefresh();
@@ -2088,23 +2072,6 @@ function loadShotData(shot) {
   // sliders.
   if (typeof window._updateSliderIndicator === 'function') {
     window._updateSliderIndicator();
-  }
-  // Auto-enable Cue Ball Path when loading sequence shots. In sequence
-  // context the CB path is the pedagogy — it shows the student where the
-  // CB is supposed to go after contact, with the landing-ghost marking
-  // the predicted stop. We don't override the user's preference in
-  // non-sequence contexts (warmup, free play).
-  if (window._seqState && window._seqState.sequenceIdx >= 0
-      && typeof cbPathOn !== 'undefined' && !cbPathOn) {
-    cbPathOn = true;
-    var _cpBtn = document.getElementById('btn-cbpath');
-    if (_cpBtn) {
-      _cpBtn.classList.add('on');
-      _cpBtn.style.lineHeight = '1.3';
-      _cpBtn.innerHTML = 'CUE PATH<br>ON';
-    }
-    var _cpDock = document.getElementById('dock-cuepath');
-    if (_cpDock) _cpDock.classList.add('active');
   }
   render();
 }
@@ -2827,10 +2794,12 @@ if ('serviceWorker' in navigator) {
            of the in-sequence navigation UI; Learn panel is only for picking
            which sequence to start. -->
       <div id="seq-nav-strip" style="display:none;position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(0,0,0,0.85);border:1px solid rgba(125,211,252,0.6);border-radius:8px;padding:6px 8px;align-items:center;gap:6px;font-family:Lato,sans-serif;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.5);">
+        <button id="seq-prev-seq-btn" title="Previous sequence — jump to shot 1 of the previous sequence in the list." style="font-size:13px;font-weight:900;padding:6px 8px;border-radius:5px;background:rgba(125,211,252,0.10);color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">⏮</button>
         <button id="seq-back-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(125,211,252,0.18);color:#7dd3fc;border:1px solid #7dd3fc;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">◀ BACK</button>
         <div id="seq-nav-indicator" style="font-size:12px;font-weight:900;color:#fff;letter-spacing:0.04em;padding:0 6px;text-align:center;min-width:130px;line-height:1.15;"></div>
         <button id="seq-read-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(240,223,112,0.18);color:#f0df70;border:1px solid #f0df70;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">READ</button>
         <button id="seq-next-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(125,211,252,0.18);color:#7dd3fc;border:1px solid #7dd3fc;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">NEXT ▶</button>
+        <button id="seq-next-seq-btn" title="Next sequence — jump to shot 1 of the next sequence in the list." style="font-size:13px;font-weight:900;padding:6px 8px;border-radius:5px;background:rgba(125,211,252,0.10);color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">⏭</button>
       </div>
       <!-- READ overlay: semi-transparent panel over the table showing the
            active shot's intent prose. Tap READ again to dismiss. -->
@@ -3940,11 +3909,15 @@ const svg = $('topsvg');
 // finger position on touch-down.
 let _ballGrabDx = 0, _ballGrabDy = 0;
 svg.addEventListener('pointerdown', e => {
-  if (window._tableLocked) return;  // table locked: no ball grabs, fall through to pan
+  // Game-mode placement: when the player is positioning the CB between
+  // laps of a game, allow CB drag specifically (not OB) even if the table
+  // is locked. The CB grab below will pick it up; OB stays locked.
+  var _placementCbDrag = !!(window._seqState && window._seqState.placeCbMode);
+  if (window._tableLocked && !_placementCbDrag) return;  // table locked: no ball grabs, fall through to pan
   const p = svgPt(e);
   // Ball drag works regardless of pan/ball mode. The wrapper-level pan handler
   // ignores touches that started on a ball; the ball handler picks them up.
-  if (Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) {
+  if (!_placementCbDrag && Math.hypot(p.x-S.ob.x, p.y-S.ob.y) < 36) {
     e.preventDefault(); e.stopPropagation();
     drag = 'ob';
     _ballGrabDx = p.x - S.ob.x;
@@ -7441,6 +7414,8 @@ document.addEventListener('DOMContentLoaded', function(){
     var backBtn = document.getElementById('seq-back-btn');
     var nextBtn = document.getElementById('seq-next-btn');
     var readBtn = document.getElementById('seq-read-btn');
+    var prevSeqBtn = document.getElementById('seq-prev-seq-btn');
+    var nextSeqBtn = document.getElementById('seq-next-seq-btn');
     var overlay = document.getElementById('seq-read-overlay');
     var ovSeqEl = document.getElementById('seq-read-seq-intent');
     var ovShotEl= document.getElementById('seq-read-shot-intent');
@@ -7474,8 +7449,10 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       var seq = SEQUENCES[window._seqState.sequenceIdx];
       var idx = getActiveShotIdx();
+      var inPlacement = !!window._seqState.placeCbMode;
       strip.style.display = 'flex';
       // Build indicator: title · [lap info, if looping] · shot N of M
+      // (or placement prompt if we're between laps of a game)
       var indicator = (seq.title || 'Sequence');
       if (seq.loops) {
         var totalLaps = (typeof seq.laps === 'number' && seq.laps > 0) ? seq.laps : null;
@@ -7486,16 +7463,21 @@ document.addEventListener('DOMContentLoaded', function(){
           indicator += ' · Lap ' + curLap;
         }
       }
-      indicator += ' · Shot ' + (idx + 1) + ' of ' + seq.shots.length;
+      if (inPlacement) {
+        indicator += ' · Place CB, then NEXT';
+      } else {
+        indicator += ' · Shot ' + (idx + 1) + ' of ' + seq.shots.length;
+      }
       indEl.textContent = indicator;
-      // BACK disabled on shot 1 of any lap
-      var canBack = idx > 0;
+      // BACK disabled on shot 1 of any lap AND during placement
+      var canBack = idx > 0 && !inPlacement;
       backBtn.disabled = !canBack;
       backBtn.style.opacity = canBack ? '1' : '0.35';
       backBtn.style.cursor = canBack ? 'pointer' : 'default';
       // NEXT label: "DONE" only on the very last shot of the very last lap
       // (non-looping → last shot = DONE; looping with laps → final lap final
-      // shot = DONE; looping without laps cap → always NEXT)
+      // shot = DONE; looping without laps cap → always NEXT). In placement
+      // mode NEXT becomes "COMMIT" to make the action explicit.
       var isLastShot = idx >= seq.shots.length - 1;
       var isLastLap;
       if (!seq.loops) {
@@ -7505,17 +7487,32 @@ document.addEventListener('DOMContentLoaded', function(){
       } else {
         isLastLap = false; // looping with no cap → never DONE
       }
-      if (isLastShot && isLastLap) {
+      if (inPlacement) {
+        nextBtn.textContent = 'COMMIT ▶';
+      } else if (isLastShot && isLastLap) {
         nextBtn.textContent = 'DONE';
       } else {
         nextBtn.textContent = 'NEXT ▶';
       }
-      // READ: disabled if no shot prose
+      // READ: disabled if no shot prose, or during placement
       var shotIntent = (seq.shots[idx] && seq.shots[idx].intent) || '';
-      var hasProse = shotIntent.trim().length > 0;
+      var hasProse = shotIntent.trim().length > 0 && !inPlacement;
       readBtn.disabled = !hasProse;
       readBtn.style.opacity = hasProse ? '1' : '0.4';
       readBtn.style.cursor = hasProse ? 'pointer' : 'default';
+      // Prev/Next sequence buttons: disabled at the list ends AND during placement.
+      if (prevSeqBtn) {
+        var canPrevSeq = window._seqState.sequenceIdx > 0 && !inPlacement;
+        prevSeqBtn.disabled = !canPrevSeq;
+        prevSeqBtn.style.opacity = canPrevSeq ? '1' : '0.35';
+        prevSeqBtn.style.cursor = canPrevSeq ? 'pointer' : 'default';
+      }
+      if (nextSeqBtn) {
+        var canNextSeq = window._seqState.sequenceIdx < SEQUENCES.length - 1 && !inPlacement;
+        nextSeqBtn.disabled = !canNextSeq;
+        nextSeqBtn.style.opacity = canNextSeq ? '1' : '0.35';
+        nextSeqBtn.style.cursor = canNextSeq ? 'pointer' : 'default';
+      }
       if (overlay.style.display !== 'none') {
         showOverlayContent(seq, idx);
       }
@@ -7539,22 +7536,50 @@ document.addEventListener('DOMContentLoaded', function(){
       var isLastShot = idx >= seq.shots.length - 1;
       // Mark current shot completed
       window._seqState.completed[idx] = true;
-      if (isLastShot) {
+      // Game-mode placement commit: if we're in placement mode, NEXT now
+      // commits the player's chosen CB position and loads shot 1 with it.
+      if (window._seqState.placeCbMode) {
+        var seq0 = SEQUENCES[window._seqState.sequenceIdx];
+        // Capture current CB position as the placement, clear placement flag,
+        // then load shot 1 — but override the loaded shot's CB with the placed
+        // position. (loadShotData reads shot.cb; we replace it for this load.)
+        var placedX = S.cb.x, placedY = S.cb.y;
+        window._seqState.placeCbMode = false;
+        // Build a per-call override of shot 0 so loadShotData picks up the
+        // placed CB, leaving the authored shot data intact.
+        var s0 = seq0.shots[0];
+        var overriddenShot = Object.assign({}, s0, { cb: { x: placedX, y: placedY } });
+        loadShotData(overriddenShot);
+        // After load, mark shot 0 as not yet completed (fresh lap)
+        for (var i = 0; i < seq0.shots.length; i++) window._seqState.completed[i] = false;
+      } else if (isLastShot) {
         if (seq.loops) {
           var totalLaps = (typeof seq.laps === 'number' && seq.laps > 0) ? seq.laps : null;
           var curLap = window._seqState.currentLap || 1;
           if (totalLaps && curLap >= totalLaps) {
             // Final lap, final shot — DONE, exit sequence
-            window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1 };
+            window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1, placeCbMode: false };
           } else {
-            // Wrap to next lap: reset completed[], increment lap, load shot 1
-            for (var i = 0; i < seq.shots.length; i++) window._seqState.completed[i] = false;
+            // Wrap to next lap
             window._seqState.currentLap = curLap + 1;
-            loadShotData(seq.shots[0]);
+            if (seq.mode === 'game') {
+              // GAME MODE: keep CB where it actually ended up. Enter
+              // placement state — player can drag CB; the next NEXT tap
+              // commits the position and loads shot 1 with the placed CB.
+              window._seqState.placeCbMode = true;
+              // Don't reset completed[] yet — we're conceptually between
+              // laps, with shot N (the last) still "completed" as the
+              // visual state. completed[] gets reset on placement commit.
+            } else {
+              // SEQUENCE MODE (idealized restart): reset completed[],
+              // load authored shot 1 fresh.
+              for (var i = 0; i < seq.shots.length; i++) window._seqState.completed[i] = false;
+              loadShotData(seq.shots[0]);
+            }
           }
         } else {
           // Non-looping last shot — DONE, exit sequence
-          window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1 };
+          window._seqState = { sequenceIdx: -1, completed: [], currentLap: 1, placeCbMode: false };
         }
       } else {
         // Within a lap: advance to next shot
@@ -7598,9 +7623,65 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     }
 
+    function jumpToSequence(targetIdx) {
+      if (targetIdx < 0 || targetIdx >= SEQUENCES.length) return;
+      // Cue Path defaults ON for any new sequence the user opens.
+      if (typeof ensureCuePathOn === 'function') ensureCuePathOn();
+      // Use the existing toggleSequence machinery if available — it sets up
+      // _seqState and loads shot 1 via the same path as picking from the
+      // Learn panel, so all downstream rendering stays consistent.
+      if (typeof toggleSequence === 'function') {
+        // toggleSequence on the same idx CLOSES the sequence (toggle behavior),
+        // so first ensure we're not already on the target.
+        if (window._seqState && window._seqState.sequenceIdx === targetIdx) return;
+        // If a sequence is currently open, exit it first to avoid the
+        // "already open → close" branch firing on the target.
+        if (window._seqState && window._seqState.sequenceIdx >= 0) {
+          // Fully reinitialize state to point at the target
+          window._seqState = {
+            sequenceIdx: targetIdx,
+            completed: SEQUENCES[targetIdx].shots.map(function(){ return false; }),
+            currentLap: 1
+          };
+          if (typeof magSetShot === 'function') {
+            magSetShot('seq' + (targetIdx+1) + '.shot1');
+          } else {
+            loadShotData(SEQUENCES[targetIdx].shots[0]);
+          }
+          if (typeof buildSequencesPane === 'function') buildSequencesPane();
+        } else {
+          toggleSequence(targetIdx);
+          return; // toggleSequence calls _seqNavRefresh itself
+        }
+      } else {
+        // Fallback: load directly
+        window._seqState = {
+          sequenceIdx: targetIdx,
+          completed: SEQUENCES[targetIdx].shots.map(function(){ return false; }),
+          currentLap: 1
+        };
+        loadShotData(SEQUENCES[targetIdx].shots[0]);
+      }
+      if (typeof renderSequenceTable === 'function') {
+        renderSequenceTable(targetIdx);
+      }
+      if (typeof render === 'function') render();
+      refresh();
+    }
+
     backBtn.addEventListener('click', function(e){ e.preventDefault(); back(); });
     nextBtn.addEventListener('click', function(e){ e.preventDefault(); advance(); });
     readBtn.addEventListener('click', function(e){ e.preventDefault(); toggleRead(); });
+    if (prevSeqBtn) prevSeqBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      if (!isSeqActive()) return;
+      jumpToSequence(window._seqState.sequenceIdx - 1);
+    });
+    if (nextSeqBtn) nextSeqBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      if (!isSeqActive()) return;
+      jumpToSequence(window._seqState.sequenceIdx + 1);
+    });
 
     // Expose refresh so external code can call it when _seqState changes
     // (e.g. when Learn panel picks a sequence)
