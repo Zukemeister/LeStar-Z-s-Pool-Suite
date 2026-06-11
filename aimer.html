@@ -2848,13 +2848,14 @@ if ('serviceWorker' in navigator) {
            shot's intent prose, with a toggle between LeStar's authored
            version and the user's personal notes. Drag the top grip bar
            to move; drag the corner handle to resize. -->
-      <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:299;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:0;max-width:560px;width:90vw;max-height:70vh;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
+      <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:10000;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:0;max-width:560px;width:90vw;max-height:70vh;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
         <!-- Drag grip bar -->
-        <div id="seq-read-grip" title="Drag to move" style="cursor:move;height:22px;touch-action:none;background:rgba(125,211,252,0.18);border-top-left-radius:8px;border-top-right-radius:8px;border-bottom:1px solid rgba(125,211,252,0.3);display:flex;align-items:center;justify-content:center;user-select:none;">
-          <span style="font-size:10px;color:#7dd3fc;letter-spacing:0.4em;line-height:1;">▪▪▪</span>
+        <div id="seq-read-grip" title="Drag to move" style="cursor:move;height:30px;touch-action:none;position:relative;background:rgba(125,211,252,0.18);border-top-left-radius:8px;border-top-right-radius:8px;border-bottom:1px solid rgba(125,211,252,0.3);display:flex;align-items:center;justify-content:center;user-select:none;">
+          <span style="font-size:11px;color:#7dd3fc;letter-spacing:0.4em;line-height:1;">▪▪▪</span>
+          <button id="seq-read-min" title="Hide" style="position:absolute;right:5px;top:50%;transform:translateY(-50%);min-width:52px;height:24px;padding:0 10px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:5px;font-size:13px;font-weight:900;letter-spacing:0.06em;line-height:1;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;">HIDE</button>
         </div>
         <!-- Body wrapper — this is what scrolls; gives the overlay its content area -->
-        <div id="seq-read-body" style="padding:12px 20px 16px;overflow-y:auto;max-height:calc(100% - 14px);">
+        <div id="seq-read-body" style="padding:12px 20px 16px;overflow-y:auto;max-height:calc(100% - 30px);">
         <!-- View toggle: LeStar's Version | Mine -->
         <div style="display:flex;gap:0;margin-bottom:12px;border:1px solid rgba(125,211,252,0.5);border-radius:6px;overflow:hidden;font-size:12px;font-weight:900;letter-spacing:0.04em;">
           <button id="seq-read-view-lestar" style="flex:1;padding:7px 10px;background:rgba(125,211,252,0.25);color:#fff;border:none;cursor:pointer;line-height:1;font-family:inherit;">LESTAR'S VERSION</button>
@@ -2876,7 +2877,6 @@ if ('serviceWorker' in navigator) {
         </div>
         </div>
         <!-- Corner resize handle -->
-        <div id="seq-read-resize" title="Drag to resize. Double-click to reset." style="position:absolute;bottom:0;right:0;width:18px;height:18px;cursor:nwse-resize;display:flex;align-items:center;justify-content:center;color:#7dd3fc;font-size:12px;line-height:1;user-select:none;">⇲</div>
       </div>
       <button id="rail-lock-btn" title="Lock table — disables ball drags so you can pan freely from any point on the table." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
       <button id="slider-indicator-btn" title="Sliders status — bright blue when speed, spin, or vert is set away from default. Tap to scroll to the sliders panel." style="position:fixed;left:0;top:0;z-index:200;width:30px;height:24px;padding:0;border-radius:4px;background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.2);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;visibility:hidden;">
@@ -7886,12 +7886,15 @@ document.addEventListener('DOMContentLoaded', function(){
       var dragging = false, sx = 0, sy = 0, bx = 0, by = 0;
       function clampIntoView(){
         var r = overlay.getBoundingClientRect();
-        var maxL = Math.max(0, window.innerWidth  - r.width);
-        var maxT = Math.max(0, window.innerHeight - r.height);
+        var MIN = 56; // keep at least this much on-screen so the box stays grabbable
         var l = parseFloat(overlay.style.left) || 0;
         var t = parseFloat(overlay.style.top)  || 0;
-        overlay.style.left = Math.min(Math.max(0, l), maxL) + 'px';
-        overlay.style.top  = Math.min(Math.max(0, t), maxT) + 'px';
+        var minL = MIN - r.width;                 // may hang off the left edge...
+        var maxL = window.innerWidth  - MIN;      // ...and off the right edge
+        var minT = 0;                             // keep the grip reachable at the top
+        var maxT = window.innerHeight - MIN;      // may hang off the bottom edge
+        overlay.style.left = Math.min(Math.max(minL, l), maxL) + 'px';
+        overlay.style.top  = Math.min(Math.max(minT, t), maxT) + 'px';
       }
       grip.addEventListener('pointerdown', function(e){
         dragging = true;
@@ -7917,6 +7920,20 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       grip.addEventListener('pointerup', endDrag);
       grip.addEventListener('pointercancel', endDrag);
+      // Minimize / restore — collapse the body, leaving the draggable grip bar.
+      var minBtn = document.getElementById('seq-read-min');
+      var rbody  = document.getElementById('seq-read-body');
+      if (minBtn && rbody) {
+        minBtn.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+        minBtn.addEventListener('click', function(e){
+          e.stopPropagation(); e.preventDefault();
+          var willMin = rbody.style.display !== 'none';
+          rbody.style.display = willMin ? 'none' : '';
+          minBtn.textContent = willMin ? 'SHOW' : 'HIDE';
+          minBtn.title = willMin ? 'Restore' : 'Hide';
+          clampIntoView();
+        });
+      }
     })();
 
     function advance() {
@@ -8010,12 +8027,16 @@ document.addEventListener('DOMContentLoaded', function(){
         overlay.style.display = 'block';
         overlay.style.transform = 'none';
         overlay.style.maxWidth = 'none';
-        overlay.style.maxHeight = 'none';
-        var _vw = window.innerWidth, _boxW = Math.min(400, _vw - 16);
+        var _vw = window.innerWidth;
+        var _boxW = (_vw < 500) ? Math.min(_vw - 24, 340) : 400;
+        overlay.style.maxHeight = (_vw < 500) ? '66vh' : 'none';
         overlay.style.width  = _boxW + 'px';
         overlay.style.height = 'auto';
         overlay.style.left   = Math.round((_vw - _boxW) / 2) + 'px';
         overlay.style.top    = '60px';
+        // Always open expanded (not minimized)
+        var _b = document.getElementById('seq-read-body'); if (_b) _b.style.display = '';
+        var _m = document.getElementById('seq-read-min'); if (_m) { _m.textContent = 'HIDE'; _m.title = 'Hide'; }
       } else {
         overlay.style.display = 'none';
         window._overlayView = 'lestar';
