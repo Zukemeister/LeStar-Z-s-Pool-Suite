@@ -32,6 +32,11 @@ h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-b
 #help-btn{position:absolute;left:0;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;}
 #table-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);padding:4px 10px;border-radius:14px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.06em;cursor:pointer;line-height:1.2;}
 .diagram-wrap{border-radius:4px;overflow:hidden;margin-bottom:10px;}
+@media (max-width: 410px) {
+  #seq-nav-strip { gap: 3px !important; padding: 5px 4px !important; max-width: calc(100vw - 8px) !important; box-sizing: border-box !important; }
+  #seq-nav-strip button { padding: 6px 6px !important; font-size: 12px !important; }
+  #seq-nav-indicator { min-width: 84px !important; font-size: 11px !important; padding: 0 3px !important; }
+}
 .svg-box{position:relative;width:100%;overflow:hidden;background:transparent;}
 .svg-box.top-box{aspect-ratio:460/278;padding-bottom:0;}
 .svg-box.aim-box{aspect-ratio:460/220;padding-bottom:0;}
@@ -7506,6 +7511,9 @@ document.addEventListener('DOMContentLoaded', function(){
     // not the viewport) and clips + multiplies drag. As a direct child of <body>,
     // fixed positioning is viewport-relative and drag is 1:1.
     if (overlay.parentNode !== document.body) document.body.appendChild(overlay);
+    // Same treatment for the READ control bar — zoom-wrap's overflow:hidden was
+    // clipping it left/right on a phone. Viewport-relative at body level fixes it.
+    if (strip.parentNode !== document.body) document.body.appendChild(strip);
 
     // Compute the active shot index for the current sequence:
     // = index of first non-completed shot. (Internally we still use the
