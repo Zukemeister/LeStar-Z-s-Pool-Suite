@@ -2844,11 +2844,39 @@ if ('serviceWorker' in navigator) {
         <button id="seq-next-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(125,211,252,0.18);color:#7dd3fc;border:1px solid #7dd3fc;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">NEXT ▶</button>
         <button id="seq-next-seq-btn" title="Next sequence — jump to shot 1 of the next sequence in the list." style="font-size:13px;font-weight:900;padding:6px 8px;border-radius:5px;background:rgba(125,211,252,0.10);color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">⏭</button>
       </div>
-      <!-- READ overlay: semi-transparent panel over the table showing the
-           active shot's intent prose. Tap READ again to dismiss. -->
-      <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:299;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:16px 20px;max-width:560px;width:90vw;max-height:70vh;overflow-y:auto;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
-        <div id="seq-read-seq-intent" style="font-size:13px;color:#7dd3fc;font-weight:900;letter-spacing:0.04em;margin-bottom:10px;border-bottom:1px solid rgba(125,211,252,0.3);padding-bottom:8px;"></div>
-        <div id="seq-read-shot-intent" style="white-space:pre-wrap;"></div>
+      <!-- READ overlay: relocatable + resizable panel showing the active
+           shot's intent prose, with a toggle between LeStar's authored
+           version and the user's personal notes. Drag the top grip bar
+           to move; drag the corner handle to resize. -->
+      <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:299;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:0;max-width:560px;width:90vw;max-height:70vh;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
+        <!-- Drag grip bar -->
+        <div id="seq-read-grip" title="Drag to move" style="cursor:move;height:22px;touch-action:none;background:rgba(125,211,252,0.18);border-top-left-radius:8px;border-top-right-radius:8px;border-bottom:1px solid rgba(125,211,252,0.3);display:flex;align-items:center;justify-content:center;user-select:none;">
+          <span style="font-size:10px;color:#7dd3fc;letter-spacing:0.4em;line-height:1;">▪▪▪</span>
+        </div>
+        <!-- Body wrapper — this is what scrolls; gives the overlay its content area -->
+        <div id="seq-read-body" style="padding:12px 20px 16px;overflow-y:auto;max-height:calc(100% - 14px);">
+        <!-- View toggle: LeStar's Version | Mine -->
+        <div style="display:flex;gap:0;margin-bottom:12px;border:1px solid rgba(125,211,252,0.5);border-radius:6px;overflow:hidden;font-size:12px;font-weight:900;letter-spacing:0.04em;">
+          <button id="seq-read-view-lestar" style="flex:1;padding:7px 10px;background:rgba(125,211,252,0.25);color:#fff;border:none;cursor:pointer;line-height:1;font-family:inherit;">LESTAR'S VERSION</button>
+          <button id="seq-read-view-mine" style="flex:1;padding:7px 10px;background:transparent;color:#aab;border:none;border-left:1px solid rgba(125,211,252,0.5);cursor:pointer;line-height:1;font-family:inherit;">MINE</button>
+        </div>
+        <!-- LeStar's view: read-only authored prose -->
+        <div id="seq-read-lestar-pane">
+          <div id="seq-read-seq-intent" style="font-size:13px;color:#7dd3fc;font-weight:900;letter-spacing:0.04em;margin-bottom:10px;border-bottom:1px solid rgba(125,211,252,0.3);padding-bottom:8px;"></div>
+          <div id="seq-read-shot-intent" style="white-space:pre-wrap;"></div>
+        </div>
+        <!-- Mine view: user's editable notes for this shot -->
+        <div id="seq-read-mine-pane" style="display:none;">
+          <textarea id="seq-read-mine-textarea" placeholder="What did you see? Save your observations here." style="width:100%;min-height:140px;padding:10px;background:rgba(0,0,0,0.5);color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:5px;font-size:15px;font-family:Lato,sans-serif;line-height:1.5;box-sizing:border-box;resize:vertical;"></textarea>
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+            <button id="seq-read-mine-save" style="padding:6px 16px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:5px;font-weight:900;font-size:12px;letter-spacing:0.04em;cursor:pointer;font-family:inherit;">SAVE</button>
+            <button id="seq-read-mine-delete" style="padding:6px 12px;background:transparent;color:#aab;border:1px solid rgba(170,170,187,0.4);border-radius:5px;font-weight:700;font-size:11px;letter-spacing:0.04em;cursor:pointer;font-family:inherit;">DELETE MINE</button>
+            <span id="seq-read-mine-status" style="font-size:11px;color:#aab;flex:1;text-align:right;"></span>
+          </div>
+        </div>
+        </div>
+        <!-- Corner resize handle -->
+        <div id="seq-read-resize" title="Drag to resize. Double-click to reset." style="position:absolute;bottom:0;right:0;width:18px;height:18px;cursor:nwse-resize;display:flex;align-items:center;justify-content:center;color:#7dd3fc;font-size:12px;line-height:1;user-select:none;">⇲</div>
       </div>
       <button id="rail-lock-btn" title="Lock table — disables ball drags so you can pan freely from any point on the table." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
       <button id="slider-indicator-btn" title="Sliders status — bright blue when speed, spin, or vert is set away from default. Tap to scroll to the sliders panel." style="position:fixed;left:0;top:0;z-index:200;width:30px;height:24px;padding:0;border-radius:4px;background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.2);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;visibility:hidden;">
@@ -4707,6 +4735,10 @@ function renderTable(d) {
       }
     }
     if (nextCb) {
+      // MINE window: show the user's saved landing in place of LeStar's authored one.
+      if (window._overlayView === 'mine' && window._mineLanding) {
+        nextCb = window._mineLanding;
+      }
       el.setAttribute('cx', nextCb.x);
       el.setAttribute('cy', nextCb.y);
       el.setAttribute('r',  BALL_R);
@@ -5964,14 +5996,20 @@ function swapPanels(){
       var y = Math.max(TL.top  + BALL_R, Math.min(TL.bottom - BALL_R, p.y));
       ghost.setAttribute('cx', x);
       ghost.setAttribute('cy', y);
-      // Live-update next shot's CB in memory
-      ref.shot.cb = { x: Math.round(x), y: Math.round(y) };
+      // MINE window: capture the user's landing only; leave authored data alone.
+      if (window._overlayView === 'mine') {
+        window._mineLanding = { x: Math.round(x), y: Math.round(y) };
+      } else {
+        // Live-update next shot's CB in memory
+        ref.shot.cb = { x: Math.round(x), y: Math.round(y) };
+      }
     });
     function endDrag(e) {
       if (!dragging) return;
       dragging = false;
       ghost.style.cursor = 'grab';
       try { ghost.releasePointerCapture(e.pointerId); } catch(_){}
+      if (window._overlayView === 'mine') return;
       var ref = nextShotRef();
       if (ref) {
         // Log for the author to copy into the source
@@ -7463,6 +7501,11 @@ document.addEventListener('DOMContentLoaded', function(){
     var ovSeqEl = document.getElementById('seq-read-seq-intent');
     var ovShotEl= document.getElementById('seq-read-shot-intent');
     if (!strip || !backBtn || !nextBtn || !readBtn || !overlay) return;
+    // Lift the READ overlay out of #zoom-wrap. That wrapper gets transform:scale()
+    // and overflow:hidden, which traps position:fixed (measuring from the wrapper,
+    // not the viewport) and clips + multiplies drag. As a direct child of <body>,
+    // fixed positioning is viewport-relative and drag is 1:1.
+    if (overlay.parentNode !== document.body) document.body.appendChild(overlay);
 
     // Compute the active shot index for the current sequence:
     // = index of first non-completed shot. (Internally we still use the
@@ -7559,10 +7602,202 @@ document.addEventListener('DOMContentLoaded', function(){
       if (overlay.style.display !== 'none') {
         showOverlayContent(seq, idx);
       }
+      // Personal History indicators on the READ button:
+      //   RED dot  = somewhere in this sequence has saved Mine data
+      //   BLUE dot = this specific shot has saved Mine data
+      // Both, one, or neither show depending on what's saved.
+      function _isMineEntry(m) {
+        return !!(m && (
+          (m.notes || '').length > 0 ||
+          typeof m.vert === 'number' || typeof m.speed === 'number' ||
+          typeof m.spin === 'number' || typeof m.pathAngleAdjust === 'number' ||
+          typeof m.rcBias === 'number' || typeof m.rcMult === 'number' ||
+          !!m.landing
+        ));
+      }
+      var curShot = seq.shots[idx];
+      var curShotId = (curShot && curShot.shotId) || null;
+      var curHasMine = (curShotId && typeof getUserShot === 'function')
+        ? _isMineEntry(getUserShot(curShotId))
+        : false;
+      // Scan all shots in this sequence for any Mine data.
+      var seqHasMine = false;
+      if (typeof getUserShot === 'function') {
+        for (var _i = 0; _i < seq.shots.length; _i++) {
+          var _sid = seq.shots[_i] && seq.shots[_i].shotId;
+          if (_sid && _isMineEntry(getUserShot(_sid))) { seqHasMine = true; break; }
+        }
+      }
+      if (readBtn) {
+        var dots = '';
+        if (seqHasMine) dots += ' <span style="color:#ef4444;font-size:14px;">●</span>';
+        if (curHasMine) dots += ' <span style="color:#7dd3fc;font-size:14px;">●</span>';
+        readBtn.innerHTML = 'READ' + dots;
+      }
+    }
+
+    // ── PERSONAL HISTORY: overlay view state ─────────────────────────
+    // Two views inside the overlay — LeStar's authored prose and the
+    // user's personal notes. The toggle remembers which view the user
+    // left in across shot changes within a session.
+    var overlayCurrentView = 'lestar';   // 'lestar' | 'mine'
+    var lestarBtn = document.getElementById('seq-read-view-lestar');
+    var mineBtn   = document.getElementById('seq-read-view-mine');
+    var lestarPane = document.getElementById('seq-read-lestar-pane');
+    var minePane   = document.getElementById('seq-read-mine-pane');
+    var mineTextarea = document.getElementById('seq-read-mine-textarea');
+    var mineSaveBtn  = document.getElementById('seq-read-mine-save');
+    var mineDeleteBtn= document.getElementById('seq-read-mine-delete');
+    var mineStatus   = document.getElementById('seq-read-mine-status');
+
+    function setOverlayView(view) {
+      overlayCurrentView = view;
+      window._overlayView = view;
+      if (!lestarBtn || !mineBtn || !lestarPane || !minePane) return;
+      if (view === 'mine') {
+        lestarPane.style.display = 'none';
+        minePane.style.display = 'block';
+        lestarBtn.style.background = 'transparent';
+        lestarBtn.style.color = '#aab';
+        mineBtn.style.background = 'rgba(125,211,252,0.25)';
+        mineBtn.style.color = '#fff';
+      } else {
+        lestarPane.style.display = 'block';
+        minePane.style.display = 'none';
+        lestarBtn.style.background = 'rgba(125,211,252,0.25)';
+        lestarBtn.style.color = '#fff';
+        mineBtn.style.background = 'transparent';
+        mineBtn.style.color = '#aab';
+      }
+      // Apply the calibration appropriate to the selected view.
+      // LeStar's view → authored values restore. Mine view → if a saved
+      // calibration exists for this shot, restore it; else fall back to
+      // authored (Mine notes without calibration just means notes-only).
+      if (!isSeqActive()) return;
+      var seq = SEQUENCES[window._seqState.sequenceIdx];
+      var idx = getActiveShotIdx();
+      var shot = seq && seq.shots[idx];
+      if (!shot) return;
+      var authored = getAuthoredCalibration(shot);
+      if (view === 'mine') {
+        var shotId = shot.shotId || null;
+        var saved = (shotId && typeof getUserShot === 'function') ? getUserShot(shotId) : null;
+        window._mineLanding = (saved && saved.landing) ? { x: saved.landing.x, y: saved.landing.y } : null;
+        // Saved calibration exists when at least one of the six numbers
+        // was captured (not just notes). Detect by presence of any field
+        // other than notes/timestamp.
+        var hasCal = !!(saved && (
+          typeof saved.vert === 'number' || typeof saved.speed === 'number' ||
+          typeof saved.spin === 'number' || typeof saved.pathAngleAdjust === 'number' ||
+          typeof saved.rcBias === 'number' || typeof saved.rcMult === 'number' ||
+          saved.landing
+        ));
+        if (hasCal) {
+          applyCalibration({
+            vert:  (typeof saved.vert  === 'number') ? saved.vert  : authored.vert,
+            speed: (typeof saved.speed === 'number') ? saved.speed : authored.speed,
+            spin:  (typeof saved.spin  === 'number') ? saved.spin  : authored.spin,
+            pathAngleAdjust: (typeof saved.pathAngleAdjust === 'number') ? saved.pathAngleAdjust : authored.pathAngleAdjust,
+            rcBias:  (typeof saved.rcBias === 'number') ? saved.rcBias : authored.rcBias,
+            rcMult:  (typeof saved.rcMult === 'number') ? saved.rcMult : authored.rcMult,
+            rcLocked: (typeof saved.rcLocked === 'boolean') ? saved.rcLocked : authored.rcLocked
+          });
+        } else {
+          applyCalibration(authored);
+        }
+      } else {
+        window._mineLanding = null;
+        applyCalibration(authored);
+      }
+    }
+
+    function currentShotId() {
+      if (!isSeqActive()) return null;
+      var seq = SEQUENCES[window._seqState.sequenceIdx];
+      var idx = getActiveShotIdx();
+      var shot = seq && seq.shots[idx];
+      return (shot && shot.shotId) || null;
+    }
+
+    // ── PERSONAL HISTORY: calibration capture/restore ─────────────────
+    // A "calibration" is the set of slider values that define the shot's
+    // behavior: vert, speed, spin, pathAngleAdjust, rcBias, rcMult, rcLocked.
+    // When the user saves Mine, we capture their current calibration alongside
+    // their notes. When they toggle to Mine view, the saved calibration is
+    // restored to the sliders and render state. Toggling back to LeStar's
+    // restores the authored values.
+    function getCurrentCalibration() {
+      // Read effective values from S and window._* (these reflect any user
+      // adjustments on top of the authored baseline).
+      var pathAngle = (typeof S.pathAngleAdjust === 'number' ? S.pathAngleAdjust : 0)
+                    + (window._pathAngleOffset || 0);
+      return {
+        vert:            (typeof S.vert  === 'number') ? S.vert  : 0,
+        speed:           (typeof S.speed === 'number') ? S.speed : 0,
+        spin:            (typeof S.spin  === 'number') ? S.spin  : 0,
+        pathAngleAdjust: pathAngle,
+        rcBias:          (typeof window._perceptionOffset === 'number') ? window._perceptionOffset : 0,
+        rcMult:          (typeof window._rcMultiplier === 'number')     ? window._rcMultiplier     : 0,
+        rcLocked:        !!window._rcLocked
+      };
+    }
+    function getAuthoredCalibration(shot) {
+      if (!shot) return null;
+      return {
+        vert:            (typeof shot.vert  === 'number') ? shot.vert  : 0,
+        speed:           (typeof shot.speed === 'number') ? shot.speed : 0,
+        spin:            (typeof shot.spin  === 'number') ? shot.spin  : 0,
+        pathAngleAdjust: (typeof shot.pathAngleAdjust === 'number') ? shot.pathAngleAdjust : 0,
+        rcBias:          (typeof shot.rcBias === 'number') ? shot.rcBias : 0,
+        rcMult:          (typeof shot.rcMult === 'number') ? shot.rcMult : 0,
+        rcLocked:        !!shot.rcLocked
+      };
+    }
+    function applyCalibration(vals) {
+      if (!vals) return;
+      // S object — used by all render math
+      S.vert  = vals.vert;
+      S.speed = vals.speed;
+      S.spin  = vals.spin;
+      S.pathAngleAdjust = vals.pathAngleAdjust;
+      // Slider DOM
+      var sv  = document.getElementById('sl-vert');
+      var sp  = document.getElementById('sl-spd');
+      var ssn = document.getElementById('sl-spn');
+      if (sv)  sv.value  = String(Math.round(vals.vert  * 25));
+      if (sp)  sp.value  = String(Math.round(vals.speed * 100));
+      if (ssn) ssn.value = String(Math.round(vals.spin  * 25));
+      // Window globals — RC and path offset model
+      window._authoredRcBias  = vals.rcBias;
+      window._authoredRcMult  = vals.rcMult;
+      window._authoredRcLocked = vals.rcLocked;
+      window._userRcOffset    = 0;
+      window._pathAngleOffset = 0;
+      window._perceptionOffset = vals.rcBias;
+      window._rcMultiplier     = vals.rcMult;
+      window._rcLocked         = vals.rcLocked;
+      // Reset visual thumbs to center (user offset = 0)
+      var pt = document.getElementById('path-thumb');
+      if (pt) pt.setAttribute('cx', '170');
+      var t = document.getElementById('perc-thumb');
+      if (t) {
+        // RC thumb maps to bias by x = CX(170) + bias*RC_SCALE(300), clamped [20,320].
+        var _rcX = Math.max(20, Math.min(320, 170 + (vals.rcBias || 0) * 300));
+        t.setAttribute('cx', String(_rcX));
+        if (typeof window._rcUpdateIndicator === 'function') window._rcUpdateIndicator();
+      }
+      // Refresh slider value-display labels
+      if (typeof onSliders === 'function') {
+        try { onSliders(); } catch(_) {}
+      }
+      // Re-render the table with the new calibration
+      if (typeof render === 'function') {
+        try { render(); } catch(_) {}
+      }
     }
 
     function showOverlayContent(seq, idx) {
-      // Sequence-level intent shown once (on shot 1), shot-level always.
+      // LeStar's view: authored sequence + shot prose.
       if (idx === 0 && seq.intent) {
         ovSeqEl.textContent = seq.intent;
         ovSeqEl.style.display = 'block';
@@ -7570,7 +7805,119 @@ document.addEventListener('DOMContentLoaded', function(){
         ovSeqEl.style.display = 'none';
       }
       ovShotEl.textContent = (seq.shots[idx] && seq.shots[idx].intent) || '';
+      // Mine view: load saved notes for this shotId, or empty.
+      var shotId = (seq.shots[idx] && seq.shots[idx].shotId) || null;
+      var saved = shotId && typeof getUserShot === 'function' ? getUserShot(shotId) : null;
+      var hasMine = !!(saved && (
+        (saved.notes || '').length > 0 ||
+        typeof saved.vert === 'number' || typeof saved.speed === 'number' ||
+        typeof saved.spin === 'number' || typeof saved.pathAngleAdjust === 'number' ||
+        typeof saved.rcBias === 'number' || typeof saved.rcMult === 'number' ||
+        !!saved.landing
+      ));
+      if (mineTextarea) {
+        mineTextarea.value = saved && saved.notes ? saved.notes : '';
+      }
+      if (mineStatus) {
+        mineStatus.textContent = hasMine ? 'saved' : '';
+      }
+      // Default opening view: if Mine has content (notes or calibration),
+      // show Mine; else show LeStar's. But respect the user's session toggle.
+      if (!overlayCurrentView || overlayCurrentView === 'auto') {
+        setOverlayView(hasMine ? 'mine' : 'lestar');
+      } else {
+        setOverlayView(overlayCurrentView);
+      }
     }
+
+    // Wire the toggle buttons
+    if (lestarBtn) lestarBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      setOverlayView('lestar');
+    });
+    if (mineBtn) mineBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      setOverlayView('mine');
+    });
+    // Wire SAVE
+    if (mineSaveBtn) mineSaveBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var shotId = currentShotId();
+      if (!shotId || typeof saveUserShot !== 'function') return;
+      var text = mineTextarea ? mineTextarea.value : '';
+      // Combined save: notes + current calibration (user's adjusted sliders).
+      var cal = getCurrentCalibration();
+      saveUserShot(shotId, {
+        notes: text,
+        vert:  cal.vert,
+        speed: cal.speed,
+        spin:  cal.spin,
+        pathAngleAdjust: cal.pathAngleAdjust,
+        rcBias:  cal.rcBias,
+        rcMult:  cal.rcMult,
+        rcLocked: cal.rcLocked,
+        landing: (window._mineLanding ? { x: window._mineLanding.x, y: window._mineLanding.y } : undefined)
+      });
+      if (mineStatus) {
+        mineStatus.textContent = 'saved ✓';
+        setTimeout(function(){
+          var stillSaved = getUserShot(shotId);
+          if (mineStatus) mineStatus.textContent = stillSaved ? 'saved' : '';
+        }, 1500);
+      }
+      // Refresh the strip so any "has saved" indicator updates.
+      refresh();
+    });
+    // Wire DELETE
+    if (mineDeleteBtn) mineDeleteBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var shotId = currentShotId();
+      if (!shotId || typeof deleteUserShot !== 'function') return;
+      if (mineTextarea) mineTextarea.value = '';
+      deleteUserShot(shotId);
+      if (mineStatus) mineStatus.textContent = 'deleted';
+      refresh();
+    });
+
+    // READ overlay: free drag. Pointer Events = one path for mouse + touch.
+    (function setupReadDrag(){
+      var grip = document.getElementById('seq-read-grip');
+      if (!grip || !overlay) return;
+      var dragging = false, sx = 0, sy = 0, bx = 0, by = 0;
+      function clampIntoView(){
+        var r = overlay.getBoundingClientRect();
+        var maxL = Math.max(0, window.innerWidth  - r.width);
+        var maxT = Math.max(0, window.innerHeight - r.height);
+        var l = parseFloat(overlay.style.left) || 0;
+        var t = parseFloat(overlay.style.top)  || 0;
+        overlay.style.left = Math.min(Math.max(0, l), maxL) + 'px';
+        overlay.style.top  = Math.min(Math.max(0, t), maxT) + 'px';
+      }
+      grip.addEventListener('pointerdown', function(e){
+        dragging = true;
+        overlay.style.transform = 'none';
+        var r = overlay.getBoundingClientRect();
+        overlay.style.left = r.left + 'px';
+        overlay.style.top  = r.top  + 'px';
+        bx = r.left; by = r.top; sx = e.clientX; sy = e.clientY;
+        try { grip.setPointerCapture(e.pointerId); } catch(_e){}
+        e.preventDefault();
+      });
+      grip.addEventListener('pointermove', function(e){
+        if (!dragging) return;
+        overlay.style.left = (bx + (e.clientX - sx)) + 'px';
+        overlay.style.top  = (by + (e.clientY - sy)) + 'px';
+        e.preventDefault();
+      });
+      function endDrag(e){
+        if (!dragging) return;
+        dragging = false;
+        try { grip.releasePointerCapture(e.pointerId); } catch(_e){}
+        clampIntoView();
+      }
+      grip.addEventListener('pointerup', endDrag);
+      grip.addEventListener('pointercancel', endDrag);
+    })();
 
     function advance() {
       if (!isSeqActive()) return;
@@ -7661,8 +8008,19 @@ document.addEventListener('DOMContentLoaded', function(){
         var idx = getActiveShotIdx();
         showOverlayContent(seq, idx);
         overlay.style.display = 'block';
+        overlay.style.transform = 'none';
+        overlay.style.maxWidth = 'none';
+        overlay.style.maxHeight = 'none';
+        var _vw = window.innerWidth, _boxW = Math.min(400, _vw - 16);
+        overlay.style.width  = _boxW + 'px';
+        overlay.style.height = 'auto';
+        overlay.style.left   = Math.round((_vw - _boxW) / 2) + 'px';
+        overlay.style.top    = '60px';
       } else {
         overlay.style.display = 'none';
+        window._overlayView = 'lestar';
+        window._mineLanding = null;
+        if (typeof render === 'function') render();
       }
     }
 
