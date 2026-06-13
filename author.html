@@ -32,6 +32,11 @@ h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-b
 #help-btn{position:absolute;left:0;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:'Lato',sans-serif;font-size:14px;font-weight:900;cursor:pointer;line-height:1;}
 #table-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);padding:4px 10px;border-radius:14px;border:2px solid rgba(160,208,160,0.4);background:rgba(160,208,160,0.08);color:#a0d0a0;font-family:'Lato',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.06em;cursor:pointer;line-height:1.2;}
 .diagram-wrap{border-radius:4px;overflow:hidden;margin-bottom:10px;}
+@media (max-width: 410px) {
+  #seq-nav-strip { gap: 3px !important; padding: 5px 4px !important; max-width: calc(100vw - 8px) !important; box-sizing: border-box !important; }
+  #seq-nav-strip button { padding: 6px 6px !important; font-size: 12px !important; }
+  #seq-nav-indicator { min-width: 84px !important; font-size: 11px !important; padding: 0 3px !important; }
+}
 .svg-box{position:relative;width:100%;overflow:hidden;background:transparent;}
 .svg-box.top-box{aspect-ratio:460/278;padding-bottom:0;}
 .svg-box.aim-box{aspect-ratio:460/220;padding-bottom:0;}
@@ -1043,13 +1048,19 @@ var SEQUENCES = [
         vert: 1.64, speed: 0.51,
         pathAngleAdjust: 0,
         landing: {x:244.11, y:121.9},
-        intent: "The 2-ball is in a  challenging position. How to get there? To get the 2-ball in the side, you need to direct the cueball off the 1-ball into two rails and out. Be careful about not scratching in the bottom middle pocket, Pocket 5. You can direct the position of the bounces by hitting higher or lower. Try both and see what happens." },
+        intent: "The 2-ball is in a  challenging position. How to get there? To get the 2-ball in the side, you need to direct the cueball off the 1-ball into two rails and out. Be careful about not scratching in the bottom middle pocket, Pocket 5. You can direct the position of the bounces by hitting higher or lower. Try both and see what happens.\n\n" },
       { shotId: "seq02.shot2", ob: {x:220, y:44}, cb: {x:244.11, y:121.9},
         cut: 35.22, pocket: 'TM', rh: true,
         vert: 1.52, speed: 0.81,
         pathAngleAdjust: 0,
-        landing: {x:77.98, y:97.06},
-        intent: "Follow with just enough to get to the end rail safely." }
+        landing: {x:104.11, y:78.18},
+        intent: "Follow with just enough to get to the end rail safely." },
+      { shotId: "seq02.shot3", alt: true, ob: {x:376.97, y:77.25}, cb: {x:353.8, y:124.3},
+        cut: 29.65, pocket: null, rh: true,
+        vert: -2.28, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:206.07, y:137.87},
+        intent: "Alternatively, you could hit low on the cueball when shooting the 1-ball in Shot One. This will make the cueball go wider and, if you choose this route, shoot more softly. This will prevent the danger of scratching in the 5 pocket, the side." }
     ]
   },
   {
@@ -1358,6 +1369,60 @@ var SEQUENCES = [
         pathAngleAdjust: 0,
         landing: {x:111.16, y:113.51},
         intent: "" }
+    ]
+  },
+  {
+    title: '16. Intro to shooting 1',
+    intent: '',
+    shots: [
+      { shotId: "seq16.shot1", ob: {x:230, y:105}, cb: {x:230, y:180},
+        cut: 0, pocket: null, rh: false,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:230, y:180},
+        intent: "The CUEBALL is the white one and the red ball is any ball you want to shoot. Here we call that the \"Object Ball,\" which makes sense, as it is the OBJECT of your attention. We need to have a way to indicate on our AIMER app the location of all balls, and we need for you to translate those locations into positions on your physical table. Set them up approximately as you see here, and go on to Shot 2 of this series.\n\n" },
+      { shotId: "seq16.shot2", ob: {x:230, y:105}, cb: {x:230, y:180},
+        cut: 0, pocket: null, rh: false,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:230, y:180},
+        intent: "On the top diagram, the TABLE DIAGRAM, is a grid with numbers, 1-32. This grid is constructed by referring to the \"Diamond\" symbols on the edges of the table (look for them: they actually look like diamonds), and drawing lines across the table between the diamonds. The result is the creation of the numbered squares you see here. \n\nThe middle pockets count as diamonds, too, and a line is drawn between them, as you see here.\n\nGo on to Shot 3 for more." },
+      { shotId: "seq16.shot3", ob: {x:230, y:105}, cb: {x:230, y:180},
+        cut: 0, pocket: null, rh: false,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:230, y:180},
+        intent: "The numbered squares are subdivided into four squares, as you see. From left to right in each square they are A in the top left, B in the top right, C on the bottom left, and D on the bottom right. So a general location of a ball would be 13.A., for example, to indicate a ball sitting in the A section of square 13.\n\nGo on to Shot 4 for more." },
+      { shotId: "seq16.shot4", ob: {x:230, y:105}, cb: {x:230, y:180},
+        cut: 0, pocket: null, rh: false,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:230, y:180},
+        intent: "This is not an exact system, because there are no lines drawn on your table. You have to estimate position using the diamonds and a little Kentucky windage, meaning an approximation.\n\nThe cueball is located at the lower right corner of Square 20. D. Put the cue ball at that place on the table. The object ball here is located at the lower right corner of Square 12. B. Good enough to get you to where you need to be.\n\nPut the balls in those positions--more or less match what you see on the table, and go on to Shot 5." },
+      { shotId: "seq16.shot5", ob: {x:230, y:105}, cb: {x:230, y:180},
+        cut: 0, pocket: null, rh: false,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:230, y:180},
+        intent: "Now that you have positioned the two balls, it's time to shoot them. If you have experience, you know that you have to hold the cuestick with two hands, one of which rests on the table, and one of which grabs the butt, the back end, of the cuestick. The front hand is called the bridge hand, and its job is to make a tripod on which the cuestick is balanced.\n\nIf you have no experience, look around the room to see how good shooters hold the cuestick and how they stand. Imitate them.\n\nPut your bridge hand flat on the table. Make a V-shape with your thumb and index finger. The thumb curls upward; the index finger curves to the table, where it rests on its tip, and becomes part of the tripod.\n\nRest the cuestick in that V formed by the fingers, and go on to Shot 6 to see what happens next.\n\n" },
+      { shotId: "seq16.shot6", ob: {x:230, y:105}, cb: {x:230, y:180},
+        cut: 0, pocket: null, rh: false,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:230, y:180},
+        intent: "With the cue set on the V of those fingers, this is known as an \"OPEN BRIDGE.\" \n\nAn alternative is to make a loop with your thumb and ring finger. Think of how you make an \"It's OK \" sign. Remember what that looks like?  Make that loop with your fingers and curl it around the cuestick. Use your remaining three fingers for the tripod. It's a very stable bridge, widely used, and known as a \"CLOSED BRIDGE.\" \n\nSet up away from the balls and practice the motion of shooting with those two bridges.  I mentioned \"tripod\" in describing the bridge. There is another \"tripod\" that is helpful in pool: YOU are that tripod. Your two feet and your bridge hand become a tripod, so think of yourself as that stable object when you are preparing to shoot. \n\nBend down as best you can, so your head is near the cuestick. Keep your feet spread and stay very stable in your stance, two feet and bridge hand forming that steady tripod. Swing the cue while holding the rest of your body very still; only your shooting arm should move, not your head, not your legs.\n\nPractice that for a while and go on to shot 7.\n\n\n" },
+      { shotId: "seq16.shot7", ob: {x:230, y:105}, cb: {x:230, y:180},
+        cut: 0, pocket: null, rh: false,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:230, y:180},
+        intent: "Whole books have been written about how to hold a cue and shoot with it. It's going to take you some time to figure this out. It's like learning how to play an instrument, repeating an action many times until it is natural.\n\nWhat you can do right off the bat, though, is to relax as you shoot, stand still in your tripod, keep your emotions at bay, set up carefully, aim carefully and then note what went right or wrong with your shot.  When something goes right, try to figure out what it was, and do it again.\n\nIf you do that enough, you will build instincts that will tell you exactly what to do as you are shooting, with very little thought. That is the goal of LeStar Z's Aimer, to help you build your pool instincts and strategies.\n\nGo to the next shot." },
+      { shotId: "seq16.shot8", ob: {x:230, y:105}, cb: {x:230, y:180},
+        cut: 0, pocket: null, rh: false,
+        vert: 0, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:230, y:180},
+        intent: "\"At last,\" you say, \"I get to shoot the damned shot!!\"\n\nYou are correct. The balls are set up on your table exactly as depicted here in the Aimer.  Then look at the diagram for the table. You see that it is a straight shot. The goal is to put the Object Ball in the side pocket, pocket 2 in the diagram.\n\nLook at the middle diagram, the one with the large pink ball. You see a black dot in the middle? That's where your cuetip should hit the cueball. So, take your stance, make your bridge, think about how to stroke with the cuestick. Put the tip very close to where this black dot would be on your cueball, relax and take a shot.\n\nWhere did it go?  Where did the cueball go? Absorb that info and move on to the next set of shots." }
     ]
   }
 ];
@@ -2758,11 +2823,15 @@ if ('serviceWorker' in navigator) {
         <button id="seq-next-btn" style="font-size:13px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(125,211,252,0.18);color:#7dd3fc;border:1px solid #7dd3fc;cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">NEXT ▶</button>
         <button id="seq-next-seq-btn" title="Next sequence — jump to shot 1 of the next sequence in the list." style="font-size:13px;font-weight:900;padding:6px 8px;border-radius:5px;background:rgba(125,211,252,0.10);color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);cursor:pointer;touch-action:manipulation;line-height:1;letter-spacing:0.04em;">⏭</button>
       </div>
-      <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:299;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:0;max-width:560px;width:90vw;max-height:70vh;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
-        <div id="seq-read-grip" title="Drag to move" style="cursor:move;height:22px;touch-action:none;background:rgba(125,211,252,0.18);border-top-left-radius:8px;border-top-right-radius:8px;border-bottom:1px solid rgba(125,211,252,0.3);display:flex;align-items:center;justify-content:center;user-select:none;">
-          <span style="font-size:10px;color:#7dd3fc;letter-spacing:0.4em;line-height:1;">▪▪▪</span>
+      <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:10000;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:0;flex-direction:column;overflow:hidden;max-width:560px;width:90vw;max-height:70vh;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
+        <div id="seq-read-grip" title="Drag to move" style="cursor:move;height:30px;touch-action:none;position:relative;background:rgba(125,211,252,0.18);border-top-left-radius:8px;border-top-right-radius:8px;border-bottom:1px solid rgba(125,211,252,0.3);display:flex;align-items:center;gap:5px;padding:0 6px;box-sizing:border-box;user-select:none;">
+          <span style="flex:1;text-align:center;font-size:11px;color:#7dd3fc;letter-spacing:0.4em;line-height:1;pointer-events:none;">▪▪▪</span>
+          <span id="seq-read-mine-status" style="font-size:10px;color:#9fe0a0;white-space:nowrap;line-height:1;"></span>
+          <button id="seq-read-mine-save" style="display:none;height:24px;padding:0 11px;background:#4ade80;color:#0a0a0a;border:none;border-radius:5px;font-size:12px;font-weight:900;letter-spacing:0.04em;line-height:1;cursor:pointer;touch-action:manipulation;font-family:inherit;align-items:center;justify-content:center;">SAVE</button>
+          <button id="seq-read-mine-delete" style="display:none;height:24px;padding:0 9px;background:transparent;color:#d9a0a8;border:1px solid rgba(220,150,160,0.45);border-radius:5px;font-size:11px;font-weight:700;letter-spacing:0.04em;line-height:1;cursor:pointer;touch-action:manipulation;font-family:inherit;align-items:center;justify-content:center;">DEL</button>
+          <button id="seq-read-min" title="Hide" style="min-width:48px;height:24px;padding:0 10px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:5px;font-size:13px;font-weight:900;letter-spacing:0.06em;line-height:1;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;">HIDE</button>
         </div>
-        <div id="seq-read-body" style="padding:12px 20px 16px;overflow-y:auto;max-height:calc(100% - 14px);">
+        <div id="seq-read-body" style="padding:12px 20px 16px;overflow-y:auto;flex:1 1 auto;min-height:0;">
         <div style="display:flex;gap:0;margin-bottom:12px;border:1px solid rgba(125,211,252,0.5);border-radius:6px;overflow:hidden;font-size:12px;font-weight:900;letter-spacing:0.04em;">
           <button id="seq-read-view-lestar" style="flex:1;padding:7px 10px;background:rgba(125,211,252,0.25);color:#fff;border:none;cursor:pointer;line-height:1;font-family:inherit;">LESTAR'S VERSION</button>
           <button id="seq-read-view-mine" style="flex:1;padding:7px 10px;background:transparent;color:#aab;border:none;border-left:1px solid rgba(125,211,252,0.5);cursor:pointer;line-height:1;font-family:inherit;">MINE</button>
@@ -2773,14 +2842,11 @@ if ('serviceWorker' in navigator) {
         </div>
         <div id="seq-read-mine-pane" style="display:none;">
           <textarea id="seq-read-mine-textarea" placeholder="What did you see? Save your observations here." style="width:100%;min-height:140px;padding:10px;background:rgba(0,0,0,0.5);color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:5px;font-size:15px;font-family:Lato,sans-serif;line-height:1.5;box-sizing:border-box;resize:vertical;"></textarea>
-          <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
-            <button id="seq-read-mine-save" style="padding:6px 16px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:5px;font-weight:900;font-size:12px;letter-spacing:0.04em;cursor:pointer;font-family:inherit;">SAVE</button>
-            <button id="seq-read-mine-delete" style="padding:6px 12px;background:transparent;color:#aab;border:1px solid rgba(170,170,187,0.4);border-radius:5px;font-weight:700;font-size:11px;letter-spacing:0.04em;cursor:pointer;font-family:inherit;">DELETE MINE</button>
-            <span id="seq-read-mine-status" style="font-size:11px;color:#aab;flex:1;text-align:right;"></span>
-          </div>
         </div>
         </div>
-        <div id="seq-read-resize" title="Drag to resize. Double-click to reset." style="position:absolute;bottom:0;right:0;width:18px;height:18px;cursor:nwse-resize;display:flex;align-items:center;justify-content:center;color:#7dd3fc;font-size:12px;line-height:1;user-select:none;">⇲</div>
+        <div id="seq-read-resize" title="Drag to resize" style="height:20px;flex:0 0 auto;touch-action:none;cursor:ns-resize;display:flex;align-items:center;justify-content:center;background:rgba(125,211,252,0.12);border-top:1px solid rgba(125,211,252,0.25);border-bottom-left-radius:8px;border-bottom-right-radius:8px;user-select:none;">
+          <span style="font-size:12px;color:#7dd3fc;line-height:1;pointer-events:none;">⇕</span>
+        </div>
       </div>
       <button id="rail-lock-btn" title="Lock table — disables ball drags so you can pan freely from any point on the table." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
       <button id="slider-indicator-btn" title="Sliders status — bright blue when speed, spin, or vert is set away from default. Tap to scroll to the sliders panel." style="position:fixed;left:0;top:0;z-index:200;width:30px;height:24px;padding:0;border-radius:4px;background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.2);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;visibility:hidden;">
@@ -4623,11 +4689,22 @@ function renderTable(d) {
         if (!window._seqState.completed[i]) { aIdx = i; break; }
       }
       if (aIdx >= 0 && aIdx + 1 < seq.shots.length) {
-        nextCb = seq.shots[aIdx + 1].cb;
+        // Prefer THIS shot's own landing (where its cue ball actually stops).
+        // Normally equals the next shot's CB; for a flagged non-sequential /
+        // branch shot the next shot restarts elsewhere, so honor this shot's
+        // landing rather than the next shot's CB.
+        var _curShot = seq.shots[aIdx];
+        nextCb = (_curShot && _curShot.landing) ? _curShot.landing : seq.shots[aIdx + 1].cb;
       } else if (aIdx >= 0 && seq.loops && seq.shots.length > 0) {
         // Looping Game: the last shot's ghost points back to shot 1's CB
         // start, showing the loop-back target.
         nextCb = seq.shots[0].cb;
+      } else if (aIdx >= 0 && seq.shots[aIdx] && seq.shots[aIdx].landing) {
+        // Last shot of a non-looping sequence: show the composer-authored
+        // landing target ("where the CB should end up if you ran this
+        // perfectly"). The ghost stays useful on every shot, not just
+        // shots that have a next.
+        nextCb = seq.shots[aIdx].landing;
       }
     }
     // Authoring fallback: if no sequence is active (or no next-shot to point
@@ -7352,6 +7429,9 @@ document.addEventListener('DOMContentLoaded', function(){
     // not the viewport) and clips + multiplies drag. As a direct child of <body>,
     // fixed positioning is viewport-relative and drag is 1:1.
     if (overlay.parentNode !== document.body) document.body.appendChild(overlay);
+    // Same treatment for the READ control bar — zoom-wrap's overflow:hidden was
+    // clipping it left/right on a phone. Viewport-relative at body level fixes it.
+    if (strip.parentNode !== document.body) document.body.appendChild(strip);
 
     function getActiveShotIdx() {
       var s = window._seqState;
@@ -7485,6 +7565,8 @@ document.addEventListener('DOMContentLoaded', function(){
         lestarBtn.style.color = '#aab';
         mineBtn.style.background = 'rgba(125,211,252,0.25)';
         mineBtn.style.color = '#fff';
+        if (mineSaveBtn) mineSaveBtn.style.display = 'inline-flex';
+        if (mineDeleteBtn) mineDeleteBtn.style.display = 'inline-flex';
       } else {
         lestarPane.style.display = 'block';
         minePane.style.display = 'none';
@@ -7492,6 +7574,9 @@ document.addEventListener('DOMContentLoaded', function(){
         lestarBtn.style.color = '#fff';
         mineBtn.style.background = 'transparent';
         mineBtn.style.color = '#aab';
+        if (mineSaveBtn) mineSaveBtn.style.display = 'none';
+        if (mineDeleteBtn) mineDeleteBtn.style.display = 'none';
+        if (mineStatus) mineStatus.textContent = '';
       }
       if (!isSeqActive()) return;
       var seq = SEQUENCES[window._seqState.sequenceIdx];
@@ -7680,12 +7765,15 @@ document.addEventListener('DOMContentLoaded', function(){
       var dragging = false, sx = 0, sy = 0, bx = 0, by = 0;
       function clampIntoView(){
         var r = overlay.getBoundingClientRect();
-        var maxL = Math.max(0, window.innerWidth  - r.width);
-        var maxT = Math.max(0, window.innerHeight - r.height);
+        var MIN = 56; // keep at least this much on-screen so the box stays grabbable
         var l = parseFloat(overlay.style.left) || 0;
         var t = parseFloat(overlay.style.top)  || 0;
-        overlay.style.left = Math.min(Math.max(0, l), maxL) + 'px';
-        overlay.style.top  = Math.min(Math.max(0, t), maxT) + 'px';
+        var minL = MIN - r.width;                 // may hang off the left edge...
+        var maxL = window.innerWidth  - MIN;      // ...and off the right edge
+        var minT = 0;                             // keep the grip reachable at the top
+        var maxT = window.innerHeight - MIN;      // may hang off the bottom edge
+        overlay.style.left = Math.min(Math.max(minL, l), maxL) + 'px';
+        overlay.style.top  = Math.min(Math.max(minT, t), maxT) + 'px';
       }
       grip.addEventListener('pointerdown', function(e){
         dragging = true;
@@ -7711,6 +7799,46 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       grip.addEventListener('pointerup', endDrag);
       grip.addEventListener('pointercancel', endDrag);
+      // Minimize / restore — collapse the body, leaving the draggable grip bar.
+      var minBtn = document.getElementById('seq-read-min');
+      var rbody  = document.getElementById('seq-read-body');
+      if (minBtn && rbody) {
+        minBtn.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+        minBtn.addEventListener('click', function(e){
+          e.stopPropagation(); e.preventDefault();
+          var willMin = rbody.style.display !== 'none';
+          rbody.style.display = willMin ? 'none' : '';
+          var rsz = document.getElementById('seq-read-resize');
+          if (rsz) rsz.style.display = willMin ? 'none' : '';
+          if (willMin) { overlay.dataset.fullh = overlay.style.height; overlay.style.height = 'auto'; }
+          else { overlay.style.height = overlay.dataset.fullh || ''; }
+          minBtn.textContent = willMin ? 'SHOW' : 'HIDE';
+          minBtn.title = willMin ? 'Restore' : 'Hide';
+          clampIntoView();
+        });
+      }
+      ['seq-read-mine-save','seq-read-mine-delete'].forEach(function(id){
+        var b = document.getElementById(id);
+        if (b) b.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+      });
+      var rgrip = document.getElementById('seq-read-resize');
+      if (rgrip) {
+        var rz = false, rsy = 0, rh0 = 0;
+        rgrip.addEventListener('pointerdown', function(e){
+          rz = true; rsy = e.clientY; rh0 = overlay.getBoundingClientRect().height;
+          try { rgrip.setPointerCapture(e.pointerId); } catch(_e){}
+          e.stopPropagation(); e.preventDefault();
+        });
+        rgrip.addEventListener('pointermove', function(e){
+          if (!rz) return;
+          var h = Math.max(140, Math.min(window.innerHeight - 80, rh0 + (e.clientY - rsy)));
+          overlay.style.height = h + 'px';
+          e.preventDefault();
+        });
+        function endRz(e){ if (!rz) return; rz = false; try { rgrip.releasePointerCapture(e.pointerId); } catch(_e){} }
+        rgrip.addEventListener('pointerup', endRz);
+        rgrip.addEventListener('pointercancel', endRz);
+      }
     })();
 
     function advance() {
@@ -7779,15 +7907,21 @@ document.addEventListener('DOMContentLoaded', function(){
         var seq = SEQUENCES[window._seqState.sequenceIdx];
         var idx = getActiveShotIdx();
         showOverlayContent(seq, idx);
-        overlay.style.display = 'block';
+        overlay.style.display = 'flex';
         overlay.style.transform = 'none';
         overlay.style.maxWidth = 'none';
         overlay.style.maxHeight = 'none';
-        var _vw = window.innerWidth, _boxW = Math.min(400, _vw - 16);
+        var _vw = window.innerWidth, _vh = window.innerHeight;
+        var _boxW = (_vw < 500) ? Math.min(_vw - 24, 340) : 400;
+        var _boxH = (_vw < 500) ? Math.round(_vh * 0.60) : Math.round(Math.min(_vh * 0.72, 560));
         overlay.style.width  = _boxW + 'px';
-        overlay.style.height = 'auto';
+        overlay.style.height = _boxH + 'px';
         overlay.style.left   = Math.round((_vw - _boxW) / 2) + 'px';
         overlay.style.top    = '60px';
+        // Always open expanded (not minimized)
+        var _b = document.getElementById('seq-read-body'); if (_b) _b.style.display = '';
+        var _r = document.getElementById('seq-read-resize'); if (_r) _r.style.display = '';
+        var _m = document.getElementById('seq-read-min'); if (_m) { _m.textContent = 'HIDE'; _m.title = 'Hide'; }
       } else {
         overlay.style.display = 'none';
         window._overlayView = 'lestar';
@@ -8718,9 +8852,13 @@ window._copyShotData = function() {
     for (var i = 0; i < shots.length; i++) {
       var s = shots[i];
       var landing;
-      if (i + 1 < shots.length && shots[i+1].cb) {
-        landing = { x: shots[i+1].cb.x, y: shots[i+1].cb.y };
+      var nextS = (i + 1 < shots.length) ? shots[i+1] : null;
+      if (nextS && nextS.cb && !nextS.alt) {
+        // Normal chain: this shot's landing = next shot's start.
+        landing = { x: nextS.cb.x, y: nextS.cb.y };
       } else if (s.landing && typeof s.landing.x === 'number') {
+        // Last shot, OR the next shot is a branch (independent start): keep
+        // this shot's own explicit landing.
         landing = { x: s.landing.x, y: s.landing.y };
       } else {
         // Estimate: small offset from OB; user will adjust in composer
@@ -8736,6 +8874,8 @@ window._copyShotData = function() {
         rh: !!s.rh,
         pathAngleAdjust: (typeof s.pathAngleAdjust === 'number') ? s.pathAngleAdjust : 0,
         landing: landing,
+        alt: s.alt ? true : undefined,
+        cb: (s.alt && s.cb) ? { x: s.cb.x, y: s.cb.y } : undefined,
         intent: s.intent || ''
       });
     }
@@ -8753,8 +8893,12 @@ window._copyShotData = function() {
     var idx = _comp.activeShot;
     var shot = _comp.shots[idx];
     if (!shot) return;
-    // CB = previous shot's landing (or cb0 for shot 1)
-    var cb = (idx === 0) ? _comp.cb0 : _comp.shots[idx - 1].landing;
+    // CB = previous shot's landing (or cb0 for shot 1). A BRANCH shot (alt)
+    // ignores the chain and starts at its OWN stored cb instead, so it can
+    // restart anywhere without dragging the previous shot's landing with it.
+    var cb = (idx === 0) ? _comp.cb0
+           : (_comp.shots[idx].alt && _comp.shots[idx].cb) ? _comp.shots[idx].cb
+           : _comp.shots[idx - 1].landing;
     S.cb.x = cb.x; S.cb.y = cb.y;
     S.ob.x = shot.ob.x; S.ob.y = shot.ob.y;
     S.pocket = shot.pocket || null;
@@ -8854,6 +8998,10 @@ window._copyShotData = function() {
     var liveCB = { x: S.cb.x, y: S.cb.y };
     if (idx === 0) {
       _comp.cb0 = liveCB;
+    } else if (_comp.shots[idx].alt) {
+      // Branch shot: its cue ball is independent. Write its OWN start and
+      // leave the previous shot's landing alone — that is the decouple.
+      _comp.shots[idx].cb = liveCB;
     } else {
       _comp.shots[idx - 1].landing = liveCB;
     }
@@ -9449,6 +9597,48 @@ window._copyShotData = function() {
         renderUI();
       });
       tabsDiv.appendChild(addBtn);
+      // BRANCH toggle — marks the ACTIVE shot as a non-sequential / alternative
+      // shot. A branch shot does NOT continue from the previous shot's landing;
+      // it keeps its own cue-ball start. That frees the previous shot's landing
+      // ghost and this shot's start to be placed independently. Shot 1 can't be
+      // a branch (nothing precedes it).
+      if (_comp.activeShot > 0) {
+        var _aShot = _comp.shots[_comp.activeShot];
+        var _isAlt = !!(_aShot && _aShot.alt);
+        var brBtn = document.createElement('button');
+        brBtn.textContent = _isAlt ? 'BRANCH ✓' : 'BRANCH';
+        brBtn.title = 'Mark this shot as an alternative/branch: it keeps its own cue-ball start instead of continuing from the previous shot, so you can place the previous shot\u2019s landing on its own.';
+        brBtn.style.cssText = [
+          'padding:6px 11px',
+          'background:' + (_isAlt ? '#f0a020' : 'rgba(240,160,32,0.18)'),
+          'color:' + (_isAlt ? '#0a0a0a' : '#f0a020'),
+          'border:1px solid ' + (_isAlt ? '#f0a020' : 'rgba(240,160,32,0.6)'),
+          'border-radius:4px',
+          'font-weight:900',
+          'font-size:13px',
+          'cursor:pointer',
+          'touch-action:manipulation'
+        ].join(';');
+        brBtn.addEventListener('click', function(e){
+          e.preventDefault();
+          pullLiveIntoActiveShot();
+          var s = _comp.shots[_comp.activeShot];
+          if (!s) return;
+          if (s.alt) {
+            // Turn OFF: rejoin the chain (start follows the previous landing).
+            delete s.alt; delete s.cb;
+          } else {
+            // Turn ON: capture the current cue-ball spot as this shot's own
+            // independent start, so nothing jumps the moment it decouples.
+            s.alt = true;
+            s.cb = { x: S.cb.x, y: S.cb.y };
+          }
+          syncActiveShotToAimer();
+          renderUI();
+          save();
+        });
+        tabsDiv.appendChild(brBtn);
+      }
       // - Remove last shot
       if (_comp.shots.length > 1) {
         var rmBtn = document.createElement('button');
@@ -9610,6 +9800,8 @@ window._copyShotData = function() {
           rcMult: +(s.rcMult || 0).toFixed(3),
           rcLocked: !!s.rcLocked,
           landing: s.landing ? { x: +s.landing.x.toFixed(2), y: +s.landing.y.toFixed(2) } : null,
+          alt: s.alt ? true : undefined,
+          cb: (s.alt && s.cb) ? { x: +s.cb.x.toFixed(2), y: +s.cb.y.toFixed(2) } : undefined,
           intent: s.intent || ''
         };
       })

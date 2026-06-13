@@ -1053,20 +1053,24 @@ var SEQUENCES = [
     title: '02. Two Shot Set 2',
     intent: 'A thin cut and a long follow across the table.',
     shots: [
-      // Shot 1: CB(355,124) → OB(378,76) → TR. Cut 31° R, follow.
       { shotId: "seq02.shot1", ob: {x:378, y:76}, cb: {x:355, y:124},
         cut: 31, pocket: 'TR', rh: true,
         vert: 1.64, speed: 0.51,
         pathAngleAdjust: 0,
         landing: {x:244.11, y:121.9},
-        intent: "The 2-ball is in a  challenging position. How to get there? To get the 2-ball in the side, you need to direct the cueball off the 1-ball into two rails and out. Be careful about not scratching in the bottom middle pocket, Pocket 5. You can direct the position of the bounces by hitting higher or lower. Try both and see what happens." },
-      // Shot 2: CB inherits shot 1's landing (244.11,121.9) → OB(220,44) → TM. Cut 35.22° R, hard follow.
+        intent: "The 2-ball is in a  challenging position. How to get there? To get the 2-ball in the side, you need to direct the cueball off the 1-ball into two rails and out. Be careful about not scratching in the bottom middle pocket, Pocket 5. You can direct the position of the bounces by hitting higher or lower. Try both and see what happens.\n\n" },
       { shotId: "seq02.shot2", ob: {x:220, y:44}, cb: {x:244.11, y:121.9},
         cut: 35.22, pocket: 'TM', rh: true,
         vert: 1.52, speed: 0.81,
         pathAngleAdjust: 0,
-        landing: {x:77.98, y:97.06},
-        intent: "Follow with just enough to get to the end rail safely." }
+        landing: {x:104.11, y:78.18},
+        intent: "Follow with just enough to get to the end rail safely." },
+      { shotId: "seq02.shot3", alt: true, ob: {x:376.97, y:77.25}, cb: {x:353.8, y:124.3},
+        cut: 29.65, pocket: null, rh: true,
+        vert: -2.28, speed: 0.5,
+        pathAngleAdjust: 0,
+        landing: {x:206.07, y:137.87},
+        intent: "Alternatively, you could hit low on the cueball when shooting the 1-ball in Shot One. This will make the cueball go wider and, if you choose this route, shoot more softly. This will prevent the danger of scratching in the 5 pocket, the side." }
     ]
   },
   {
@@ -2907,7 +2911,7 @@ if ('serviceWorker' in navigator) {
            shot's intent prose, with a toggle between LeStar's authored
            version and the user's personal notes. Drag the top grip bar
            to move; drag the corner handle to resize. -->
-      <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:10000;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:0;max-width:560px;width:90vw;max-height:70vh;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
+      <div id="seq-read-overlay" style="display:none;position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:10000;background:rgba(0,0,0,0.92);border:2px solid rgba(125,211,252,0.5);border-radius:10px;padding:0;flex-direction:column;overflow:hidden;max-width:560px;width:90vw;max-height:70vh;font-family:Lato,sans-serif;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.7);">
         <!-- Drag grip bar -->
         <div id="seq-read-grip" title="Drag to move" style="cursor:move;height:30px;touch-action:none;position:relative;background:rgba(125,211,252,0.18);border-top-left-radius:8px;border-top-right-radius:8px;border-bottom:1px solid rgba(125,211,252,0.3);display:flex;align-items:center;gap:5px;padding:0 6px;box-sizing:border-box;user-select:none;">
           <span style="flex:1;text-align:center;font-size:11px;color:#7dd3fc;letter-spacing:0.4em;line-height:1;pointer-events:none;">▪▪▪</span>
@@ -2917,7 +2921,7 @@ if ('serviceWorker' in navigator) {
           <button id="seq-read-min" title="Hide" style="min-width:48px;height:24px;padding:0 10px;background:#7dd3fc;color:#0a0a0a;border:none;border-radius:5px;font-size:13px;font-weight:900;letter-spacing:0.06em;line-height:1;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;">HIDE</button>
         </div>
         <!-- Body wrapper — this is what scrolls; gives the overlay its content area -->
-        <div id="seq-read-body" style="padding:12px 20px 16px;overflow-y:auto;max-height:calc(100% - 30px);">
+        <div id="seq-read-body" style="padding:12px 20px 16px;overflow-y:auto;flex:1 1 auto;min-height:0;">
         <!-- View toggle: LeStar's Version | Mine -->
         <div style="display:flex;gap:0;margin-bottom:12px;border:1px solid rgba(125,211,252,0.5);border-radius:6px;overflow:hidden;font-size:12px;font-weight:900;letter-spacing:0.04em;">
           <button id="seq-read-view-lestar" style="flex:1;padding:7px 10px;background:rgba(125,211,252,0.25);color:#fff;border:none;cursor:pointer;line-height:1;font-family:inherit;">LESTAR'S VERSION</button>
@@ -2933,7 +2937,9 @@ if ('serviceWorker' in navigator) {
           <textarea id="seq-read-mine-textarea" placeholder="What did you see? Save your observations here." style="width:100%;min-height:140px;padding:10px;background:rgba(0,0,0,0.5);color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:5px;font-size:15px;font-family:Lato,sans-serif;line-height:1.5;box-sizing:border-box;resize:vertical;"></textarea>
         </div>
         </div>
-        <!-- Corner resize handle -->
+        <div id="seq-read-resize" title="Drag to resize" style="height:20px;flex:0 0 auto;touch-action:none;cursor:ns-resize;display:flex;align-items:center;justify-content:center;background:rgba(125,211,252,0.12);border-top:1px solid rgba(125,211,252,0.25);border-bottom-left-radius:8px;border-bottom-right-radius:8px;user-select:none;">
+          <span style="font-size:12px;color:#7dd3fc;line-height:1;pointer-events:none;">⇕</span>
+        </div>
       </div>
       <button id="rail-lock-btn" title="Lock table — disables ball drags so you can pan freely from any point on the table." style="position:fixed;left:0;top:0;z-index:200;font-family:Lato,sans-serif;font-size:10px;font-weight:900;padding:4px 9px;border-radius:4px;background:rgba(240,223,112,0.9);border:1px solid rgba(240,223,112,0.95);color:#000;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1;visibility:hidden;">LOCK</button>
       <button id="slider-indicator-btn" title="Sliders status — bright blue when speed, spin, or vert is set away from default. Tap to scroll to the sliders panel." style="position:fixed;left:0;top:0;z-index:200;width:30px;height:24px;padding:0;border-radius:4px;background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.2);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;visibility:hidden;">
@@ -4778,7 +4784,12 @@ function renderTable(d) {
         if (!window._seqState.completed[i]) { aIdx = i; break; }
       }
       if (aIdx >= 0 && aIdx + 1 < seq.shots.length) {
-        nextCb = seq.shots[aIdx + 1].cb;
+        // Prefer THIS shot's own landing (where its cue ball actually stops).
+        // Normally equals the next shot's CB; for a flagged non-sequential /
+        // branch shot the next shot restarts elsewhere, so honor this shot's
+        // landing rather than the next shot's CB.
+        var _curShot = seq.shots[aIdx];
+        nextCb = (_curShot && _curShot.landing) ? _curShot.landing : seq.shots[aIdx + 1].cb;
       } else if (aIdx >= 0 && seq.loops && seq.shots.length > 0) {
         // Looping Game: the last shot's ghost points back to shot 1's CB
         // start, showing the loop-back target.
@@ -7994,6 +8005,10 @@ document.addEventListener('DOMContentLoaded', function(){
           e.stopPropagation(); e.preventDefault();
           var willMin = rbody.style.display !== 'none';
           rbody.style.display = willMin ? 'none' : '';
+          var rsz = document.getElementById('seq-read-resize');
+          if (rsz) rsz.style.display = willMin ? 'none' : '';
+          if (willMin) { overlay.dataset.fullh = overlay.style.height; overlay.style.height = 'auto'; }
+          else { overlay.style.height = overlay.dataset.fullh || ''; }
           minBtn.textContent = willMin ? 'SHOW' : 'HIDE';
           minBtn.title = willMin ? 'Restore' : 'Hide';
           clampIntoView();
@@ -8003,6 +8018,24 @@ document.addEventListener('DOMContentLoaded', function(){
         var b = document.getElementById(id);
         if (b) b.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
       });
+      var rgrip = document.getElementById('seq-read-resize');
+      if (rgrip) {
+        var rz = false, rsy = 0, rh0 = 0;
+        rgrip.addEventListener('pointerdown', function(e){
+          rz = true; rsy = e.clientY; rh0 = overlay.getBoundingClientRect().height;
+          try { rgrip.setPointerCapture(e.pointerId); } catch(_e){}
+          e.stopPropagation(); e.preventDefault();
+        });
+        rgrip.addEventListener('pointermove', function(e){
+          if (!rz) return;
+          var h = Math.max(140, Math.min(window.innerHeight - 80, rh0 + (e.clientY - rsy)));
+          overlay.style.height = h + 'px';
+          e.preventDefault();
+        });
+        function endRz(e){ if (!rz) return; rz = false; try { rgrip.releasePointerCapture(e.pointerId); } catch(_e){} }
+        rgrip.addEventListener('pointerup', endRz);
+        rgrip.addEventListener('pointercancel', endRz);
+      }
     })();
 
     function advance() {
@@ -8093,18 +8126,20 @@ document.addEventListener('DOMContentLoaded', function(){
         var seq = SEQUENCES[window._seqState.sequenceIdx];
         var idx = getActiveShotIdx();
         showOverlayContent(seq, idx);
-        overlay.style.display = 'block';
+        overlay.style.display = 'flex';
         overlay.style.transform = 'none';
         overlay.style.maxWidth = 'none';
-        var _vw = window.innerWidth;
+        overlay.style.maxHeight = 'none';
+        var _vw = window.innerWidth, _vh = window.innerHeight;
         var _boxW = (_vw < 500) ? Math.min(_vw - 24, 340) : 400;
-        overlay.style.maxHeight = (_vw < 500) ? '66vh' : 'none';
+        var _boxH = (_vw < 500) ? Math.round(_vh * 0.60) : Math.round(Math.min(_vh * 0.72, 560));
         overlay.style.width  = _boxW + 'px';
-        overlay.style.height = 'auto';
+        overlay.style.height = _boxH + 'px';
         overlay.style.left   = Math.round((_vw - _boxW) / 2) + 'px';
         overlay.style.top    = '60px';
         // Always open expanded (not minimized)
         var _b = document.getElementById('seq-read-body'); if (_b) _b.style.display = '';
+        var _r = document.getElementById('seq-read-resize'); if (_r) _r.style.display = '';
         var _m = document.getElementById('seq-read-min'); if (_m) { _m.textContent = 'HIDE'; _m.title = 'Hide'; }
       } else {
         overlay.style.display = 'none';
