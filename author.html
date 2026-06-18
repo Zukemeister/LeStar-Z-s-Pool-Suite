@@ -51,7 +51,7 @@ h1{display:flex;align-items:center;justify-content:center;line-height:1;margin-b
 .sgroup-title{font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#ddd;margin-bottom:6px;}
 .srow{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
 .srow:last-child{margin-bottom:0;}
-.slbl{font-size:11px;color:#e8e8e8;min-width:52px;font-weight:700;}
+.slbl{font-size:14px;color:#fff;min-width:78px;font-weight:900;letter-spacing:0.5px;text-transform:uppercase;}
 .sval{font-size:15px;font-weight:900;width:80px;min-width:80px;max-width:80px;text-align:right;white-space:nowrap;overflow:hidden;color:#f0df70;}
 input[type=range]{flex:1;-webkit-appearance:none;height:5px;background:rgba(255,255,255,0.15);border-radius:3px;outline:none;touch-action:none;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #1a361a;box-shadow:0 1px 5px rgba(0,0,0,0.5);}
@@ -1426,7 +1426,7 @@ var SEQUENCES = [
     ]
   },
   {
-    title: '6-12--26 Basic shooting and how aimer works. Part 2.',
+    title: '17. 6-12--26 Basic shooting and how aimer works. Part 2.',
     intent: '',
     shots: [
       { shotId: "seq17.shot1", ob: {x:128.87, y:129.62}, cb: {x:181.16, y:180.94},
@@ -1450,51 +1450,66 @@ var SEQUENCES = [
     ]
   },
   {
-    title: '6-13--26 Basic shooting and how aimer works. Part 3',
+    title: '18. 6-13--26 Basic shooting and how aimer works. Part 3',
     intent: '',
+    soloBalls: true,
     shots: [
       { shotId: "seq18.shot1", ob: {x:329.92, y:129.46}, cb: {x:279.78, y:178.6},
-        cut: 0, pocket: null, rh: false,
+        cut: 0, pocket: "TR", rh: false,
         vert: 1.8, speed: 0.34,
         pathAngleAdjust: 0,
         landing: {x:400.58, y:58.27},
-        intent: "Let's setup and shoot familiar shots, but look at useful information that comes from other parts of Aimer.\n\nOn this shot, we are again shooting straight into the corner pocket, Pocket-3, but we are hitting higher on the cueball. Look at the pink ball in the center. You'll see the black dot is high above center. That means that when you shoot, your cue tip should hit high and center on the cueball.\n\nThe result of that is evident on the Table Diagram, the top diagram. You'll notice that the Blue Ghost is now very close to the pocket. That is so because hitting at the top of the cueball causes the cueball to continue forward after impact with the object ball. Try it. What happened?\n\nNow look to the bottom of Aimer, to the section called BALL CONTROL. There are three sliders there. The top one is for speed, meaning how hard you hit the cueball. The bottom one, \"VERT,\" is how high or low you hit the cueball. The middle, \"SPIN,\" indicates how much left or right your cuetip hits the cueball. \n\nFor this shot the speed is moderate and the vert is high. Note that when you slide the \"vert\" slider, the black dot in the cueball diagram goes up and down. Try it, and then move on to the next shot." },
+        summary: "Shoot lightly with a little follow, to roll the cueball towards the pocket.",
+        intent: "Hi. LeStar Z. here, again. Let's setup and shoot familiar shots, but look at useful information that comes from other parts of Aimer. By that I mean I would like you to become familiar with the tools and indicators in Aimer, and at the same time build your shooting ability.\n\nOn this shot, we are again shooting straight into the corner pocket, Pocket-3, but we are hitting higher on the cueball. Look at the pink ball in the center. You'll see the black dot is high above center. That means that when you shoot, your cue tip should hit high and center on the cueball.\n\nThe result of that is evident on the Table Diagram, the top diagram. You'll notice that the Blue Ghost is now very close to the pocket. That is so because hitting at the top of the cueball causes the cueball to continue forward after impact with the object ball. Try it. What happened?\n\nNow look to the bottom of Aimer, to the section called BALL CONTROL. There are three sliders there. The top one is for speed, meaning how hard you hit the cueball. The bottom one, \"VERT,\" is how high or low you hit the cueball. The middle, \"SPIN,\" indicates how much left or right your cuetip hits the cueball. \n\nFor this shot the speed is moderate and the vert is high. Note that when you slide the \"vert\" slider, the black dot in the cueball diagram goes up and down. Try it, and then move on to the next shot." },
       { shotId: "seq18.shot2", alt: true, ob: {x:330.55, y:104.94}, cb: {x:279.46, y:178.86},
-        cut: 24.08, pocket: null, rh: true,
+        cut: 24.08, pocket: "TR", rh: true,
         vert: 2.4, speed: 0.34,
         pathAngleAdjust: 0,
-        landing: {x:318.7, y:46.2},
-        intent: "This shot has some angle to go into the pocket. In fact, we can know from two places in Aimer what that angle is exactly.\n\nBelow the table are 6 windows with numbers in them. The fifth says \"cut,\" and has a yellow number, in this case 24.1 degrees. Cut is \"Cut Angle,\" and we now know that this setup make the object ball go in if give it a cut angle of 24.1 degrees. So how do we do that, exactly?\n\nGood question, and not easily answered, but we'll approach that in the next shot. Meanwhile, that other indicator of angle is at the bottom of Aimer, to the right. You see the red circle with \"24 °\" inscribed, a yellow, dashed circle and two lines. As you have guessed, that is the cueball entering on the yellow line, colliding with the object ball, which exits at a 24° angle on the blue line. This number is rounded to the nearest even digit, no decimals.\n\nShoot it and let's go to the next shot." },
-      { shotId: "seq18.shot3", alt: true, ob: {x:329.86, y:81.68}, cb: {x:280.48, y:177.3},
-        cut: 41.61, pocket: null, rh: true,
-        vert: 2.56, speed: 0.36,
+        landing: {x:400.58, y:58.27},
+        summary: "What is the angle of this shot? Look around Aimer for evidence.",
+        intent: "This shot has some angle to go into the pocket. In fact, we can know from two places in Aimer what that angle is exactly.\n\nBelow the table are 6 windows with numbers in them. The fifth says \"cut,\" and has a yellow number, in this case 24.1 degrees. Cut is \"Cut Angle,\" and we now know that this setup makes the object ball go in with a cut angle of 24.1 degrees. So how do we do that, exactly?\n\nGood question, but we'll approach that in the next shot. Meanwhile, that other indicator of angle is at the bottom of Aimer, to the right. You see the red circle with \"24 °\" inscribed, a yellow, dashed circle and two lines. As you have guessed, that is the cueball entering on the yellow line, colliding with the object ball, which exits at a 24° angle on the blue line. This number is rounded to the nearest even digit, no decimals. That yellow, dashed line is the same yellow \"GHOST BALL\" that you see on the Table Diagram above.\n\nShoot it and let's go to the next shot." },
+      { shotId: "seq18.shot3", alt: true, ob: {x:329.92, y:129.46}, cb: {x:279.78, y:178.6},
+        cut: 0, pocket: "TR", rh: false,
+        vert: 1.8, speed: 0.34,
         pathAngleAdjust: 0,
-        landing: {x:302.83, y:151.81},
-        intent: "So, how do we aim?\n\nThat's a million-dollar question, answered by many persons in different ways. Here in Aimer, our goal is to give you what should happen by the rules of physics, and encourage you to develop how it looks to you, and from that, to build instinctivity--intuition. The theory is that repeated success builds knowledge, and knowledge allows you to KNOW what angle and speed and spin to put on any shot, to make it go in and to make the cueball go to where it needs to for a makeable next shot.\n\nHow does that work?  We show you a shot on the table. You setup that shot on your table. You read what our physics say makes the shot go in.  It doesn't necessarily go in, so you then adjust until it does, and then you record it here in the \"MINE\" section. You do that for all shots in any sequence, and the next time you play the sequence, you go from YOUR data as to how to shoot the shot, and as to where the cueball goes.\n\nTry that here. Actually, don't shoot this shot yet, as a few other things need to be explained. Let's do that in the next shot description.\n\n\n" },
+        landing: {x:400.58, y:58.27},
+        summary: "You can adjust this and all other shots by going to the \"MINE\" section and recording how the shot really works. Then, when you go back to the shot, you skip LeStar's version and go straight to your own.",
+        intent: "So, how do we aim?\n\nThat's a million-dollar question, answered by many persons, and  in different ways. Here in Aimer, our goal is to give you what should happen by the rules of physics, and encourage you to develop how it looks to you, and from that, to build instinctive aiming--intuition. The theory is that repeated success builds knowledge, and knowledge allows you to KNOW what angle and speed and spin to put on any shot, to make it go in, and to make the cueball go to where it needs to for a makeable next shot.\n\nHow does that work?  We show you a shot on the table. You setup that shot on your table. You read what our physics say makes the shot go in.  It doesn't necessarily go in when you shoot it on your table, so you then adjust until it does, and then you record it here in the \"MY VERSION\" section. You do that for all shots in any sequence, and the next time you play the sequence, you go from YOUR data as to how to shoot the shot, and as to where the cueball goes.\n\nTry that here. Actually, don't shoot this shot yet, as a few other things need to be explained. Let's do that in the next shot description.\n\n\n" },
       { shotId: "seq18.shot4", alt: true, ob: {x:355.62, y:81.25}, cb: {x:278.53, y:177.62},
-        cut: 20.58, pocket: null, rh: true,
+        cut: 20.34, pocket: "TR", rh: true,
         vert: 2.88, speed: 0.44,
-        pathAngleAdjust: -16,
-        landing: {x:317.88, y:151.14},
-        intent: "How to aim? Look at the Ball Diagram, in the center of Aimer. There are the white ball,--the cueball,--and the red ball, the object ball. The cueball has a gold line around it, its circumference. If you were to line the cueball up with the object ball so the right edge of the cueball falls between the 5/8 indicator and the 3/4 indicator, you'll notice an orange vertical line is drawn at that point. That point of aim is called the \"INSIDE EDGE,\" and it is so written at the top of that line. Do you see it?\n\nNow, prove that the INSIDE EDGE aiming point changes both here and on the real table--in the real aim--by dragging the cueball diagram left and right. \n\nThe point moves, the line moves, and in the readout box above, 2nd from the left, the \"Inside Edge\" percentage changes as you move. Do that, and then return the cueball to where you started, with an Inside Edge percentage of 35% in the readout. The green arrow head should be in the pocket again. Then go on to the next shot." },
+        pathAngleAdjust: 0,
+        landing: {x:368.18, y:154.93},
+        summary: "How to aim? The big Ball Diagram in the middle of Aimer tells you what the relationship of the cueball is to the object ball to make it go in the pocket.",
+        intent: "How to aim? Look at the Ball Diagram, in the center of Aimer. There are the white ball,--the cueball,--and the red ball, the object ball. The cueball has a gold line around it, its circumference. If you were to line the cueball up with the object ball so the right edge of the cueball falls between the 5/8 indicator and the 3/4 indicator, you'll notice an orange vertical line is drawn at that point. That point of aim is called the \"INSIDE EDGE,\" and it is so written at the top of that line. Do you see it?\n\nNow, prove that the INSIDE EDGE aiming point changes both here and on the real table--in the real aim--by dragging the cueball diagram left and right.  To do that, you have to switch panels to the MY VERSION panel.\n\nThe point moves, the line moves, and in the readout box above, 2nd from the left, the \"Inside Edge\" percentage changes as you move. Do that, and then return the cueball to where you started, with an Inside Edge percentage of 35% in the readout. The green arrow head should be in the pocket again. Then go on to the next shot." },
       { shotId: "seq18.shot5", alt: true, ob: {x:355.62, y:81.25}, cb: {x:278.53, y:177.62},
-        cut: 20.52, pocket: null, rh: true,
+        cut: 20.34, pocket: "TR", rh: true,
         vert: 2.88, speed: 0.44,
-        pathAngleAdjust: -16,
-        landing: {x:317.88, y:151.14},
-        intent: "Set up Shot 5 on the table. Now look at the physics shown in Aimer. What important qualities can we see described in Aimer that will help us make this shot?\n\nMaybe you can do this easily, but for now take all your knowledge from Aimer. On the table diagram you see the Ghost Ball, in yellow. If you look down to the ball diagram in the Doors of Perception window, the two balls are offset, white to the left, red to the right. The one with the gold line around it is the Ghost Ball, the cueball that you see on the table. The \"INSIDE EDGE\" line we noted in the last shot sits almost on the 3/8 indicator that is marked on the object ball. Do you see that?\n\nReinforcing that is the orange output in the readout above, Inside Edge, which says, \"35%.\" That means that to aim this shot, you would sight down your cuestick and try to shoot the cueball so that the right edge of it went to this place that leaves 35% of the object ball showing to the right. Basically, that is 1/3 of the object ball.\n\nFurthermore, you'll notice that there is a second vertical orange line. That line always sits on the outside rim of the object ball, and the space between the two lines is the \"INSIDE EDGE\" space. Shoot that shot and go on to Shot 6." },
+        pathAngleAdjust: 0,
+        landing: {x:368.18, y:154.93},
+        summary: "The two orange, dashed lines show you the amount of object ball showing outside of the cueball, if you are aiming correctly.",
+        intent: "Set up Shot 5 on the table. Now look at the physics shown in Aimer. What important qualities can we see described in Aimer that will help us make this shot?\n\nMaybe you already have the experience to make this shot easily, but for now take all your knowledge from Aimer. On the table diagram you see the Ghost Ball, in yellow. If you look down to the ball diagram in the Doors of Perception window, the two balls are offset, white to the left, red to the right. The one with the gold line around it is the Ghost Ball, the same Ghost Ball that you see drawn on the table. The \"INSIDE EDGE\" line we noted in the last shot sits almost on the 3/8 indicator that is marked on the object ball. Do you see that?\n\nTo help explain what is important about this edge, click in the readout that is Inside Edge. This lights up a crescent that represents the area of the object ball that is not covered by the cue ball.\n\nReinforcing that is the orange output in the readout above, Inside Edge, which says, \"35%.\" That means that to aim this shot, you would sight down your cuestick and try to shoot the cueball so that the right edge of it went to the place that leaves 35% of the object ball showing to the right (on the equator of the ball). Basically, that is 1/3 of the object ball.\n\nFurthermore, you'll notice that there is a second vertical orange line. That line always sits on the outside rim of the object ball, and the space between the two lines on the equator of the ball is what you would give the percentage or fraction that would guide your shot. Shoot that shot and go on to Shot 6." },
       { shotId: "seq18.shot6", alt: true, ob: {x:355.62, y:81.25}, cb: {x:278.53, y:177.62},
-        cut: 20.34, pocket: null, rh: true,
+        cut: 20.34, pocket: "TR", rh: true,
         vert: 2.88, speed: 0.44,
-        pathAngleAdjust: -16,
-        landing: {x:317.88, y:151.14},
-        intent: "Same shot as Shot 5. Set it up on the table again.\n\nThe Inside Edge remains, same data showing. But look to the left in the ball diagram this time. There is a blue dashed vertical line--in fact, there are TWO of them. The one on the left says \"OUTSIDE EDGE,\" and it touches the outside edge of the cueball at its leftmost place.\n\nThe space between those blue lines is collectively known as the \"Outside Edge,\" and if you look closely you'll notice that is exactly the dimensions of the Inside Edge we spoke of in the last shot. If you look at the blue readout above, third from left, you see that it says, \"35%,\" exactly the number of the Inside Edge.\n\nWhy is this important? The goal here is to build your aiming instincts, so ALL PREDICTABLE INFORMATION IS USEFUL. The physics say that if you set up an Inside Edge and an Outside Edge of 35%, this ball will go in.\n\nTo emphasize this, click on either the Inside Edge box or the Outside Edge box above. Surprise!! The two dimensions are now glowing. This is so you can clearly see those dimensions, and so that you can easily verify that they are indeed equal. Slide the ball around and watch them change, then return to 35%, shoot the shot, and go on to Shot 7." },
+        pathAngleAdjust: 0,
+        landing: {x:368.18, y:154.93},
+        summary: "Click the box that says \"inside edge\" (or Outside Edge, either one). The Outside Edge space and the Inside Edge spaces are highlighted.",
+        intent: "Same shot as Shot 5. Set it up on the table again.\n\nThe Inside Edge remains, same data showing. But look to the left in the ball diagram this time. There is a blue dashed vertical line--in fact, there are TWO of them. The one on the left says \"OUTSIDE EDGE,\" and it touches the outside edge of the cueball at its leftmost place.\n\nThe space between those blue lines is collectively known as the \"Outside Edge,\" and if you look closely you'll notice that is exactly the dimensions of the Inside Edge we spoke of in the last shot. If you look at the blue readout above, third from left, you see that it says, \"35%,\" exactly the number of the Inside Edge.\n\nWhy is this important? The goal here is to build your aiming instincts, so ALL PREDICTABLE INFORMATION IS USEFUL. The physics say that if you set up an Inside Edge and an Outside Edge of 35%, this ball will go in.\n\nTo emphasize this, click on either the Inside Edge box or the Outside Edge box above. Surprise!! The two dimensions are now glowing. This is so you can clearly see those dimensions, and so that you can easily verify that they are indeed equal. Switch to the MY VERSION panel and slide the cueball left and right, and watch the numbers change. Then return to 35%, shoot the shot, and go on to Shot 7." },
       { shotId: "seq18.shot7", alt: true, ob: {x:355.62, y:81.25}, cb: {x:278.53, y:177.62},
-        cut: 20.52, pocket: null, rh: true,
+        cut: 20.34, pocket: "TR", rh: true,
         vert: 2.88, speed: 0.44,
-        pathAngleAdjust: -16,
-        landing: {x:317.88, y:151.14},
-        intent: "" }
+        pathAngleAdjust: 0,
+        landing: {x:368.18, y:154.93},
+        summary: "In LESTAR'S VERSION again click the \"Inside Edge\" readout, to see the Inner and Outer Edges light up. Shut them off and click the \"TWIXT\" readout. What do you see?",
+        intent: "Click either of the Inside Edge and Outside Edge readouts to cycle between highlighted and not highlighted. Then, leaving them off, click in the readout called \"TWIXT.\" \n\nViola! More lights--the center part of the shot is illuminated in bright purple. What is this area, and how is it useful? I call it the TWIXT, as it is \"Betwixt\" the Inside and Outside Edges.\n\nIt is the space created by the overlap of the two balls. Once again, go to the MY VERSION panel and drag the cueball left and right. Note how the shape changes, return the Twixt readout to 65%, and then return here.\n\nClick between Inner Edge and Twixt. Twixt is a lens-shaped form, except when there is complete overlap of the two balls--a straight shot. Leave all areas lit up for now. Shoot the shot and go on to the next one.\n\n\n\n" },
+      { shotId: "seq18.shot8", alt: true, ob: {x:355.62, y:81.25}, cb: {x:280.56, y:148.6},
+        cut: 8.66, pocket: "TR", rh: true,
+        vert: 2.88, speed: 0.44,
+        pathAngleAdjust: 0,
+        landing: {x:409.53, y:140.23},
+        summary: "Shoot nearly straight shots, say to about 15 degrees, using the \"EARS.\" ",
+        intent: "This shot shows a cut angle of about 9°. Let's see how to aim it, and how to get the cueball to go to a desired place.\n\nIn the sliders at the bottom of Aimer, note that we have a lot of high \"vert.\" The result of that is the black dot on the ball diagram is high on the ball. That means we are shooting with our cuetip towards the top of the cueball.\n\nSet the balls up on the table in this way. Click on the readout for INSIDE EDGE. The two outer crescents light up. " }
     ]
   }
 ];
@@ -1686,6 +1701,7 @@ function magSetShot(ref) {
     }
     loadShotData(r.shot);
     renderSequenceTable(r.seqIdx);
+    ensureCuePathOn();  // LEARN panels default to Cueball Path ON
     // Same fix as magMarkDone: render() inside loadShotData ran before
     // renderSequenceTable rebuilt the scenery list. Call render() again
     // so the cue-path draws against the correct scenery state.
@@ -1874,17 +1890,15 @@ function escapeSeqHTML(s) {
 }
 
 function ensureCuePathOn() {
-  if (typeof cbPathOn !== 'undefined' && !cbPathOn) {
-    cbPathOn = true;
-    var _cpBtn = document.getElementById('btn-cbpath');
-    if (_cpBtn) {
-      _cpBtn.classList.add('on');
-      _cpBtn.style.lineHeight = '1.3';
-      _cpBtn.innerHTML = 'CUE PATH<br>ON';
-    }
-    var _cpDock = document.getElementById('dock-cuepath');
-    if (_cpDock) _cpDock.classList.add('active');
+  if (typeof cbPathOn !== 'undefined') cbPathOn = true;
+  var _cpBtn = document.getElementById('btn-cbpath');
+  if (_cpBtn) {
+    _cpBtn.classList.add('on');
+    _cpBtn.style.lineHeight = '1.3';
+    _cpBtn.innerHTML = 'Cueball Path<br>ON';
   }
+  var _cpDock = document.getElementById('dock-cuepath');
+  if (_cpDock) _cpDock.classList.add('active');
 }
 
 function toggleSequence(idx) {
@@ -2306,7 +2320,9 @@ function renderSequenceTable(seqIdx) {
 
   for (var j = 0; j < seq.shots.length; j++) {
     if (j === activeIdx) continue;      // active — drawn separately below
+    if (seq.soloBalls) continue;        // solo: this sequence shows ONLY the current shot's ball (no scenery, no obstacles)
     var shot = seq.shots[j];
+    if (shot.alt) continue;   // alternatives/branches are not simultaneous balls on the table — never draw or obstruct with them
     if (s.completed[j]) {
       // Completed → muted gray "already shot" marker, NOT in obstacle list.
       drawCompletedBall(shot.ob.x, shot.ob.y, j + 1);
@@ -2906,11 +2922,13 @@ if ('serviceWorker' in navigator) {
         <div id="seq-read-body" style="padding:12px 20px 16px;overflow-y:auto;flex:1 1 auto;min-height:0;">
         <div style="display:flex;gap:0;margin-bottom:12px;border:1px solid rgba(125,211,252,0.5);border-radius:6px;overflow:hidden;font-size:12px;font-weight:900;letter-spacing:0.04em;">
           <button id="seq-read-view-lestar" style="flex:1;padding:7px 10px;background:rgba(125,211,252,0.25);color:#fff;border:none;cursor:pointer;line-height:1;font-family:inherit;">LESTAR'S VERSION</button>
-          <button id="seq-read-view-mine" style="flex:1;padding:7px 10px;background:transparent;color:#aab;border:none;border-left:1px solid rgba(125,211,252,0.5);cursor:pointer;line-height:1;font-family:inherit;">MINE</button>
+          <button id="seq-read-view-mine" style="flex:1;padding:7px 10px;background:transparent;color:#aab;border:none;border-left:1px solid rgba(125,211,252,0.5);cursor:pointer;line-height:1;font-family:inherit;">MY VERSION</button>
         </div>
         <div id="seq-read-lestar-pane">
           <div id="seq-read-seq-intent" style="font-size:13px;color:#7dd3fc;font-weight:900;letter-spacing:0.04em;margin-bottom:10px;border-bottom:1px solid rgba(125,211,252,0.3);padding-bottom:8px;"></div>
-          <div id="seq-read-shot-intent" style="white-space:pre-wrap;"></div>
+          <div id="seq-read-shot-summary" style="white-space:pre-wrap;"></div>
+          <button id="seq-read-fulltext-toggle" style="display:none;margin:10px 0 0;padding:5px 11px;background:rgba(125,211,252,0.15);border:1px solid rgba(125,211,252,0.5);border-radius:5px;color:#7dd3fc;font-family:inherit;font-size:11px;font-weight:900;letter-spacing:0.04em;cursor:pointer;">SHOW FULL TEXT ▾</button>
+          <div id="seq-read-shot-intent" style="white-space:pre-wrap;margin-top:10px;"></div>
         </div>
         <div id="seq-read-mine-pane" style="display:none;">
           <textarea id="seq-read-mine-textarea" placeholder="What did you see? Save your observations here." style="width:100%;min-height:140px;padding:10px;background:rgba(0,0,0,0.5);color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:5px;font-size:15px;font-family:Lato,sans-serif;line-height:1.5;box-sizing:border-box;resize:vertical;"></textarea>
@@ -3347,13 +3365,13 @@ if ('serviceWorker' in navigator) {
       </div>
       <!-- FLIPPABLE THREE: Inside Edge · Outside Edge · Twixt -->
       <div id="diag-flip-row" style="display:flex;flex-direction:row;gap:4px;grid-column:span 3;">
-        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleEdgeStripes()" title="Tap to toggle Inside/Outside edge crescents in diagram">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleInsideStripes()" title="Tap to toggle Inside/Outside edge crescents in diagram">
           <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#e87030;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Inside Edge</div>
           <div id="r-aim-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
             <div id="r-aim" style="color:#e87030;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleEdgeStripes()" title="Tap to toggle Inside/Outside edge crescents in diagram">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleOutsideStripes()" title="Tap to toggle Inside/Outside edge crescents in diagram">
           <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#7dd3fc;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Outside Edge</div>
           <div id="r-oe-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
             <div id="r-oe" style="color:#7dd3fc;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
@@ -3451,7 +3469,7 @@ if ('serviceWorker' in navigator) {
      displayed path matches reality. Dev-only; remove for ship version. Bounces
      after the first segment follow geometrically from the rotated endpoint. -->
 <div id="angle-row" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:2px 8px 6px;width:100%;box-sizing:border-box;overflow:hidden;">
-  <span style="font-size:10px;font-weight:900;color:#7dd3fc;white-space:nowrap;letter-spacing:0.06em;text-align:center;line-height:1.1;flex-shrink:0;">ANGLE</span>
+  <span style="font-size:10px;font-weight:900;color:#7dd3fc;white-space:nowrap;letter-spacing:0.06em;text-align:center;line-height:1.1;flex-shrink:0;">Cueball Path</span>
   <svg id="angle-svg" viewBox="0 0 340 28" preserveAspectRatio="xMidYMid meet" style="flex:1;min-width:0;height:28px;touch-action:none;cursor:grab;">
     <rect x="20" y="10" width="300" height="8" rx="4" fill="rgba(125,211,252,0.20)" stroke="#7dd3fc" stroke-width="1.2"/>
     <line x1="170" y1="6" x2="170" y2="22" stroke="#7dd3fc" stroke-width="1.5"/>
@@ -3474,6 +3492,7 @@ if ('serviceWorker' in navigator) {
     <circle id="angle-thumb" cx="170" cy="14" r="9" fill="#7dd3fc" stroke="#fff" stroke-width="1" opacity="0.85"/>
   </svg>
   <button id="angle-zero-btn" title="Reset angle adjustment to 0 (use model prediction)." style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 6px;border-radius:4px;background:rgba(125,211,252,0.2);border:1px solid #7dd3fc;color:#7dd3fc;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1.1;flex-shrink:0;white-space:nowrap;">ZERO</button>
+  <button id="angle-lock-btn" title="Lock the Cueball Path slider." style="font-family:Lato,sans-serif;font-size:9px;font-weight:900;padding:3px 6px;border-radius:4px;background:rgba(125,211,252,0.2);border:1px solid #7dd3fc;color:#7dd3fc;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;line-height:1.1;flex-shrink:0;white-space:nowrap;">LOCK</button>
 </div>
     </div><!-- /perc-block -->
     <div id="aim-wrap" style="width:100%;aspect-ratio:460/300;background:rgba(0,0,0,0.28);overflow:hidden;position:relative;touch-action:none;">
@@ -3514,18 +3533,18 @@ if ('serviceWorker' in navigator) {
         <!-- Static fraction labels — never change -->
         <!-- pct labels — two sets, toggled by rh -->
         <g id="bot-pct-lh">
-          <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0%</text>
-          <text x="189" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">25%</text>
-          <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>
-          <text x="271" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">75%</text>
-          <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">100%</text>
+          <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0</text>
+          <text x="189" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">2.5</text>
+          <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">5</text>
+          <text x="271" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">7.5</text>
+          <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">10</text>
         </g>
         <g id="bot-pct-rh" opacity="0">
-          <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">100%</text>
-          <text x="189" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">75%</text>
-          <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">50%</text>
-          <text x="271" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">25%</text>
-          <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0%</text>
+          <text x="148" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">10</text>
+          <text x="189" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">7.5</text>
+          <text x="230" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">5</text>
+          <text x="271" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9"  font-weight="700" fill="#b0e8ff">2.5</text>
+          <text x="312" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#b0e8ff">0</text>
         </g>
         <!-- Fraction labels LH -->
         <g id="bot-fracs-lh">
@@ -3553,6 +3572,7 @@ if ('serviceWorker' in navigator) {
         <text x="10" y="20" font-family="Lato,sans-serif" font-size="11" font-weight="900" fill="rgba(255,255,255,0.7)" letter-spacing="8"></text>
         <!-- CB -->
         <circle id="bot-cb"   cx="230" cy="148" r="82" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5"/>
+        <line id="bot-equator" x1="100" y1="148" x2="360" y2="148" stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
       
         <!-- bot-cb-v removed: center line gone -->
         <circle id="bot-tip"  cx="230" cy="148" r="8.2" fill="#000" opacity="0.85"/>
@@ -3563,8 +3583,8 @@ if ('serviceWorker' in navigator) {
         <line id="bot-ob-outer-l" x1="148" y1="0" x2="148" y2="230" stroke="#e87030" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
         <line id="bot-ob-outer-r" x1="312" y1="54" x2="312" y2="242" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
         <line   id="bot-edge-line" x1="230" y1="54" x2="230" y2="242" stroke="#e87030" stroke-width="2" stroke-linecap="round" stroke-dasharray="6,4" opacity="0"/>
-        <text   id="bot-edge-lbl"  x="230" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080" opacity="0">Inside Edge</text>
-        <text   id="bot-cb-outer-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#7dd3fc" opacity="0">Outside Edge</text>
+        <text   id="bot-edge-lbl"  x="230" y="28" text-anchor="start" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080" opacity="0">Inside Edge</text>
+        <text   id="bot-cb-outer-lbl" x="230" y="38" text-anchor="start" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#7dd3fc" opacity="0">Outside Edge</text>
         <!-- aim % badge removed — readouts at top of screen show the same info -->
         <!-- hint text -->
         <text   id="bot-hint" x="322" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)" opacity="0">Drag ▶ to begin</text>
@@ -3775,6 +3795,17 @@ window._panLocked = true;  // default: single-finger does NOT pan; pan is two-fi
 window._tableLocked = true;
 window._perceptionLocked = true;
 window._slidersLocked = true;
+window._cuePathLocked = false;  // Cueball Path slider lock (own button); enforcement forces it true in LeStar, false in Mine
+// True only while a sequence is being PLAYED (locked / read-only), NOT while
+// the composer is open and authoring is driving the table. Lets the lock
+// enforcement and the slider guards apply to the student playback experience
+// without ever locking the table during authoring or the placement pass.
+window._inLockedSequence = function(){
+  if (!(window._seqState && window._seqState.sequenceIdx >= 0)) return false;
+  var p = document.getElementById('composer-panel');
+  if (p && p.dataset.minimized !== '1' && (p.offsetWidth > 0 || p.offsetHeight > 0)) return false;  // composer open AND expanded = authoring (a minimized composer counts as closed)
+  return true;
+};
 let lockTable = true;
 let lockBalls = true;
 let lockSliders = true;
@@ -3816,7 +3847,7 @@ function toggleCbPath() {
   if (btn) {
     btn.classList.toggle('on', cbPathOn);
     btn.style.lineHeight = '1.3';
-    btn.innerHTML = cbPathOn ? 'CUE PATH<br>ON' : 'CUE PATH<br>OFF';
+    btn.innerHTML = cbPathOn ? 'Cueball Path<br>ON' : 'Cueball Path<br>OFF';
   }
   render();
 }
@@ -4029,7 +4060,7 @@ svg.addEventListener('pointerdown', e => {
   // Game-mode placement: allow CB drag specifically (not OB) even when
   // table is locked, so the player can position the cue ball between laps.
   var _placementCbDrag = !!(window._seqState && window._seqState.placeCbMode);
-  if (window._tableLocked && !_placementCbDrag) return;  // table locked: no ball grabs, fall through to pan
+  if ((window._tableLocked || window._inLockedSequence()) && !_placementCbDrag) return;  // table locked (incl. all sequence views): no ball grabs, fall through to pan
   const p = svgPt(e);
   // Ball drag works regardless of pan/ball mode. The wrapper-level pan handler
   // ignores touches that started on a ball; the ball handler picks them up.
@@ -4141,6 +4172,21 @@ function computeCutFromPositions(cb, ob, pocketName) {
 }
 
 function render() {
+  // ── SEQUENCE LOCK ENFORCEMENT ──
+  // While a sequence is active, the pool table and the speed/spin/vert sliders
+  // are ALWAYS locked and cannot be unlocked. The perception ball, Reality
+  // Check, and Cueball Path slider are live ONLY in the Mine view (where the
+  // player records their own result); LeStar's authored view is fully
+  // read-only. Re-applied every render so tapping an unlock button can't
+  // defeat it. (_rcLocked is a physics/commit flag, intentionally untouched.)
+  if (window._inLockedSequence()) {
+    window._tableLocked = true;
+    window._slidersLocked = true;
+    window._perceptionLocked = (window._overlayView !== 'mine');
+    var _cueLock = (window._overlayView !== 'mine');
+    if (window._cuePathLocked !== _cueLock) { window._cuePathLocked = _cueLock; if (window._paintCuePathLock) window._paintCuePathLock(); }
+  }
+  if (window._paintRcLock) window._paintRcLock();
   if (snapOn) {
     const svgEl = document.getElementById('topsvg');
     if (!window._snapPos) window._snapPos = {};
@@ -4214,16 +4260,16 @@ function render() {
   // CONTACT — how far in from the cut-side edge the contact point sits.
   // 50% = dead center (straight-in), 0% = edge (90° cut). = (1 − fraction)·50.
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cpPct = Math.round((1 - _percFracMag) * 50); _cpEl.textContent = _cpPct + '%' + (cutDeg < 1.0 ? '' : (_percRhReadout ? ' L' : ' R')); }
+  if (_cpEl) { const _cp10 = ((1 + _percFracMag) * 5).toFixed(1); _cpEl.textContent = _cp10 + (cutDeg < 1.0 ? '' : (_percRhReadout ? ' L' : ' R')); }
   // INSIDE EDGE / OUTSIDE EDGE — the two non-overlap crescents. For two equal
   // balls offset along the line of centers the crescents are mirror images,
   // so both widths equal the cut fraction. They are equal BY GEOMETRY (this
   // is correct), and both track the diagram's drawn crescents.
   const _edgeP = Math.round(_percFracMag * 100);
-  const _raim = $('r-aim'); if (_raim) _raim.textContent = _edgeP + '%';
-  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = _edgeP + '%';
+  const _raim = $('r-aim'); if (_raim) _raim.textContent = (_percFracMag*10).toFixed(1);
+  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = (_percFracMag*10).toFixed(1);
   // TWIXT — the overlap lens between the two balls = 1 − fraction.
-  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = Math.max(0, 100 - _edgeP) + '%';
+  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = (Math.max(0, 10 - _percFracMag*10)).toFixed(1);
 
   // Distance readout
   const distEl = $('r-dist');
@@ -4952,7 +4998,7 @@ function drawBot(d) {
   const _contactX = (ocx + ccx) / 2;
   if (_cLine) { _cLine.setAttribute('x1',_contactX); _cLine.setAttribute('x2',_contactX); _cLine.setAttribute('y1',ocy-r-12); _cLine.setAttribute('y2',ocy+r+12); _cLine.setAttribute('opacity','1'); }
   const _cpDiag = $('cp-dot-diag');
-  if (_cpDiag) { _cpDiag.setAttribute('transform', 'translate(' + (_contactX - 230) + ',' + (ocy - 148) + ')'); _cpDiag.setAttribute('opacity', ((!!window._twixtStripes || !!window._edgeStripes) && showContact) ? '1' : '0'); }
+  if (_cpDiag) { _cpDiag.setAttribute('transform', 'translate(' + (_contactX - 230) + ',' + (ocy - 148) + ')'); _cpDiag.setAttribute('opacity', '1'); }
   const _cLbl = $('bot-contact-lbl');
   if (_cLbl) { _cLbl.setAttribute('x',_contactX); _cLbl.setAttribute('opacity','1'); }
   const _gbg = $('bot-cb-gold');
@@ -4964,7 +5010,7 @@ function drawBot(d) {
     _gog.setAttribute('cx', ocx);
     _gog.setAttribute('cy', ocy);
     _gog.setAttribute('r',  r);
-    _gog.setAttribute('opacity', window._edgeStripes ? '1' : '0');
+    _gog.setAttribute('opacity', (window._insideStripes || window._outsideStripes) ? '1' : '0');
   }
   $('bot-edge-line').setAttribute('x1', edgeX); $('bot-edge-line').setAttribute('x2', edgeX);
   $('bot-edge-line').setAttribute('y1','0'); $('bot-edge-line').setAttribute('y2','230');
@@ -4978,7 +5024,9 @@ function drawBot(d) {
     _cbOuter.setAttribute('y1','0'); _cbOuter.setAttribute('y2','230');
     _cbOuter.setAttribute('opacity', op); }
   const _cbOutLbl = $('bot-cb-outer-lbl');
-  if (_cbOutLbl) { _cbOutLbl.setAttribute('x', Math.max(50, Math.min(_cbOuterX, W-50)));
+  if (_cbOutLbl) { var _coE = (_cbOuterX > ocx);
+    _cbOutLbl.setAttribute('text-anchor', _coE ? 'end' : 'start');
+    _cbOutLbl.setAttribute('x', Math.max(50, Math.min(_cbOuterX + (_coE ? -6 : 6), W-50)));
     _cbOutLbl.setAttribute('opacity', op); }
   const _obOutL = $('bot-ob-outer-l');
   if (_obOutL) { _obOutL.setAttribute('x1', ocx-r); _obOutL.setAttribute('x2', ocx-r);
@@ -5014,8 +5062,14 @@ function drawBot(d) {
         const leftBallRight  = Lx + bulge;
         const rightBallLeft  = Rx - bulge;
         if (leftBallRight > rightBallLeft + 0.5) {
-          // Overlap at this y: stripe spans from rightBallLeft to leftBallRight
-          stripeHtml += `<line x1="${rightBallLeft.toFixed(1)}" y1="${y.toFixed(1)}" x2="${leftBallRight.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#8b5cf6" stroke-width="2.2" opacity="0.78"/>`;
+          // Overlap at this y: split at the contact line into two purple tints (lighter on the right)
+          const _sp = Math.max(rightBallLeft, Math.min(_contactX, leftBallRight));
+          if (_sp > rightBallLeft + 0.1) {
+            stripeHtml += `<line x1="${rightBallLeft.toFixed(1)}" y1="${y.toFixed(1)}" x2="${_sp.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#7c4ddb" stroke-width="2.2" opacity="0.7"/>`;
+          }
+          if (leftBallRight > _sp + 0.1) {
+            stripeHtml += `<line x1="${_sp.toFixed(1)}" y1="${y.toFixed(1)}" x2="${leftBallRight.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#c4b5fd" stroke-width="2.2" opacity="0.7"/>`;
+          }
         }
       }
       _twixtG.innerHTML = stripeHtml;
@@ -5034,8 +5088,9 @@ function drawBot(d) {
   //   from OB). Rendered as cyan horizontal stripes.
   const _edgeG = document.getElementById('edge-stripes');
   if (_edgeG) {
-    const edgeOn = !!window._edgeStripes;
-    if (edgeOn && Math.abs(ccx - ocx) > 0.5) {
+    const insOn = !!window._insideStripes;
+    const outOn = !!window._outsideStripes;
+    if ((insOn || outOn) && Math.abs(ccx - ocx) > 0.5) {
       let html = '';
       const cbLeft = ccx < ocx;
       const STRIPE_SPACING = 4;
@@ -5050,26 +5105,26 @@ function drawBot(d) {
           // At each row, inside spans from (where CB ends OR OB starts, whichever is larger)
           // to OB's right edge. Cap at OB's silhouette — no drawing where OB doesn't exist.
           const insL = Math.max(obL, cbR);  // start of non-overlap on OB row
-          if (insL < obR) {
+          if (insOn && insL < obR) {
             html += `<line x1="${insL.toFixed(1)}" y1="${y.toFixed(1)}" x2="${obR.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#ff9040" stroke-width="2" opacity="0.72"/>`;
           }
           // CB far-side (outside) crescent on the LEFT of CB.
           // At each row, outside spans from CB's left edge to (CB's right OR OB's left, whichever is smaller).
           // Cap at CB's silhouette — no drawing beyond the CB circle.
           const outR = Math.min(cbR, obL);
-          if (cbL < outR) {
+          if (outOn && cbL < outR) {
             html += `<line x1="${cbL.toFixed(1)}" y1="${y.toFixed(1)}" x2="${outR.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#7dd3fc" stroke-width="1.8" opacity="0.55"/>`;
           }
         } else {
           // Mirror image: CB is on the right.
           // OB far-side (inside) crescent on the LEFT of OB.
           const insR = Math.min(obR, cbL);
-          if (obL < insR) {
+          if (insOn && obL < insR) {
             html += `<line x1="${obL.toFixed(1)}" y1="${y.toFixed(1)}" x2="${insR.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#ff9040" stroke-width="2" opacity="0.72"/>`;
           }
           // CB far-side (outside) crescent on the RIGHT of CB.
           const outL = Math.max(cbL, obR);
-          if (outL < cbR) {
+          if (outOn && outL < cbR) {
             html += `<line x1="${outL.toFixed(1)}" y1="${y.toFixed(1)}" x2="${cbR.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#7dd3fc" stroke-width="1.8" opacity="0.55"/>`;
           }
         }
@@ -5084,8 +5139,10 @@ function drawBot(d) {
   // Readouts (r-cp, r-aim, r-oe, r-twixt) are set in render() from the same
   // _displayFrac and _compFrac. No second writes here — single source of truth.
   // "inside edge" floating label follows edgeX
-  $('bot-edge-lbl').setAttribute('x', Math.max(60, Math.min(edgeX, W-60)).toString());
-  $('bot-edge-lbl').setAttribute('opacity', showMarker ? '1' : '0');
+  { var _elE = (edgeX > ocx), _el = $('bot-edge-lbl');
+    _el.setAttribute('text-anchor', _elE ? 'end' : 'start');
+    _el.setAttribute('x', Math.max(60, Math.min(edgeX + (_elE ? -6 : 6), W-60)).toString());
+    _el.setAttribute('opacity', showMarker ? '1' : '0'); }
   $('bot-hint').setAttribute('opacity', '0');
   $('bot-hint').setAttribute('x', rh ? ocx-r-70 : ocx+r+24);
   $('bot-hint').setAttribute('text-anchor', rh ? 'end' : 'start');
@@ -5094,22 +5151,20 @@ function drawBot(d) {
   const _tg = document.getElementById('frac-ticks');
   if(_tg){
     const _ns='http://www.w3.org/2000/svg'; while(_tg.firstChild)_tg.removeChild(_tg.firstChild);
-    [{f:1/8,lh:'⅛',rh:'⅞',s:9,h:6},{f:2/8,lh:'¼',rh:'¾',s:13,h:9},{f:3/8,lh:'⅜',rh:'⅝',s:9,h:6},
-     {f:4/8,lh:'½',rh:'½',s:17,h:13},{f:5/8,lh:'⅝',rh:'⅜',s:9,h:6},{f:6/8,lh:'¾',rh:'¼',s:13,h:9},{f:7/8,lh:'⅞',rh:'⅛',s:9,h:6}
-    ].forEach(fd=>{
-      const x=(ocx-r)+fd.f*2*r, lbl=rh?fd.rh:fd.lh, half=fd.f===0.5;
+    (function(){var a=[];for(var n=0;n<=10;n++)a.push(n);return a;})().forEach(function(n){
+      var f=n/10, x=(ocx-r)+f*2*r, lbl=(rh?(10-n):n), mid=(n===5), edge=(n===0||n===10), big=mid||edge;
+      var hh=mid?14:(edge?10:6), ss=mid?15:(edge?12:9);
       const tk=document.createElementNS(_ns,'line');
       tk.setAttribute('x1',x);tk.setAttribute('x2',x);
-      tk.setAttribute('y1',ocy-fd.h/2);tk.setAttribute('y2',ocy+fd.h/2);
-      tk.setAttribute('stroke','#ffffff');tk.setAttribute('stroke-width',half?'2.5':'1.5');
-      tk.setAttribute('opacity',half?'1':'0.6');_tg.appendChild(tk);
+      tk.setAttribute('y1',ocy-hh/2);tk.setAttribute('y2',ocy+hh/2);
+      tk.setAttribute('stroke','#ffffff');tk.setAttribute('stroke-width',big?'2.2':'1.2');
+      tk.setAttribute('opacity',big?'1':'0.55');_tg.appendChild(tk);
       const tx=document.createElementNS(_ns,'text');
-      tx.setAttribute('x',x);tx.setAttribute('y',ocy+fd.h/2+fd.s+2);
+      tx.setAttribute('x',x);tx.setAttribute('y',ocy+22);
       tx.setAttribute('text-anchor','middle');tx.setAttribute('font-family','Lato,sans-serif');
-      tx.setAttribute('font-size',fd.s);tx.setAttribute('font-weight',fd.s>=13?'700':'400');
-      tx.setAttribute('fill','#ffffff');tx.setAttribute('opacity',half?'1':'0.65');
+      tx.setAttribute('font-size',ss);tx.setAttribute('font-weight',big?'900':'400');
+      tx.setAttribute('fill','#ffffff');tx.setAttribute('opacity',big?'1':'0.6');
       tx.textContent=lbl;_tg.appendChild(tx);
-
     });
   }
 }
@@ -5213,7 +5268,8 @@ document.addEventListener('keydown', e => {
 // ── SLIDERS ────────────────────────────────────────────────────
 // Twixt stripes toggle — tap the Twixt readout box to enable/disable
 window._twixtStripes = false;
-window._edgeStripes = false;
+window._insideStripes = false;
+window._outsideStripes = false;
 function toggleTwixtStripes() {
   window._twixtStripes = !window._twixtStripes;
   var box = document.getElementById('r-twixt-box');
@@ -5223,20 +5279,25 @@ function toggleTwixtStripes() {
   }
   if (typeof render === 'function') render();
 }
-function toggleEdgeStripes() {
-  window._edgeStripes = !window._edgeStripes;
+function toggleInsideStripes() {
+  window._insideStripes = !window._insideStripes;
   var ins = document.getElementById('r-aim-box');
-  var out = document.getElementById('r-oe-box');
   if (ins) {
-    ins.style.background = window._edgeStripes ? 'rgba(232,112,48,0.22)' : 'rgba(0,0,0,0.3)';
-    ins.style.borderColor = window._edgeStripes ? 'rgba(232,112,48,0.55)' : 'rgba(255,255,255,0.07)';
-  }
-  if (out) {
-    out.style.background = window._edgeStripes ? 'rgba(125,211,252,0.22)' : 'rgba(0,0,0,0.3)';
-    out.style.borderColor = window._edgeStripes ? 'rgba(125,211,252,0.55)' : 'rgba(255,255,255,0.07)';
+    ins.style.background = window._insideStripes ? 'rgba(232,112,48,0.22)' : 'rgba(0,0,0,0.3)';
+    ins.style.borderColor = window._insideStripes ? 'rgba(232,112,48,0.55)' : 'rgba(255,255,255,0.07)';
   }
   if (typeof render === 'function') render();
 }
+function toggleOutsideStripes() {
+  window._outsideStripes = !window._outsideStripes;
+  var out = document.getElementById('r-oe-box');
+  if (out) {
+    out.style.background = window._outsideStripes ? 'rgba(125,211,252,0.22)' : 'rgba(0,0,0,0.3)';
+    out.style.borderColor = window._outsideStripes ? 'rgba(125,211,252,0.55)' : 'rgba(255,255,255,0.07)';
+  }
+  if (typeof render === 'function') render();
+}
+function toggleEdgeStripes() { toggleInsideStripes(); toggleOutsideStripes(); }
 
 function onSliders() {
   S.speed  = parseInt($('sl-spd').value)  / 100;
@@ -5868,7 +5929,7 @@ function edgeZoomReset() {
     <!-- BALL CONTROL group -->
     <div id="sg-ball" style="background:rgba(176,144,240,0.08);border:1px solid rgba(176,144,240,0.2);border-radius:8px;padding:8px 10px;margin-bottom:8px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-size:9px;font-weight:900;letter-spacing:1.5px;color:rgba(176,144,240,0.9);text-transform:uppercase;">Ball Control</span>
+        <span style="font-size:13px;font-weight:900;letter-spacing:1.5px;color:rgba(205,175,255,1);text-transform:uppercase;">Ball Control</span>
         <div style="display:flex;gap:4px;">
           <button id="bc-freeze" onclick="sgFreeze('ball')" title="Freeze values" style="background:rgba(176,144,240,0.12);border:1px solid rgba(176,144,240,0.3);border-radius:4px;color:rgba(176,144,240,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
           <button onclick="sgZero('ball')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
@@ -5876,17 +5937,17 @@ function edgeZoomReset() {
         </div>
       </div>
       <div class="srow">
-        <span class="slbl" style="color:#b090f0;">speed</span>
+        <span class="slbl">SPEED</span>
         <input type="range" id="sl-spd" min="0" max="100" value="50" oninput="onSliders()">
         <span class="sval" id="sv-spd" style="display:none;">med</span>
       </div>
       <div class="srow" style="margin-top:24px;">
-        <span class="slbl">spin</span>
+        <span class="slbl">SPIN</span>
         <input type="range" id="sl-spn" min="-100" max="100" value="0" oninput="onSliders()">
         <span class="sval" id="sv-spn" style="display:none;">0</span>
       </div>
       <div class="srow" style="margin-top:24px;">
-        <span class="slbl">vert</span>
+        <span class="slbl">HIGH/LOW</span>
         <input type="range" id="sl-vert" min="-100" max="100" value="0" oninput="onSliders()">
         <span class="sval" id="sv-vert" style="display:none;">stun</span>
       </div>
@@ -5962,7 +6023,7 @@ window.addEventListener('load', function(){
   (function(){
     var m = document.getElementById('btn-map');     if(m){ m.textContent = mapOn ? 'GRID ON' : 'GRID OFF'; m.classList.toggle('on', mapOn); }
     var s = document.getElementById('ep-snap');     if(s){ s.textContent = snapOn ? 'SNAP ON' : 'SNAP OFF'; s.classList.toggle('on', snapOn); }
-    var c = document.getElementById('btn-cbpath');  if(c){ c.classList.toggle('on', cbPathOn); c.style.lineHeight='1.3'; c.innerHTML = cbPathOn ? 'CUE PATH<br>ON' : 'CUE PATH<br>OFF'; }
+    var c = document.getElementById('btn-cbpath');  if(c){ c.classList.toggle('on', cbPathOn); c.style.lineHeight='1.3'; c.innerHTML = cbPathOn ? 'Cueball Path<br>ON' : 'Cueball Path<br>OFF'; }
     var a = document.getElementById('btn-angle');   if(a){ a.classList.toggle('on', angleOn); a.style.lineHeight='1.3'; a.innerHTML = angleOn ? 'SHOT<br>ANGLES ON' : 'SHOT<br>ANGLES OFF'; }
   })();
 
@@ -6029,10 +6090,16 @@ function swapPanels(){
     if (!ghost || !topsvg) return;
     var dragging = false;
     function ptToSvg(e) {
-      var pt = topsvg.createSVGPoint();
       var src = (e.touches && e.touches[0]) ? e.touches[0] : e;
-      pt.x = src.clientX; pt.y = src.clientY;
-      return pt.matrixTransform(topsvg.getScreenCTM().inverse());
+      var rect = topsvg.getBoundingClientRect();
+      var vb = topsvg.viewBox.baseVal;
+      // getBoundingClientRect reflects the _pz CSS-transform zoom, so this
+      // tracks the finger on desktop and iOS. getScreenCTM() ignores the
+      // ancestor CSS transform and caused the ~inch drag offset.
+      return {
+        x: (src.clientX - rect.left) / rect.width  * vb.width,
+        y: (src.clientY - rect.top)  / rect.height * vb.height
+      };
     }
     function nextShotRef() {
       if (!window._seqState || window._seqState.sequenceIdx < 0) return null;
@@ -6046,6 +6113,10 @@ function swapPanels(){
       return { seqIdx: window._seqState.sequenceIdx, shotIdx: aIdx + 1, shot: seq.shots[aIdx + 1] };
     }
     ghost.addEventListener('pointerdown', function(e){
+      // In LeStar's playback view the blue ghost is read-only. It is draggable
+      // only in Mine (the player records their landing) and during composer
+      // authoring (handled by _inLockedSequence returning false then).
+      if (window._inLockedSequence() && window._overlayView !== 'mine') return;
       // The composer is the authoring environment for aimer_work; the ghost
       // ALWAYS represents the active shot's landing target the author is
       // setting. (Older guard checked _seqState to lock the ghost during
@@ -6976,7 +7047,7 @@ function toggleSlidersPanel() {
         <polygon points="2,10 6,10 4,7" fill="#ffa040"/>
       </svg>
     </div>
-    <div class="dock-slot" id="dock-cuepath" title="Cue path — shows where the CB will travel after contact, plus a faint rebound off the first rail.">
+    <div class="dock-slot" id="dock-cuepath" title="Cueball path — shows where the CB will travel after contact, plus a faint rebound off the first rail.">
       <svg width="18" height="18" viewBox="0 0 18 18" style="pointer-events:none;">
         <circle cx="9" cy="9" r="5" fill="none" stroke="#f0df70" stroke-width="1.5"/>
         <line x1="9" y1="1" x2="9" y2="4" stroke="#f0df70" stroke-width="1.5" stroke-linecap="round"/>
@@ -7119,6 +7190,7 @@ function toggleSlidersPanel() {
     bind('dock-manual', function(){ openExternalDoc(MANUAL_URL, 'Manual'); });
     bind('dock-manifesto', function(){ openExternalDoc(MANIFESTO_URL, 'Manifesto'); });
     bind('dock-lockall',  function(){
+      if (window._inLockedSequence()) return;  // sequence locks are enforced and cannot be toggled off
       // Determine target state: if ANY lock is currently off, lock all.
       // Otherwise (all locked), unlock all.
       var anyOff = !window._tableLocked || !window._perceptionLocked || !window._slidersLocked;
@@ -7185,7 +7257,8 @@ function toggleSlidersPanel() {
       }
       // Visual toggles back to defaults
       window._twixtStripes = false;
-      window._edgeStripes = false;
+      window._insideStripes = false;
+      window._outsideStripes = false;
       window._helpModeOn = false;
       if (typeof contactDotOn !== 'undefined') {
         try { contactDotOn = false; } catch(e){}
@@ -7206,6 +7279,10 @@ function toggleSlidersPanel() {
         twBox.style.background = 'rgba(0,0,0,0.3)';
         twBox.style.borderColor = 'rgba(255,255,255,0.07)';
       }
+      var ieBox2 = document.getElementById('r-aim-box');
+      if (ieBox2) { ieBox2.style.background = 'rgba(0,0,0,0.3)'; ieBox2.style.borderColor = 'rgba(255,255,255,0.07)'; }
+      var oeBox2 = document.getElementById('r-oe-box');
+      if (oeBox2) { oeBox2.style.background = 'rgba(0,0,0,0.3)'; oeBox2.style.borderColor = 'rgba(255,255,255,0.07)'; }
       // Zero sliders
       ['sl-spd','sl-spn','sl-vert'].forEach(function(id){
         var el = document.getElementById(id);
@@ -7451,6 +7528,7 @@ window.addEventListener('load', function(){
   window._rcSetX = setX;
   thumb.addEventListener('pointerdown', function(e){
     if(window._rcLocked) return;
+    if (window._inLockedSequence() && window._overlayView !== 'mine') return;  // in a sequence, RC slider is live only in the Mine view
     if(e.detail>1) return;
     dragging=true; thumb.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   });
@@ -7495,6 +7573,13 @@ document.addEventListener('DOMContentLoaded', function(){
     var overlay = document.getElementById('seq-read-overlay');
     var ovSeqEl = document.getElementById('seq-read-seq-intent');
     var ovShotEl= document.getElementById('seq-read-shot-intent');
+    var ovSummaryEl = document.getElementById('seq-read-shot-summary');
+    var ovToggleBtn = document.getElementById('seq-read-fulltext-toggle');
+    if (ovToggleBtn) ovToggleBtn.onclick = function(){
+      var hidden = (ovShotEl.style.display === 'none');
+      ovShotEl.style.display = hidden ? 'block' : 'none';
+      ovToggleBtn.textContent = hidden ? 'HIDE FULL TEXT \u25b4' : 'SHOW FULL TEXT \u25be';
+    };
     if (!strip || !backBtn || !nextBtn || !readBtn || !overlay) return;
     // Lift the READ overlay out of #zoom-wrap. That wrapper gets transform:scale()
     // and overflow:hidden, which traps position:fixed (measuring from the wrapper,
@@ -7567,8 +7652,13 @@ document.addEventListener('DOMContentLoaded', function(){
       } else {
         nextBtn.textContent = 'NEXT ▶';
       }
+      var _nextDead = isLastShot && !seq.loops && !inPlacement;
+      nextBtn.disabled = _nextDead;
+      nextBtn.style.opacity = _nextDead ? '0.4' : '1';
+      nextBtn.style.cursor = _nextDead ? 'default' : 'pointer';
       var shotIntent = (seq.shots[idx] && seq.shots[idx].intent) || '';
-      var hasProse = shotIntent.trim().length > 0 && !inPlacement;
+      var shotSummary = (seq.shots[idx] && seq.shots[idx].summary) || '';
+      var hasProse = (shotIntent.trim().length > 0 || shotSummary.trim().length > 0) && !inPlacement;
       readBtn.disabled = !hasProse;
       readBtn.style.opacity = hasProse ? '1' : '0.4';
       readBtn.style.cursor = hasProse ? 'pointer' : 'default';
@@ -7762,7 +7852,20 @@ document.addEventListener('DOMContentLoaded', function(){
       } else {
         ovSeqEl.style.display = 'none';
       }
-      ovShotEl.textContent = (seq.shots[idx] && seq.shots[idx].intent) || '';
+      // Two-step read: show the tidy summary first; full prose one tap away.
+      // No summary -> show the full prose directly (graceful fallback).
+      var _tsSum = (seq.shots[idx] && seq.shots[idx].summary) || '';
+      var _tsInt = (seq.shots[idx] && seq.shots[idx].intent) || '';
+      ovShotEl.textContent = _tsInt;
+      if (_tsSum.trim()) {
+        if (ovSummaryEl) { ovSummaryEl.textContent = _tsSum; ovSummaryEl.style.display = 'block'; }
+        ovShotEl.style.display = 'none';
+        if (ovToggleBtn) { ovToggleBtn.style.display = _tsInt.trim() ? 'inline-block' : 'none'; ovToggleBtn.textContent = 'SHOW FULL TEXT \u25be'; }
+      } else {
+        if (ovSummaryEl) ovSummaryEl.style.display = 'none';
+        ovShotEl.style.display = 'block';
+        if (ovToggleBtn) ovToggleBtn.style.display = 'none';
+      }
       var shotId = (seq.shots[idx] && seq.shots[idx].shotId) || null;
       var saved = shotId && typeof getUserShot === 'function' ? getUserShot(shotId) : null;
       var hasMine = !!(saved && (
@@ -7918,6 +8021,9 @@ document.addEventListener('DOMContentLoaded', function(){
       var seq = SEQUENCES[window._seqState.sequenceIdx];
       var idx = getActiveShotIdx();
       var isLastShot = idx >= seq.shots.length - 1;
+      // Last shot of a non-looping sequence: NEXT must NOT close the sequence.
+      // Stay put; it remains open until the user exits explicitly.
+      if (isLastShot && !seq.loops && !window._seqState.placeCbMode) return;
       window._seqState.completed[idx] = true;
       // Game-mode placement commit
       if (window._seqState.placeCbMode) {
@@ -8076,7 +8182,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var lb = document.getElementById('perc-lock-btn');
   if (lb) {
     function paint() {
-      var on = !!window._rcLocked;
+      var on = !!window._rcLocked || (typeof window._inLockedSequence === 'function' && window._inLockedSequence() && window._overlayView !== 'mine');
       lb.textContent = on ? 'LOCKED' : 'LOCK';
       lb.style.background = on ? '#ff8c00' : 'rgba(255,140,0,0.2)';
       lb.style.color      = on ? '#1a1400' : '#ff8c00';
@@ -8084,8 +8190,10 @@ document.addEventListener('DOMContentLoaded', function(){
       if (svg) svg.style.cursor = on ? 'not-allowed' : 'grab';
     }
     paint();
+    window._paintRcLock = paint;
     lb.addEventListener('click', function(e){
       e.stopPropagation();
+      if (typeof window._inLockedSequence === 'function' && window._inLockedSequence() && window._overlayView !== 'mine') return;  // read-only in LeStar sequence view
       var newLocked = !window._rcLocked;
       if (newLocked) {
         // Snapshot the current shot's physics fraction. Use the same cutDeg
@@ -8143,6 +8251,7 @@ document.addEventListener('DOMContentLoaded', function(){
     _lockBtnRepainters.push(paint);
     btn.addEventListener('click', function(e){
       e.stopPropagation();
+      if (window._inLockedSequence()) return;  // sequence locks are enforced and cannot be toggled off
       window[flagName] = !window[flagName];
       paint();
     });
@@ -8432,7 +8541,7 @@ document.addEventListener('DOMContentLoaded', function(){
     var inputs = document.querySelectorAll('#sliders-block input[type="range"]');
     inputs.forEach(function(el){ el.disabled = locked; });
     var sg = document.querySelector('#sliders-block .sgroup, #sliders-block #sg-ball');
-    if (sg) sg.style.opacity = locked ? '0.55' : '1';
+    if (sg) sg.style.opacity = '1';  // BALL CONTROL stays bright even when locked
   }
   _applySlidersLockState();
   // Hook into the lock button click to also update slider disabled state
@@ -8772,6 +8881,7 @@ window._copyShotData = function() {
 
     var dragging = false, ptr = null;
     function startDrag(e) {
+      if (window._cuePathLocked) return;  // Cueball Path slider lock (own button + sequence enforcement)
       e.preventDefault();
       e.stopPropagation();
       dragging = true; ptr = e.pointerId;
@@ -8779,6 +8889,7 @@ window._copyShotData = function() {
       doMove(e);
     }
     function doMove(e) {
+      if (window._cuePathLocked) return;  // hard lock: value cannot change while the Cueball Path slider is locked
       if (!dragging) return;
       e.preventDefault();
       e.stopPropagation();
@@ -8812,6 +8923,25 @@ window._copyShotData = function() {
       });
     }
 
+    var lockBtn = document.getElementById('angle-lock-btn');
+    function paintCuePathLock(){
+      if (!lockBtn) return;
+      var on = !!window._cuePathLocked;
+      lockBtn.textContent = on ? 'LOCKED' : 'LOCK';
+      lockBtn.style.background  = on ? 'rgba(255,140,0,0.8)'  : 'rgba(125,211,252,0.2)';
+      lockBtn.style.borderColor = on ? 'rgba(255,140,0,0.95)' : '#7dd3fc';
+      lockBtn.style.color       = on ? '#000' : '#7dd3fc';
+    }
+    if (lockBtn) {
+      lockBtn.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        if (window._inLockedSequence()) return;  // sequence locks are enforced and cannot be toggled off
+        window._cuePathLocked = !window._cuePathLocked;
+        paintCuePathLock();
+      });
+    }
+    window._paintCuePathLock = paintCuePathLock;
+    paintCuePathLock();
     // Initial position
     updateThumb();
     // Also re-sync the thumb if anything else (sequence loads, Reset) changes pathAngleAdjust.
@@ -8948,6 +9078,7 @@ window._copyShotData = function() {
         landing: landing,
         alt: s.alt ? true : undefined,
         cb: (s.alt && s.cb) ? { x: s.cb.x, y: s.cb.y } : undefined,
+        summary: s.summary || '',
         intent: s.intent || ''
       });
     }
@@ -9247,6 +9378,7 @@ window._copyShotData = function() {
           '<button id="comp-text-larger" title="Larger intent text" style="padding:2px 8px;background:rgba(125,211,252,0.15);color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);border-radius:4px;font-weight:900;font-size:15px;cursor:pointer;line-height:1;">A+</button>',
           '<span id="comp-text-size-readout" style="opacity:0.7;min-width:28px;text-align:right;">14px</span>',
         '</div>',
+        '<textarea id="comp-shot-summary" placeholder="Tidy summary \u2014 the do-this checklist, shown first (optional)" style="width:100%;height:58px;min-height:40px;padding:8px;background:#0a0a0a;color:#fff;border:1px solid rgba(125,211,252,0.45);border-radius:4px;font-size:14px;font-family:Lato,sans-serif;resize:vertical;box-sizing:border-box;line-height:1.35;"></textarea>',
         '<textarea id="comp-intent" placeholder="Notes for the active shot (LeStar Z teaching prose)" style="width:100%;min-height:48px;padding:8px;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:4px;font-size:14px;font-family:Lato,sans-serif;resize:vertical;box-sizing:border-box;line-height:1.35;"></textarea>',
       '</div>',
       // ── RESIZE HANDLE ── Bottom-right corner. Drag to scale the whole panel
@@ -9447,6 +9579,8 @@ window._copyShotData = function() {
     var readout = document.getElementById('comp-text-size-readout');
     var px = getIntentFontSize();
     if (box) box.style.fontSize = px + 'px';
+    var _sbox = document.getElementById('comp-shot-summary');
+    if (_sbox) _sbox.style.fontSize = px + 'px';
     if (readout) readout.textContent = px + 'px';
   }
   function resizeIntentBoxToFit() {
@@ -9689,6 +9823,7 @@ window._copyShotData = function() {
         if (!src) return;
         var _dup = JSON.parse(JSON.stringify(src));
         _dup.intent = '';  // text is independent of the copy cycle — new shot starts blank
+        _dup.summary = '';  // summary is prose too — new shot starts blank
         _comp.shots.splice(_comp.activeShot + 1, 0, _dup);
         _comp.activeShot = _comp.activeShot + 1;
         syncActiveShotToAimer();
@@ -9708,6 +9843,7 @@ window._copyShotData = function() {
         if (!src) return;
         _comp.shotClipboard = JSON.parse(JSON.stringify(src));
         _comp.shotClipboard.intent = '';  // clipboard holds shot geometry only, not the text
+        _comp.shotClipboard.summary = '';  // summary is prose too — never carried by copy
         renderUI();
       });
       tabsDiv.appendChild(copyBtn);
@@ -9722,8 +9858,10 @@ window._copyShotData = function() {
         if (!_comp.shotClipboard) return;
         var _cur = _comp.shots[_comp.activeShot];
         var _keepText = (_cur && typeof _cur.intent === 'string') ? _cur.intent : '';
+        var _keepSummary = (_cur && typeof _cur.summary === 'string') ? _cur.summary : '';
         var _pasted = JSON.parse(JSON.stringify(_comp.shotClipboard));
         _pasted.intent = _keepText;  // paste overwrites geometry only — shot keeps its own text
+        _pasted.summary = _keepSummary;  // summary is prose too — shot keeps its own
         _comp.shots[_comp.activeShot] = _pasted;
         syncActiveShotToAimer();
         renderUI();
@@ -9795,6 +9933,11 @@ window._copyShotData = function() {
       var shot = _comp.shots[_comp.activeShot];
       if (shot && intentBox.value !== shot.intent) intentBox.value = shot.intent || '';
     }
+    var summaryBox = document.getElementById('comp-shot-summary');
+    if (summaryBox) {
+      var _ssShot = _comp.shots[_comp.activeShot];
+      if (_ssShot && summaryBox.value !== _ssShot.summary) summaryBox.value = _ssShot.summary || '';
+    }
   }
 
   // ── Wire panel ──────────────────────────────────────────────────────────
@@ -9812,6 +9955,13 @@ window._copyShotData = function() {
       intentBox.addEventListener('input', function(){
         var shot = _comp.shots[_comp.activeShot];
         if (shot) { shot.intent = intentBox.value; save(); }
+      });
+    }
+    var summaryBox = document.getElementById('comp-shot-summary');
+    if (summaryBox) {
+      summaryBox.addEventListener('input', function(){
+        var shot = _comp.shots[_comp.activeShot];
+        if (shot) { shot.summary = summaryBox.value; save(); }
       });
     }
     var copyBtn = document.getElementById('comp-copy');
@@ -9935,6 +10085,7 @@ window._copyShotData = function() {
           landing: s.landing ? { x: +s.landing.x.toFixed(2), y: +s.landing.y.toFixed(2) } : null,
           alt: s.alt ? true : undefined,
           cb: (s.alt && s.cb) ? { x: +s.cb.x.toFixed(2), y: +s.cb.y.toFixed(2) } : undefined,
+          summary: (s.summary && s.summary.trim()) ? s.summary : undefined,
           intent: s.intent || ''
         };
       })
