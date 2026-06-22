@@ -489,7 +489,7 @@ body { padding-bottom: 80px !important; }
 #shot-library-panel.float-panel {
   left: 0; top: 0; right: 0; bottom: 0;
   width: 100%; height: 100vh; height: 100dvh;
-  max-width: none; min-width: 0; max-height: none;
+  max-width: 900px; margin: 0 auto; min-width: 0; max-height: none;
   border: none; border-radius: 0;
   box-shadow: none;
   transform: none !important;   /* never offset by old drag positioning */
@@ -1443,7 +1443,7 @@ var SEQUENCES = [
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:230, y:180},
-        intent: "The CUEBALL is the white one and the red ball is any ball you want to shoot. Here we call that the \"Object Ball,\" which makes sense, as it is the OBJECT of your attention. We need to have a way to indicate on our AIMER app the location of all balls, and we need for you to translate those locations into positions on your physical table. Set them up approximately as you see here, and go on to Shot 2 of this series.\n\n" },
+        intent: "The CUEBALL is the white one and the red ball is any ball you want to shoot. Here we call that red one the \"Object Ball,\" which makes sense, as it is the OBJECT of your attention. We need to have a way to indicate on our AIMER app the location of all balls, and we need for you to translate those locations into positions on your physical table. Set them up approximately as you see here, and go on to Shot 2 of this series.\n\n" },
       { shotId: "seq16.shot2", ob: {x:230, y:105}, cb: {x:230, y:180},
         cut: 0, pocket: null, rh: false,
         vert: 0, speed: 0.5,
@@ -1455,7 +1455,7 @@ var SEQUENCES = [
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:230, y:180},
-        intent: "The numbered squares are subdivided into four squares, as you see. From left to right in each square they are A in the top left, B in the top right, C on the bottom left, and D on the bottom right. So a general location of a ball would be 13.A., for example, to indicate a ball sitting in the A section of square 13.\n\nGo on to Shot 4 for more." },
+        intent: "The numbered squares are subdivided into four squares, as you see. From left to right in each square they are A in the top left, B in the top right, C on the bottom left, and D on the bottom right. So a general location of a ball would be 13.A., for example, to indicate a ball sitting in the A section of square 13.\n\nTo be clear, the letter designations of those four squares are not written on the table. You have to remember the names.\n\nGo on to Shot 4 for more." },
       { shotId: "seq16.shot4", ob: {x:230, y:105}, cb: {x:230, y:180},
         cut: 0, pocket: null, rh: false,
         vert: 0, speed: 0.5,
@@ -1467,13 +1467,13 @@ var SEQUENCES = [
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:230, y:180},
-        intent: "Now that you have positioned the two balls, it's time to shoot them. If you have experience, you know that you have to hold the cuestick with two hands, one of which rests on the table, and one of which grabs the butt, the back end, of the cuestick. The front hand is called the bridge hand, and its job is to make a tripod on which the cuestick is balanced.\n\nIf you have no experience, look around the room to see how good shooters hold the cuestick and how they stand. Imitate them.\n\nPut your bridge hand flat on the table. Make a V-shape with your thumb and index finger. The thumb curls upward; the index finger curves to the table, where it rests on its tip, and becomes part of the tripod.\n\nRest the cuestick in that V formed by the fingers, and go on to Shot 6 to see what happens next.\n\n" },
+        intent: "Now that you have positioned the two balls, it's time to shoot them. If you have experience, you know that you have to hold the cuestick with two hands, one of which rests on the table, and one of which grabs the butt, the back end, of the cuestick. The front hand is called the bridge hand, and its job is to make a tripod on which the cuestick is balanced.\n\nIf you have no experience, look around the room to see how good shooters hold the cuestick and how they stand. Imitate them.\n\nPut your bridge hand flat on the table. Make a V-shape with your thumb and index finger. The thumb curls upward; the index finger curves to the table, where it rests on its tip, and becomes part of the tripod. The other three fingers of your bridge hand can lie flat on the table, or you can elevate your hand, resting on your fingertips. Spread those fingers to make the bridge stable.\n\nRest the cuestick in that V formed by the fingers, and go on to Shot 6 to see what happens next.\n\n" },
       { shotId: "seq16.shot6", ob: {x:230, y:105}, cb: {x:230, y:180},
         cut: 0, pocket: null, rh: false,
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:230, y:180},
-        intent: "With the cue set on the V of those fingers, this is known as an \"OPEN BRIDGE.\" \n\nAn alternative is to make a loop with your thumb and ring finger. Think of how you make an \"It's OK \" sign. Remember what that looks like?  Make that loop with your fingers and curl it around the cuestick. Use your remaining three fingers for the tripod. It's a very stable bridge, widely used, and known as a \"CLOSED BRIDGE.\" \n\nSet up away from the balls and practice the motion of shooting with those two bridges.  I mentioned \"tripod\" in describing the bridge. There is another \"tripod\" that is helpful in pool: YOU are that tripod. Your two feet and your bridge hand become a tripod, so think of yourself as that stable object when you are preparing to shoot. \n\nBend down as best you can, so your head is near the cuestick. Keep your feet spread and stay very stable in your stance, two feet and bridge hand forming that steady tripod. Swing the cue while holding the rest of your body very still; only your shooting arm should move, not your head, not your legs.\n\nPractice that for a while and go on to shot 7.\n\n\n" },
+        intent: "With the cue set on the V of those fingers, this is known as an \"OPEN BRIDGE.\" \n\nAn alternative is to make a loop with your thumb and ring finger. Think of how you make an \"It's OK \" sign. Remember what that looks like?  Make that loop with your fingers and curl it around the cuestick. Use your remaining three fingers for the tripod. It's a very stable bridge, widely used, and known as a \"CLOSED BRIDGE.\" \n\nSet up away from the balls and practice the motion of shooting with those two bridges.  I mentioned \"tripod\" in describing the bridge. There is another \"tripod\" that is helpful in pool: YOU are that tripod. Your two feet and your bridge hand become a tripod, so think of yourself as that stable object when you are preparing to shoot. \n\nBend down as best you can, so your head is near the cuestick. Keep your feet spread and stay very stable in your stance, your two feet and bridge hand forming that steady tripod. Swing the cue while holding the rest of your body very still; only your shooting arm should move, not your head, not your legs.\n\nPractice that for a while and go on to shot 7.\n\n\n" },
       { shotId: "seq16.shot7", ob: {x:230, y:105}, cb: {x:230, y:180},
         cut: 0, pocket: null, rh: false,
         vert: 0, speed: 0.5,
@@ -1497,19 +1497,19 @@ var SEQUENCES = [
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:116, y:117.19},
-        intent: "Here is a straight-in shot. Set up for it in the standard way, with a solid bridge in your forward hand, your \"bridge\" hand, with a careful, deliberate stance. Bend over as low as you can above the cue. Grip lightly on the butt of the cue. Two \"tripods:\" the one in your bridge hand and the one in your stance.\n\nWhere do you aim? How do you aim? Let's find help in other parts of Aimer for advice on that. Let's look at the table diagram first. Do you see that yellow, dashed circle behind the object ball? That is called the \"Ghost Ball,\" and that is intended to represent the position of your cueball when it strikes the object ball. You want to make the cueball go to that position.\n\nThen let's look at the middle of Aimer. There is a pink ball with a yellow dashed line around it. In this diagram we are seeing through a cue ball; it is transparent. There is a red object ball behind it, so the circle looks pink. the black dot in the middle indicates where the cuetip should hit the cueball.\n\nTake your stance, make your bridge, put your cuetip right at the middle of your cueball and aim it so the cueball goes to where the yellow circle is in the table diagram. \n\nThen shoot, and go on to the next shot." },
+        intent: "Here is a straight-in shot. Set up for it in the standard way, with a solid bridge in your forward hand, your \"bridge\" hand. Make a careful, deliberate stance. Bend over as low as you can above the cue. Grip lightly on the butt of the cue. Two \"tripods--\" the one in your bridge hand and the one in your stance.\n\nWhere do you aim? How do you aim? Let's find help in other parts of Aimer for advice on that. Let's look at the table diagram first. Do you see that yellow, dashed circle behind the object ball? That is called the \"Ghost Ball,\" and that is intended to represent the position of your cueball when it strikes the object ball. You want to make the cueball go to that position.\n\nThen let's look at the middle of Aimer. There is a pink ball with a yellow dashed line around it. In this diagram we are seeing through a cue ball; it is transparent. There is a red object ball behind it, so the circle looks pink. The black dot in the middle indicates where the cuetip should hit the cueball.\n\nTake your stance, make your bridge, put your cuetip right at the middle of your cueball and aim it so the cueball goes to where the yellow circle is in the table diagram. \n\nThen shoot, and go on to the next shot." },
       { shotId: "seq17.shot2", alt: true, ob: {x:130.03, y:105.43}, cb: {x:181.22, y:180.23},
         cut: 22.84, pocket: null, rh: false,
         vert: 0, speed: 0.5,
         pathAngleAdjust: 0,
         landing: {x:154.03, y:53.53},
-        intent: "For this shot, put the cueball where it was for Shot 1, but move the object ball to this new position. Some new things have appeared, and some old ones demand explanation.\n\nComing out of the red object ball is a blue, dashed line, with a green arrowhead in Pocket-1. That line tells you the calculated angle of the shot you have set up, the angle it takes to the pocket. For this shot we look below the table and see some boxes with numbers. The one with yellow type says, \"22.8 Degrees.\" That is the angle the ball takes to go from this position to the pocket, as measured from the incoming shot line. That incoming line is in gold dashes, so the angle between the gold dashed line and the blue dashed line is 22.8 degrees, and that is the angle of your shot.\n\nLook below, to the section I call the \"Doors of Perception.\" There you will see the pink ball of shot one, has moved to the right, and we see the red object ball that was behind it. The white ball represents the cueball AS IT HITS THE OBJECT BALL. It is basically filling the space you noted in the table outlined by the yellow GHOST BALL.\n\nThe cueball/ghost ball in the middle diagram is appropriately outlined in gold--you see the connection? It's the same ball.\n\nYou see how the Ghost Ball relates to the red object ball? You need to make the cueball go to that position when it hits the object ball. Set up your shot, shoot it that way, and move on to shot 3." },
+        intent: "For this shot, put the cueball where it was for Shot 1, but move the object ball to this new position. Some new things have appeared, and some old ones demand explanation.\n\nComing out of the red object ball is a blue, dashed line, with a green arrowhead in Pocket 1. That line tells you the calculated angle of the shot you have set up, the angle it takes to the pocket. For this shot we look below the table and see some boxes with numbers. The one with yellow type says, \"22.8 Degrees.\" That is the angle the ball takes to go from this position to the pocket, as measured from the incoming shot line. That incoming line is in gold dashes, so the angle between the gold dashed line and the blue dashed line is 22.8 degrees, and that is the angle of your shot.\n\nThat middle section of Aimer, the one below the table is the section I call the \"Doors of Perception.\" There you will see the pink ball of shot one has moved to the right, and we see the red object ball that was behind it. The white ball represents the cueball AS IT HITS THE OBJECT BALL. It is basically filling the space you noted in the table outlined by the yellow GHOST BALL.\n\nThe cueball/ghost ball in the middle diagram is appropriately outlined in gold--you see the connection? It's the same ball.\n\nYou see how the Ghost Ball relates to the red object ball? You need to make the cueball go to that position when it hits the object ball. Set up your shot, bend down, aim so the balls line up as they do in the diagram. Shoot it that way, and move on to shot 3." },
       { shotId: "seq17.shot3", alt: true, ob: {x:129.63, y:81.4}, cb: {x:181.65, y:180.39},
         cut: 40.1, pocket: null, rh: false,
         vert: -1.56, speed: 0.64,
         pathAngleAdjust: 0,
         landing: {x:179.48, y:125.59},
-        intent: "For this shot, retain the position of the cueball, and move the object ball away a little bit.\n\nThis becomes a much harder shot, a lot less room for error. Let's look around for useful information.\n\nOn the table diagram we see what we know already: Cueball, cueball path going toward the object ball, object ball an the path going to the pocket. We also see the yellow ghost ball.\n\nComing out of the ghost ball is yet another line, white. That line hits the rail and becomes green, and that one hits a rail and becomes purple. Those lines are the predicted path of the cueball, after it hits the object ball.\n\nSitting on one of those lines is a blue-dashed circle. That is called the BLUE GHOST. It represents the landing place of the cueball, after the impact with the object ball.\n\nLook down to \"Perception Window,\" and observe the two balls again. You note that the white cueball/ghost ball has moved to the right quite a bit since the last shot, and the number in the CUT window says 40.1 degrees. Set up the table with the balls in this position,  take your stance, make your bridge and shoot. Did you make the shot? If not, was it left or right of the pocket?  Let's move on to the next set of shots, the next SEQUENCE." }
+        intent: "For this shot, retain the position of the cueball, and move the object ball away a little bit.\n\nThis becomes a much harder shot, a lot less room for error. Let's look around for useful information.\n\nOn the table diagram we see what we know already: Cueball, cueball path going toward the object ball, object ball and the path going to the pocket. We also see the yellow ghost ball.\n\nComing out of the ghost ball is yet another line, white. That line hits the rail and becomes green, and that one hits a rail and becomes purple. Those lines are the predicted path of the cueball, after it hits the object ball.\n\nSitting on one of those lines is a blue-dashed circle. That is called the BLUE GHOST. It represents the landing place of the cueball, after the impact with the object ball.\n\nLook down to \"Perception Window,\" and observe the two balls again. You note that the white cueball/ghost ball has moved to the right quite a bit since the last shot, and the number in the CUT window says 40.1 degrees. Set up the table with the balls in this position,  take your stance, make your bridge and shoot. Did you make the shot? If not, was it left or right of the pocket?  Let's move on to the next set of shots, the next SEQUENCE." }
     ]
   },
   {
@@ -1518,61 +1518,75 @@ var SEQUENCES = [
     soloBalls: true,
     shots: [
       { shotId: "seq18.shot1", ob: {x:329.92, y:129.46}, cb: {x:279.78, y:178.6},
-        cut: 0, pocket: "TR", rh: false,
-        vert: 1.8, speed: 0.34,
+        cut: 0.57, pocket: "TR", rh: true,
+        vert: 1.8, speed: 0.34, spin: 0,
         pathAngleAdjust: 0,
         landing: {x:400.58, y:58.27},
-        summary: "Shoot lightly with a little follow, to roll the cueball towards the pocket.",
-        intent: "Hi. LeStar Z. here, again. Let's setup and shoot familiar shots, but look at useful information that comes from other parts of Aimer. By that I mean I would like you to become familiar with the tools and indicators in Aimer, and at the same time build your shooting ability.\n\nOn this shot, we are again shooting straight into the corner pocket, Pocket-3, but we are hitting higher on the cueball. Look at the pink ball in the center. You'll see the black dot is high above center. That means that when you shoot, your cue tip should hit high and center on the cueball.\n\nThe result of that is evident on the Table Diagram, the top diagram. You'll notice that the Blue Ghost is now very close to the pocket. That is so because hitting at the top of the cueball causes the cueball to continue forward after impact with the object ball. Try it. What happened?\n\nNow look to the bottom of Aimer, to the section called BALL CONTROL. There are three sliders there. The top one is for speed, meaning how hard you hit the cueball. The bottom one, \"VERT,\" is how high or low you hit the cueball. The middle, \"SPIN,\" indicates how much left or right your cuetip hits the cueball. \n\nFor this shot the speed is moderate and the vert is high. Note that when you slide the \"vert\" slider, the black dot in the cueball diagram goes up and down. Try it, and then move on to the next shot." },
+        summary: "Aimer is divided into four main parts. The top one is the TABLE DIAGRAM. It provides the overhead view of the table and balls. The middle is the DOORS OF PERCEPTION, sometimes called the \"Ball Diagram.\" In this section we see how the cueball and object ball line up to make a shot. At the bottom is the BALL CONTROL diagram, three sliders that allow you to add speed, spin, draw and follow to the shot. Shoot lightly with a little follow, to roll the cueball towards the pocket.",
+        intent: "Hi. LeStar Z. here, again. Let's setup and shoot familiar shots, but look at useful information that comes from other parts of Aimer. By that I mean I would like you to become familiar with the tools and indicators in Aimer, and at the same time build your shooting ability.\n\nOn this shot, we are again shooting straight into a corner pocket, Pocket 3, but we are hitting higher on the cueball. Look at the pink ball in the center. You'll see the black dot is high above center. That means that when you shoot, your cue tip should hit high and center on the cueball. You are putting FOLLOW on the shot--hitting high on the ball.\n\nThe result of that is evident on the Table Diagram, the top diagram. You'll notice that the Blue Ghost is now very close to the pocket. That is so because hitting at the top of the cueball causes the cueball to continue forward after impact with the object ball. Try it. What happened?\n\nNow look to the bottom of Aimer, to the section called BALL CONTROL. There are three sliders there. The top one is for speed, meaning how hard you hit the cueball. The bottom one, \"HIGH/LOW,\" is how high or low you hit the cueball. Pretty clever name, huh? High is also known as \"Follow.\" Low is also known as \"Draw.\" The middle one, \"SPIN,\" indicates how much left or right your cuetip hits the cueball. \n\nFor this shot the Speed is moderate and the High/Low is high. Note that when you slide the \"High/Low\" slider, the black dot in the cueball diagram goes up and down. Try it, and then move on to the next shot." },
       { shotId: "seq18.shot2", alt: true, ob: {x:330.55, y:104.94}, cb: {x:279.46, y:178.86},
         cut: 24.08, pocket: "TR", rh: true,
-        vert: 2.4, speed: 0.34,
+        vert: 2.4, speed: 0.34, spin: 0,
         pathAngleAdjust: 0,
         landing: {x:400.58, y:58.27},
         summary: "What is the angle of this shot? Look around Aimer for evidence.",
         intent: "This shot has some angle to go into the pocket. In fact, we can know from two places in Aimer what that angle is exactly.\n\nBelow the table are 6 windows with numbers in them. The fifth says \"cut,\" and has a yellow number, in this case 24.1 degrees. Cut is \"Cut Angle,\" and we now know that this setup makes the object ball go in with a cut angle of 24.1 degrees. So how do we do that, exactly?\n\nGood question, but we'll approach that in the next shot. Meanwhile, that other indicator of angle is at the bottom of Aimer, to the right. You see the red circle with \"24 °\" inscribed, a yellow, dashed circle and two lines. As you have guessed, that is the cueball entering on the yellow line, colliding with the object ball, which exits at a 24° angle on the blue line. This number is rounded to the nearest even digit, no decimals. That yellow, dashed line is the same yellow \"GHOST BALL\" that you see on the Table Diagram above.\n\nShoot it and let's go to the next shot." },
       { shotId: "seq18.shot3", alt: true, ob: {x:329.92, y:129.46}, cb: {x:279.78, y:178.6},
         cut: 0, pocket: "TR", rh: false,
-        vert: 1.8, speed: 0.34,
+        vert: 1.8, speed: 0.34, spin: 0,
         pathAngleAdjust: 0,
         landing: {x:400.58, y:58.27},
-        summary: "You can adjust this and all other shots by going to the \"MINE\" section and recording how the shot really works. Then, when you go back to the shot, you skip LeStar's version and go straight to your own.",
-        intent: "So, how do we aim?\n\nThat's a million-dollar question, answered by many persons, and  in different ways. Here in Aimer, our goal is to give you what should happen by the rules of physics, and encourage you to develop how it looks to you, and from that, to build instinctive aiming--intuition. The theory is that repeated success builds knowledge, and knowledge allows you to KNOW what angle and speed and spin to put on any shot, to make it go in, and to make the cueball go to where it needs to for a makeable next shot.\n\nHow does that work?  We show you a shot on the table. You setup that shot on your table. You read what our physics say makes the shot go in.  It doesn't necessarily go in when you shoot it on your table, so you then adjust until it does, and then you record it here in the \"MY VERSION\" section. You do that for all shots in any sequence, and the next time you play the sequence, you go from YOUR data as to how to shoot the shot, and as to where the cueball goes.\n\nTry that here. Actually, don't shoot this shot yet, as a few other things need to be explained. Let's do that in the next shot description.\n\n\n" },
-      { shotId: "seq18.shot4", alt: true, ob: {x:355.62, y:81.25}, cb: {x:278.53, y:177.62},
-        cut: 20.34, pocket: "TR", rh: true,
-        vert: 2.88, speed: 0.44,
+        summary: "You can adjust this and all other shots by going to the \"MY VERSION\" section and recording how the shot really works. Then, when you go back to the shot, you skip LeStar's version and go straight to your own.",
+        intent: "So, how do we aim?\n\nThat's a million-dollar question, answered by many persons, and  in different ways. Here in Aimer, our goal is to give you what should happen by the rules of physics, and encourage you to develop how it looks to you, and from that, to build instinctive aiming--intuition. The theory is that repeated success builds knowledge, and knowledge allows you to KNOW what angle and speed and spin to put on any shot, to make it go in, and to make the cueball go to where it needs to for a makeable next shot.\n\nHow does that work?  We show you a shot on the table diagram. You setup that shot on your real table. You read what our physics say makes the shot go in.  It doesn't necessarily go in when you shoot it on your table, so you then adjust until it does, and then you record it here in the \"MY VERSION\" section. You do that for all shots in any sequence, and the next time you play the sequence, you go from YOUR data as to how to shoot the shot, and as to where the cueball goes.\n\nTry that here. Actually, don't shoot this shot yet, as a few other things need to be explained. Let's do that in the next shot description.\n\n\n" },
+      { shotId: "seq18.shot4", alt: true, ob: {x:356.98, y:79.6}, cb: {x:278.53, y:177.62},
+        cut: 19.35, pocket: "TR", rh: true,
+        vert: 2.88, speed: 0.44, spin: 0,
         pathAngleAdjust: 0,
         landing: {x:368.18, y:154.93},
         summary: "How to aim? The big Ball Diagram in the middle of Aimer tells you what the relationship of the cueball is to the object ball to make it go in the pocket.",
-        intent: "How to aim? Look at the Ball Diagram, in the center of Aimer. There are the white ball,--the cueball,--and the red ball, the object ball. The cueball has a gold line around it, its circumference. If you were to line the cueball up with the object ball so the right edge of the cueball falls between the 5/8 indicator and the 3/4 indicator, you'll notice an orange vertical line is drawn at that point. That point of aim is called the \"INSIDE EDGE,\" and it is so written at the top of that line. Do you see it?\n\nNow, prove that the INSIDE EDGE aiming point changes both here and on the real table--in the real aim--by dragging the cueball diagram left and right.  To do that, you have to switch panels to the MY VERSION panel.\n\nThe point moves, the line moves, and in the readout box above, 2nd from the left, the \"Inside Edge\" percentage changes as you move. Do that, and then return the cueball to where you started, with an Inside Edge percentage of 35% in the readout. The green arrow head should be in the pocket again. Then go on to the next shot." },
-      { shotId: "seq18.shot5", alt: true, ob: {x:355.62, y:81.25}, cb: {x:278.53, y:177.62},
+        intent: "How to aim? Look at the Ball Diagram, in the center of Aimer. There are the white ball,--the cueball,--and the red ball, the object ball. The cueball has a gold line around it, its circumference. And--importantly--there is a scale through the middle of the object ball, the red ball. That scale divides the ball into ten sections, with lines between. Here, we line the cueball up with the object ball so the right edge of the cueball falls at about 3.5 on that scale. You'll notice an orange vertical line is drawn at that point. That point of aim is called the \"INSIDE EDGE,\" and it is so written at the top of that line. Do you see it?\n\nGo on to the next shot." },
+      { shotId: "seq18.shot5", alt: true, ob: {x:357.91, y:78.2}, cb: {x:278.53, y:177.62},
         cut: 20.34, pocket: "TR", rh: true,
-        vert: 2.88, speed: 0.44,
+        vert: 2.88, speed: 0.44, spin: 0,
         pathAngleAdjust: 0,
         landing: {x:368.18, y:154.93},
-        summary: "The two orange, dashed lines show you the amount of object ball showing outside of the cueball, if you are aiming correctly.",
-        intent: "Set up Shot 5 on the table. Now look at the physics shown in Aimer. What important qualities can we see described in Aimer that will help us make this shot?\n\nMaybe you already have the experience to make this shot easily, but for now take all your knowledge from Aimer. On the table diagram you see the Ghost Ball, in yellow. If you look down to the ball diagram in the Doors of Perception window, the two balls are offset, white to the left, red to the right. The one with the gold line around it is the Ghost Ball, the same Ghost Ball that you see drawn on the table. The \"INSIDE EDGE\" line we noted in the last shot sits almost on the 3/8 indicator that is marked on the object ball. Do you see that?\n\nTo help explain what is important about this edge, click in the readout that is Inside Edge. This lights up a crescent that represents the area of the object ball that is not covered by the cue ball.\n\nReinforcing that is the orange output in the readout above, Inside Edge, which says, \"35%.\" That means that to aim this shot, you would sight down your cuestick and try to shoot the cueball so that the right edge of it went to the place that leaves 35% of the object ball showing to the right (on the equator of the ball). Basically, that is 1/3 of the object ball.\n\nFurthermore, you'll notice that there is a second vertical orange line. That line always sits on the outside rim of the object ball, and the space between the two lines on the equator of the ball is what you would give the percentage or fraction that would guide your shot. Shoot that shot and go on to Shot 6." },
-      { shotId: "seq18.shot6", alt: true, ob: {x:355.62, y:81.25}, cb: {x:278.53, y:177.62},
-        cut: 20.34, pocket: "TR", rh: true,
-        vert: 2.88, speed: 0.44,
+        summary: "The two orange, dashed lines show you the amount of object ball showing outside of the cueball, if you are aiming correctly. You can read that amount on the line that follows the equator of the ball, and you can read that amount in the box above labeled \"Inside Edge.\" In this case it is \"3.5\" units out of a possible 10.",
+        intent: "Set up Shot 5 on the table. Now look at the physics shown in Aimer. What important qualities can we see described in Aimer that will help us make this shot?\n\nMaybe you already have the experience to make this shot easily, but for now take all your knowledge from Aimer. On the table diagram you see the Ghost Ball, in yellow. If you look down to the ball diagram in the Doors of Perception window, the two balls are offset, white to the left, red to the right. The one with the gold line around it is the Ghost Ball, the same Ghost Ball that you see drawn on the table. The \"INSIDE EDGE\" line we noted in the last shot sits at approximately 3.5 on the index that is marked on the object ball. Do you see that?\n\nTo help explain what is important about this edge, go to the readout just below the table diagram, the readout called \"Inside Edge.\" Tap it. This lights up a crescent that represents the area of the object ball that is not covered by the cue ball. Glue this shape into your mind; it is important. The fattest part of this crescent is where we measure, and is where you aim.\n\nReinforcing that is the orange output in the readout above, Inside Edge, which says, \"3.5.\" That means that to aim this shot, you would sight down your cuestick and try to shoot the cueball so that the right edge of it went to the place that is point 3.5 on the scale of  the object ball showing to the right (on the equator of the ball). This scale is built by taking the area of an object ball and dividing it into ten spaces. The outsides of the ball are Zero (0) on one side and Ten(10) on the other.\n\nFurthermore, you'll notice that there is a second vertical orange line. That line always sits on the outside rim of the object ball, and marks the beginning, the Zero point of the measurement to the Inside Edge. Shoot that shot and go on to Shot 6." },
+      { shotId: "seq18.shot6", alt: true, ob: {x:353.29, y:82.46}, cb: {x:278.53, y:177.62},
+        cut: 19.77, pocket: "TR", rh: true,
+        vert: 2.88, speed: 0.44, spin: 0,
         pathAngleAdjust: 0,
         landing: {x:368.18, y:154.93},
-        summary: "Click the box that says \"inside edge\" (or Outside Edge, either one). The Outside Edge space and the Inside Edge spaces are highlighted.",
-        intent: "Same shot as Shot 5. Set it up on the table again.\n\nThe Inside Edge remains, same data showing. But look to the left in the ball diagram this time. There is a blue dashed vertical line--in fact, there are TWO of them. The one on the left says \"OUTSIDE EDGE,\" and it touches the outside edge of the cueball at its leftmost place.\n\nThe space between those blue lines is collectively known as the \"Outside Edge,\" and if you look closely you'll notice that is exactly the dimensions of the Inside Edge we spoke of in the last shot. If you look at the blue readout above, third from left, you see that it says, \"35%,\" exactly the number of the Inside Edge.\n\nWhy is this important? The goal here is to build your aiming instincts, so ALL PREDICTABLE INFORMATION IS USEFUL. The physics say that if you set up an Inside Edge and an Outside Edge of 35%, this ball will go in.\n\nTo emphasize this, click on either the Inside Edge box or the Outside Edge box above. Surprise!! The two dimensions are now glowing. This is so you can clearly see those dimensions, and so that you can easily verify that they are indeed equal. Switch to the MY VERSION panel and slide the cueball left and right, and watch the numbers change. Then return to 35%, shoot the shot, and go on to Shot 7." },
-      { shotId: "seq18.shot7", alt: true, ob: {x:355.62, y:81.25}, cb: {x:278.53, y:177.62},
+        summary: "Click the box that says \"inside edge\" (or Outside Edge, either one). The Outside Edge space and the Inside Edge spaces are highlighted. \"INSIDE\" and \"OUTSIDE\" refer to the angle of the shot. If the shot angles to the right, the right is the \"Inside\" angle and the left is the \"Outside\" angle. The edge of the cueball that is seen on the Inside of the shot is the \"Inside Edge,\" and the other side of the cueball is the \"Outside Edge.\"",
+        intent: "\"INSIDE\" and \"OUTSIDE\" refer to the angle of the shot. If the shot angles to the right, the right is the \"Inside\" angle and the left is the \"Outside\" angle. The edge of the cueball that is seen on the Inside of the shot is the \"Inside Edge,\" and the other side of the cueball is the \"Outside Edge.\"\n\nThis is the same shot as Shot 5. Set it up on the table again.\n\nThe Inside Edge remains, same data showing. But look to the left in the ball diagram this time. There is a blue dashed vertical line--in fact, there are TWO of them. The one on the left says \"OUTSIDE EDGE,\" and it touches the outside edge of the cueball at its leftmost place.\n\nThe space between those blue lines is collectively known as the \"Outside Edge,\" and if you look closely you'll notice that is exactly the dimensions of the Inside Edge we spoke of in the last shot. If you look at the blue readout above, third from left, you see that it says, \"3.5,\" exactly the number of the Inside Edge.\n\nWhy is this important? The goal here is to build your aiming instincts, so ALL PREDICTABLE INFORMATION IS USEFUL. The physics say that if you set up an Inside Edge and an Outside Edge of 3.5 on the scale of 10, this ball will go in.\n\nClick on  Outside Edge readout, above.  Now, the two dimensions are glowing. This is so you can clearly see those dimensions, and so that you can easily verify that they are indeed equal. Shoot the shot, and go on to Shot 7." },
+      { shotId: "seq18.shot7", alt: true, ob: {x:360.41, y:75.23}, cb: {x:278.53, y:177.62},
         cut: 20.34, pocket: "TR", rh: true,
-        vert: 2.88, speed: 0.44,
+        vert: 2.88, speed: 0.44, spin: 0,
         pathAngleAdjust: 0,
         landing: {x:368.18, y:154.93},
-        summary: "In LESTAR'S VERSION again click the \"Inside Edge\" readout, to see the Inner and Outer Edges light up. Shut them off and click the \"TWIXT\" readout. What do you see?",
-        intent: "Click either of the Inside Edge and Outside Edge readouts to cycle between highlighted and not highlighted. Then, leaving them off, click in the readout called \"TWIXT.\" \n\nViola! More lights--the center part of the shot is illuminated in bright purple. What is this area, and how is it useful? I call it the TWIXT, as it is \"Betwixt\" the Inside and Outside Edges.\n\nIt is the space created by the overlap of the two balls. Once again, go to the MY VERSION panel and drag the cueball left and right. Note how the shape changes, return the Twixt readout to 65%, and then return here.\n\nClick between Inner Edge and Twixt. Twixt is a lens-shaped form, except when there is complete overlap of the two balls--a straight shot. Leave all areas lit up for now. Shoot the shot and go on to the next one.\n\n\n\n" },
-      { shotId: "seq18.shot8", alt: true, ob: {x:355.62, y:81.25}, cb: {x:280.56, y:148.6},
+        summary: "Shut off the glow of the Inner and Outer crescents,  and click the \"TWIXT\" readout. What do you see?",
+        intent: "Click either of the Inside Edge and Outside Edge readouts to cycle between highlighted and not highlighted. Then, leaving them off, click in the readout called \"TWIXT.\" \n\nViola! More lights--the center part of the shot is illuminated in two shades of purple. What is this area, and how is it useful? I call it the TWIXT, as it is \"Betwixt\" the Inside and Outside crescents.\n\nIt is the space created by the overlap of the two balls, and it is the space boxed by the two outside crescents. \n\nTWIXT is a lens-shaped form, except when there is complete overlap of the two balls--a straight shot. \n\n Shoot the shot and go on to the next one.\n\n\n\n" },
+      { shotId: "seq18.shot8", alt: true, ob: {x:353.54, y:83.34}, cb: {x:280.56, y:148.6},
         cut: 8.66, pocket: "TR", rh: true,
-        vert: 2.88, speed: 0.44,
+        vert: 2.88, speed: 0.4, spin: 0,
         pathAngleAdjust: 0,
-        landing: {x:409.53, y:140.23},
-        summary: "Shoot nearly straight shots, say to about 15 degrees, using the \"EARS.\" ",
-        intent: "This shot shows a cut angle of about 9°. Let's see how to aim it, and how to get the cueball to go to a desired place.\n\nIn the sliders at the bottom of Aimer, note that we have a lot of high \"vert.\" The result of that is the black dot on the ball diagram is high on the ball. That means we are shooting with our cuetip towards the top of the cueball.\n\nSet the balls up on the table in this way. Click on the readout for INSIDE EDGE. The two outer crescents light up. " }
+        landing: {x:279.78, y:178.6},
+        summary: "Illuminate the three sections of the ball diagram.",
+        intent: "This shot shows a cut angle of about 9°. Let's see how to aim it, and how to get the cueball to go to a desired place.\n\nIn the sliders at the bottom of Aimer, note that we have a lot of high \"High/Low.\" The result of that is the black dot on the ball diagram is high on the ball. That means we are shooting with our cuetip towards the top of the cueball. This will make the cueball roll forward after contact.\n\nSet the balls up on the table in this way. Click on the readouts for INSIDE EDGE and OUTSIDE EDGE. The two outer crescents light up.  Click on TWIXT: the purple Twixt area illuminates. Notice that the purple is lighter on the right and darker on the left. Between them is a green dashed line that says CONTACT POINT at the top of the line, and that there is a red and white bullseye smack dab in the middle of the Twixt, and on the green line.\n\nThis important spot is exactly where the two balls should meet. The Contact Point readout says this is point 5.8 on the 10 space line that is drawn on the equator of the object ball.\n\nTry to digest all this and shoot the shot; go to Shot 9." },
+      { shotId: "seq18.shot9", ob: {x:167.48, y:74.2}, cb: {x:279.78, y:178.6},
+        cut: 44.26, pocket: null, rh: false,
+        vert: 0, speed: 0.5, spin: 0,
+        pathAngleAdjust: 0,
+        landing: {x:279.78, y:178.6},
+        summary: "Use the numbers to find the right aiming point.",
+        intent: "I mentioned the scale of 0-10 that is drawn on the equator of the Object Ball. Let's look at it more closely, and figure out how knowing about these three areas can make you a much better shooter, and pretty quickly, at that. Illuminate the three areas, if they are not already lit.\n\nIn the readouts above the ball diagram, note that TWIXT for this shot has a value of 3.0. INSIDE EDGE has a value of 7.0. Add those two up. You got---?  I'm hoping you arrived at TEN for an answer. Where else have we recently seen an important 10?  Answer: that is the LENGTH OF THE LINE across the Object Ball.  Let's memorialize that in a FACT: The width of the Twixt and the width of the Inside Edge always add up to ten. In fact, The width of the Twixt and the width of the Outside Edge also always add up to ten.\n\nNow let's look at the TWIXT itself. It is colored dark purple on the left, light purple on the right. Moreover, it is divided by a green vertical line, that says \"Contact Point\" at the top of the line. That Contact Point is further pinpointed by a red and white TARGET in the middle of Twixt and on the equator of the Object Ball. \n\nShoot the shot, and we'll continue the discussion in the next one." },
+      { shotId: "seq18.shot10", ob: {x:166.8, y:74.74}, cb: {x:279.78, y:178.6},
+        cut: 44.3, pocket: null, rh: false,
+        vert: 0, speed: 0.5, spin: 0,
+        pathAngleAdjust: 0,
+        landing: {x:100.88, y:148.25},
+        summary: "We find the center of Twixt and the Contact Point.",
+        intent: "Continuing with the same set up as the previous shot, we see three illuminated areas on the diagram. The two outer crescents, the OUTER and INNER Edges, surround the lens-shaped TWIXT, with its two colors and green line, and its bullseye.\n\nIn this shot we have an angle of 28°, an Inside Edge of 4.6 and a Twixt of 5.4. Here's an important piece of information: the contact point, the point you have to hit in order for the shot to go in, is ALWAYS in the middle, dead center, of the Twixt. That point in this shot is 7.3 on the equatorial scale. You see it?\n\nAnd the Inside Edge and the Outside Edge are ALWAYS equidistant from that center point.\n\nSo, if you aim the Inside Edge at the 4.6 mark on the Object Ball, the two balls will ALWAYS collide at 7.3 on the line." }
     ]
   }
 ];
@@ -2209,6 +2223,7 @@ function loadShotData(shot) {
   // Visual: slider thumbs always at center on shot load (user sees 0).
   var pt = document.getElementById('path-thumb');
   if (pt) pt.setAttribute('cx', '170');
+  if (window._paintPathInd) window._paintPathInd();
   var t = document.getElementById('perc-thumb');
   if (t) t.setAttribute('cx', '170');
   // ON-indicator: visible if authored RC is non-zero (lets user know the
@@ -2254,6 +2269,9 @@ function loadShotData(shot) {
     var sp = document.getElementById('sl-spd');
     if (sp) sp.value = String(Math.round(shot.speed * 100));
   }
+  S.spin = (shot.spin !== undefined) ? shot.spin : 0;
+  var ssp = document.getElementById('sl-spn');
+  if (ssp) ssp.value = String(Math.round(S.spin * 25));
   // ANGLE override from composer-authored data (defaults to 0 if absent).
   S.pathAngleAdjust = (typeof shot.pathAngleAdjust === 'number') ? shot.pathAngleAdjust : 0;
   if (typeof justShot !== 'undefined') justShot = false;
@@ -2943,6 +2961,8 @@ if ('serviceWorker' in navigator) {
       </div>
       <div style="display:flex;gap:4px;align-items:center;flex-shrink:0;flex-wrap:nowrap;">
 
+        <button onclick="openWhyHow()" style="padding:4px 9px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-size:10px;font-weight:900;letter-spacing:0.5px;cursor:pointer;touch-action:manipulation;white-space:nowrap;flex-shrink:0;">WHY/HOW?</button>
+
         <button onclick="(function(){
   var dock=document.getElementById('dock');
   var bar=document.getElementById('dock-bar');
@@ -2968,7 +2988,7 @@ if ('serviceWorker' in navigator) {
   var clamped = Math.max(topMargin, Math.min(ideal, vH - dH - topMargin));
   // If the dock is taller than the viewport, just anchor at top.
   if (dH >= vH - 2*topMargin) clamped = topMargin;
-  dock.style.left=(window.innerWidth - dock.offsetWidth - 8)+'px';
+  dock.style.left=((window.innerWidth + Math.min(window.innerWidth,900))/2 - dock.offsetWidth - 8)+'px';
   dock.style.top = clamped + 'px';
 })()" style="padding:4px 9px;border-radius:8px;border:1px solid rgba(240,223,112,0.4);background:rgba(240,223,112,0.08);color:#f0df70;font-size:10px;font-weight:900;letter-spacing:0.5px;cursor:pointer;touch-action:manipulation;white-space:nowrap;flex-shrink:0;">DOCK</button>
       </div>
@@ -3458,13 +3478,13 @@ if ('serviceWorker' in navigator) {
       </div>
       <!-- FLIPPABLE THREE: Inside Edge · Outside Edge · Twixt -->
       <div id="diag-flip-row" style="display:flex;flex-direction:row;gap:4px;grid-column:span 3;">
-        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleInsideStripes()" title="Tap to toggle Inside/Outside edge crescents in diagram">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleInsideStripes()" title="Tap to cycle: none → crescent → dimensions → both">
           <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#e87030;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Inside Edge</div>
           <div id="r-aim-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
             <div id="r-aim" style="color:#e87030;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleOutsideStripes()" title="Tap to toggle Inside/Outside edge crescents in diagram">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleOutsideStripes()" title="Tap to cycle: none → crescent → dimensions → both">
           <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#7dd3fc;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Outside Edge</div>
           <div id="r-oe-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
             <div id="r-oe" style="color:#7dd3fc;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
@@ -3497,9 +3517,10 @@ if ('serviceWorker' in navigator) {
 
     <!-- REALITY CHECK — permanent, primary tool -->
     <div id="perc-block" style="display:flex;flex-direction:column;align-items:stretch;background:rgba(255,140,0,0.06);border-top:1px solid rgba(255,140,0,0.3);border-bottom:1px solid rgba(255,140,0,0.3);width:100%;box-sizing:border-box;">
+    <div style="text-align:center;font-size:10px;font-weight:900;letter-spacing:1.5px;color:#ff8c00;text-transform:uppercase;padding:4px 0 1px;">Reality Check</div>
     <div id="perc-row" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 8px 0;width:100%;box-sizing:border-box;overflow:hidden;">
   <!-- Title stacked, tight to the slider on the left -->
-  <span style="font-size:10px;font-weight:900;color:#ff8c00;white-space:nowrap;letter-spacing:0.06em;text-align:center;line-height:1.1;flex-shrink:0;width:54px;box-sizing:border-box;">REALITY<br>CHECK</span>
+  <span style="font-size:10px;font-weight:900;color:#ff8c00;white-space:nowrap;letter-spacing:0.06em;text-align:center;line-height:1.1;flex-shrink:0;width:54px;box-sizing:border-box;">AIM</span>
   <svg id="perc-svg" viewBox="0 0 340 56" preserveAspectRatio="xMidYMid meet" style="flex:1;min-width:0;height:56px;touch-action:none;cursor:grab;">
     <!-- track -->
     <rect x="20" y="26" width="300" height="12" rx="6" fill="rgba(255,140,0,0.22)" stroke="#ff8c00" stroke-width="1.5"/>
@@ -3578,6 +3599,12 @@ if ('serviceWorker' in navigator) {
         <text x="320" y="52" text-anchor="end"   font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#7dd3fc" letter-spacing="0.5">RIGHT</text>
         <!-- thumb -->
         <circle id="path-thumb" cx="170" cy="32" r="14" fill="rgba(125,211,252,0.4)" stroke="#7dd3fc" stroke-width="2"/>
+        <!-- ON-indicator bullseye: visible only when Cue Ball Path is engaged. Tap to zero. -->
+        <g id="path-on-indicator" style="display:none;cursor:pointer;">
+          <circle cx="330" cy="32" r="13" fill="#ffd400"/>
+          <circle cx="330" cy="32" r="9"  fill="#000"/>
+          <circle cx="330" cy="32" r="5"  fill="#ffd400"/>
+        </g>
       </svg>
       <div style="display:flex;flex-direction:column;align-items:stretch;gap:7px;flex-shrink:0;">
         <button id="path-lock-btn" title="Lock the Cueball Path slider." style="font-family:Lato,sans-serif;font-size:11px;font-weight:900;padding:6px 10px;border-radius:5px;background:rgba(125,211,252,0.2);border:1px solid #7dd3fc;color:#7dd3fc;cursor:pointer;touch-action:manipulation;letter-spacing:0.05em;">LOCK</button>
@@ -3638,27 +3665,26 @@ if ('serviceWorker' in navigator) {
         </g>
         <!-- Fraction labels LH -->
         <g id="bot-fracs-lh">
-          <text x="169" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅛</text>
-          <text x="189" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¼</text>
-          <text x="210" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅜</text>
-          <text x="251" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅝</text>
-          <text x="271" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¾</text>
-          <text x="292" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅞</text>
+          <text x="169" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">⅛</text>
+          <text x="189" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">¼</text>
+          <text x="210" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">⅜</text>
+          <text x="251" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">⅝</text>
+          <text x="271" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">¾</text>
+          <text x="292" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">⅞</text>
         </g>
         <!-- Fraction labels RH (flipped) -->
         <g id="bot-fracs-rh" opacity="0">
-          <text x="169" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅞</text>
-          <text x="189" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¾</text>
-          <text x="210" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅝</text>
-          <text x="251" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅜</text>
-          <text x="271" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">¼</text>
-          <text x="292" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="rgba(255,255,255,0.82)">⅛</text>
+          <text x="169" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">⅞</text>
+          <text x="189" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">¾</text>
+          <text x="210" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">⅝</text>
+          <text x="251" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">⅜</text>
+          <text x="271" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">¼</text>
+          <text x="292" y="252" text-anchor="middle" font-family="Lato,sans-serif" font-size="18" font-weight="700" fill="#808080">⅛</text>
         </g>
         <!-- OB fixed at center, r=82 -->
         <circle id="bot-ob-dark" cx="230" cy="148" r="82" fill="url(#OGdB)" stroke="#2a0606" stroke-width="1.5"/>
         <circle id="bot-ob-lit" cx="230" cy="148" r="82" fill="url(#OGB)" stroke="none" clip-path="url(#revClip)"/>
         <circle id="bot-ob-rim" cx="230" cy="148" r="82" fill="none" stroke="#8a1818" stroke-width="1.5" clip-path="url(#revClip)"/>
-        <g id="frac-ticks"></g>
         <text x="10" y="20" font-family="Lato,sans-serif" font-size="11" font-weight="900" fill="rgba(255,255,255,0.7)" letter-spacing="8"></text>
         <!-- CB -->
         <circle id="bot-cb"   cx="230" cy="148" r="82" fill="url(#CGB)" stroke="#aaa" stroke-width="1.5"/>
@@ -3692,9 +3718,18 @@ if ('serviceWorker' in navigator) {
         <circle id="bot-cb-gold" cx="230" cy="148" r="82" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="0"/>
         <!-- Gold dashed ring on OB — visible only when edge stripes (ears) are on,
              same color/dash as bot-cb-gold for visual parity. -->
-        <circle id="bot-ob-gold" cx="230" cy="148" r="82" fill="none" stroke="#f0df70" stroke-width="1.5" stroke-dasharray="6,4" opacity="0"/>
+        <circle id="bot-ob-gold" cx="230" cy="148" r="82" fill="none" stroke="#d62828" stroke-width="1.5" stroke-dasharray="6,4" opacity="0"/>
         <!-- Contact Point label -->
         <text id="bot-contact-lbl" x="230" y="38" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#4ade80" opacity="0">Contact Point</text>
+        <!-- on-ball measurement numbers (in the gaps) -->
+        <defs>
+          <marker id="dim-arrow-ie" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto-start-reverse"><path d="M0,0 L7,3.5 L0,7 z" fill="#ffffff"/></marker>
+          <marker id="dim-arrow-tw" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto-start-reverse"><path d="M0,0 L7,3.5 L0,7 z" fill="#ffffff"/></marker>
+          <marker id="dim-arrow-oe" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto-start-reverse"><path d="M0,0 L7,3.5 L0,7 z" fill="#ffffff"/></marker>
+        </defs>
+        <line id="dim-oe" x1="0" y1="148" x2="0" y2="148" stroke="#ffffff" stroke-width="1" marker-start="url(#dim-arrow-oe)" marker-end="url(#dim-arrow-oe)" opacity="0"/>
+        <line id="dim-tw" x1="0" y1="148" x2="0" y2="148" stroke="#ffffff" stroke-width="1" marker-start="url(#dim-arrow-tw)" marker-end="url(#dim-arrow-tw)" opacity="0"/>
+        <line id="dim-ie" x1="0" y1="148" x2="0" y2="148" stroke="#ffffff" stroke-width="1" marker-start="url(#dim-arrow-ie)" marker-end="url(#dim-arrow-ie)" opacity="0"/>
         <!-- Contact point line — always on top -->
         <line id="bot-contact-line" x1="230" y1="0" x2="230" y2="230" stroke="#4ade80" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0"/>
         <!-- Opacity +/- buttons bottom-right -->
@@ -3711,12 +3746,18 @@ if ('serviceWorker' in navigator) {
         <g id="twixt-stripes" opacity="0" pointer-events="none"></g>
         <!-- Edge crescent stripes — inside & outside edges of OB (non-overlap region) -->
         <g id="edge-stripes" opacity="0" pointer-events="none"></g>
+        <!-- 0-10 face scale: above the stripes -->
+        <g id="frac-ticks"></g>
         <!-- Contact point bullseye — drawn after stripes so it sits on top -->
         <g id="cp-dot-diag" opacity="0">
           <circle cx="230" cy="148" r="6"   fill="#d62828"/>
           <circle cx="230" cy="148" r="4"   fill="#ffffff"/>
           <circle cx="230" cy="148" r="2"   fill="#d62828"/>
         </g>
+        <!-- dimension numbers: drawn last so they sit on top of stripes -->
+        <text id="bot-ie-num"      x="200" y="148" dominant-baseline="central" text-anchor="middle" font-family="Lato,sans-serif" font-size="12" font-weight="900" paint-order="stroke" stroke="#0a1a0a" stroke-width="2.5" fill="#ffffff" opacity="0">0</text>
+        <text id="bot-oe-num"      x="260" y="148" dominant-baseline="central" text-anchor="middle" font-family="Lato,sans-serif" font-size="12" font-weight="900" paint-order="stroke" stroke="#0a1a0a" stroke-width="2.5" fill="#ffffff" opacity="0">0</text>
+        <text id="bot-contact-num" x="230" y="132" dominant-baseline="central" text-anchor="middle" font-family="Lato,sans-serif" font-size="12" font-weight="900" paint-order="stroke" stroke="#ffffff" stroke-width="3" fill="#d62828" opacity="0">0</text>
       </svg>
     </div>
 
@@ -5085,7 +5126,7 @@ function drawBot(d) {
     _gog.setAttribute('cx', ocx);
     _gog.setAttribute('cy', ocy);
     _gog.setAttribute('r',  r);
-    _gog.setAttribute('opacity', (window._insideStripes || window._outsideStripes) ? '1' : '0');
+    _gog.setAttribute('opacity', (window._insideStripes || window._outsideStripes || window._twixtStripes) ? '1' : '0');
   }
   $('bot-edge-line').setAttribute('x1', edgeX); $('bot-edge-line').setAttribute('x2', edgeX);
   $('bot-edge-line').setAttribute('y1','0'); $('bot-edge-line').setAttribute('y2','230');
@@ -5113,6 +5154,31 @@ function drawBot(d) {
     _obOutR.setAttribute('y1','0'); _obOutR.setAttribute('y2','230');
     _obOutR.setAttribute('stroke', rh ? '#e87030' : '#7dd3fc');
     _obOutR.setAttribute('opacity', '1'); }
+
+  // ── On-ball measurement numbers: the value sitting in the gap it measures ──
+  const _ie10n = aimF * 10;
+  const _blueRimX = rh ? (ocx - r) : (ocx + r);
+  const _ieMidX = (edgeX + _obOuterX) / 2;
+  const _oeMidX = (_cbOuterX + _blueRimX) / 2;
+  const _ieNum = $('bot-ie-num');
+  if (_ieNum) { _ieNum.setAttribute('x', _ieMidX); _ieNum.textContent = _ie10n.toFixed(1); _ieNum.setAttribute('opacity', (window._insideDim && op === '1') ? '1' : '0'); }
+  const _oeNum = $('bot-oe-num');
+  if (_oeNum) { _oeNum.setAttribute('x', _oeMidX); _oeNum.textContent = _ie10n.toFixed(1); _oeNum.setAttribute('opacity', (window._outsideDim && op === '1') ? '1' : '0'); }
+  const _cpNum = $('bot-contact-num');
+  if (_cpNum) { _cpNum.setAttribute('x', _contactX); _cpNum.textContent = ((1 + aimF) * 5).toFixed(1); _cpNum.setAttribute('opacity', (contactDotOn && op === '1') ? '1' : '0'); }
+
+  // ── Dimension lines (architect style) between each number's two measured lines ──
+  var _DIM_MIN = 24;
+  var _setDim = function(id, xa, xb, show){
+    var L = $(id); if (!L) return;
+    L.setAttribute('x1', Math.min(xa, xb)); L.setAttribute('x2', Math.max(xa, xb));
+    L.setAttribute('opacity', show ? '1' : '0');
+  };
+  var _wRev = Math.abs(_obOuterX - edgeX);   // inside / outside crescent width
+  var _wTw  = Math.abs(_blueRimX - edgeX);   // twixt (overlap) width
+  _setDim('dim-ie', edgeX, _obOuterX, window._insideDim && op === '1' && _wRev >= _DIM_MIN);
+  _setDim('dim-oe', _cbOuterX, _blueRimX, window._outsideDim && op === '1' && _wRev >= _DIM_MIN);
+  _setDim('dim-tw', edgeX, _blueRimX, window._twixtDim && op === '1' && _wTw  >= _DIM_MIN);
 
   // ── TWIXT STRIPES — horizontal purple lines in the ball-overlap lens ──
   // Twixt is the intersection of the two ball silhouettes — a Venn-diagram
@@ -5289,6 +5355,7 @@ function updateDiagCutWithOffset(svgX) {
 // touch within a hit-zone of the ball engages drag, touch outside is
 // unclaimed and falls through to the wrap-level pan handler.
 botsvg.addEventListener('pointerdown', e => {
+  if (window._inLockedSequence && window._inLockedSequence()) return;  // ball-diagram dragging disabled in all sequences (incl. MY VERSION)
   if (window._perceptionLocked) return;  // perception locked: no drag, fall through to pan
   const p2 = botSvgPt(e);
   // Hit zone: a horizontal band that spans the area the ghost ball can occupy
@@ -5345,33 +5412,36 @@ document.addEventListener('keydown', e => {
 window._twixtStripes = false;
 window._insideStripes = false;
 window._outsideStripes = false;
-function toggleTwixtStripes() {
-  window._twixtStripes = !window._twixtStripes;
-  var box = document.getElementById('r-twixt-box');
+window._twixtDim = false;
+window._insideDim = false;
+window._outsideDim = false;
+// Each readout box cycles on tap: 0 none -> 1 crescent -> 2 dimensions -> 3 both -> 0
+window._ieState = 0; window._oeState = 0; window._twState = 0;
+function _applyMeasureState(which) {
+  var s, box, onBg, onBorder;
+  if (which === 'ie') {
+    s = window._ieState; box = document.getElementById('r-aim-box');
+    onBg = 'rgba(232,112,48,0.22)'; onBorder = 'rgba(232,112,48,0.55)';
+    window._insideStripes = (s === 1 || s === 3); window._insideDim = (s === 2 || s === 3);
+  } else if (which === 'oe') {
+    s = window._oeState; box = document.getElementById('r-oe-box');
+    onBg = 'rgba(125,211,252,0.22)'; onBorder = 'rgba(125,211,252,0.55)';
+    window._outsideStripes = (s === 1 || s === 3); window._outsideDim = (s === 2 || s === 3);
+  } else {
+    s = window._twState; box = document.getElementById('r-twixt-box');
+    onBg = 'rgba(167,139,250,0.22)'; onBorder = 'rgba(167,139,250,0.55)';
+    window._twixtStripes = (s === 1 || s === 3); window._twixtDim = (s === 2 || s === 3);
+  }
   if (box) {
-    box.style.background = window._twixtStripes ? 'rgba(167,139,250,0.22)' : 'rgba(0,0,0,0.3)';
-    box.style.borderColor = window._twixtStripes ? 'rgba(167,139,250,0.55)' : 'rgba(255,255,255,0.07)';
+    box.style.background = (s > 0) ? onBg : 'rgba(0,0,0,0.3)';
+    box.style.borderColor = (s > 0) ? onBorder : 'rgba(255,255,255,0.07)';
+    box.style.borderStyle = (s === 2 || s === 3) ? 'dashed' : 'solid';
   }
   if (typeof render === 'function') render();
 }
-function toggleInsideStripes() {
-  window._insideStripes = !window._insideStripes;
-  var ins = document.getElementById('r-aim-box');
-  if (ins) {
-    ins.style.background = window._insideStripes ? 'rgba(232,112,48,0.22)' : 'rgba(0,0,0,0.3)';
-    ins.style.borderColor = window._insideStripes ? 'rgba(232,112,48,0.55)' : 'rgba(255,255,255,0.07)';
-  }
-  if (typeof render === 'function') render();
-}
-function toggleOutsideStripes() {
-  window._outsideStripes = !window._outsideStripes;
-  var out = document.getElementById('r-oe-box');
-  if (out) {
-    out.style.background = window._outsideStripes ? 'rgba(125,211,252,0.22)' : 'rgba(0,0,0,0.3)';
-    out.style.borderColor = window._outsideStripes ? 'rgba(125,211,252,0.55)' : 'rgba(255,255,255,0.07)';
-  }
-  if (typeof render === 'function') render();
-}
+function toggleInsideStripes()  { window._ieState = (window._ieState + 1) % 4; _applyMeasureState('ie'); }
+function toggleOutsideStripes() { window._oeState = (window._oeState + 1) % 4; _applyMeasureState('oe'); }
+function toggleTwixtStripes()   { window._twState = (window._twState + 1) % 4; _applyMeasureState('tw'); }
 function toggleEdgeStripes() { toggleInsideStripes(); toggleOutsideStripes(); }
 
 function onSliders() {
@@ -6004,7 +6074,7 @@ function edgeZoomReset() {
     <!-- BALL CONTROL group -->
     <div id="sg-ball" style="background:rgba(176,144,240,0.08);border:1px solid rgba(176,144,240,0.2);border-radius:8px;padding:8px 10px;margin-bottom:8px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span style="font-size:13px;font-weight:900;letter-spacing:1.5px;color:rgba(205,175,255,1);text-transform:uppercase;">Ball Control</span>
+        <span style="font-size:13px;font-weight:900;letter-spacing:1.5px;color:rgba(205,175,255,1);text-transform:uppercase;flex:1;text-align:center;">Ball Control</span>
         <div style="display:flex;gap:4px;">
           <button id="bc-freeze" onclick="sgFreeze('ball')" title="Freeze values" style="background:rgba(176,144,240,0.12);border:1px solid rgba(176,144,240,0.3);border-radius:4px;color:rgba(176,144,240,0.8);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">FREEZE</button>
           <button onclick="sgZero('ball')" title="Zero all" style="background:rgba(240,223,112,0.1);border:1px solid rgba(240,223,112,0.25);border-radius:4px;color:rgba(240,223,112,0.7);font-size:8px;font-weight:900;padding:2px 6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">ZERO</button>
@@ -7217,7 +7287,7 @@ function toggleSlidersPanel() {
         dock.style.bottom='auto';
         if(_v){
           // Vertical: right edge, middle height
-          dock.style.left=(window.innerWidth - dock.offsetWidth - 8)+'px';
+          dock.style.left=((window.innerWidth + Math.min(window.innerWidth,900))/2 - dock.offsetWidth - 8)+'px';
           dock.style.top=Math.round(window.innerHeight/2 - 100)+'px';
         } else {
           // Horizontal: bottom center
@@ -7244,7 +7314,7 @@ function toggleSlidersPanel() {
         var ideal = Math.round(vH/2 - dH/2);
         var clamped = Math.max(topMargin, Math.min(ideal, vH - dH - topMargin));
         if (dH >= vH - 2*topMargin) clamped = topMargin;
-        dock.style.left=(window.innerWidth - dock.offsetWidth - 8)+'px';
+        dock.style.left=((window.innerWidth + Math.min(window.innerWidth,900))/2 - dock.offsetWidth - 8)+'px';
         dock.style.top = clamped + 'px';
       }
       if (document.readyState === 'loading') {
@@ -7335,6 +7405,8 @@ function toggleSlidersPanel() {
       window._twixtStripes = false;
       window._insideStripes = false;
       window._outsideStripes = false;
+      window._twixtDim = false; window._insideDim = false; window._outsideDim = false;
+      window._ieState = 0; window._oeState = 0; window._twState = 0;
       window._helpModeOn = false;
       if (typeof contactDotOn !== 'undefined') {
         try { contactDotOn = false; } catch(e){}
@@ -7354,11 +7426,12 @@ function toggleSlidersPanel() {
       if (twBox) {
         twBox.style.background = 'rgba(0,0,0,0.3)';
         twBox.style.borderColor = 'rgba(255,255,255,0.07)';
+        twBox.style.borderStyle = 'solid';
       }
       var ieBox2 = document.getElementById('r-aim-box');
-      if (ieBox2) { ieBox2.style.background = 'rgba(0,0,0,0.3)'; ieBox2.style.borderColor = 'rgba(255,255,255,0.07)'; }
+      if (ieBox2) { ieBox2.style.background = 'rgba(0,0,0,0.3)'; ieBox2.style.borderColor = 'rgba(255,255,255,0.07)'; ieBox2.style.borderStyle = 'solid'; }
       var oeBox2 = document.getElementById('r-oe-box');
-      if (oeBox2) { oeBox2.style.background = 'rgba(0,0,0,0.3)'; oeBox2.style.borderColor = 'rgba(255,255,255,0.07)'; }
+      if (oeBox2) { oeBox2.style.background = 'rgba(0,0,0,0.3)'; oeBox2.style.borderColor = 'rgba(255,255,255,0.07)'; oeBox2.style.borderStyle = 'solid'; }
       // Zero sliders
       ['sl-spd','sl-spn','sl-vert'].forEach(function(id){
         var el = document.getElementById(id);
@@ -7653,6 +7726,10 @@ document.addEventListener('DOMContentLoaded', function(){
     var svg = document.getElementById('path-svg');
     var thumb = document.getElementById('path-thumb');
     if (!svg || !thumb) return;
+    var pind = document.getElementById('path-on-indicator');
+    function paintPathInd(){ if(pind) pind.style.display = (window._pathAngleOffset && window._pathAngleOffset !== 0) ? 'block' : 'none'; }
+    window._paintPathInd = paintPathInd;
+    if (pind) { pind.addEventListener('click', function(e){ e.stopPropagation(); window._pathAngleOffset=0; thumb.setAttribute('cx','170'); paintPathInd(); if(typeof render==='function') render(); }); }
     var dragging = false;
     function ptOnTrack(e) {
       var rect = svg.getBoundingClientRect();
@@ -7671,6 +7748,7 @@ document.addEventListener('DOMContentLoaded', function(){
       // Snap to 0 within a small dead-zone for easy zeroing
       if (Math.abs(deg) < 0.5) deg = 0;
       window._pathAngleOffset = deg;
+      paintPathInd();
       if (typeof render === 'function') render();
     }
     svg.addEventListener('pointerdown', function(e){
@@ -7704,6 +7782,7 @@ document.addEventListener('DOMContentLoaded', function(){
         e.stopPropagation();
         window._pathAngleOffset = 0;
         thumb.setAttribute('cx', '170');
+        paintPathInd();
         if (typeof render === 'function') render();
       });
     }
@@ -8837,4 +8916,83 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 
 
+
+<style id="whyhow-style">
+#whyhow-overlay{position:fixed;inset:0;z-index:99999;background:#0c1a0f;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+#whyhow-overlay.open{display:flex;}
+#whyhow-card{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+#whyhow-img{max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;}
+#whyhow-img img{max-width:100vw;max-height:100vh;object-fit:contain;display:block;}
+#whyhow-img .ph{width:min(440px,92vw);height:min(720px,86vh);border:2px dashed rgba(255,255,255,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.35);font-size:13px;letter-spacing:0.5px;text-align:center;padding:10px;}
+#whyhow-close{position:absolute;top:14px;right:16px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);background:rgba(0,0,0,0.4);color:#fff;font-size:17px;line-height:1;cursor:pointer;z-index:3;}
+#whyhow-count{position:absolute;top:18px;left:18px;font-size:11px;font-weight:700;letter-spacing:0.5px;color:rgba(255,255,255,0.65);background:rgba(0,0,0,0.35);padding:3px 9px;border-radius:8px;z-index:3;}
+#whyhow-nav{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:rgba(0,0,0,0.4);padding:8px 16px;border-radius:14px;z-index:3;}
+.whyhow-arrow{padding:6px 13px;border-radius:9px;border:1px solid rgba(240,223,112,0.5);background:rgba(240,223,112,0.12);color:#f0df70;font-size:14px;font-weight:900;cursor:pointer;min-width:64px;}
+.whyhow-arrow[disabled]{opacity:0.3;cursor:default;}
+#whyhow-dots{display:flex;gap:6px;align-items:center;}
+.whyhow-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.3);}
+.whyhow-dot.on{background:#f0df70;}
+</style>
+<div id="whyhow-overlay" onclick="if(event.target===this)closeWhyHow()">
+  <div id="whyhow-card">
+    <div id="whyhow-count"></div>
+    <button id="whyhow-close" onclick="closeWhyHow()" aria-label="Close">&#10005;</button>
+    <div id="whyhow-img"></div>
+    <div id="whyhow-nav">
+      <button class="whyhow-arrow" id="whyhow-prev" onclick="whyHowGo(-1)">&#8249;</button>
+      <div id="whyhow-dots"></div>
+      <button class="whyhow-arrow" id="whyhow-next" onclick="whyHowGo(1)">&#8250;</button>
+    </div>
+  </div>
+</div>
+<script>
+/* ===== WHY/HOW intro flipbook (image-only) =====
+   EDIT: list your page-image paths in order, one string per page. Each page is a
+   full image you compose in Illustrator (text and all). '' shows a placeholder box.
+   Compose at phone proportions; it is shown fit-to-screen on a dark surround, so on
+   tablet/desktop the extra space reads as matting around the page. Set
+   WHYHOW_AUTO_OPEN=false to stop the one-time auto-open on first launch.
+   Example: var WHYHOW_PAGES = ['intro/p1.png','intro/p2.png','intro/p3.png']; */
+var WHYHOW_AUTO_OPEN = true;
+var WHYHOW_PAGES = ['', '', '', '', '', ''];
+var _whyHowPage = 0;
+function _whyHowRender(){
+  var src = WHYHOW_PAGES[_whyHowPage] || '';
+  var n = WHYHOW_PAGES.length;
+  document.getElementById('whyhow-count').textContent = (_whyHowPage+1) + ' / ' + n;
+  var img = document.getElementById('whyhow-img');
+  if (src) { img.innerHTML = '<img src="' + src + '" alt="">'; }
+  else { img.innerHTML = '<div class="ph">page ' + (_whyHowPage+1) + ' \u2014 drop image here</div>'; }
+  var dots = document.getElementById('whyhow-dots'); dots.innerHTML = '';
+  for (var i=0;i<n;i++){ var d=document.createElement('div'); d.className='whyhow-dot'+(i===_whyHowPage?' on':''); dots.appendChild(d); }
+  document.getElementById('whyhow-prev').disabled = (_whyHowPage===0);
+  var nx = document.getElementById('whyhow-next');
+  nx.innerHTML = (_whyHowPage===n-1) ? 'Got it' : '&#8250;';
+}
+function openWhyHow(){ _whyHowPage=0; _whyHowRender(); document.getElementById('whyhow-overlay').classList.add('open'); }
+function closeWhyHow(){
+  document.getElementById('whyhow-overlay').classList.remove('open');
+  try { localStorage.setItem('aimer_whyhow_seen','1'); } catch(e){}
+}
+function whyHowGo(d){
+  var n = WHYHOW_PAGES.length;
+  if (d>0 && _whyHowPage===n-1){ closeWhyHow(); return; }
+  _whyHowPage = Math.max(0, Math.min(n-1, _whyHowPage + d));
+  _whyHowRender();
+}
+(function(){
+  var card = document.getElementById('whyhow-card'); if(!card) return;
+  var x0=null;
+  card.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true});
+  card.addEventListener('touchend',function(e){
+    if(x0===null) return; var dx=e.changedTouches[0].clientX-x0; x0=null;
+    if(Math.abs(dx)>40){ whyHowGo(dx<0?1:-1); }
+  },{passive:true});
+})();
+window.addEventListener('load',function(){
+  if(!WHYHOW_AUTO_OPEN) return;
+  var seen=false; try{ seen = localStorage.getItem('aimer_whyhow_seen')==='1'; }catch(e){}
+  if(!seen){ setTimeout(openWhyHow, 350); }
+});
+</script>
 </html>
