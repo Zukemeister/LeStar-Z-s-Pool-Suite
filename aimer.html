@@ -924,7 +924,8 @@ var FOUNDATIONAL_SHOT = {
   shot: {
     ob: {x:230, y:130}, cb: {x:230, y:205},
     cut: 0, pocket: 'TM', rh: false,
-    vert: 0, speed: 0.5
+    vert: 0, speed: 0.5,
+    landing: {x:230, y:100}   // blue ghost a little downrange of the OB, on the aim line
   }
 };
 
@@ -1059,23 +1060,28 @@ function ensureAuthoredShotIds() {
 // Available from any shot in any sequence via the AIM SCALE toggle in READ.
 function buildAimTableHTML() {
   var rows = [], prev = 0, i;
-  for (i = 0; i <= 10; i++) {
-    var contact = 5 + i / 2;
-    var cut = Math.asin(i / 10) * 180 / Math.PI;
+  for (i = 0; i <= 8; i++) {
+    var contact = 4 + i / 2;
+    var cut = Math.asin(i / 8) * 180 / Math.PI;
     var d = cut - prev; prev = cut;
     rows.push({ e: i, c: contact, cut: cut, d: d });
   }
   var h = '<div style="border:1px solid rgba(125,211,252,0.4);border-radius:8px;padding:10px 12px;background:rgba(0,0,0,0.4);margin-bottom:12px;">';
   h += '<div style="font-size:12px;font-weight:900;letter-spacing:0.05em;color:#7dd3fc;margin-bottom:4px;">AIM SCALE \u2014 no spin</div>';
-  h += '<div style="font-size:11px;color:#9fb0c8;margin-bottom:10px;line-height:1.4;">Contact = 5 + \u00bd\u00b7edge &nbsp;\u00b7&nbsp; Cut = arcsin(edge \u00f7 10)</div>';
+  h += '<div style="font-size:11px;color:#9fb0c8;margin-bottom:10px;line-height:1.4;">Contact = 4 + \u00bd\u00b7edge &nbsp;\u00b7&nbsp; Cut = arcsin(edge \u00f7 8)</div>';
   h += '<table style="width:100%;border-collapse:collapse;font-size:12px;color:#e6eef7;">';
   h += '<tr style="color:#9fb0c8;font-weight:800;"><td style="padding:3px 4px;text-align:center;">Put Inside Edge On:</td><td style="padding:3px 4px;text-align:center;">Contact Point</td><td style="padding:3px 4px;text-align:center;">Cut Angle</td><td style="padding:3px 4px;text-align:center;">Difference</td></tr>';
   for (i = 0; i < rows.length; i++) {
     var r = rows[i];
-    h += '<tr style="border-top:1px solid rgba(255,255,255,0.08);">'
-      + '<td style="padding:3px 4px;text-align:center;font-weight:800;">' + r.e + '</td>'
-      + '<td style="padding:3px 4px;text-align:center;">' + r.c.toFixed(1) + '</td>'
-      + '<td style="padding:3px 4px;text-align:center;">' + r.cut.toFixed(1) + '\u00b0</td>'
+    // 2, 4, 6 are the three numbers you say standing behind the shot, so they
+    // get to shout: pink, larger, on a tinted row.
+    var mark = (r.e === 2 || r.e === 4 || r.e === 6);
+    h += '<tr style="border-top:1px solid rgba(255,255,255,0.08);'
+      + (mark ? 'background:rgba(255,92,138,0.10);' : '') + '">'
+      + '<td style="padding:3px 4px;text-align:center;font-weight:900;'
+      + (mark ? 'color:#ff5c8a;font-size:15px;' : '') + '">' + r.e + '</td>'
+      + '<td style="padding:3px 4px;text-align:center;' + (mark ? 'color:#ff5c8a;' : '') + '">' + r.c.toFixed(1) + '</td>'
+      + '<td style="padding:3px 4px;text-align:center;' + (mark ? 'color:#ff5c8a;font-weight:800;' : '') + '">' + r.cut.toFixed(1) + '\u00b0</td>'
       + '<td style="padding:3px 4px;text-align:center;color:#f0df70;">+' + r.d.toFixed(1) + '\u00b0</td></tr>';
   }
   h += '</table></div>';
@@ -1719,7 +1725,9 @@ var SEQUENCES = [
   {"title": "28. AIMING 1", "soloBalls": true, "intent": "", "shots": [{"ob": {"x": 230, "y": 130}, "cb": {"x": 155.46, "y": 167.27}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 0, "rh": false, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 268, "y": 111}, "summary": "Intro to LeStar Z's aiming method.", "intent": "If you follow the instructions in this app, and you are willing to repeat the tasks multiple times, carefully, you WILL become a much better pool player.\n\nThe basics: you hit a ball, a CUEBALL with a stick, the Cueball travels to and hits another ball, an OBJECT BALL. That Object Ball goes to a predictible place, often a pocket.\n\nAnd, the Cueball also goes to a predicted place, so it is in a useful position for the next shot--or for some other reason.\n\nTo learn, you find the lessons set up on this app, look at the balls on the TABLE DIAGRAM (the top part of the app, and set balls up on your own, physical table in exactly the same way the balls are drawn on the Table Diagram.\n\nSet these two balls up on your table in this manner, and then move on to the next shot in this sequence."}, {"ob": {"x": 230, "y": 130}, "cb": {"x": 130, "y": 180}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 0, "rh": false, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 268, "y": 111}, "summary": "Reading the diagrams", "intent": "If you set the balls on your table in this way, you would then look at the Ball Diagram, the middle part of this app. You see a single, pink circle, with a blue line on one side and an orange line on the other. In the center is bullseye and a green line that says \"Contact Point.\"\n\nThis represents how the shot setup on the table above would look if you were behind the Cueball, at table level. The pink is the white Cueball, but it is made transparent, so you see the red Object Ball through it, making a pink circle.\n\nOn the equator of the ball is a scale, and it runs from 0 to 10. That is how we will divide the ball, into 10 units. 0 is the very edge on one side, and 10 is the very edge on the other. Therefore, 5 is at the very center, and that means that halfway from 5 to ten is 7.5, and halfway from 5 to 0, the other way is at 2.5.\n\nDividing the ball that way, you can easily find the 5, the 2.5 and the 7.5 places, plus the two edges.\n\nShoot the shot, and go to the next one. "}, {"ob": {"x": 206.13, "y": 105.81}, "cb": {"x": 130, "y": 180}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 30.03, "rh": true, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 202, "y": 38}, "summary": "What the diagrams tell us", "intent": "Let's move the Object Ball a little, both on the table and in the app.  The Object Ball now sits in the center of the grid labeled 13.\n\nLook at the table diagram. The shot now has an angle. The yellow line from the Cueball and the blue line to the pocket form the angle that makes the shot go in the pocket. If we look to the bottom of the app, we see that the angle is 30º.\n\nThe angle goes from the Cueball to the Object Ball and then bends right to the pocket. The right side of this angle is the \"INSIDE ANGLE,\" the inside of the shot. This is important in describing shots. Conversely, the left hand side of this angle is called the \"OUTSIDE ANGLE.\"\n\nIn association with that, the rim of the Cueball that is on the same side as the INSIDE of the angle is called the \"INSIDE EDGE.\" Do you see the label on the orange dashed line with those words?\n\nThat orange line touches the edge of the Cueball at its equator, and that point on the Cueball touches (visually) the equator of the red ball, the Object Ball at the number 5 on the scale. Do you see it?\n\nAim the INSIDE EDGE of your Cueball at the center of the red ball, the Object Ball and shoot the shot.\n\nThen go on to the next shot."}, {"ob": {"x": 206.13, "y": 105.81}, "cb": {"x": 130, "y": 180}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 30.03, "rh": true, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 202, "y": 38}, "summary": "More About the \"Inside Edge.\"", "intent": "The Inside Edge is the edge of the Cueball that is on the inside of the shooting angle. On the opposite side of the Cueball is the edge that is known as the \"OUTSIDE EDGE.\" See the blue line drawn there and so labeled.\n\nIf you look above the Ball Diagram to the series of readouts that separate the Ball Diagram from the Table Diagram, you will see that one of those is the \"Inside Edge,\" in orange type. Tap or click once in that box.\n\nYou'll see that it illuminates the red section of the Object Ball outside the coverage of the Cueball. This gives emphasis to what you are seeking--the place of aim, which in this case is exactly the 5 point, the half-ball, and it produces a 30º angle to the right.\n\nClick that same box above and the illumination goes out, but a number appears. In this case the number is \"5.0, \" and that is exactly what the permanent scale on the red ball indicates.\n\nShoot the shot and let's move to the next one.\n\n"}]},
   {"title": "29. Aiming 1-10", "soloBalls": true, "intent": "", "shots": [{"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 154, "y": 157}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 0.0, "rh": false, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 80, "y": 82}, "summary": "Straight on shot: 0º", "intent": "This sequence asks you to march across the cue, one segment at a time, starting at 0º.\n\nOn 0º, the Inside Edge is either the left or the right edge of the Object Ball.  We'll use the left edge for this sequence, so aim the left edge of the Cueball at the left edge of the Object Ball.\n\nUse moderate speed, hit the Cueball in the middle, and put no spin on the Cueball.  The ball should go straight in, and the Cueball should roll a little beyond the initial location of the Object Ball.\n\nShoot this straight-in shot and go through the next 10. As you do that, read the angle at the bottom right of Aimer, and every now and then click the box at the top of this panel that says \"AIM.\" It will show you a chart with comparative data on all the shot angles."}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 149, "y": 161}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 5.74, "rh": false, "pathAngleAdjust": -33.73, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 108, "y": 74}, "summary": "Increment 1", "intent": "Approximate your aim as per the Ball Diagram. Click the readout that says \"Inside Angle,\" to illuminate and emphasize the aiming point."}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 143, "y": 165}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 11.54, "rh": false, "pathAngleAdjust": -16.34, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 146, "y": 104}, "summary": "Second Aiming spot, 2 on the scale, 11.5º", "intent": ""}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 137, "y": 169}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 17.46, "rh": false, "pathAngleAdjust": -15.26, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 150, "y": 76}, "summary": "Third Aiming spot, 3 on the scale, 17.5º", "intent": ""}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 130, "y": 172}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 23.58, "rh": false, "pathAngleAdjust": -12.29, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 170, "y": 125}, "summary": "Fourth aiming spot, 23.6º", "intent": ""}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 123, "y": 174}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 30.0, "rh": false, "pathAngleAdjust": -3.93, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 202, "y": 131}, "summary": "Aiming spot 5, 30º", "intent": ""}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 114, "y": 176}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 36.87, "rh": false, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 222, "y": 151}, "summary": "Aiming spot 6, 36.9º", "intent": ""}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 105, "y": 177}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 44.43, "rh": false, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 237, "y": 178}, "summary": "Aiming spot 7, 44.4º", "intent": ""}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 95, "y": 176}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 53.13, "rh": false, "pathAngleAdjust": 3.06, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 272, "y": 202}, "summary": "Aiming spot 8, 53.1º", "intent": ""}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 82, "y": 173}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 64.16, "rh": false, "pathAngleAdjust": 7.44, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 309, "y": 185}, "summary": "", "intent": ""}, {"ob": {"x": 105.33, "y": 107.06}, "cb": {"x": 56, "y": 156}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 90.0, "rh": false, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 398, "y": 214}, "summary": "Aiming spot 10", "intent": "This is a brush-by, or a miss."}]},
   {"title": "30. Aiming 1-10 \u2014 Table Setup", "arcDemo": true, "soloBalls": true, "intent": "A picture of the whole aiming ruler at once. The red ball is the Object Ball \u2014 mark its spot so it returns there every shot. The light balls, #15 then #1 through #10, sit on an arc exactly 10 ball-widths (22.5\") out from the Object Ball. Notice each one steps exactly one ball-width to the left of the one before it, while curving in toward the Object Ball \u2014 that is the arc. #15 marks the straight-in shot (0). To run the drill: lift #15, set the Cueball in its place and shoot straight in; then lift #1, set the Cueball where it stood, aim the inside edge at the 1 mark and shoot; lift #2, Cueball in its place, aim at 2, shoot; and on down the arc. Every ball you replace with the Cueball is the next increment on the scale \u2014 the balls did the measuring for you.", "shots": [{"ob": {"x": 230, "y": 46}, "cb": {"x": 230, "y": 206}, "pocket": null, "vert": 0, "speed": 0.5, "spin": 0, "cut": 0, "rh": false, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 230, "y": 90}, "summary": "The whole aiming ruler at once"}], "demoBalls": [{"label":"15","x":230,"y":206},{"label":"1","x":214,"y":205},{"label":"2","x":198,"y":203},{"label":"3","x":182,"y":199},{"label":"4","x":166,"y":193},{"label":"5","x":150,"y":185},{"label":"6","x":134,"y":174},{"label":"7","x":118,"y":160},{"label":"8","x":102,"y":142},{"label":"9","x":86,"y":116},{"label":"10","x":70,"y":46}]},
-  {"title": "31. Inside Edge 1, Left", "soloBalls": true, "intent": "", "shots": [{"ob": {"x": 230, "y": 80}, "cb": {"x": 323.13, "y": 103.28}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 0, "rh": true, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 168, "y": 64}, "summary": "Straight--Shot \"0.\"", "intent": "This sequence steps you through the Inside Edge aiming scale. The sequence opens with this shot, which you'll notice is straight in.\n\nTo make this shot, aim your cueball's LEFT edge at the left edge of the object ball. In this case only, the other side, the right edge, also lines up with the right edge of the object ball.\n\nHit in the middle of the cueball, meaning no spin, no follow, no draw, and moderate speed.\n\nThis shot is called Shot-0. It requires a smooth stroke. Make a very deliberate, straight swing. Be very conscious of how your shooting arm moves.  Notice where the cueball winds up after the shot.\n\nAim, and shoot, and go on to the next shot. ", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 320.64, "y": 111.63}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 5.74, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 163, "y": 56}, "summary": "Inside Edge 1, 5.7\u00ba", "intent": "In this shot, you'll notice the angle has changed from the starting shot. If you open the AIM SCALE by clicking the box at the top of this panel, you will see a list of angles. \n\nThe angle numbered 1 in that list shows a \"Cut Angle\" of 5.7\u00ba.  That's the angle that it takes to make this shot-- 5.7\u00ba. To get that angle on your shot, you should aim the INSIDE EDGE of your cueball at the approximate \"1\" spot on the object ball.\n\nLook to the Ball Diagram. The Inside Edge line is at the \"1\" mark on the scale. This is what you should approximate when you aim your cueball on the table. Look at this diagram, and then aim on your table. Left edge of the cueball aimed just a little in from the object ball's left edge.\n\nShoot it. What happened?  Set it up a few times, or a dozen times until it goes in three times in a row. Where are you aiming to make it go in? Is it the same as the diagram?\n\nIf it is different, how is it different? Switch to MY VERSION and drag the ball on the orange Reality Check--AIM slider. This slider lets you move the Ball Diagram so that what YOU see is the right aim is described. Then save the shot and it will stay in the app's memory. When you return to this shot in the future, always look at \"MY VERSION\" to see how it really works.\n\n", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 317.36, "y": 119.81}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 11.54, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 160, "y": 41}, "summary": "Inside Edge 2, 11.5\u00ba", "intent": "This shot is made by aiming at the next increment in the scale that you see in the Ball Diagram.  You'll see that Aim Point 2 is a little less than a quarter of the ball. It's easy to see that amount of object ball outside of the aiming point.\n\nTo emphasize how much of the object ball is to the left of your aiming mark, click on the \"INSIDE EDGE\" readout box just below the Table Diagram. You will see that layers of yellow stripes appear on the object ball LEFT of the Inside Edge of the cueball.\n\nLooking at it another way, to make the ball go in from this angle, aim the cueball so you see this CRESCENT of the object ball to the left of the aiming point. If the crescent seems bigger or smaller, adjust so it looks like this.\n\nLook at the AIM SCALE Table again. You see that this aiming point, Inside Edge 2, creates an angle of 11.5\u00ba. \n\nYou know you need to execute a 2 angle. Say out loud the word, \"TWO,\" and aim the cueball at the 2 spot on the object ball, and shoot.\n\nGo on to Increment 3.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 313.24, "y": 127.83}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 17.46, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 101, "y": 60}, "summary": "Inside Edge 3, 17.5\u00ba", "intent": "We've moved one increment on the scale seen on the equator of the Object Ball (It's an imaginary scale. Draw it in your mind).\n\nAim the Inside Edge at the 3 increment on the object ball. Imagine the crescent. This will produce an angle of 17.5\u00ba. Look at the AIM SCALE chart and know that a 17.5\u00ba angle demands that you aim at spot 3 on the object ball. You should as much as possible try to see what 17.5 degrees looks like on the table. The idea is to gradually get to know, when looking at the table, what the angle of the layout is, and therefore what number on the aiming scale will produce the 17.5\u00ba angle.\n\nIf you haven't already done so, click the \"Inside Edge\" box just below the table diagram. It will light up the red crescent.\n\nLook at the table; analyze the angle; say the number, \"3.\" Aim the Inside Edge at the 3 increment on the ball. Estimate where the cueball will go after it hits. Shoot.\n\nDid it go in? If not, shoot it until it does, and record the correct angle by switching to \"My Version\" at the top of this panel and sliding the orange Reality Check/AIM slider to move the Ball Diagram to the correct aim for this angle.\n\nMove on to the next shot.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 308.19, "y": 135.7}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 23.58, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 138, "y": 42}, "summary": "Inside Edge 4, 23.6\u00ba", "intent": "This shot needs you to aim at increment 4. That means you need to take the left edge of your cueball and point it at the object ball so that nearly half of the object ball appears to the left of where you are aiming. Look at the Ball Diagram to see exactly what I mean.\n\nWe are aiming at the 4 increment on that diagram, and this will give us an angle of 23.6 degrees. You can see what that looks like if you look at the Table Diagram: the blue dashed line departs from the yellow dashed line at an angle of 23.6\u00ba. Set it up on the table and look at what this angle is on a real table, and put that in your brain. You don't have to memorize that this is 23.6 degrees, only that THIS ANGLE, the one I am looking at is had by aiming the inside edge of the cueball at the 4 mark.\n\nDo all that and shoot the shot. Remember the angle, what you did, and where the cueball eventually stopped.\n\nNext shot.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 302.07, "y": 143.42}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 30, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 138, "y": 42}, "summary": "Inside Edge 5, 30\u00ba--important", "intent": "This is a crucial shot--because it is so easy to aim.\n\nThe angle is 30 degrees, and it is produced by aiming the Inside Edge at the 5 mark, which is the dead center of the object ball. It's easy to accurately find the middle of the ball.\n\nIf I were you, I'd shoot this shot many times, each time saying, \"5,\" and aiming the Inside Edge carefully at the middle of the Object Ball. I'd then each time note the angle that object ball took. The idea of this is to build your instincts, so that later you don't think about the degrees of the angle, you don't think about the number, you just FEEL it and point to what your instincts tell you.\n\nSo, look at the setup on the table, the position of the balls and the angle necessary to put the object ball in the corner pocket. Say \"5,\" and aim as a 5, and shoot. While you're at it, watch where the cueball goes and build that instinct, too.\n\nDo it many times, saying \"5\" each time, then go on to the next shot.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 294.63, "y": 150.98}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 36.87, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 102, "y": 72}, "summary": "Inside Edge 6, 36.9\u00ba", "intent": "Ever steeper angle. In my opinion--and it may not prove to be yours--these next couple of shots, #s 6, 7, 8 and 9 are the most difficult, and I believe it is in these shots you should absolutely strive for mastery. In shots 2-5 you can usually see the target pretty well out of the corner of your eye, but not so on these, plus small errors here produce more misses than the earlier angles.\n\nSo pay close attention to your aiming on these. I'm going to give you a few more ways to verify that you are aiming in a way that sends the object ball where you want it to go.\n\nSo all our INSIDE EDGE aiming technique is an INDIRECT aiming method. What we are really trying to hit is that point on the object ball that is the red and white bull's eye: this is where the two balls meet and exchange energy; this is the point opposite the target on the object ball.\n\nPress Inside Edge in the readouts, as you did before, but also press OUTSIDE EDGE. This outlines the portion of the cueball that does NOT OVERLAP the object ball. Why is that important?\n\nQuickly note that between the two crescents that are now illuminated in the Ball Diagram, there is a lens-shaped space. In the exact center of that space is the target, the point of contact. \n\nSay the number \"6,\" aim the cueball at the 6 on the table, and shoot. Then go to the next shot.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}]}
+  {"title": "31. Inside Edge 1, Left", "soloBalls": true, "intent": "", "shots": [{"ob": {"x": 230, "y": 80}, "cb": {"x": 323.13, "y": 103.28}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 0, "rh": true, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 168, "y": 64}, "summary": "Straight--Shot \"0.\"", "intent": "This sequence steps you through the Inside Edge aiming scale. The sequence opens with this shot, which you'll notice is straight in.\n\nTo make this shot, aim your cueball's LEFT edge at the left edge of the object ball. In this case only, the other side, the right edge, also lines up with the right edge of the object ball.\n\nHit in the middle of the cueball, meaning no spin, no follow, no draw, and moderate speed.\n\nThis shot is called Shot-0. It requires a smooth stroke. Make a very deliberate, straight swing. Be very conscious of how your shooting arm moves.  Notice where the cueball winds up after the shot.\n\nAim, and shoot, and go on to the next shot. ", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 320.64, "y": 111.63}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 5.74, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 163, "y": 56}, "summary": "Inside Edge 1, 5.7\u00ba", "intent": "In this shot, you'll notice the angle has changed from the starting shot. If you open the AIM SCALE by clicking the box at the top of this panel, you will see a list of angles. \n\nThe angle numbered 1 in that list shows a \"Cut Angle\" of 5.7\u00ba.  That's the angle that it takes to make this shot-- 5.7\u00ba. To get that angle on your shot, you should aim the INSIDE EDGE of your cueball at the approximate \"1\" spot on the object ball.\n\nLook to the Ball Diagram. The Inside Edge line is at the \"1\" mark on the scale. This is what you should approximate when you aim your cueball on the table. Look at this diagram, and then aim on your table. Left edge of the cueball aimed just a little in from the object ball's left edge.\n\nShoot it. What happened?  Set it up a few times, or a dozen times until it goes in three times in a row. Where are you aiming to make it go in? Is it the same as the diagram?\n\nIf it is different, how is it different? Switch to MY VERSION and drag the ball on the orange Reality Check--AIM slider. This slider lets you move the Ball Diagram so that what YOU see is the right aim is described. Then save the shot and it will stay in the app's memory. When you return to this shot in the future, always look at \"MY VERSION\" to see how it really works.\n\n", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 317.36, "y": 119.81}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 11.54, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 160, "y": 41}, "summary": "Inside Edge 2, 11.5\u00ba", "intent": "This shot is made by aiming at the next increment in the scale that you see in the Ball Diagram.  You'll see that Aim Point 2 is a little less than a quarter of the ball. It's easy to see that amount of object ball outside of the aiming point.\n\nTo emphasize how much of the object ball is to the left of your aiming mark, click on the \"INSIDE EDGE\" readout box just below the Table Diagram. You will see that layers of yellow stripes appear on the object ball LEFT of the Inside Edge of the cueball.\n\nLooking at it another way, to make the ball go in from this angle, aim the cueball so you see this CRESCENT of the object ball to the left of the aiming point. If the crescent seems bigger or smaller, adjust so it looks like this.\n\nLook at the AIM SCALE Table again. You see that this aiming point, Inside Edge 2, creates an angle of 11.5\u00ba. \n\nYou know you need to execute a 2 angle. Say out loud the word, \"TWO,\" and aim the cueball at the 2 spot on the object ball, and shoot.\n\nGo on to Increment 3.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 313.24, "y": 127.83}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 17.46, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 101, "y": 60}, "summary": "Inside Edge 3, 17.5\u00ba", "intent": "We've moved one increment on the scale seen on the equator of the Object Ball (It's an imaginary scale. Draw it in your mind).\n\nAim the Inside Edge at the 3 increment on the object ball. Imagine the crescent. This will produce an angle of 17.5\u00ba. Look at the AIM SCALE chart and know that a 17.5\u00ba angle demands that you aim at spot 3 on the object ball. You should as much as possible try to see what 17.5 degrees looks like on the table. The idea is to gradually get to know, when looking at the table, what the angle of the layout is, and therefore what number on the aiming scale will produce the 17.5\u00ba angle.\n\nIf you haven't already done so, click the \"Inside Edge\" box just below the table diagram. It will light up the red crescent.\n\nLook at the table; analyze the angle; say the number, \"3.\" Aim the Inside Edge at the 3 increment on the ball. Estimate where the cueball will go after it hits. Shoot.\n\nDid it go in? If not, shoot it until it does, and record the correct angle by switching to \"My Version\" at the top of this panel and sliding the orange Reality Check/AIM slider to move the Ball Diagram to the correct aim for this angle.\n\nMove on to the next shot.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 308.19, "y": 135.7}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 23.58, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 138, "y": 42}, "summary": "Inside Edge 4, 23.6\u00ba", "intent": "This shot needs you to aim at increment 4. That means you need to take the left edge of your cueball and point it at the object ball so that nearly half of the object ball appears to the left of where you are aiming. Look at the Ball Diagram to see exactly what I mean.\n\nWe are aiming at the 4 increment on that diagram, and this will give us an angle of 23.6 degrees. You can see what that looks like if you look at the Table Diagram: the blue dashed line departs from the yellow dashed line at an angle of 23.6\u00ba. Set it up on the table and look at what this angle is on a real table, and put that in your brain. You don't have to memorize that this is 23.6 degrees, only that THIS ANGLE, the one I am looking at is had by aiming the inside edge of the cueball at the 4 mark.\n\nDo all that and shoot the shot. Remember the angle, what you did, and where the cueball eventually stopped.\n\nNext shot.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 302.07, "y": 143.42}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 30, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 138, "y": 42}, "summary": "Inside Edge 5, 30\u00ba--important", "intent": "This is a crucial shot--because it is so easy to aim.\n\nThe angle is 30 degrees, and it is produced by aiming the Inside Edge at the 5 mark, which is the dead center of the object ball. It's easy to accurately find the middle of the ball.\n\nIf I were you, I'd shoot this shot many times, each time saying, \"5,\" and aiming the Inside Edge carefully at the middle of the Object Ball. I'd then each time note the angle that object ball took. The idea of this is to build your instincts, so that later you don't think about the degrees of the angle, you don't think about the number, you just FEEL it and point to what your instincts tell you.\n\nSo, look at the setup on the table, the position of the balls and the angle necessary to put the object ball in the corner pocket. Say \"5,\" and aim as a 5, and shoot. While you're at it, watch where the cueball goes and build that instinct, too.\n\nDo it many times, saying \"5\" each time, then go on to the next shot.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 294.63, "y": 150.98}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 36.87, "rh": false, "pathAngleAdjust": -45.24, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 102, "y": 72}, "summary": "Inside Edge 6, 36.9\u00ba", "intent": "Ever steeper angle. In my opinion--and it may not prove to be yours--these next couple of shots, #s 6, 7, 8 and 9 are the most difficult, and I believe it is in these shots you should absolutely strive for mastery. In shots 2-5 you can usually see the target pretty well out of the corner of your eye, but not so on these, plus small errors here produce more misses than the earlier angles.\n\nSo pay close attention to your aiming on these. I'm going to give you a few more ways to verify that you are aiming in a way that sends the object ball where you want it to go.\n\nSo all our INSIDE EDGE aiming technique is an INDIRECT aiming method. What we are really trying to hit is that point on the object ball that is the red and white bull's eye: this is where the two balls meet and exchange energy; this is the point opposite the target on the object ball.\n\nPress Inside Edge in the readouts, as you did before, but also press OUTSIDE EDGE. This outlines the portion of the cueball that does NOT OVERLAP the object ball. Why is that important?\n\nQuickly note that between the two crescents that are now illuminated in the Ball Diagram, there is a lens-shaped space. In the exact center of that space is the target, the point of contact. \n\nSay the number \"6,\" aim the cueball at the 6 on the table, and shoot. Then go to the next shot.", "bench": {"markers": [{"x": 323.13, "y": 103.28, "num": 0}, {"x": 320.64, "y": 111.63, "num": 1}, {"x": 317.36, "y": 119.81, "num": 2}, {"x": 313.24, "y": 127.83, "num": 3}, {"x": 308.19, "y": 135.7, "num": 4}, {"x": 302.07, "y": 143.42, "num": 5}, {"x": 294.63, "y": 150.98, "num": 6}, {"x": 285.47, "y": 158.35, "num": 7}, {"x": 273.78, "y": 165.43, "num": 8}, {"x": 257.5, "y": 171.98, "num": 9}, {"x": 215.55, "y": 174.91, "num": 10}], "lockDist": true, "lockR": 96}}]},
+  {"title": "32. Rail 1", "soloBalls": true, "intent": "", "shots": [{"ob": {"x": 230, "y": 80}, "cb": {"x": 136.54, "y": 101.91}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 0, "rh": false, "pathAngleAdjust": 0, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 302, "y": 64}, "summary": "", "intent": "", "tbl": 9, "bench": {"markers": [{"x": 136.54, "y": 101.91, "num": 0}, {"x": 134.93, "y": 93.34, "num": 1}, {"x": 134.11, "y": 84.57, "num": 2}, {"x": 134.1, "y": 75.55, "num": 3}, {"x": 134.99, "y": 66.24, "num": 4}, {"x": 136.9, "y": 56.58, "num": 5}, {"x": 140.06, "y": 46.45, "num": 6}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 134.93, "y": 93.34}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 5.74, "rh": false, "pathAngleAdjust": -30.82, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 296, "y": 92}, "summary": "1. 5.7\u00ba down rail", "intent": "", "tbl": 9, "bench": {"markers": [{"x": 136.54, "y": 101.91, "num": 0}, {"x": 134.93, "y": 93.34, "num": 1}, {"x": 134.11, "y": 84.57, "num": 2}, {"x": 134.1, "y": 75.55, "num": 3}, {"x": 134.99, "y": 66.24, "num": 4}, {"x": 136.9, "y": 56.58, "num": 5}, {"x": 140.06, "y": 46.45, "num": 6}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 134.11, "y": 84.57}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 11.54, "rh": false, "pathAngleAdjust": -30.89, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 324, "y": 110}, "summary": "3. 11.5\u00ba down rail", "intent": "", "tbl": 9, "bench": {"markers": [{"x": 136.54, "y": 101.91, "num": 0}, {"x": 134.93, "y": 93.34, "num": 1}, {"x": 134.11, "y": 84.57, "num": 2}, {"x": 134.1, "y": 75.55, "num": 3}, {"x": 134.99, "y": 66.24, "num": 4}, {"x": 136.9, "y": 56.58, "num": 5}, {"x": 140.06, "y": 46.45, "num": 6}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 134.1, "y": 75.55}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 17.46, "rh": false, "pathAngleAdjust": -20.03, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 384, "y": 174}, "summary": "3. 17.5\u00ba down rail", "intent": "", "tbl": 9, "bench": {"markers": [{"x": 136.54, "y": 101.91, "num": 0}, {"x": 134.93, "y": 93.34, "num": 1}, {"x": 134.11, "y": 84.57, "num": 2}, {"x": 134.1, "y": 75.55, "num": 3}, {"x": 134.99, "y": 66.24, "num": 4}, {"x": 136.9, "y": 56.58, "num": 5}, {"x": 140.06, "y": 46.45, "num": 6}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 134.99, "y": 66.24}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 23.58, "rh": false, "pathAngleAdjust": -5.42, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 343, "y": 204}, "summary": "4. 23.6\u00ba down rail", "intent": "", "tbl": 9, "bench": {"markers": [{"x": 136.54, "y": 101.91, "num": 0}, {"x": 134.93, "y": 93.34, "num": 1}, {"x": 134.11, "y": 84.57, "num": 2}, {"x": 134.1, "y": 75.55, "num": 3}, {"x": 134.99, "y": 66.24, "num": 4}, {"x": 136.9, "y": 56.58, "num": 5}, {"x": 140.06, "y": 46.45, "num": 6}], "lockDist": true, "lockR": 96}}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 136.9, "y": 56.58}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 29.98, "rh": false, "pathAngleAdjust": -5.33, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 393, "y": 200}, "tbl": 9, "bench": {"markers": [{"x": 136.54, "y": 101.91, "num": 0}, {"x": 134.93, "y": 93.34, "num": 1}, {"x": 134.11, "y": 84.57, "num": 2}, {"x": 134.1, "y": 75.55, "num": 3}, {"x": 134.99, "y": 66.24, "num": 4}, {"x": 136.9, "y": 56.58, "num": 5}, {"x": 140.06, "y": 46.45, "num": 6}], "lockDist": true, "lockR": 96}, "summary": "5. 30\u00ba down rail", "intent": ""}, {"ob": {"x": 230, "y": 80}, "cb": {"x": 140.06, "y": 46.45}, "pocket": "TL", "vert": 0, "speed": 0.5, "spin": 0, "cut": 36.86, "rh": false, "pathAngleAdjust": -12.34, "rcBias": 0, "rcMult": 0, "rcLocked": false, "landing": {"x": 396, "y": 171}, "tbl": 9, "bench": {"markers": [{"x": 136.54, "y": 101.91, "num": 0}, {"x": 134.93, "y": 93.34, "num": 1}, {"x": 134.11, "y": 84.57, "num": 2}, {"x": 134.1, "y": 75.55, "num": 3}, {"x": 134.99, "y": 66.24, "num": 4}, {"x": 136.9, "y": 56.58, "num": 5}, {"x": 140.06, "y": 46.45, "num": 6}], "lockDist": true, "lockR": 96}, "summary": "6. 36.9\u00ba down rail", "intent": ""}]},
+  {"title":"INTRO TO AIMER","intent":"","tier":"mine","shots":[{"ob":{"x":230,"y":130},"cb":{"x":130,"y":180},"cut":0.16,"pocket":"TR","rh":false,"spin":0,"speed":0.5,"vert":0,"pathAngleAdjust":0,"rcBias":0,"landing":{"x":269,"y":110},"summary":"USING AIMER","intent":"Hi. I'm Lestar Z. I wrote Aimer to help you be a better pool player. I am an experienced--not great--player myself, but in writing and using the logic of Aimer over a couple of months, I have become a MUCH better player. I'm an old man, and you are not, so you have an opportunity here to be at least the best player in your room, and maybe more. This will work only if you use AIMER effectively, so let's first go over how Aimer works.\n\nThere are three main sections, The TABLE DIAGRAM at the top, the BALL DIAGRAM in the center and the BALL CONTROL SLIDERS at the bottom.\n\nThe TABLE DIAGRAM is a visual of your table. It graphically demonstrates the table's features, pockets, rails and diamond markers. At the top right, you can choose between 7 and 9 foot table sizes. The pockets are numbered 1-6. The diamonds have numbers, too, 1-7 at the top and bottom, and 1-3 on the sides. The middle pockets serve as diamond number 4. \n\nYou see two balls on the Table Diagram, one white, one red. The white one is the CUEBALL; the red one is the OBJECT BALL. The white one sits at the intersection of lines drawn vertically from top/bottom diamonds numbered \"2,\" and horizontally from side diamonds numbered \"3.\" Do you see it? Look to your own table. Your diamonds match the diamonds on the Table Diagram. Find that intersection there, using your own diamonds, and place the cueball at that spot. Do the same for the object ball.\n\nShoot the shot on your table and go to the NEXT shot here in Aimer.","rcMult":0,"rcLocked":false},{"ob":{"x":230,"y":130},"cb":{"x":121.53,"y":156.72},"cut":14.22,"pocket":"TR","rh":false,"spin":0,"speed":0.5,"vert":0,"pathAngleAdjust":0,"rcBias":0,"landing":{"x":350,"y":193},"summary":"FIRST ANGLE SHOT","intent":"I moved the cueball a little. Look at the grid markings and put your cueball on YOUR table at about the same place (use the diamond markers to find the location as you did in Shot 1). It's a little to the left of the vertical 2 diamond line and about halfway between the 2 and 3 horizontal diamond lines (in the grid marked \"18\"). The OBJECT BALL, the red one, stays the same as in Shot 1.\n\nLook downward in AIMER. We are now looking at the BALL DIAGRAM. It has two large circles. Those represent the two balls on the table, in which the CUEBALL is white, but transparent, and the OBJECT BALL is in the background, the red ball. Importantly, there is a scale across the face of the Object Ball, from 0 through 8. This divides the Object Ball into aiming lines, which give you points at which you aim.\n\nAim what, you might ask? This is THE crucial question to ask AIMER. Look at the Cueball in the Ball Diagram. It has a yellow, dashed line on its circumference. That line crosses through the \"2\" mark on the Object Ball. So, if you were to take the left edge of your Cueball, estimate where the \"2\" mark is on the Object Ball and aim the left edge of the Cueball to that 2 line, and shoot, the object ball would go to the left and in Pocket 3.\n\nThat means the angle of this shot in this case moves to the left. The direction the shot moves is called the INSIDE of the angle (the larger angle, on the other side, is the OUTSIDE of the angle).\n\nThe edge of the cueball on the same side of the Inside of the angle is known as the INSIDE EDGE. It is your primary aiming tool. In the case of this shot, the INSIDE EDGE is the left edge.\n\nTo emphasize the Inside Edge, the Ball Diagram has an orange, dashed line that touches the cueball at its equator. The line has the title \"INSIDE EDGE\" written at the top of the line.\n\nSet this up, look at the shot. Tell yourself this is what 14 degrees looks like. And tell yourself that 14 degrees takes a \"2\" aim. Stand behind the shot and say the words \"TWO, FOUR, SIX\" to yourself while looking at the object ball. That means you visualize the scale on your object ball. Then pick the obvious one for this shot, by putting your Inside Edge on the \"2\" line, say \"TWO\" again, and shoot. Go on to the next shot, Shot 3.","rcMult":0,"rcLocked":false},{"ob":{"x":230,"y":130},"cb":{"x":118.02,"y":127.79},"cut":30,"pocket":"TR","rh":false,"spin":0,"speed":0.5,"vert":0,"pathAngleAdjust":0,"rcBias":0,"landing":{"x":383,"y":215},"summary":"HALF-BALL SHOT","intent":"Did Shot 2 go in? Do it several--several DOZEN--times. Repetition is learning.\n\nFor Shot 3, I moved the Cueball again, and again the Object Ball stays at the center of the table. Look at the Table Diagram, and note that the cueball now is a little left of the \"2\" diamond line--the vertical line drawn between the top and bottom diamonds, and just above center on the horizontal \"2\" diamond line. Look to the diagram and then put it on your table.\n\nThis is a \"Half-Ball\" shot. It's very easy to find, as you just look for the middle of the Object Ball. This is the \"4\" spot on the measuring scale. If you look down in Aimer, you'll see the \"30\" in the Angle Diagram. You would achieve this angle if you were to take the INSIDE EDGE of your Cueball (in this case, it's the LEFT edge), and point it at the middle of the Object Ball, the \"4\" spot.\n\nSet it up. stand back and look at the shot on your table. Tell yourself this is what 30 degrees look like, and say again the words \"TWO, FOUR, SIX,\" as you line it up. It's important to say the words, or at least think them. Then refine it, and say, \"FOUR.\" Aim the Inside Edge, left edge of the cueball on that spot, say \"FOUR\" again, and shoot.\n\nRepeat, and adjust your thinking as necessary to both find the \"4\" spot and make it go in, REPEAT, REPEAT, REPEAT, saying \"4\" each time. \n\nNext shot.","rcMult":0,"rcLocked":false},{"ob":{"x":230,"y":130},"cb":{"x":123.38,"y":93.48},"cut":48.87,"pocket":"TR","rh":false,"spin":0,"speed":0.5,"vert":0,"pathAngleAdjust":0,"rcBias":0,"landing":{"x":406,"y":118},"summary":"THINNER CUT","intent":"The most important parts of Aimer's work is in emphasizing the scale across the Object Ball, 0-8, and the aiming use of the INSIDE EDGE. So, here we will look at those two elements in greater detail.\n\nLook at the Table Diagram, find the coordinates of the Cueball and set that up on your table. The Object Ball remains in the center. Where is the Cueball in diamond measurements? See if you can replicate the layout.\n\nThis is a \"Thin\" shot, a 49 degree angle shot. Stand in the shot line, once again say the words \"TWO, FOUR, SIX,\" and think of the scale on the Object Ball. And think of what those numbers signify--they are the Half Ball, the \"4,\" and the two obvious aiming spots halfway between the \"4\" and the edges: the \"2\" and the \"6.\" Then visualize the scale drawn on the Object Ball, approximate the location of the \"6\" on the scale, say the word \"SIX\", and burn the look of that angle into your memory. Associate it with \"6\", put the Inside Edge on the \"6\" and shoot it.\n\nREPEAT many times, and go on to Shot 5.","rcMult":0,"rcLocked":false}],"soloBalls":true,"srcVer":"2026-07-23a"}
 ];
 
 
@@ -1878,6 +1886,7 @@ function exitSequenceMode() {
   clearSceneryBalls();
   if (typeof FOUNDATIONAL_SHOT !== 'undefined' && FOUNDATIONAL_SHOT.shot) {
     loadShotData(FOUNDATIONAL_SHOT.shot);
+    if (S) S.landing = FOUNDATIONAL_SHOT.shot.landing || null;   // blue ghost downrange of the OB
   }
   // Refresh the magazine view if it's open, so the sequence's active-shot
   // highlight clears.
@@ -2206,7 +2215,8 @@ function _seqCardHTML(i, openIdx) {
   h += '</div>';
   if (seq.tier === 'mine') {
     h += '<div onclick="event.stopPropagation(); if(window.buildEditSequence) buildEditSequence(' + i + ')" title="Edit this sequence in the Build dock" style="margin-left:8px;padding:4px 10px;border-radius:5px;background:#12303a;border:1px solid #24525f;color:#7dd3fc;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;touch-action:manipulation;">\u270e Edit</div>';
-    h += '<div onclick="event.stopPropagation(); lzCopySequence(' + i + ')" title="Copy this sequence to paste &amp; send" style="margin-left:6px;padding:4px 10px;border-radius:5px;background:#3a2f12;border:1px solid #5f5324;color:#f0df70;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;touch-action:manipulation;">\u29c9 Copy</div>';
+    h += '<div onclick="event.stopPropagation(); lzCopySequence(' + i + ')" title="Copy this sequence to paste &amp; send" style="margin-left:6px;padding:4px 10px;border-radius:5px;background:#3a2f12;border:1px solid #5f5324;color:#f0df70;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;touch-action:manipulation;">\u29c9 Copy</div>';    h += '<div onclick="event.stopPropagation(); if(window.lzDeleteSequence) lzDeleteSequence(' + i + ')" title="Delete this sequence from My Sequences" style="margin-left:6px;padding:4px 10px;border-radius:5px;background:#3a1616;border:1px solid #6a2a2a;color:#e88;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;touch-action:manipulation;">\u2715 Delete</div>';
+    h += '<div onclick="event.stopPropagation(); if(window.lzDeleteSequence) lzDeleteSequence(' + i + ')" title="Delete this sequence from My Sequences" style="margin-left:6px;padding:4px 10px;border-radius:5px;background:#3a1616;border:1px solid #6a2a2a;color:#e88;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;touch-action:manipulation;">\u2715 Delete</div>';
   }
   h += '<div style="font-size:11px;color:#999;margin-left:8px;white-space:nowrap;">' + nShots + ' shot' + (nShots===1?'':'s') + '</div>';
   h += '</div>';
@@ -2503,7 +2513,7 @@ function loadShotData(shot) {
   // LeStar Z arc sequences play back with their whole array, at true 9-ft scale.
   window._benchShot = !!(shot.bench && shot.bench.markers && shot.bench.markers.length);
   if (window._benchShot) {
-    window._benchMarkers = shot.bench.markers.map(function(m){ return { x:m.x, y:m.y, num:m.num }; });
+    window._benchMarkers = shot.bench.markers.map(function(m){ return { x:m.x, y:m.y, num:m.num, side:m.side, mag:m.mag }; });
     window._benchLockDist = !!shot.bench.lockDist;
     window._benchLockR = shot.bench.lockR || 0;
   }
@@ -2772,6 +2782,55 @@ function renderSequenceTable(seqIdx) {
   }
   svg.appendChild(g);
 }
+
+// Author-side traffic: while BUILDING a seq/game, show the whole rack the way a
+// learner will see it in play — every future shot's object ball full-colour and
+// numbered by shot order, past shots greyed "already shot", the current shot
+// left to the live red OB. Reads live from draft.shots (sel = active), so it
+// updates the instant any shot is edited. Its own group id so it never collides
+// with the play-side scenery-balls. Suppressed for bench/variation authoring.
+function renderAuthorTraffic(shots, activeIdx, kind){
+  var old = document.getElementById('author-traffic'); if (old) old.remove();
+  var svg = document.getElementById('topsvg'); if (!svg) return;
+  if (window._benchMode) return;                       // arc/variation authoring: no traffic
+  if (kind !== 'seq' && kind !== 'game') return;       // only real chains carry a rack
+  if (!shots || shots.length < 2) return;
+  var ns='http://www.w3.org/2000/svg';
+  var g=document.createElementNS(ns,'g'); g.setAttribute('id','author-traffic'); g.setAttribute('pointer-events','none');
+  function ball(cx,cy,num,done){
+    if (done){
+      var dc=document.createElementNS(ns,'circle');
+      dc.setAttribute('cx',cx); dc.setAttribute('cy',cy); dc.setAttribute('r',effR());
+      dc.setAttribute('fill','#3a3a3a'); dc.setAttribute('stroke','#000'); dc.setAttribute('stroke-width','0.5'); dc.setAttribute('opacity','0.5');
+      g.appendChild(dc);
+    } else {
+      var sh=document.createElementNS(ns,'circle');
+      sh.setAttribute('cx',cx+1); sh.setAttribute('cy',cy+1); sh.setAttribute('r',effR());
+      sh.setAttribute('fill','#000'); sh.setAttribute('opacity','0.32'); g.appendChild(sh);
+      var c=document.createElementNS(ns,'circle');
+      c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',effR());
+      c.setAttribute('fill','url(#gOB'+num+')'); c.setAttribute('stroke','#000'); c.setAttribute('stroke-width','0.5'); g.appendChild(c);
+      var hi=document.createElementNS(ns,'circle');
+      hi.setAttribute('cx',cx-effR()*0.45); hi.setAttribute('cy',cy-effR()*0.45); hi.setAttribute('r',effR()*0.35);
+      hi.setAttribute('fill','#fff'); hi.setAttribute('opacity','0.45'); g.appendChild(hi);
+    }
+    var disc=document.createElementNS(ns,'circle');
+    disc.setAttribute('cx',cx); disc.setAttribute('cy',cy+0.5); disc.setAttribute('r',effR()*0.55);
+    disc.setAttribute('fill','#fff'); disc.setAttribute('opacity','0.92'); g.appendChild(disc);
+    var t=document.createElementNS(ns,'text');
+    t.setAttribute('x',cx); t.setAttribute('y',cy+0.5); t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','central');
+    t.setAttribute('font-family','Lato,sans-serif'); t.setAttribute('font-size',(effR()*0.9).toFixed(1)); t.setAttribute('font-weight','900'); t.setAttribute('fill','#111');
+    t.textContent=String(num+1); g.appendChild(t);
+  }
+  for (var j=0;j<shots.length;j++){
+    if (j===activeIdx) continue;                       // current shot = the live red OB
+    var sh=shots[j]; if (!sh || !sh.ob) continue;
+    ball(sh.ob.x, sh.ob.y, j, j<activeIdx);
+  }
+  svg.appendChild(g);
+}
+function clearAuthorTraffic(){ var g=document.getElementById('author-traffic'); if (g) g.remove(); }
+
 
 // ── MY NOTES PANE ──────────────────────────────────────────────
 // Notes are stored in localStorage under their own key, never cleared by
@@ -3893,7 +3952,7 @@ if ('serviceWorker' in navigator) {
           <!-- CB landing ghost: sits along the path at the predicted stop
                position (depends on speed). Line continues past it to show
                headroom for a harder stroke. -->
-          <circle id="cb-landing-ghost" cx="0" cy="0" r="8" fill="rgba(125,211,252,0.20)" stroke="#7dd3fc" stroke-width="2.5" stroke-dasharray="5,3" opacity="0" style="cursor:grab;" pointer-events="all"/>
+          <circle id="cb-landing-ghost" cx="0" cy="0" r="8" fill="none" stroke="#7dd3fc" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="0.1,2.3" opacity="0" style="cursor:grab;" pointer-events="all"/>
           <!-- Start-point marker. Shows where this run began — i.e., shot 1's
                CB position. Visible on every shot of every sequence so the
                student always knows their origin point. Static, non-draggable;
@@ -3902,7 +3961,7 @@ if ('serviceWorker' in navigator) {
             <circle cx="0" cy="0" r="8" fill="none" stroke="#e02020" stroke-width="2.5"/>
             <circle cx="0" cy="0" r="3" fill="none" stroke="#e02020" stroke-width="2"/>
           </g>
-          <circle id="ghost-ball" cx="0" cy="0" r="8" fill="rgba(255,255,255,0.10)" stroke="#f0df70" stroke-width="1.8" stroke-dasharray="4,3" opacity="0"/>
+          <circle id="ghost-ball" cx="0" cy="0" r="8" fill="rgba(255,255,255,0.10)" stroke="#f0df70" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="0.1,2.3" opacity="0"/>
           <!-- Contact point dot on OB surface -->
           <circle id="cp-dot-table" cx="0" cy="0" r="4" fill="#ffffff" stroke="#ff6600" stroke-width="1.5" opacity="0"/>
           <!-- Setup-bench loose marker balls (author guides; drawn behind OB/CB) -->
@@ -3929,7 +3988,7 @@ if ('serviceWorker' in navigator) {
       <!-- Top-rail toggle buttons: SIZE, UNITS, GAME -->
       <!-- Top toggle buttons: TBL / UNIT / TYPE — compact 3/4 size, bold labels -->
       <g id="rail-size-btn" onclick="cycleTableSize()" style="cursor:pointer;touch-action:manipulation;">
-        <title>Table size — cycles through available lengths (7, 8, 9 ft for pool; 10, 12 ft for snooker). Used to compute real-world distances.</title>
+        <title>Table size — cycles between the two: 9 ft and 7 ft. Used to compute real-world distances.</title>
         <rect x="288" y="-13" width="35" height="11" rx="2.5" fill="rgba(240,223,112,0.55)" stroke="rgba(240,223,112,0.85)" stroke-width="0.7"/>
         <text x="291" y="-7" text-anchor="start" dominant-baseline="central" font-family="Lato,sans-serif" font-size="5" font-weight="900" fill="#000" pointer-events="none" letter-spacing="0.3">TBL</text>
         <text id="rail-size-lbl" x="308" y="-7" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="7" font-weight="900" fill="#000" pointer-events="none">9ft</text>
@@ -3941,25 +4000,6 @@ if ('serviceWorker' in navigator) {
         <text x="329" y="-7" text-anchor="start" dominant-baseline="central" font-family="Lato,sans-serif" font-size="5" font-weight="900" fill="#000" pointer-events="none" letter-spacing="0.3">UNIT</text>
         <text id="rail-unit-lbl" x="346" y="-7" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="7" font-weight="900" fill="#000" pointer-events="none">F</text>
         <polygon id="rail-unit-arrow" points="351,-11 356,-11 353.5,-4" fill="#000" pointer-events="none"/>
-      </g>
-      <g id="rail-table-btn" onclick="toggleTypeMenu(event)" style="cursor:pointer;touch-action:manipulation;">
-        <title>Game type — pick POOL or SNOOKER. Switching auto-sets a sensible default size for that game.</title>
-        <rect x="361" y="-13" width="48" height="11" rx="2.5" fill="rgba(160,208,160,0.55)" stroke="rgba(160,208,160,0.95)" stroke-width="0.8"/>
-        <text x="363" y="-7" text-anchor="start" dominant-baseline="central" font-family="Lato,sans-serif" font-size="4.5" font-weight="900" fill="#000" pointer-events="none" letter-spacing="0.2">TYPE</text>
-        <text id="rail-table-lbl" x="390" y="-7" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="#000" pointer-events="none">POOL</text>
-        <polygon id="rail-table-arrow" points="402,-11 407,-11 404.5,-4" fill="#000" pointer-events="none"/>
-      </g>
-      <!-- TYPE dropdown menu -->
-      <g id="rail-type-menu" opacity="0" style="pointer-events:none;">
-        <rect x="361" y="0" width="48" height="24" rx="2.5" fill="#1a1a1a" stroke="rgba(160,208,160,0.7)" stroke-width="0.8"/>
-        <g style="cursor:pointer;pointer-events:auto;" onclick="selectGameType('pool', event)">
-          <rect x="361" y="0" width="48" height="12" fill="rgba(160,208,160,0.15)"/>
-          <text x="385" y="6" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="#a0d0a0" pointer-events="none">POOL</text>
-        </g>
-        <g style="cursor:pointer;pointer-events:auto;" onclick="selectGameType('snooker', event)">
-          <rect x="361" y="12" width="48" height="12" fill="rgba(112,192,240,0.15)"/>
-          <text x="385" y="18" text-anchor="middle" dominant-baseline="central" font-family="Lato,sans-serif" font-size="6.5" font-weight="900" fill="#70c0f0" pointer-events="none">SNOOKER</text>
-        </g>
       </g>
       <!-- Bottom-rail toggle buttons: GRID and SNAP -->
       <g id="rail-grid-btn" onclick="toggleMap()" style="cursor:pointer;touch-action:manipulation;">
@@ -4031,32 +4071,17 @@ if ('serviceWorker' in navigator) {
     <rect x="20" y="26" width="300" height="12" rx="6" fill="rgba(255,140,0,0.22)" stroke="#ff8c00" stroke-width="1.5"/>
     <!-- center divider -->
     <line x1="170" y1="20" x2="170" y2="44" stroke="#ff8c00" stroke-width="2"/>
-    <!-- tick marks + numbers: 10 on each side, 15px spacing from center -->
+    <!-- tick marks: inside-edge units, 1 per 30px (rcBias 0.1 = 1 unit) -->
     <g id="perc-ticks" font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#ff8c00" text-anchor="middle">
-      <!-- left side -->
-      <line x1="155" y1="24" x2="155" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="155" y="12">1</text>
-      <line x1="140" y1="24" x2="140" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="140" y="12">2</text>
-      <line x1="125" y1="24" x2="125" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="125" y="12">3</text>
-      <line x1="110" y1="24" x2="110" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="110" y="12">4</text>
-      <line x1="95"  y1="24" x2="95"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="95"  y="12">5</text>
-      <line x1="80"  y1="24" x2="80"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="80"  y="12">6</text>
-      <line x1="65"  y1="24" x2="65"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="65"  y="12">7</text>
-      <line x1="50"  y1="24" x2="50"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="50"  y="12">8</text>
-      <line x1="35"  y1="24" x2="35"  y2="40" stroke="#ff8c00" stroke-width="1"/><text x="35"  y="12">9</text>
-      <line x1="20"  y1="24" x2="20"  y2="40" stroke="#ff8c00" stroke-width="1.5"/><text x="20"  y="12">10</text>
-      <!-- center 0 -->
+      <line x1="20" y1="24" x2="20" y2="40" stroke="#ff8c00" stroke-width="1.5"/><text x="20" y="12">4</text>
+      <line x1="57.5" y1="24" x2="57.5" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="57.5" y="12">3</text>
+      <line x1="95" y1="24" x2="95" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="95" y="12">2</text>
+      <line x1="132.5" y1="24" x2="132.5" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="132.5" y="12">1</text>
       <text x="170" y="12" font-size="11">0</text>
-      <!-- right side -->
-      <line x1="185" y1="24" x2="185" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="185" y="12">1</text>
-      <line x1="200" y1="24" x2="200" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="200" y="12">2</text>
-      <line x1="215" y1="24" x2="215" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="215" y="12">3</text>
-      <line x1="230" y1="24" x2="230" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="230" y="12">4</text>
-      <line x1="245" y1="24" x2="245" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="245" y="12">5</text>
-      <line x1="260" y1="24" x2="260" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="260" y="12">6</text>
-      <line x1="275" y1="24" x2="275" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="275" y="12">7</text>
-      <line x1="290" y1="24" x2="290" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="290" y="12">8</text>
-      <line x1="305" y1="24" x2="305" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="305" y="12">9</text>
-      <line x1="320" y1="24" x2="320" y2="40" stroke="#ff8c00" stroke-width="1.5"/><text x="320" y="12">10</text>
+      <line x1="207.5" y1="24" x2="207.5" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="207.5" y="12">1</text>
+      <line x1="245" y1="24" x2="245" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="245" y="12">2</text>
+      <line x1="282.5" y1="24" x2="282.5" y2="40" stroke="#ff8c00" stroke-width="1"/><text x="282.5" y="12">3</text>
+      <line x1="320" y1="24" x2="320" y2="40" stroke="#ff8c00" stroke-width="1.5"/><text x="320" y="12">4</text>
     </g>
     <text x="20"  y="52" text-anchor="start" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#ff8c00" letter-spacing="0.5">THICKER</text>
     <text x="320" y="52" text-anchor="end"   font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#ff8c00" letter-spacing="0.5">THINNER</text>
@@ -4086,18 +4111,20 @@ if ('serviceWorker' in navigator) {
         <rect x="20" y="26" width="300" height="12" rx="6" fill="rgba(125,211,252,0.18)" stroke="#7dd3fc" stroke-width="1.5"/>
         <!-- center divider -->
         <line x1="170" y1="20" x2="170" y2="44" stroke="#7dd3fc" stroke-width="2"/>
-        <!-- tick marks ±45° in 9° steps (5 ticks each side, 30px spacing) -->
+        <!-- tick marks: real degrees, 15° steps (25px = 15°) -->
         <g font-family="Lato,sans-serif" font-size="9" font-weight="900" fill="#7dd3fc" text-anchor="middle">
-          <line x1="140" y1="24" x2="140" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="140" y="12">18</text>
-          <line x1="110" y1="24" x2="110" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="110" y="12">36</text>
-          <line x1="80"  y1="24" x2="80"  y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="80"  y="12">54</text>
-          <line x1="50"  y1="24" x2="50"  y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="50"  y="12">72</text>
-          <line x1="20"  y1="24" x2="20"  y2="40" stroke="#7dd3fc" stroke-width="1.5"/><text x="20"  y="12">90</text>
+          <line x1="20" y1="24" x2="20" y2="40" stroke="#7dd3fc" stroke-width="1.5"/><text x="20" y="12">90</text>
+          <line x1="45" y1="24" x2="45" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="45" y="12">75</text>
+          <line x1="70" y1="24" x2="70" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="70" y="12">60</text>
+          <line x1="95" y1="24" x2="95" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="95" y="12">45</text>
+          <line x1="120" y1="24" x2="120" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="120" y="12">30</text>
+          <line x1="145" y1="24" x2="145" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="145" y="12">15</text>
           <text x="170" y="12" font-size="11">0</text>
-          <line x1="200" y1="24" x2="200" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="200" y="12">18</text>
-          <line x1="230" y1="24" x2="230" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="230" y="12">36</text>
-          <line x1="260" y1="24" x2="260" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="260" y="12">54</text>
-          <line x1="290" y1="24" x2="290" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="290" y="12">72</text>
+          <line x1="195" y1="24" x2="195" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="195" y="12">15</text>
+          <line x1="220" y1="24" x2="220" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="220" y="12">30</text>
+          <line x1="245" y1="24" x2="245" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="245" y="12">45</text>
+          <line x1="270" y1="24" x2="270" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="270" y="12">60</text>
+          <line x1="295" y1="24" x2="295" y2="40" stroke="#7dd3fc" stroke-width="1"/><text x="295" y="12">75</text>
           <line x1="320" y1="24" x2="320" y2="40" stroke="#7dd3fc" stroke-width="1.5"/><text x="320" y="12">90</text>
         </g>
         <text x="20"  y="52" text-anchor="start" font-family="Lato,sans-serif" font-size="8" font-weight="900" fill="#7dd3fc" letter-spacing="0.5">LEFT</text>
@@ -4359,6 +4386,7 @@ function addFeltSpots() {
 const S = {
   ob: {x:230, y:130},
   cb: {x:130, y:180},
+  landing: {x:269, y:110},  // blue ghost: one ball-plus downrange of the OB on the CB->OB aim line
   diagCutDeg: 0,
   _diagDragRh: undefined,
   // Cut is the user's responsibility (set via perception ball or loadShot).
@@ -4378,6 +4406,7 @@ const S = {
                        // shot.pathAngleAdjust during sequence load.
 };
 let drag = null;
+let _mkPressTimer = null, _mkPressStart = null;   // long-press-to-delete a marker (touch-friendly)
 let _allStart = null, _allGrabX = 0, _allGrabY = 0, _rotStart = null;   // bench "drag all" / rotate
 let diagDrag = false;
 let mapOn = true;
@@ -4690,6 +4719,23 @@ svg.addEventListener('pointerdown', e => {
     renderBenchMarkers();
     return;
   }
+  // Setup-bench distance handle: drag to re-solve the array to a new distance.
+  if (typeof _benchVisible === 'function' && _benchVisible() && e.target
+      && e.target.hasAttribute && e.target.hasAttribute('data-disthandle')){
+    e.preventDefault(); e.stopPropagation();
+    drag = 'dist';
+    // Freeze the aim direction NOW so distance changes never re-derive (and never
+    // flip) which side the fan is on. Prefer the current 0-ball direction; if the
+    // array has no 0 ball, use any marker's direction; last resort, OB->pointer.
+    var _z=(window._benchMarkers||[]).filter(function(m){return m.side==='C'||+m.num===0;})[0]
+          || (window._benchMarkers||[])[0];
+    var _zx, _zy;
+    if(_z){ _zx=_z.x-S.ob.x; _zy=_z.y-S.ob.y; } else { _zx=p.x-S.ob.x; _zy=p.y-S.ob.y; }
+    var _zl=Math.hypot(_zx,_zy)||1;
+    window._distAim={ x:_zx/_zl, y:_zy/_zl };
+    svg.setPointerCapture(e.pointerId);
+    return;
+  }
   // Setup-bench L/R flip: mirror the arc to the other hand (tap, not drag).
   if (typeof _benchVisible === 'function' && _benchVisible() && e.target
       && e.target.hasAttribute && e.target.hasAttribute('data-flip')){
@@ -4739,6 +4785,9 @@ svg.addEventListener('pointerdown', e => {
       drag = 'mk:'+_mtk;
       _ballGrabDx = p.x - _mkT.x; _ballGrabDy = p.y - _mkT.y;
       svg.setPointerCapture(e.pointerId);
+      // Tap = delete, drag = move. Record where this press began and which ball;
+      // pointerup deletes it only if the pointer never really moved (a tap).
+      window._mkTap = { i: _mtk, x0: p.x, y0: p.y, moved: false };
       return;
     }
   }
@@ -4760,6 +4809,16 @@ svg.addEventListener('pointerdown', e => {
     svg.setPointerCapture(e.pointerId);
     return;
   }
+  // Fell through everything else in bench mode: a drag on EMPTY felt starts a
+  // rubber-band SELECT-TO-DELETE box. On release, markers inside the box are
+  // removed (select the ones to delete, not the keepers).
+  if (typeof _benchVisible === 'function' && _benchVisible() && (window._benchMarkers||[]).length){
+    e.preventDefault(); e.stopPropagation();
+    drag = 'selbox';
+    window._selBox = { x0:p.x, y0:p.y, x1:p.x, y1:p.y };
+    svg.setPointerCapture(e.pointerId);
+    return;
+  }
 });
 svg.addEventListener('pointermove', e => {
   if (!drag) return; e.preventDefault();
@@ -4768,6 +4827,24 @@ svg.addEventListener('pointermove', e => {
   // finger from where it was grabbed (no jump to fingertip).
   const targetX = p.x - _ballGrabDx;
   const targetY = p.y - _ballGrabDy;
+  if (drag==='selbox') {
+    window._selBox.x1 = p.x; window._selBox.y1 = p.y;
+    var _sb = window._selBox;
+    var _g = document.getElementById('sel-box');
+    if (!_g){ _g = document.createElementNS('http://www.w3.org/2000/svg','rect'); _g.setAttribute('id','sel-box');
+      _g.setAttribute('fill','rgba(255,140,0,0.12)'); _g.setAttribute('stroke','#ff8c00');
+      _g.setAttribute('stroke-width','1'); _g.setAttribute('stroke-dasharray','4 3'); _g.setAttribute('pointer-events','none');
+      var _lyr=document.getElementById('topsvg'); if(_lyr) _lyr.appendChild(_g); }
+    _g.setAttribute('x', Math.min(_sb.x0,_sb.x1)); _g.setAttribute('y', Math.min(_sb.y0,_sb.y1));
+    _g.setAttribute('width', Math.abs(_sb.x1-_sb.x0)); _g.setAttribute('height', Math.abs(_sb.y1-_sb.y0));
+    // live highlight: tint markers currently inside the box
+    var _x0=Math.min(_sb.x0,_sb.x1),_x1=Math.max(_sb.x0,_sb.x1),_y0=Math.min(_sb.y0,_sb.y1),_y1=Math.max(_sb.y0,_sb.y1);
+    (window._benchMarkers||[]).forEach(function(m,i){
+      var _c=document.querySelector('[data-mk="'+i+'"]');
+      if(_c){ var _in=(m.x>=_x0&&m.x<=_x1&&m.y>=_y0&&m.y<=_y1); _c.setAttribute('opacity', _in?'0.35':'1'); }
+    });
+    return;
+  }
   if (drag==='ob') {
     const snapped = applySnap(targetX, targetY);
     const clamped = clampBall(snapped.x, snapped.y);
@@ -4799,23 +4876,43 @@ svg.addEventListener('pointermove', e => {
       for (var _si=0;_si<window._benchMarkers.length;_si++){ var _mk=window._benchMarkers[_si]; var _md=Math.hypot(S.cb.x-_mk.x,S.cb.y-_mk.y); if(_md<_bd){_bd=_md;_best=_mk;} }
       if (_best && _bd <= 2*BENCH_BALL_R){                       // within ~a ball width
         S.cb = {x:_best.x, y:_best.y};
-        S.diagCutDeg = Math.asin(Math.min(1,(+_best.num||0)/10))*180/Math.PI;   // exact chart cut for this number
+        var _mag = (_best.mag != null ? _best.mag : Math.abs(+_best.num||0));
+        S.diagCutDeg = Math.asin(Math.min(1,_mag/8))*180/Math.PI;   // exact chart cut for this mark
         S._userAdjustedDiag = true;                              // hold it; render won't recompute from geometry
         var _pk={TL:{x:30,y:30},TM:{x:230,y:30},TR:{x:430,y:30},BR:{x:430,y:230},BM:{x:230,y:230},BL:{x:30,y:230}}[S.pocket];
         if (_pk){ S._diagDragRh = ((_pk.x-S.ob.x)*(_best.y-S.ob.y)-(_pk.y-S.ob.y)*(_best.x-S.ob.x) > 0); }
-        showSnapLabel($('topsvg'), S.cb.x, S.cb.y, String(_best.num), 'cb');
+        if (_best.side === 'L' || _best.side === 'R') S._diagDragRh = (_best.side === 'L');   // the ball's own hand wins
+        showSnapLabel($('topsvg'), S.cb.x, S.cb.y, String(_mag), 'cb');
         _snappedMk = true;
       }
     }
     if (!_snappedMk && snapped.label) showSnapLabel($('topsvg'), clamped.x, clamped.y, snapped.label, 'cb');
+  } else if (drag==='dist') {
+    // Distance from the OB to the pointer, in inches; free drag (no snap).
+    var _dpx = Math.hypot(p.x - S.ob.x, p.y - S.ob.y);
+    var _in = _dpx / pxPerInch();               // free drag, no snap stops
+    _in = Math.max(4, Math.min(60, _in));
+    if (typeof window.resolveBenchDistance === 'function') window.resolveBenchDistance(_in);
+    return;
   } else if (drag==='rot') {
     var _da = Math.atan2(p.y - S.ob.y, p.x - S.ob.x) - _rotStart.ang0;
     var _ca = Math.cos(_da), _sa = Math.sin(_da);
-    var _rot = function(px, py){ var dx=px-S.ob.x, dy=py-S.ob.y; return clampBall(S.ob.x + dx*_ca - dy*_sa, S.ob.y + dx*_sa + dy*_ca); };
-    var _rc = _rot(_rotStart.cb.x, _rotStart.cb.y); S.cb = {x:_rc.x, y:_rc.y};
-    for (var _rj=0; _rj<_rotStart.mk.length; _rj++){ if(window._benchMarkers[_rj]){ var _rp=_rot(_rotStart.mk[_rj].x,_rotStart.mk[_rj].y); window._benchMarkers[_rj].x=_rp.x; window._benchMarkers[_rj].y=_rp.y; } }
-    justShot=false;
-    renderBenchMarkers();   // OB is the pivot, so the locked distance is preserved
+    // Rotate rigidly about the OB. Do NOT clamp balls individually — that
+    // squishes the array against a rail. Instead compute every rotated point
+    // first; if ANY would leave the felt, reject this angle and hold the last
+    // valid one, so the whole ruler keeps its shape and just stops turning.
+    var _rotP = function(px, py){ var dx=px-S.ob.x, dy=py-S.ob.y; return { x:S.ob.x + dx*_ca - dy*_sa, y:S.ob.y + dx*_sa + dy*_ca }; };
+    var _mL=TL.left+effR()+1, _mR=TL.right-effR()-1, _mT=TL.top+effR()+1, _mB=TL.bottom-effR()-1;
+    var _pts=[_rotP(_rotStart.cb.x,_rotStart.cb.y)];
+    for (var _rj=0; _rj<_rotStart.mk.length; _rj++){ _pts.push(_rotP(_rotStart.mk[_rj].x,_rotStart.mk[_rj].y)); }
+    var _fits=true;
+    for (var _pk=0; _pk<_pts.length; _pk++){ if(_pts[_pk].x<_mL||_pts[_pk].x>_mR||_pts[_pk].y<_mT||_pts[_pk].y>_mB){ _fits=false; break; } }
+    if (_fits){
+      S.cb={x:_pts[0].x, y:_pts[0].y};
+      for (var _rj2=0; _rj2<_rotStart.mk.length; _rj2++){ if(window._benchMarkers[_rj2]){ window._benchMarkers[_rj2].x=_pts[_rj2+1].x; window._benchMarkers[_rj2].y=_pts[_rj2+1].y; } }
+      justShot=false;
+      renderBenchMarkers();   // OB is the pivot, so the locked distance is preserved
+    }
   } else if (drag==='all') {
     var _adx = p.x - _allGrabX, _ady = p.y - _allGrabY;
     // Clamp the shared delta so every ball in the group stays on the felt.
@@ -4834,13 +4931,47 @@ svg.addEventListener('pointermove', e => {
     renderBenchMarkers();   // locked distance is preserved: OB and CB shift together
   } else if (typeof drag==='string' && drag.indexOf('mk:')===0) {
     var _mi = +drag.slice(3), _mk = window._benchMarkers[_mi];
-    if (_mk){ var _c = clampBall(targetX, targetY); _mk.x = _c.x; _mk.y = _c.y; renderBenchMarkers(); }
+    if (_mk){
+      // Distinguish tap from drag: only treat it as a move once the pointer has
+      // travelled a few px. A pure tap leaves the ball put and deletes on release.
+      if (window._mkTap && !window._mkTap.moved
+          && Math.hypot(p.x - window._mkTap.x0, p.y - window._mkTap.y0) > 4){
+        window._mkTap.moved = true;
+      }
+      if (window._mkTap && window._mkTap.moved){
+        var _c = clampBall(targetX, targetY);
+        _mk.x = _c.x; _mk.y = _c.y; renderBenchMarkers();
+      }
+    }
     return;   // markers are guides; no full re-render needed
   }
   render();
 });
-svg.addEventListener('pointerup',    () => { drag=null; });
-svg.addEventListener('pointercancel',() => { drag=null; });
+function _cancelMkPress(){ if (_mkPressTimer){ clearTimeout(_mkPressTimer); _mkPressTimer=null; } _mkPressStart=null; }
+svg.addEventListener('pointerup',    () => {
+  // Rubber-band box on empty felt: delete every marker inside it on release.
+  if (drag==='selbox' && window._selBox){
+    var _b=window._selBox, _x0=Math.min(_b.x0,_b.x1),_x1=Math.max(_b.x0,_b.x1),_y0=Math.min(_b.y0,_b.y1),_y1=Math.max(_b.y0,_b.y1);
+    if (Math.abs(_x1-_x0) > 4 || Math.abs(_y1-_y0) > 4){
+      if (typeof window.benchPushUndo === 'function') window.benchPushUndo();
+      window._benchMarkers = (window._benchMarkers||[]).filter(function(m){
+        return !(m.x>=_x0 && m.x<=_x1 && m.y>=_y0 && m.y<=_y1);   // inside the box → deleted
+      });
+      if (typeof renderBenchMarkers === 'function') renderBenchMarkers();
+    }
+    var _sbEl=document.getElementById('sel-box'); if(_sbEl) _sbEl.remove();
+    window._selBox=null; drag=null; return;
+  }
+  // Tap on a marker (no real movement) = delete it. A drag just ends.
+  if (window._mkTap && !window._mkTap.moved && window._benchMarkers[window._mkTap.i]){
+    if (typeof window.benchPushUndo === 'function') window.benchPushUndo();
+    window._benchMarkers.splice(window._mkTap.i, 1);
+    if (typeof renderBenchMarkers === 'function') renderBenchMarkers();
+  }
+  window._mkTap = null;
+  _cancelMkPress(); drag=null; window._distAim=null;
+});
+svg.addEventListener('pointercancel',() => { _cancelMkPress(); drag=null; });
 
 // ── Setup-bench loose marker balls ───────────────────────────────────────
 // Numbered guide balls the author drags into place (e.g. an aiming arc). They
@@ -4873,7 +5004,7 @@ function renderBenchMarkers(){
     t.setAttribute('x', m.x); t.setAttribute('y', m.y+0.4); t.setAttribute('text-anchor','middle');
     t.setAttribute('dominant-baseline','central'); t.setAttribute('font-family','Lato,sans-serif');
     t.setAttribute('font-size', (7*R/BALL_R).toFixed(1)); t.setAttribute('font-weight','900'); t.setAttribute('fill','#111');
-    t.setAttribute('pointer-events','none'); t.textContent = m.num; layer.appendChild(t);
+    t.setAttribute('pointer-events','none'); t.textContent = (m.mag != null ? m.mag : Math.abs(m.num)); layer.appendChild(t);
   });
   if (!_benchVisible()) return;   // playback: show the arc itself, not the editing handles
   // Move-all handle: grab this chip to slide the whole arrangement (OB + CB +
@@ -4931,6 +5062,37 @@ function renderBenchMarkers(){
     ring.setAttribute('fill','none'); ring.setAttribute('stroke','#ff8c00');
     ring.setAttribute('stroke-width','0.7'); ring.setAttribute('stroke-dasharray','3 3');
     ring.setAttribute('opacity','0.5'); ring.setAttribute('pointer-events','none'); layer.appendChild(ring);
+    // Draggable distance handle: a knob on the ring, out along the array's aim
+    // (OB -> the shared 0 ball). Drag it in/out to re-solve the whole array to a
+    // new distance; it snaps to 6/12/18/24/36/48 inches.
+    var _ob=(typeof S!=='undefined'&&S.ob)?S.ob:{x:230,y:130};
+    var _ax, _ay;
+    if (window._distAim){ _ax=window._distAim.x; _ay=window._distAim.y; }   // mid-drag: same frozen aim the re-solve uses, so the knob can't teleport across the OB
+    else {
+      var _z=(window._benchMarkers||[]).filter(function(m){return m.side==='C'||+m.num===0;})[0];
+      if(_z){ _ax=_z.x-_ob.x; _ay=_z.y-_ob.y; } else if(typeof S!=='undefined'&&S.cb){ _ax=S.cb.x-_ob.x; _ay=S.cb.y-_ob.y; } else { _ax=0; _ay=-1; }
+      var _al=Math.hypot(_ax,_ay)||1; _ax/=_al; _ay/=_al;
+    }
+    // Put the knob OUTSIDE the array (12px beyond the ring) so it isn't buried in
+    // the cluster of balls at the straight-in end; clamp it to stay on the felt.
+    var _hr=window._benchLockR+12;
+    var _hx=Math.max(TL.left+8, Math.min(TL.right-8, _ob.x+_ax*_hr));
+    var _hy=Math.max(TL.top+8,  Math.min(TL.bottom-8, _ob.y+_ay*_hr));
+    // a little spoke from ring to knob so it reads as the distance grip
+    var _spoke=document.createElementNS(ns,'line');
+    _spoke.setAttribute('x1',_ob.x+_ax*window._benchLockR); _spoke.setAttribute('y1',_ob.y+_ay*window._benchLockR);
+    _spoke.setAttribute('x2',_hx); _spoke.setAttribute('y2',_hy);
+    _spoke.setAttribute('stroke','#ff8c00'); _spoke.setAttribute('stroke-width','1.5'); _spoke.setAttribute('opacity','0.7'); _spoke.setAttribute('pointer-events','none'); layer.appendChild(_spoke);
+    var knob=document.createElementNS(ns,'circle');
+    knob.setAttribute('cx',_hx); knob.setAttribute('cy',_hy); knob.setAttribute('r',7);
+    knob.setAttribute('fill','#ff8c00'); knob.setAttribute('stroke','#241500'); knob.setAttribute('stroke-width','1.5');
+    knob.setAttribute('cursor','grab'); knob.setAttribute('data-disthandle','1'); layer.appendChild(knob);
+    var _klbl=document.createElementNS(ns,'text');
+    _klbl.setAttribute('x',_hx); _klbl.setAttribute('y',_hy-11); _klbl.setAttribute('text-anchor','middle');
+    _klbl.setAttribute('font-family','Lato,sans-serif'); _klbl.setAttribute('font-size','7'); _klbl.setAttribute('font-weight','900');
+    _klbl.setAttribute('fill','#ff8c00'); _klbl.setAttribute('pointer-events','none');
+    var _din=Math.round(window._benchLockR/pxPerInch()); _klbl.textContent=(_din%12===0?(_din/12)+'ft':_din+'in');
+    layer.appendChild(_klbl);
   }
   var bw=108, bh=12, bx=(TL.left+TL.right)/2 - bw/2, by=-4;
   var br=document.createElementNS(ns,'rect');
@@ -4954,10 +5116,36 @@ window.renderBenchMarkers = renderBenchMarkers;
 // fanned to whichever side stays on the felt, with the string starting under
 // the cue ball (edge 0 = the straight-in cue position, opposite the pocket).
 // Returns a full bench shot (ob, cb, pocket, bench{markers,lockDist,lockR}).
-window.buildAimArc = function(obx, oby, pocketKey){
+// Two-sided master array: left scale + right scale joined, sharing the single
+// straight-in ball (0). Reuses buildAimArc's exact ghost-ball solver, so every
+// ball on either side sits at its true chart angle for distance R. Markers carry
+// a signed edge in `num` (negative = one hand, positive = the other, 0 = shared)
+// plus `side` ('L'/'R'/'C') and `mag` (1..10) so labels read "1 on either side".
+window.buildAimArcBoth = function(obx, oby, pocketKey, inches){
+  var one = window.buildAimArc(obx, oby, pocketKey, inches, +1);   // right hand, full 0..8
+  var oth = window.buildAimArc(obx, oby, pocketKey, inches, -1);   // left hand, full 0..8
+  var markers = [];
+  // left hand, high->low, magnitudes 8..1 (skip its 0; the shared 0 comes once)
+  for (var i = oth.bench.markers.length - 1; i >= 1; i--) {
+    var m = oth.bench.markers[i];
+    markers.push({ x:m.x, y:m.y, num:-m.num, side:'L', mag:m.num });
+  }
+  // shared straight-in ball
+  var z = one.bench.markers[0];
+  markers.push({ x:z.x, y:z.y, num:0, side:'C', mag:0 });
+  // right hand, low->high, magnitudes 1..8
+  for (var j = 1; j < one.bench.markers.length; j++) {
+    var r = one.bench.markers[j];
+    markers.push({ x:r.x, y:r.y, num:r.num, side:'R', mag:r.num });
+  }
+  var shot = one;                       // reuse OB/CB/pocket/etc from the right build
+  shot.bench = { markers: markers, lockDist:true, lockR: one.bench.lockR };
+  return shot;
+};
+window.buildAimArc = function(obx, oby, pocketKey, inches, forceSign){
   var POCK={TL:{x:30,y:30},TM:{x:230,y:30},TR:{x:430,y:30},BR:{x:430,y:230},BM:{x:230,y:230},BL:{x:30,y:230}};
   var pk=POCK[pocketKey]||POCK.TR;
-  var R=24*pxPerInch();                         // 2 ft in real inches, either table
+  var R=(inches||24)*pxPerInch();               // distance in real inches (default 2 ft)
   var ux=pk.x-obx, uy=pk.y-oby, ul=Math.hypot(ux,uy)||1; ux/=ul; uy/=ul;
   var D=2*effR();                                // true-scale ball diameter (ghost-ball offset)
   var mL=TL.left+effR()+1, mR=TL.right-effR()-1, mT=TL.top+effR()+1, mB=TL.bottom-effR()-1;
@@ -4969,8 +5157,8 @@ window.buildAimArc = function(obx, oby, pocketKey){
   // (angle between GB->CB and v) is exactly th.
   function arc(sign){
     var a=[];
-    for(var e=0;e<=10;e++){
-      var th=Math.asin(e/10);
+    for(var e=0;e<=8;e++){
+      var th=Math.asin(e/8);
       var t=-D*Math.cos(th)+Math.sqrt(R*R - D*D*Math.sin(th)*Math.sin(th));
       var apx=ux*Math.cos(sign*th)-uy*Math.sin(sign*th);   // aim line v rotated by the cut angle
       var apy=ux*Math.sin(sign*th)+uy*Math.cos(sign*th);
@@ -4979,22 +5167,79 @@ window.buildAimArc = function(obx, oby, pocketKey){
     return a;
   }
   function pen(arr){ var p=0; for(var i=0;i<arr.length;i++){ var q=arr[i]; p+=Math.max(0,mL-q.x,q.x-mR)+Math.max(0,mT-q.y,q.y-mB); } return p; }
-  var plus=arc(1), minus=arc(-1);
-  var mk=(pen(plus)<=pen(minus))?plus:minus;    // the side that keeps the arc on the felt
-  mk=mk.map(function(m){ var c=clampBall(m.x,m.y); return {x:Math.round(c.x*100)/100, y:Math.round(c.y*100)/100, num:m.num}; });
+  var mk = forceSign ? arc(forceSign) : ((pen(arc(1))<=pen(arc(-1)))?arc(1):arc(-1));   // forced hand, else the on-felt side
+  // Keep every ball at its TRUE constant-radius position. A ball that would sit
+  // off the felt is DROPPED, not clamped to the rail — clamping pinned it at the
+  // wrong distance (the phantom "2-foot" ball / stray ring). With clip-first
+  // authoring the kept balls always fit, so nothing vanishes in practice.
+  var _z0 = mk[0];   // remember the straight-in (0) ball for the cue start
+  mk=mk.map(function(m){ return {x:Math.round(m.x*100)/100, y:Math.round(m.y*100)/100, num:m.num}; })
+       .filter(function(m){ return m.x>=mL && m.x<=mR && m.y>=mT && m.y<=mB; });
+  if (!mk.length){ mk=[{x:Math.round(_z0.x*100)/100, y:Math.round(_z0.y*100)/100, num:_z0.num}]; }
   var cb={x:mk[0].x, y:mk[0].y};                // string starts under the cue ball
   return {
     ob:{x:obx,y:oby}, cb:cb, pocket:pocketKey, vert:0, speed:0.5, spin:0,
     cut:0, rh:false, pathAngleAdjust:0, rcBias:0, rcMult:0, rcLocked:false,
     landing:{x:pk.x,y:pk.y}, summary:'', intent:'',
-    bench:{ markers:mk, lockDist:true, lockR:R }
+    bench:{ markers:mk, lockDist:true, lockR:Math.round(R*100)/100 }
   };
+};
+// Re-solve the two-sided array to a NEW distance (inches), preserving the OB
+// position and the array's CURRENT aim direction (so any rotation you've applied
+// survives). Angle-around-OB is NOT distance-invariant, so we must re-run the
+// solver, then rotate the fresh array to match the present orientation.
+window.resolveBenchDistance = function(newInches){
+  if (!window._benchMarkers || !window._benchMarkers.length) return;
+  var ob = S.ob;
+  var D = 2*effR();                       // ghost-ball offset (true-scale diameter)
+  var R = newInches * pxPerInch();        // target radius in px
+  // Current aim direction v = unit(OB -> the shared 0 ball). Falls back to OB->CB.
+  // This is the SAME v buildAimArc uses (OB->pocket), captured live so any rotation
+  // the author applied is preserved.
+  var ax, ay;
+  if (window._distAim){ ax = window._distAim.x; ay = window._distAim.y; }   // frozen at grab: no flip
+  else {
+    var zero = window._benchMarkers.filter(function(m){ return (m.side==='C')||(+m.num===0); })[0];
+    if (zero){ ax = zero.x-ob.x; ay = zero.y-ob.y; }
+    else if (S.cb){ ax = S.cb.x-ob.x; ay = S.cb.y-ob.y; }
+    else { ax = 0; ay = 1; }
+    var al = Math.hypot(ax,ay)||1; ax/=al; ay/=al;
+  }
+  // The construction expects v = OB->POCKET, which is the OPPOSITE of OB->0-ball.
+  // Our recovered aim points at the 0-ball (the fan), so negate it to get v.
+  ax = -ax; ay = -ay;
+  // Move each EXISTING ball to its constant-radius spot for its own hand+magnitude,
+  // using buildAimArc's exact construction: CB = OB - D*v - t*ap, ap = v rotated by
+  // sign*th, t chosen so |CB-OB| = R. No rebuild, no dropping, no re-map — every
+  // ball we have keeps its identity and just changes distance.
+  window._benchMarkers.forEach(function(m){
+    var mag = (m.mag!=null) ? m.mag : Math.abs(+m.num||0);
+    var sign = (m.side==='L') ? -1 : (m.side==='R') ? 1 : (( +m.num<0) ? -1 : 1);
+    var th = Math.asin(Math.min(1, mag/8));
+    var t = -D*Math.cos(th) + Math.sqrt(Math.max(0, R*R - D*D*Math.sin(th)*Math.sin(th)));
+    var apx = ax*Math.cos(sign*th) - ay*Math.sin(sign*th);
+    var apy = ax*Math.sin(sign*th) + ay*Math.cos(sign*th);
+    m.x = ob.x - D*ax - t*apx;
+    m.y = ob.y - D*ay - t*apy;
+  });
+  window._benchLockR = Math.round(R*100)/100;
+  window._benchLockDist = true;
+  if (typeof renderBenchMarkers==='function') renderBenchMarkers();
+};
+window.benchSeedBoth = function(){
+  // Seed the TWO-SIDED master array (L10..0..R10) on the table as the starting
+  // point for a Variations build — aim the top-middle pocket so all 21 fit felt.
+  var shot=window.buildAimArcBoth(230,110,'TM');
+  if (typeof S!=='undefined'){ S.ob.x=shot.ob.x; S.ob.y=shot.ob.y; if(S.cb){ S.cb.x=shot.cb.x; S.cb.y=shot.cb.y; } if(shot.pocket) S.pocket=shot.pocket; }
+  window._benchMarkers = shot.bench.markers.map(function(m){ return {x:m.x, y:m.y, num:m.num, side:m.side, mag:m.mag}; });
+  window._benchLockR = shot.bench.lockR; window._benchLockDist = true;
+  if (typeof renderBenchMarkers==='function') renderBenchMarkers();
 };
 window.benchSeedDefault = function(){
   var ox=(typeof S!=='undefined'&&S.ob)?S.ob.x:230, oy=(typeof S!=='undefined'&&S.ob)?S.ob.y:130;
   var pk=(typeof S!=='undefined'&&S.pocket)?S.pocket:'TR';   // aim the arc at the shot's pocket
   var shot=window.buildAimArc(ox, oy, pk);
-  window._benchMarkers = shot.bench.markers.map(function(m){ return {x:m.x, y:m.y, num:m.num}; });
+  window._benchMarkers = shot.bench.markers.map(function(m){ return {x:m.x, y:m.y, num:m.num, side:m.side, mag:m.mag}; });
   window._benchLockR = shot.bench.lockR; window._benchLockDist = true;
   if (typeof S!=='undefined' && S.cb){ S.cb.x=shot.cb.x; S.cb.y=shot.cb.y; }   // start the string under the cue ball
   renderBenchMarkers();
@@ -5013,12 +5258,25 @@ window.benchFlipHand = function(){
   renderBenchMarkers();
   if (typeof window.render==='function') window.render();
 };
+// Undo stack for bench marker edits (deletes). Snapshot BEFORE each change.
+window._benchUndo = window._benchUndo || [];
+window.benchPushUndo = function(){
+  try { window._benchUndo.push(JSON.stringify(window._benchMarkers||[])); }
+  catch(e){}
+  if (window._benchUndo.length > 40) window._benchUndo.shift();   // cap
+};
+window.benchUndo = function(){
+  if (!window._benchUndo || !window._benchUndo.length) return;
+  try { window._benchMarkers = JSON.parse(window._benchUndo.pop()); }
+  catch(e){ return; }
+  if (typeof renderBenchMarkers === 'function') renderBenchMarkers();
+};
 window.benchAddMarker = function(){
-  // Numbers are inside-edge aiming numbers, so add the lowest missing 0-10 (this
-  // restores a deleted ball's own number); if 0-10 are all present, extend up.
+  // Numbers are inside-edge aiming numbers, so add the lowest missing 0-8 (this
+  // restores a deleted ball's own number); if 0-8 are all present, extend up.
   var used={}; window._benchMarkers.forEach(function(m){ used[m.num]=1; });
-  var n=0; while(n<=10 && used[n]) n++;
-  if (n>10){ var mx=-1; window._benchMarkers.forEach(function(m){ if(m.num>mx)mx=m.num; }); n=mx+1; }
+  var n=0; while(n<=8 && used[n]) n++;
+  if (n>8){ var mx=-1; window._benchMarkers.forEach(function(m){ if(m.num>mx)mx=m.num; }); n=mx+1; }
   var ox = (typeof S!=='undefined'&&S.ob)?S.ob.x:230, oy=(typeof S!=='undefined'&&S.ob)?S.ob.y:130;
   var c = clampBall(ox, oy+52);
   window._benchMarkers.push({x:c.x, y:c.y, num:n});
@@ -5193,10 +5451,10 @@ function render() {
   // so both widths equal the cut fraction. They are equal BY GEOMETRY (this
   // is correct), and both track the diagram's drawn crescents.
   const _edgeP = Math.round(_percFracMag * 100);
-  const _raim = $('r-aim'); if (_raim) _raim.textContent = (_percFracMag*10).toFixed(1);
-  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = (_percFracMag*10).toFixed(1);
+  const _raim = $('r-aim'); if (_raim) _raim.textContent = (_percFracMag*8).toFixed(1);
+  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = (_percFracMag*8).toFixed(1);
   // TWIXT — the overlap lens between the two balls = 1 − fraction.
-  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = (Math.max(0, 10 - _percFracMag*10)).toFixed(1);
+  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = (Math.max(0, 8 - _percFracMag*8)).toFixed(1);
 
   // Distance readout
   const distEl = $('r-dist');
@@ -5775,6 +6033,11 @@ function renderTable(d) {
     if (!nextCb && window._buildActive && window._buildGhostPos) {
       nextCb = window._buildGhostPos;
     }
+    // Standalone shot (e.g. the opening Foundational Shot): show its own landing
+    // as the blue ghost, a little downrange of the OB on the aim line.
+    if (!nextCb && S && S.landing) {
+      nextCb = S.landing;
+    }
     if (nextCb) {
       // MINE window: show the user's saved landing in place of LeStar's authored one.
       if (window._overlayView === 'mine' && window._mineLanding) {
@@ -5967,7 +6230,7 @@ function drawBot(d) {
     _obOutR.setAttribute('opacity', '1'); }
 
   // ── On-ball measurement numbers: the value sitting in the gap it measures ──
-  const _ie10n = aimF * 10;
+  const _ie10n = aimF * 8;
   const _blueRimX = rh ? (ocx - r) : (ocx + r);
   const _ieMidX = (edgeX + _obOuterX) / 2;
   const _oeMidX = (_cbOuterX + _blueRimX) / 2;
@@ -5976,9 +6239,9 @@ function drawBot(d) {
   const _oeNum = $('bot-oe-num');
   if (_oeNum) { _oeNum.setAttribute('x', _oeMidX); _oeNum.textContent = _ie10n.toFixed(1); _oeNum.setAttribute('opacity', (window._outsideDim && op === '1') ? '1' : '0'); }
   const _cpNum = $('bot-contact-num');
-  if (_cpNum) { _cpNum.setAttribute('x', _contactX); _cpNum.textContent = ((1 + aimF) * 5).toFixed(1); _cpNum.setAttribute('opacity', (contactDotOn && op === '1') ? '1' : '0'); }
+  if (_cpNum) { _cpNum.setAttribute('x', _contactX); _cpNum.textContent = ((1 + aimF) * 4).toFixed(1); _cpNum.setAttribute('opacity', (contactDotOn && op === '1') ? '1' : '0'); }
   const _twNum = $('bot-twixt-num');
-  if (_twNum) { _twNum.setAttribute('x', _contactX); _twNum.textContent = (Math.max(0, 10 - _ie10n)).toFixed(1); _twNum.setAttribute('opacity', (window._twixtDim && op === '1') ? '1' : '0'); }
+  if (_twNum) { _twNum.setAttribute('x', _contactX); _twNum.textContent = (Math.max(0, 8 - _ie10n)).toFixed(1); _twNum.setAttribute('opacity', (window._twixtDim && op === '1') ? '1' : '0'); }
 
   // ── Dimension lines (architect style) between each number's two measured lines ──
   var _DIM_MIN = 24;
@@ -6105,8 +6368,8 @@ function drawBot(d) {
   const _tg = document.getElementById('frac-ticks');
   if(_tg){
     const _ns='http://www.w3.org/2000/svg'; while(_tg.firstChild)_tg.removeChild(_tg.firstChild);
-    (function(){var a=[];for(var n=0;n<=10;n++)a.push(n);return a;})().forEach(function(n){
-      var f=n/10, x=(ocx-r)+f*2*r, lbl=(rh?(10-n):n), mid=(n===5), edge=(n===0||n===10), big=mid||edge;
+    (function(){var a=[];for(var n=0;n<=8;n++)a.push(n);return a;})().forEach(function(n){
+      var f=n/8, x=(ocx-r)+f*2*r, lbl=(rh?(8-n):n), mid=(n===4), edge=(n===0||n===8), big=mid||edge;
       var hh=mid?14:(edge?10:6), ss=mid?15:(edge?12:9);
       // Traveling magnifier: swell the number the inside-edge (aim) line is over
       var _md=Math.abs(x-edgeX), _mR=26, _m=Math.max(0,1-_md/_mR); _m=_m*_m;
@@ -9901,9 +10164,42 @@ window.addEventListener('load',function(){
     if (_loaded) return; _loaded = true;
     try {
       var arr = JSON.parse(localStorage.getItem('lz-user-sequences') || '[]');
-      if (Array.isArray(arr)) arr.forEach(function(s){
-        if (s && s.shots) { s.tier = 'mine'; SEQUENCES.push(s); }
+      if (!Array.isArray(arr)) arr = [];
+      // Sequences shipped INSIDE this file and copies saved in the browser used
+      // to pile up as separate rows — and because saveUserSequences() writes
+      // every 'mine' entry back to storage, each save added another. The stamp
+      // below settles it without guessing:
+      //   stored stamp == this file's  ->  the stored copy is an EDIT of this
+      //                                    version, so it wins (edits survive)
+      //   stored stamp != this file's  ->  the file is newer, so it wins and
+      //                                    the stale copy is cleaned out
+      // Anything the user made themselves has no stamp, matches no baked title,
+      // and is untouched.
+      var LABEL = /(\s*\u2014 saved in browser)+\s*$/;
+      var bakedAt = {};
+      SEQUENCES.forEach(function(s, idx){ if (s && s.title) bakedAt[s.title] = idx; });
+      var keep = [], seen = {};
+      arr.forEach(function(s){
+        if (!s || !s.shots) return;
+        var t = String(s.title || '').replace(LABEL, '').trim();
+        s.title = t; s.tier = 'mine';
+        if (bakedAt.hasOwnProperty(t)) {
+          if (seen[t]) return;                      // only one stored copy per title
+          seen[t] = 1;
+          var baked = SEQUENCES[bakedAt[t]];
+          if (s.srcVer && baked && s.srcVer === baked.srcVer) {
+            s.readonly = false;
+            SEQUENCES[bakedAt[t]] = s;              // your edit of this version
+            keep.push(s);
+          }
+          return;                                   // otherwise drop: file is newer
+        }
+        keep.push(s);
+        SEQUENCES.push(s);
       });
+      if (keep.length !== arr.length) {
+        try { localStorage.setItem('lz-user-sequences', JSON.stringify(keep)); } catch(e){}
+      }
     } catch(e){}
   }
   function saveUserSequences(){
@@ -9927,6 +10223,17 @@ window.addEventListener('load',function(){
       // buildEditSequence); the master is never overwritten or deleted.
       SEQUENCES.push({ id:ID, title:'Aim-Scale Base (L + R)', intent:'', tier:'mine', readonly:true,
         kind:'var', soloBalls:true, shots:[ left, right ] });
+    } catch(e){}
+    // Two-sided master: one shot with BOTH scales joined (L10..0..R10), the
+    // array most new shots start from. Protected + copiable; pare down per shot.
+    try {
+      var ID2='base-aim-both';
+      if (typeof window.buildAimArcBoth === 'function'
+          && !SEQUENCES.some(function(s){ return s && s.id===ID2; })) {
+        var both = window.buildAimArcBoth(230,110,'TM');   // aim the top-middle pocket: symmetric, all 21 on felt
+        SEQUENCES.push({ id:ID2, title:'Aim-Scale Base (Both Sides)', intent:'', tier:'mine', readonly:true,
+          kind:'var', soloBalls:true, shots:[ both ] });
+      }
     } catch(e){}
   }
   // Toggle the inline manage strip (Delete) for one of the user's sequences.
@@ -10042,7 +10349,7 @@ window.addEventListener('load',function(){
     // locked CB-OB distance, so COPY/PASTE/ADD/SAVE move the whole unit.
     if (window._benchMode) {
       _shot.bench = {
-        markers: (window._benchMarkers || []).map(function(m){ return { x: r(m.x), y: r(m.y), num: m.num }; }),
+        markers: (window._benchMarkers || []).map(function(m){ return { x: r(m.x), y: r(m.y), side:m.side, mag:m.mag, num: m.num }; }),
         lockDist: !!window._benchLockDist,
         lockR: r(window._benchLockR || 0)
       };
@@ -10184,6 +10491,7 @@ window.addEventListener('load',function(){
     if (bar) bar.style.display = 'none';
     if (wr) wr.style.display = 'none';
     writerOpen = false; window._buildActive = false;
+    if (typeof clearAuthorTraffic === 'function') clearAuthorTraffic();
     if (typeof window.render === 'function') window.render();
   }
   function activateBuildGhost(){
@@ -10210,7 +10518,7 @@ window.addEventListener('load',function(){
     // this shot, so a pasted or duplicated unit brings its whole ruler back.
     if (window._benchMode) {
       if (s && s.bench) {
-        window._benchMarkers = (s.bench.markers || []).map(function(m){ return { x: m.x, y: m.y, num: m.num }; });
+        window._benchMarkers = (s.bench.markers || []).map(function(m){ return { side:m.side, mag:m.mag, x: m.x, y: m.y, num: m.num }; });
         window._benchLockDist = !!s.bench.lockDist;
         window._benchLockR = s.bench.lockR || 0;
       }
@@ -10218,6 +10526,7 @@ window.addEventListener('load',function(){
     }
     window._buildGhostPos = (s && s.landing) ? { x: s.landing.x, y: s.landing.y } : defaultLanding();
     if (typeof window.render === 'function') window.render();
+    if (typeof renderAuthorTraffic === 'function') renderAuthorTraffic(draft.shots, sel, buildKind);
     renderToolbar(); renderWriter();
   }
   function selectShot(i){
@@ -10321,6 +10630,10 @@ window.addEventListener('load',function(){
     }
     h += '<span id="bt-write" class="bt-btn" style="' + btn + (writerOpen ? 'background:rgba(120,220,140,0.30);' : 'background:rgba(120,220,140,0.10);') + 'color:#7ddc8c;border-color:rgba(120,220,140,0.55);">WRITE</span>';
     h += '<span id="bt-aimscale" class="bt-btn" title="Aim scale reference (no spin) \u2014 the heart of aiming" style="' + btn + 'background:rgba(125,211,252,0.14);color:#7dd3fc;border-color:rgba(125,211,252,0.5);">AIM SCALE</span>';
+        if (window._benchMode && (window._benchMarkers||[]).length !== undefined){
+      h += '<span id="bt-undo" class="bt-btn" title="Undo the last ball delete" style="' + btn + 'background:rgba(125,211,252,0.12);color:#7dd3fc;border-color:rgba(125,211,252,0.5);">\u21b6 UNDO</span>';
+      h += '<span id="bt-addball" class="bt-btn" title="Add a ball back to the array" style="' + btn + 'background:rgba(125,211,252,0.12);color:#7dd3fc;border-color:rgba(125,211,252,0.5);">+ BALL</span>';
+    }
     h += '<span id="bt-new" class="bt-btn" title="Start a new sequence from this shot" style="' + btn + 'background:rgba(120,220,140,0.16);color:#7ddc8c;border-color:rgba(120,220,140,0.6);border-style:dashed;">NEW</span>';
     h += '<span style="flex:1 1 auto;min-width:8px;"></span>';
     h += '<span id="bt-save" class="bt-btn" title="Save the whole set to My Sequences" style="' + btn + 'background:#2e8c14;color:#fff;border-color:#60c030;">SAVE THIS ' + kindSingular(buildKind) + '</span>';
@@ -10357,6 +10670,8 @@ window.addEventListener('load',function(){
       msg('Pasted setup over shot ' + over + ' \u2014 its text kept.');
     });
     if (g('bt-write')) g('bt-write').addEventListener('click', function(){ writerOpen = !writerOpen; renderToolbar(); renderWriter(); });
+    if (g('bt-undo')) g('bt-undo').addEventListener('click', function(){ if (typeof window.benchUndo==='function') window.benchUndo(); });
+    if (g('bt-addball')) g('bt-addball').addEventListener('click', function(){ if (typeof window.benchAddMarker==='function') window.benchAddMarker(); });
     if (g('bt-aimscale')) g('bt-aimscale').addEventListener('click', function(){ if (typeof window.toggleAimScaleCard === 'function') window.toggleAimScaleCard(); });
     if (g('bt-new')) g('bt-new').addEventListener('click', newSequenceFromCurrent);
     if (g('bt-save')) g('bt-save').addEventListener('click', saveDraft);
@@ -10436,6 +10751,7 @@ window.addEventListener('load',function(){
       msg('Updated \u201c' + title + '\u201d.');
     } else {
       SEQUENCES.push(payload);
+      editIndex = SEQUENCES.length - 1;   // adopt the new entry, so the NEXT save updates it in place instead of making another
       msg('Saved \u201c' + title + '\u201d to My Sequences.');
     }
     saveUserSequences();
@@ -10471,15 +10787,19 @@ window.addEventListener('load',function(){
   }
   window.buildNew = function(kind){
     var isBench = (kind === 'bench');
-    // Bench bakes down to a Variation (independent shots from one spot).
+    // Bench bakes down to a Variation (independent shots from one spot). A plain
+    // VARIATIONS build now also comes up on the bench, seeded with the two-sided
+    // array — the array you pare down IS the starting point Don asked to see.
+    var isVarArray = (kind === 'var');
     buildKind = (kind === 'var' || kind === 'game') ? kind : (isBench ? 'var' : 'seq');
-    window._benchMode = isBench;
+    window._benchMode = isBench || isVarArray;
     window._benchMarkers = [];
     window._benchLockDist = false; window._benchLockR = 0;
     mode = 'new'; editIndex = -1; draft = { title: '', shots: [] }; sel = -1; writerOpen = false; _dockMin = false;
     window._buildGhostPos = null;
     buildCleanTable();          // fresh table, unlocked, cue path on
-    if (isBench && typeof window.benchSeedDefault === 'function') window.benchSeedDefault();
+    if (isVarArray && typeof window.benchSeedBoth === 'function') window.benchSeedBoth();
+    else if (isBench && typeof window.benchSeedDefault === 'function') window.benchSeedDefault();
     showUI(); activateBuildGhost();
     // Seed shot 1 from the clean default so "shot one" exists the moment you open.
     draft.shots.push(captureLiveShot()); sel = 0;
