@@ -1058,33 +1058,76 @@ function ensureAuthoredShotIds() {
 
 // The Aim-scale reference table (no spin) — computed, so it's always correct.
 // Available from any shot in any sequence via the AIM SCALE toggle in READ.
+// ─────────────────────────────────────────────────────────────────────────
+//  CORONA / CUSP.  The object ball's two edges are now named: the CORONA on
+//  the thick side, the CUSP on the thin. Counting runs 0,1,2,3,4 INWARD FROM
+//  EACH, and the two meet at 4 — centreball, the half-ball.
+//
+//  The engine still works in the old 0-8 edge magnitude and NO GEOMETRY MOVES.
+//  This is purely what to say and what to show. The mapping:
+//      edge 0..4  ->  Corona 0..4
+//      edge 4..8  ->  Cusp   4..0        (cusp count = 8 - edge = the TWIXT)
+//
+//  It succeeds where the old fat/skinny scale failed because both counts REACH
+//  4 and stop: the two scales meet at the most recognisable landmark on the
+//  ball instead of reversing at an arbitrary point.
+// ─────────────────────────────────────────────────────────────────────────
+function coronaCusp(edge) {
+  var e = Math.max(0, Math.min(8, +edge || 0));
+  if (e <= 4) return { side: 'Corona', abbr: 'COR', n: e, mid: (e === 4) };
+  return { side: 'Cusp', abbr: 'CUSP', n: 8 - e, mid: false };
+}
+function ccLabel(edge, dec) {
+  var c = coronaCusp(edge);
+  var n = c.n.toFixed(dec === undefined ? 1 : dec);
+  return c.mid ? (n + ' MID') : (c.abbr + ' ' + n);
+}
+window.coronaCusp = coronaCusp; window.ccLabel = ccLabel;
+
 function buildAimTableHTML() {
   var rows = [], prev = 0, i;
   for (i = 0; i <= 8; i++) {
     var contact = 4 + i / 2;
     var cut = Math.asin(i / 8) * 180 / Math.PI;
     var d = cut - prev; prev = cut;
-    rows.push({ e: i, c: contact, cut: cut, d: d });
+    rows.push({ e: i, c: contact, cut: cut, d: d, cc: coronaCusp(i) });
   }
   var h = '<div style="border:1px solid rgba(125,211,252,0.4);border-radius:8px;padding:10px 12px;background:rgba(0,0,0,0.4);margin-bottom:12px;">';
   h += '<div style="font-size:12px;font-weight:900;letter-spacing:0.05em;color:#7dd3fc;margin-bottom:4px;">AIM SCALE \u2014 no spin</div>';
-  h += '<div style="font-size:11px;color:#9fb0c8;margin-bottom:10px;line-height:1.4;">Contact = 4 + \u00bd\u00b7edge &nbsp;\u00b7&nbsp; Cut = arcsin(edge \u00f7 8)</div>';
+  h += '<div style="font-size:11px;color:#9fb0c8;margin-bottom:10px;line-height:1.4;">'
+    + 'Count in from the <b style="color:#ffb080;">CORONA</b> for the thick half, '
+    + 'in from the <b style="color:#7dd3fc;">CUSP</b> for the thin. '
+    + 'Both run 0 \u2192 4 and meet at 4 \u2014 centreball.</div>';
   h += '<table style="width:100%;border-collapse:collapse;font-size:12px;color:#e6eef7;">';
-  h += '<tr style="color:#9fb0c8;font-weight:800;"><td style="padding:3px 4px;text-align:center;">Put Inside Edge On:</td><td style="padding:3px 4px;text-align:center;">Contact Point</td><td style="padding:3px 4px;text-align:center;">Cut Angle</td><td style="padding:3px 4px;text-align:center;">Difference</td></tr>';
+  h += '<tr style="color:#9fb0c8;font-weight:800;">'
+    + '<td style="padding:3px 4px;text-align:center;">From the Corona</td>'
+    + '<td style="padding:3px 4px;text-align:center;">From the Cusp</td>'
+    + '<td style="padding:3px 4px;text-align:center;">Contact</td>'
+    + '<td style="padding:3px 4px;text-align:center;">Cut</td>'
+    + '<td style="padding:3px 4px;text-align:center;">Difference</td></tr>';
   for (i = 0; i < rows.length; i++) {
     var r = rows[i];
-    // 2, 4, 6 are the three numbers you say standing behind the shot, so they
-    // get to shout: pink, larger, on a tinted row.
-    var mark = (r.e === 2 || r.e === 4 || r.e === 6);
+    var isMid = r.cc.mid;
+    // Centreball is where the two counts meet, so it is the row that shouts.
+    var corTxt = (r.e <= 4) ? String(r.e) : '\u2014';
+    var cusTxt = (r.e >= 4) ? String(8 - r.e) : '\u2014';
     h += '<tr style="border-top:1px solid rgba(255,255,255,0.08);'
-      + (mark ? 'background:rgba(255,92,138,0.10);' : '') + '">'
-      + '<td style="padding:3px 4px;text-align:center;font-weight:900;'
-      + (mark ? 'color:#ff5c8a;font-size:15px;' : '') + '">' + r.e + '</td>'
-      + '<td style="padding:3px 4px;text-align:center;' + (mark ? 'color:#ff5c8a;' : '') + '">' + r.c.toFixed(1) + '</td>'
-      + '<td style="padding:3px 4px;text-align:center;' + (mark ? 'color:#ff5c8a;font-weight:800;' : '') + '">' + r.cut.toFixed(1) + '\u00b0</td>'
+      + (isMid ? 'background:rgba(255,92,138,0.14);' : '') + '">'
+      + '<td style="padding:3px 4px;text-align:center;font-weight:900;color:'
+      + (r.e <= 4 ? (isMid ? '#ff5c8a' : '#ffb080') : 'rgba(255,255,255,0.25)') + ';'
+      + (isMid ? 'font-size:15px;' : '') + '">' + corTxt + '</td>'
+      + '<td style="padding:3px 4px;text-align:center;font-weight:900;color:'
+      + (r.e >= 4 ? (isMid ? '#ff5c8a' : '#7dd3fc') : 'rgba(255,255,255,0.25)') + ';'
+      + (isMid ? 'font-size:15px;' : '') + '">' + cusTxt + '</td>'
+      + '<td style="padding:3px 4px;text-align:center;' + (isMid ? 'color:#ff5c8a;' : '') + '">' + r.c.toFixed(1) + '</td>'
+      + '<td style="padding:3px 4px;text-align:center;' + (isMid ? 'color:#ff5c8a;font-weight:800;' : '') + '">' + r.cut.toFixed(1) + '\u00b0</td>'
       + '<td style="padding:3px 4px;text-align:center;color:#f0df70;">+' + r.d.toFixed(1) + '\u00b0</td></tr>';
   }
-  h += '</table></div>';
+  h += '</table>';
+  h += '<div style="font-size:11px;color:#9fb0c8;margin-top:8px;line-height:1.4;">'
+    + 'The cusp count is the <b>TWIXT</b> \u2014 same fact, two names. '
+    + 'Contact is always dead centre of the twixt.</div>';
+  h += '</div>';
   return h;
 }
 
@@ -4025,19 +4068,19 @@ if ('serviceWorker' in navigator) {
       <!-- FLIPPABLE THREE: Inside Edge · Outside Edge · Twixt -->
       <div id="diag-flip-row" style="display:flex;flex-direction:row;gap:4px;grid-column:span 3;">
         <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleInsideStripes()" title="Tap to cycle: none → crescent → dimensions → both">
-          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#e87030;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Inside Edge</div>
+          <div style="font-size:7px;font-weight:900;letter-spacing:0.5px;color:#e87030;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;line-height:1.05;min-height:16px;text-align:center;">Inside Edge<br>Aim Point</div>
           <div id="r-aim-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
             <div id="r-aim" style="color:#e87030;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;flex:1;" onclick="toggleOutsideStripes()" title="Tap to cycle: none → crescent → dimensions → both">
-          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#7dd3fc;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;">Outside Edge</div>
+          <div style="font-size:7px;font-weight:900;letter-spacing:0.5px;color:#7dd3fc;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;line-height:1.05;min-height:16px;text-align:center;display:flex;align-items:center;justify-content:center;">Out Edge &rarr; Cusp</div>
           <div id="r-oe-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
             <div id="r-oe" style="color:#7dd3fc;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;">—</div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;flex:1;" id="twixt-toggle-wrap" onclick="toggleTwixtStripes()" title="Click to step through: automatic, off, stripes, dimmed, both, bullseye">
-          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#c9b8ff;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;text-shadow:0 0 4px rgba(167,139,250,0.6);">Twixt</div>
+          <div style="font-size:7px;font-weight:900;letter-spacing:1px;color:#c9b8ff;text-transform:uppercase;margin-bottom:3px;flex-shrink:0;line-height:1.05;min-height:16px;text-align:center;display:flex;align-items:center;justify-content:center;text-shadow:0 0 4px rgba(167,139,250,0.6);">Twixt</div>
           <div id="r-twixt-box" style="background:rgba(0,0,0,0.3);border-radius:5px;border:1px solid rgba(255,255,255,0.07);flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;contain:strict;cursor:pointer;touch-action:manipulation;">
             <div id="r-twixt" style="color:#e2d6ff;font-size:14px;font-weight:900;line-height:1;white-space:nowrap;text-shadow:0 0 6px rgba(167,139,250,0.7);">—</div>
           </div>
@@ -4197,8 +4240,13 @@ if ('serviceWorker' in navigator) {
         <line id="bot-ob-outer-r" x1="312" y1="54" x2="312" y2="242" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="5,4" stroke-linecap="round" opacity="0"/>
         <line   id="bot-edge-line" x1="230" y1="54" x2="230" y2="242" stroke="#e87030" stroke-width="2" stroke-linecap="round" stroke-dasharray="6,4" opacity="0"/>
         <text   id="bot-edge-lbl"  x="230" y="28" text-anchor="start" font-family="Lato,sans-serif" font-size="11" font-weight="700" fill="#ffb080" opacity="0">Inside Edge</text>
+
         <text   id="bot-cb-outer-lbl" x="230" y="38" text-anchor="start" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#7dd3fc" opacity="0">Outside Edge</text>
         <text   id="bot-cusp-lbl" x="230" y="48" text-anchor="start" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#7dd3fc" opacity="0">Cusp</text>
+        <!-- The other edge, named to match. Cusp already sat on the thin side;
+             Corona is its opposite, and the two are the object ball's two
+             zeroes — a count of 0 begins at each. -->
+        <text   id="bot-corona-lbl" x="230" y="48" text-anchor="end" font-family="Lato,sans-serif" font-size="10" font-weight="700" fill="#ffb080" opacity="0">Corona</text>
         <!-- aim % badge removed — readouts at top of screen show the same info -->
         <!-- hint text -->
         <text   id="bot-hint" x="322" y="153" text-anchor="start" font-family="Lato,sans-serif" font-size="13" font-weight="700" fill="rgba(255,255,255,0.4)" opacity="0">Drag ▶ to begin</text>
@@ -5448,16 +5496,27 @@ function render() {
   // CONTACT — how far in from the cut-side edge the contact point sits.
   // 50% = dead center (straight-in), 0% = edge (90° cut). = (1 − fraction)·50.
   const _cpEl = $('r-cp');
-  if (_cpEl) { const _cp10 = ((1 + _percFracMag) * 4).toFixed(1); /* 0-8: 4 + edge/2 */ _cpEl.textContent = _cp10 + (cutDeg < 1.0 ? '' : (_percRhReadout ? ' L' : ' R')); }
+  if (_cpEl) { const _cp10 = coronaCusp((1 + _percFracMag) * 4).n.toFixed(1); /* contact runs 4 at centreball down to 0 at the cusp */ _cpEl.textContent = _cp10 + (cutDeg < 1.0 ? '' : (_percRhReadout ? ' L' : ' R')); }
   // INSIDE EDGE / OUTSIDE EDGE — the two non-overlap crescents. For two equal
   // balls offset along the line of centers the crescents are mirror images,
   // so both widths equal the cut fraction. They are equal BY GEOMETRY (this
   // is correct), and both track the diagram's drawn crescents.
   const _edgeP = Math.round(_percFracMag * 100);
-  const _raim = $('r-aim'); if (_raim) _raim.textContent = (_percFracMag*8).toFixed(1);
-  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = (_percFracMag*8).toFixed(1);
+  // TWO DIFFERENT THINGS, so two different numbers.
+  //   INSIDE EDGE / AIM POINT is the aiming call — exactly the mark the inside
+  //     edge line sits on, 0-4, counted from whichever edge is nearer. Spoken
+  //     "inside edge 2" either way, in keeping with how a pool hall talks.
+  //   OUT EDGE -> CUSP is a DISTANCE, 0-8: how much ball lies outside the
+  //     overlap. The matching corona-to-inside-edge span is always the same
+  //     number, since the two balls are the same size.
+  const _edge08 = _percFracMag * 8;
+  const _raim = $('r-aim'); if (_raim) _raim.textContent = coronaCusp(_edge08).n.toFixed(1);
+  const _roe  = $('r-oe');  if (_roe)  _roe.textContent  = _edge08.toFixed(1);
   // TWIXT — the overlap lens between the two balls = 1 − fraction.
-  const _rtw  = $('r-twixt'); if (_rtw) _rtw.textContent = (Math.max(0, 8 - _percFracMag*8)).toFixed(1);
+  // TWIXT is the overlap lens, and its width IS the count in from the cusp —
+  // twixt = 8 − edge, which is exactly the cusp number. Same fact, two names.
+  const _rtw  = $('r-twixt');
+  if (_rtw) _rtw.textContent = (Math.max(0, 8 - _percFracMag*8)).toFixed(1);
 
   // Distance readout
   const distEl = $('r-dist');
@@ -6245,6 +6304,16 @@ function drawBot(d) {
     _cuspLbl.setAttribute('x', Math.max(50, Math.min(_blueRimX + (_cuE ? -6 : 6), W - 50)));
     _cuspLbl.setAttribute('opacity', op);
   }
+  // CORONA — the object ball's other edge, opposite whichever one the cusp is on.
+  const _corLbl = $('bot-corona-lbl');
+  if (_corLbl) {
+    var _coX = (_blueRimX > ocx) ? (ocx - r) : (ocx + r);
+    var _coE = (_coX > ocx);
+    _corLbl.setAttribute('text-anchor', _coE ? 'start' : 'end');
+    _corLbl.setAttribute('x', Math.max(50, Math.min(_coX + (_coE ? 6 : -6), W - 50)));
+    _corLbl.setAttribute('y', '48');
+    _corLbl.setAttribute('opacity', op);
+  }
   const _ieMidX = (edgeX + _obOuterX) / 2;
   const _oeMidX = (_cbOuterX + _blueRimX) / 2;
   const _ieNum = $('bot-ie-num');
@@ -6252,7 +6321,9 @@ function drawBot(d) {
   const _oeNum = $('bot-oe-num');
   if (_oeNum) { _oeNum.setAttribute('x', _oeMidX); _oeNum.textContent = _ie10n.toFixed(1); _oeNum.setAttribute('opacity', (window._outsideDim && op === '1') ? '1' : '0'); }
   const _cpNum = $('bot-contact-num');
-  if (_cpNum) { _cpNum.setAttribute('x', _contactX); _cpNum.textContent = ((1 + aimF) * 4).toFixed(1); _cpNum.setAttribute('opacity', (contactDotOn && op === '1') ? '1' : '0'); }
+  // CONTACT is 4 + edge/2, which runs 4 to 8 — so on the new scale it is
+  // always a CUSP count, from 4 (centreball) down to 0 (the cusp itself).
+  if (_cpNum) { _cpNum.setAttribute('x', _contactX); _cpNum.textContent = coronaCusp((1 + aimF) * 4).n.toFixed(1); _cpNum.setAttribute('opacity', (contactDotOn && op === '1') ? '1' : '0'); }
   const _twNum = $('bot-twixt-num');
   if (_twNum) {
     _twNum.setAttribute('x', _contactX);
@@ -6260,7 +6331,10 @@ function drawBot(d) {
     if (window._twixtContact) {
       // the bullseye's own position, in the contact green — no caption needed,
       // CONTACT is already written above the line
-      _twNum.textContent = ((1 + aimF) * 4).toFixed(1);
+      // This is the CONTACT POINT, captioned in green above the line — so it
+      // carries the bare number. Prefixing it CUSP made it read as a second
+      // cusp label competing with the edge's own.
+      _twNum.textContent = coronaCusp((1 + aimF) * 4).n.toFixed(1);
       _twNum.setAttribute('fill', '#4ade80');
       if (_twLbl) _twLbl.setAttribute('opacity', '0');
     } else {
@@ -6400,7 +6474,16 @@ function drawBot(d) {
   if(_tg){
     const _ns='http://www.w3.org/2000/svg'; while(_tg.firstChild)_tg.removeChild(_tg.firstChild);
     (function(){var a=[];for(var n=0;n<=8;n++)a.push(n);return a;})().forEach(function(n){
-      var f=n/8, x=(ocx-r)+f*2*r, lbl=(rh?(8-n):n), mid=(n===4), edge=(n===0||n===8), big=mid||edge;
+      // CORONA / CUSP. The scale no longer runs 0-8 across the ball; it counts
+      // 0,1,2,3,4 IN FROM EACH EDGE and meets at 4 — centreball. So the marks
+      // read 0 1 2 3 4 3 2 1 0, and every number appears twice except the 4.
+      // Which edge is which depends on the side of the cut: the CUSP is the
+      // edge you are cutting toward, the CORONA the one you are cutting away
+      // from. Nothing in the geometry moves — only what the marks say.
+      var f=n/8, x=(ocx-r)+f*2*r;
+      var _fromCorona = rh ? (8-n) : n;              // 0 at the corona, 8 at the cusp
+      var lbl = (_fromCorona <= 4) ? _fromCorona : (8 - _fromCorona);
+      var mid=(n===4), edge=(n===0||n===8), big=mid||edge;
       var hh=mid?14:(edge?10:6), ss=mid?15:(edge?12:9);
       // Traveling magnifier: swell the number the inside-edge (aim) line is over
       var _md=Math.abs(x-edgeX), _mR=26, _m=Math.max(0,1-_md/_mR); _m=_m*_m;
@@ -6567,6 +6650,10 @@ function _applyMeasureState(which) {
   }
   if (typeof render === 'function') render();
 }
+// The inside and outside crescents are ALWAYS the same width — both are 8 minus
+// the twixt — so their two numbers duplicate each other, and an 0-8 width sits
+// oddly beside a scale that counts 0-4 from each edge. Tried removing them;
+// Don would rather keep the measurements and live with the overlap.
 function toggleInsideStripes()  { window._ieState = (window._ieState + 1) % 4; _applyMeasureState('ie'); }
 function toggleOutsideStripes() { window._oeState = (window._oeState + 1) % 4; _applyMeasureState('oe'); }
 // Clicking walks a ring that INCLUDES the automatic setting, so there is no way
