@@ -10592,6 +10592,9 @@ window.addEventListener('load',function(){
   try { var _wf = parseInt(localStorage.getItem('lz-build-write-font'), 10); if (_wf >= 12 && _wf <= 26) _writeFontPx = _wf; } catch(e){}
   // Where the user has parked the Write panel, if they've dragged it. null = auto.
   var _writerPos = null;
+  // How far the panel has been squeezed, if at all. 0 = its own default.
+  var _writerH = 0;
+  try { var _wh2 = parseInt(localStorage.getItem('lz-build-writer-h'), 10); if (_wh2 > 60) _writerH = _wh2; } catch(e){}
   try { var _wp = JSON.parse(localStorage.getItem('lz-build-writer-pos') || 'null'); if (_wp && isFinite(_wp.left) && isFinite(_wp.top)) _writerPos = _wp; } catch(e){}
   function applyWriterPos(){
     var wr = document.getElementById('build-writer'); if (!wr || !_writerPos) return;
@@ -10618,7 +10621,7 @@ window.addEventListener('load',function(){
     makeBarDraggable(bar);
     var wr = document.createElement('div');
     wr.id = 'build-writer';
-    wr.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);z-index:399;width:min(520px,94vw);box-sizing:border-box;background:rgba(0,0,0,0.9);border:1px solid rgba(120,220,140,0.5);border-radius:8px;display:none;padding:10px 12px;font-family:Lato,sans-serif;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.5);max-height:calc(100vh - 76px);overflow:auto;cursor:move;';
+    wr.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);z-index:399;width:min(520px,94vw);box-sizing:border-box;background:rgba(0,0,0,0.9);border:1px solid rgba(120,220,140,0.5);border-radius:8px;display:none;padding:10px 12px;font-family:Lato,sans-serif;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.5);max-height:min(calc(100vh - 76px), 58vh);overflow:auto;cursor:move;';
     document.body.appendChild(wr);
     makeWriterDraggable(wr);
   }
@@ -10663,7 +10666,9 @@ window.addEventListener('load',function(){
     var dragging = false, sx = 0, sy = 0, ox = 0, oy = 0, bw = 0, bh = 0;
     bar.addEventListener('pointerdown', function(e){
       var t = e.target;
-      if (t && t.closest && t.closest('.bt-btn,.bt-shot')) return;
+      // The grip always drags, whatever else it sits among.
+      if (t && t.closest && t.closest('#bt-grip')) { /* fall through to drag */ }
+      else if (t && t.closest && t.closest('.bt-btn,.bt-shot')) return;
       dragging = true;
       var r = bar.getBoundingClientRect();
       ox = r.left; oy = r.top; bw = r.width; bh = r.height;
@@ -10690,6 +10695,30 @@ window.addEventListener('load',function(){
     var r = bar.getBoundingClientRect();
     wr.style.top = (r.bottom + 6) + 'px';
   }
+  // NOTHING MAY BE PARKED OFF THE SCREEN. Both panels remember where they were
+  // dragged, and a position that was fine on a desktop can be entirely off a
+  // tablet — leaving a control bar you cannot reach and cannot move, because
+  // the part you would grab is past the edge. Clamped on every open and on
+  // every resize or rotation.
+  function clampPanels(){
+    var bar = document.getElementById('build-toolbar');
+    var wr  = document.getElementById('build-writer');
+    var VW = window.innerWidth || 800, VH = window.innerHeight || 600;
+    if (bar && bar.style.display !== 'none'){
+      var r = bar.getBoundingClientRect();
+      bar.style.left = Math.max(4, Math.min(parseFloat(bar.style.left) || 4, VW - Math.min(r.width, VW) - 4)) + 'px';
+      bar.style.top  = Math.max(4, Math.min(parseFloat(bar.style.top) || 8, VH - 40)) + 'px';
+    }
+    if (wr && wr.style.display !== 'none' && _writerPos){
+      var q = wr.getBoundingClientRect();
+      _writerPos.left = Math.max(4, Math.min(_writerPos.left, VW - Math.min(q.width, VW) - 4));
+      _writerPos.top  = Math.max(4, Math.min(_writerPos.top,  VH - 60));
+      applyWriterPos();
+    }
+  }
+  window.addEventListener('resize', clampPanels);
+  window.addEventListener('orientationchange', function(){ setTimeout(clampPanels, 250); });
+
   function showUI(){
     makeUI();
     var bar = document.getElementById('build-toolbar');
@@ -10700,6 +10729,7 @@ window.addEventListener('load',function(){
       bar.style.left = Math.max(4, Math.round((window.innerWidth - w) / 2)) + 'px';
       bar.style.top = '8px';
       positionWriter();
+      clampPanels();
     });
   }
   function closeBuild(){
@@ -10828,7 +10858,18 @@ window.addEventListener('load',function(){
     var numchip = 'display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:40px;padding:0 6px;border-radius:6px;font-size:19px;font-weight:900;cursor:pointer;border:2px solid;box-sizing:border-box;touch-action:manipulation;';
     var btn = 'display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 15px;border-radius:6px;font-size:14px;font-weight:800;letter-spacing:0.04em;cursor:pointer;border:2px solid;box-sizing:border-box;white-space:nowrap;touch-action:manipulation;';
     var kn = kindName(buildKind);
-    var h = '<span id="bt-kind" class="bt-btn" title="Tap to change build type (Sequence / Variations / Game)" style="display:inline-flex;flex-direction:column;justify-content:center;line-height:1.05;font-weight:900;letter-spacing:0.06em;padding:3px 8px;text-align:center;cursor:pointer;border-radius:6px;border:1px solid rgba(125,211,252,0.4);background:rgba(125,211,252,0.07);touch-action:manipulation;">'
+    // A GRIP FIRST. Every other thing on this bar is a button, so "drag anywhere
+    // that isn't a button" left nowhere to drag it by — worst of all on a tablet,
+    // where the bar wraps to fill the screen and the only spare pixels are the
+    // gaps between buttons.
+    var h = '<span id="bt-grip" title="Drag the strip" style="display:inline-flex;flex-direction:column;'
+      + 'align-items:center;justify-content:center;gap:2px;padding:4px 7px;margin-right:2px;cursor:move;'
+      + 'touch-action:none;border-radius:6px;background:rgba(120,220,140,0.16);'
+      + 'border:1px solid rgba(120,220,140,0.45);">'
+      + '<span style="display:block;width:14px;height:2px;background:#7ddc8c;border-radius:1px;"></span>'
+      + '<span style="display:block;width:14px;height:2px;background:#7ddc8c;border-radius:1px;"></span>'
+      + '<span style="display:block;width:14px;height:2px;background:#7ddc8c;border-radius:1px;"></span></span>';
+    h += '<span id="bt-kind" class="bt-btn" title="Tap to change build type (Sequence / Variations / Game)" style="display:inline-flex;flex-direction:column;justify-content:center;line-height:1.05;font-weight:900;letter-spacing:0.06em;padding:3px 8px;text-align:center;cursor:pointer;border-radius:6px;border:1px solid rgba(125,211,252,0.4);background:rgba(125,211,252,0.07);touch-action:manipulation;">'
           + '<span style="color:#7ddc8c;font-size:13px;">BUILD \u25be</span>'
           + '<span style="color:#7dd3fc;font-size:14px;">' + kn + '</span></span>';
     for (var i = 0; i < draft.shots.length; i++){
@@ -10926,10 +10967,23 @@ window.addEventListener('load',function(){
         + '<label style="display:block;' + lbl + '">SHOT ' + (sel+1) + ' \u2014 SUMMARY</label>'
         + '<input id="bw-summary" class="bw-typed" type="text" placeholder="Short label\u2026" style="' + inp + '" />'
         + '<label style="display:block;' + lbl + '">SHOT ' + (sel+1) + ' \u2014 LESSON TEXT</label>'
-        + '<textarea id="bw-intent" class="bw-typed" placeholder="Do-this steps\u2026" style="' + inp + 'height:' + ((_writeTaH > 0) ? _writeTaH : Math.max(220, Math.round((window.innerHeight || 800) - 340))) + 'px;min-height:120px;line-height:1.5;resize:vertical;"></textarea>';
+        + '<textarea id="bw-intent" class="bw-typed" placeholder="Do-this steps\u2026" style="' + inp + 'height:' + ((_writeTaH > 0) ? _writeTaH : Math.max(120, Math.min(Math.round((window.innerHeight || 800) * 0.34), Math.round((window.innerHeight || 800) - 340)))) + 'px;min-height:44px;line-height:1.5;resize:vertical;"></textarea>';
     } else {
       h += '<div style="color:#9fb0bd;font-size:14px;line-height:1.4;margin-top:10px;">Tap ADD SHOT on the strip to capture a shot, then write its summary and lesson text here.</div>';
     }
+    // A PANEL MADE OF CONTROLS HAS NOTHING TO GRAB. Dragging worked on "any
+    // non-field part", which on a tablet is almost none of it — the fields fill
+    // the panel. So it gets a proper bar at the top to move it by, and a bar at
+    // the bottom to squeeze it with. Both are wide, both are obvious, and
+    // neither is a field.
+    h = '<div id="bw-grip" style="height:22px;margin:-10px -12px 6px;border-radius:8px 8px 0 0;'
+      + 'background:rgba(120,220,140,0.18);cursor:move;touch-action:none;display:flex;'
+      + 'align-items:center;justify-content:center;gap:4px;">'
+      + '<span style="color:#7ddc8c;font-size:13px;letter-spacing:0.35em;">\u2022\u2022\u2022</span></div>' + h;
+    h += '<div id="bw-squeeze" style="height:20px;margin:8px -12px -10px;border-radius:0 0 8px 8px;'
+      + 'background:rgba(120,220,140,0.14);cursor:ns-resize;touch-action:none;display:flex;'
+      + 'align-items:center;justify-content:center;">'
+      + '<span style="color:#7ddc8c;font-size:11px;letter-spacing:0.2em;">\u2261 drag to squeeze</span></div>';
     wr.innerHTML = h;
     positionWriter();
     var g = function(id){ return document.getElementById(id); };
@@ -10937,6 +10991,57 @@ window.addEventListener('load',function(){
     if (g('bw-fup')) g('bw-fup').addEventListener('click', function(){ setWriteFont(_writeFontPx + 1); });
     if (g('bw-aim')) g('bw-aim').addEventListener('click', function(){ _aimWriterOpen = !_aimWriterOpen; renderWriter(); });
     if (g('bw-min')) g('bw-min').addEventListener('click', function(){ writerOpen = false; renderToolbar(); renderWriter(); });
+
+    // MOVE, from the top bar.
+    var grip = g('bw-grip');
+    if (grip){
+      grip.addEventListener('pointerdown', function(e){
+        var r = wr.getBoundingClientRect();
+        var ox = r.left, oy = r.top, sx = e.clientX, sy = e.clientY;
+        wr.style.transform = 'none';
+        var move = function(ev){
+          var VW = window.innerWidth, VH = window.innerHeight;
+          _writerPos = {
+            left: Math.max(4, Math.min(ox + (ev.clientX - sx), VW - Math.min(r.width, VW) - 4)),
+            top:  Math.max(4, Math.min(oy + (ev.clientY - sy), VH - 60))
+          };
+          applyWriterPos();
+        };
+        var up = function(){
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', up);
+          try { localStorage.setItem('lz-build-writer-pos', JSON.stringify(_writerPos)); } catch(_){}
+        };
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', up);
+        e.preventDefault();
+      });
+    }
+
+    // SQUEEZE, from the bottom bar — down to two lines, the rest scrolls.
+    var sq = g('bw-squeeze');
+    if (sq){
+      sq.addEventListener('pointerdown', function(e){
+        var startH = wr.getBoundingClientRect().height, sy = e.clientY;
+        var move = function(ev){
+          var want = startH + (ev.clientY - sy);
+          var lo = 96;                                  // the grip, two lines, the squeeze bar
+          var hi = Math.max(lo, window.innerHeight - 20);
+          _writerH = Math.max(lo, Math.min(want, hi));
+          wr.style.maxHeight = _writerH + 'px';
+          wr.style.height = _writerH + 'px';
+        };
+        var up = function(){
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', up);
+          try { localStorage.setItem('lz-build-writer-h', String(Math.round(_writerH))); } catch(_){}
+        };
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', up);
+        e.preventDefault();
+      });
+    }
+    if (_writerH){ wr.style.maxHeight = _writerH + 'px'; wr.style.height = _writerH + 'px'; }
     var ti = g('bw-title'); if (ti){ ti.value = draft.title || ''; ti.addEventListener('input', function(){ draft.title = ti.value; }); }
     if (selShot){
       if (g('bw-update')) g('bw-update').addEventListener('click', function(){ commitLive(); renderToolbar(); renderWriter(); msg('Shot ' + (sel+1) + ' updated from table.'); });
