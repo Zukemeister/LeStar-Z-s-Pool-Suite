@@ -10594,6 +10594,8 @@ window.addEventListener('load',function(){
   var _writerPos = null;
   // How far the panel has been squeezed, if at all. 0 = its own default.
   var _writerH = 0;
+  var _barW = 0;
+  try { var _bw = parseInt(localStorage.getItem('lz-build-bar-w'), 10); if (_bw > 100) _barW = _bw; } catch(e){}
   try { var _wh2 = parseInt(localStorage.getItem('lz-build-writer-h'), 10); if (_wh2 > 60) _writerH = _wh2; } catch(e){}
   try { var _wp = JSON.parse(localStorage.getItem('lz-build-writer-pos') || 'null'); if (_wp && isFinite(_wp.left) && isFinite(_wp.top)) _writerPos = _wp; } catch(e){}
   function applyWriterPos(){
@@ -10616,12 +10618,12 @@ window.addEventListener('load',function(){
     if (document.getElementById('build-toolbar')) return;
     var bar = document.createElement('div');
     bar.id = 'build-toolbar';
-    bar.style.cssText = 'position:fixed;top:8px;left:8px;z-index:400;background:rgba(0,0,0,0.88);border:1px solid rgba(120,220,140,0.6);border-radius:10px;display:none;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;padding:8px 10px;max-width:calc(100vw - 12px);box-sizing:border-box;font-family:Lato,sans-serif;color:#fff;box-shadow:0 3px 16px rgba(0,0,0,0.55);cursor:move;';
+    bar.style.cssText = 'position:fixed;top:8px;left:8px;z-index:400;background:rgba(0,0,0,0.88);border:1px solid rgba(120,220,140,0.6);border-radius:10px;display:none;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;padding:8px 10px;max-width:calc(100vw - 12px);box-sizing:border-box;font-family:Lato,sans-serif;color:#fff;box-shadow:0 3px 16px rgba(0,0,0,0.55);cursor:move;touch-action:none;';
     document.body.appendChild(bar);
     makeBarDraggable(bar);
     var wr = document.createElement('div');
     wr.id = 'build-writer';
-    wr.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);z-index:399;width:min(520px,94vw);box-sizing:border-box;background:rgba(0,0,0,0.9);border:1px solid rgba(120,220,140,0.5);border-radius:8px;display:none;padding:10px 12px;font-family:Lato,sans-serif;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.5);max-height:min(calc(100vh - 76px), 58vh);overflow:auto;cursor:move;';
+    wr.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);z-index:399;width:min(520px,94vw);box-sizing:border-box;background:rgba(0,0,0,0.9);border:1px solid rgba(120,220,140,0.5);border-radius:8px;display:none;padding:10px 12px;font-family:Lato,sans-serif;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.5);max-height:min(calc(100vh - 76px), 58vh);overflow:auto;cursor:default;touch-action:pan-y;';
     document.body.appendChild(wr);
     makeWriterDraggable(wr);
   }
@@ -10633,6 +10635,11 @@ window.addEventListener('load',function(){
     var dragging = false, sx = 0, sy = 0, ox = 0, oy = 0, ww = 0, wh = 0;
     wr.addEventListener('pointerdown', function(e){
       var t = e.target;
+      // THE BACKGROUND NO LONGER DRAGS. It used to, and on a touch screen that
+      // meant every attempt to SCROLL the panel started a drag instead — the
+      // two gestures are the same gesture. Moving belongs to the grip bar,
+      // which is unambiguous; the rest of the panel is free to scroll.
+      return;
       if (t && t.closest && t.closest('input,textarea,[id^="bw-"]')) return;
       dragging = true;
       var r = wr.getBoundingClientRect();
@@ -10896,6 +10903,10 @@ window.addEventListener('load',function(){
     h += '<span id="bt-save" class="bt-btn" title="Save the whole set to My Sequences" style="' + btn + 'background:#2e8c14;color:#fff;border-color:#60c030;">SAVE THIS ' + kindSingular(buildKind) + '</span>';
     h += '<span id="bt-share" class="bt-btn" title="Export the whole set to a file" style="' + btn + 'background:rgba(240,223,112,0.12);color:#f0df70;border-color:rgba(240,223,112,0.55);">SHARE THIS ' + kindSingular(buildKind) + '</span>';
     h += '<span id="bt-min" class="bt-btn" title="Reduce dock to a small icon" style="' + numchip + 'background:transparent;color:#7ddc8c;border-color:rgba(120,220,140,0.5);font-size:24px;line-height:1;">\u2013</span>';
+    h += '<span id="bt-wide" title="Drag to narrow the strip" style="display:inline-flex;align-items:center;'
+      + 'justify-content:center;padding:4px 6px;margin-left:2px;cursor:ew-resize;touch-action:none;'
+      + 'border-radius:6px;background:rgba(120,220,140,0.16);border:1px solid rgba(120,220,140,0.45);'
+      + 'color:#7ddc8c;font-size:13px;font-weight:900;">\u2194</span>';
     h += '<span id="bt-close" class="bt-btn" title="Close build" style="' + numchip + 'background:transparent;color:#9fb0bd;border-color:rgba(255,255,255,0.25);font-size:22px;">\u00d7</span>';
     h += '<span id="build-msg" style="display:none;position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-weight:700;color:#cdead6;background:rgba(0,0,0,0.82);border:1px solid rgba(120,220,140,0.35);border-radius:6px;padding:3px 11px;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.45);"></span>';
     bar.innerHTML = h;
@@ -10935,6 +10946,62 @@ window.addEventListener('load',function(){
     if (g('bt-share')) g('bt-share').addEventListener('click', function(){ commitLive(); if (!draft.shots.length){ msg('Add a shot first.'); return; } downloadSeq({ title:(draft.title||'').trim()||'sequence', intent:'', shots:draft.shots }); msg('Exported to a file.'); });
     if (g('bt-min')) g('bt-min').addEventListener('click', function(){ setDockMin(true); });
     if (g('bt-close')) g('bt-close').addEventListener('click', closeBuild);
+
+    // THE GRIP DRAGS FROM THE WINDOW. Listening for the move on the BAR means a
+    // finger that slips off it — easy on a tablet, where the bar is thin and the
+    // finger is not — ends the drag halfway. The window hears it wherever it goes.
+    var tgrip = g('bt-grip');
+    if (tgrip){
+      tgrip.addEventListener('pointerdown', function(e){
+        var r = bar.getBoundingClientRect();
+        var ox = r.left, oy = r.top, sx = e.clientX, sy = e.clientY;
+        var move = function(ev){
+          var VW = window.innerWidth, VH = window.innerHeight;
+          var w = bar.getBoundingClientRect().width, hgt = bar.getBoundingClientRect().height;
+          bar.style.left = Math.max(4, Math.min(ox + (ev.clientX - sx), VW - Math.min(w, VW) - 4)) + 'px';
+          bar.style.top  = Math.max(4, Math.min(oy + (ev.clientY - sy), VH - Math.min(hgt, VH) - 4)) + 'px';
+          positionWriter();
+        };
+        var up = function(){
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', up);
+          window.removeEventListener('pointercancel', up);
+          try { localStorage.setItem('lz-build-bar-pos',
+                JSON.stringify({ left: parseFloat(bar.style.left), top: parseFloat(bar.style.top) })); } catch(_){}
+        };
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', up);
+        window.addEventListener('pointercancel', up);
+        e.preventDefault(); e.stopPropagation();
+      });
+    }
+
+    // AND A WIDTH HANDLE, so the strip can be narrowed until it wraps into as
+    // many rows as you want — the only way to make a bar of twelve buttons
+    // small on a tablet.
+    var twide = g('bt-wide');
+    if (twide){
+      twide.addEventListener('pointerdown', function(e){
+        var startW = bar.getBoundingClientRect().width, sx = e.clientX;
+        var move = function(ev){
+          var want = startW + (ev.clientX - sx);
+          _barW = Math.max(120, Math.min(want, window.innerWidth - 8));
+          bar.style.width = _barW + 'px';
+          positionWriter();
+        };
+        var up = function(){
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', up);
+          window.removeEventListener('pointercancel', up);
+          try { localStorage.setItem('lz-build-bar-w', String(Math.round(_barW))); } catch(_){}
+        };
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', up);
+        window.addEventListener('pointercancel', up);
+        e.preventDefault(); e.stopPropagation();
+      });
+    }
+    if (_barW) bar.style.width = _barW + 'px';
     positionWriter();
   }
   function renderWriter(){
@@ -10967,7 +11034,7 @@ window.addEventListener('load',function(){
         + '<label style="display:block;' + lbl + '">SHOT ' + (sel+1) + ' \u2014 SUMMARY</label>'
         + '<input id="bw-summary" class="bw-typed" type="text" placeholder="Short label\u2026" style="' + inp + '" />'
         + '<label style="display:block;' + lbl + '">SHOT ' + (sel+1) + ' \u2014 LESSON TEXT</label>'
-        + '<textarea id="bw-intent" class="bw-typed" placeholder="Do-this steps\u2026" style="' + inp + 'height:' + ((_writeTaH > 0) ? _writeTaH : Math.max(120, Math.min(Math.round((window.innerHeight || 800) * 0.34), Math.round((window.innerHeight || 800) - 340)))) + 'px;min-height:44px;line-height:1.5;resize:vertical;"></textarea>';
+        + '<textarea id="bw-intent" class="bw-typed" placeholder="Do-this steps\u2026" style="' + inp + 'height:' + ((_writeTaH > 0) ? _writeTaH : Math.max(120, Math.min(Math.round((window.innerHeight || 800) * 0.34), Math.round((window.innerHeight || 800) - 340)))) + 'px;min-height:26px;line-height:1.5;resize:vertical;"></textarea>';
     } else {
       h += '<div style="color:#9fb0bd;font-size:14px;line-height:1.4;margin-top:10px;">Tap ADD SHOT on the strip to capture a shot, then write its summary and lesson text here.</div>';
     }
@@ -11025,7 +11092,7 @@ window.addEventListener('load',function(){
         var startH = wr.getBoundingClientRect().height, sy = e.clientY;
         var move = function(ev){
           var want = startH + (ev.clientY - sy);
-          var lo = 96;                                  // the grip, two lines, the squeeze bar
+          var lo = 68;                                  // the grip, one line, the squeeze bar
           var hi = Math.max(lo, window.innerHeight - 20);
           _writerH = Math.max(lo, Math.min(want, hi));
           wr.style.maxHeight = _writerH + 'px';
