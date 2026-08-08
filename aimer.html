@@ -11437,6 +11437,11 @@ window.addEventListener('load',function(){
   // size across shot navigation. 0 = use the fill-the-screen default.
   var _writeTaH = 0;
   try { var _wt = parseInt(localStorage.getItem('lz-build-write-ta-h'), 10); if (_wt > 60) _writeTaH = _wt; } catch(e){}
+  // The SUMMARY box remembers its own height, the way LESSON TEXT already did.
+  var _writeStH = 0;
+  try { var _ws = parseInt(localStorage.getItem('lz-build-write-st-h'), 10); if (_ws > 30) _writeStH = _ws; } catch(e){}
+  var _stepsPrev = true;
+  try { _stepsPrev = localStorage.getItem('lz-build-steps-preview') !== '0'; } catch(e){}
   try { var _wf = parseInt(localStorage.getItem('lz-build-write-font'), 10); if (_wf >= 12 && _wf <= 26) _writeFontPx = _wf; } catch(e){}
   // Where the user has parked the Write panel, if they've dragged it. null = auto.
   var _writerPos = null;
@@ -11888,6 +11893,15 @@ window.addEventListener('load',function(){
     var lbl = 'font-size:13px;font-weight:800;color:#9fb0bd;letter-spacing:0.06em;margin:10px 0 4px;';
     var inp = 'width:100%;padding:10px 11px;border-radius:5px;border:1px solid rgba(255,255,255,0.15);background:#0b1219;color:#fff;font-size:' + _writeFontPx + 'px;box-sizing:border-box;outline:none;font-family:Lato,sans-serif;';
     var abtn = 'padding:8px 12px;border-radius:5px;font-size:13px;font-weight:800;cursor:pointer;border:1px solid;touch-action:manipulation;';
+    // A BOX YOU CANNOT RESIZE WITH A FINGER. The CSS resize corner is a mouse
+    // affordance — on a tablet there is nothing there to catch. Each text box
+    // gets a full-width strip beneath it instead, which needs no aim.
+    var grab = function(id){
+      return '<div id="' + id + '" style="height:16px;margin:2px 0 0;border-radius:0 0 5px 5px;'
+        + 'background:rgba(120,220,140,0.13);cursor:ns-resize;touch-action:none;display:flex;'
+        + 'align-items:center;justify-content:center;">'
+        + '<span style="color:#7ddc8c;font-size:10px;letter-spacing:0.22em;">\u2261</span></div>';
+    };
     var szbtn = 'display:inline-flex;align-items:center;justify-content:center;width:28px;height:26px;border-radius:5px;font-size:15px;font-weight:900;cursor:pointer;border:1px solid rgba(120,220,140,0.5);background:rgba(120,220,140,0.10);color:#7ddc8c;touch-action:manipulation;user-select:none;';
     var h = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;gap:8px;">'
       + '<span style="font-weight:900;color:#7ddc8c;font-size:15px;">' + (selShot ? ('Shot ' + (sel+1)) : 'Sequence') + '</span>'
@@ -11912,10 +11926,21 @@ window.addEventListener('load',function(){
         // LESSON TEXT is the long explanation, one tap further in.
         + '<label style="display:block;' + lbl + '">SHOT ' + (sel+1) + ' \u2014 TITLE</label>'
         + '<input id="bw-summary" class="bw-typed" type="text" placeholder="Name this shot in a few words\u2026" style="' + inp + '" />'
-        + '<label style="display:block;' + lbl + '">SHOT ' + (sel+1) + ' \u2014 SUMMARY <span style="opacity:0.7;font-weight:700;">\u00b7 one line each, they become a numbered list</span></label>'
-        + '<textarea id="bw-steps" class="bw-typed" placeholder="Put the object ball a foot out from the side pocket\nAim the inside edge at the 4\nShoot slowly, dead centre\u2026" style="' + inp + 'height:96px;min-height:26px;line-height:1.5;resize:vertical;"></textarea>'
+        + '<label style="display:block;' + lbl + '">SHOT ' + (sel+1) + ' \u2014 SUMMARY <span style="opacity:0.7;font-weight:700;">\u00b7 one line each</span>'
+          + '<span id="bw-steps-eye" style="float:right;font-weight:900;color:#7ddc8c;cursor:pointer;touch-action:manipulation;">'
+          + (_stepsPrev ? '\u25be numbers' : '\u25b8 numbers') + '</span></label>'
+        + '<textarea id="bw-steps" class="bw-typed" placeholder="Put the object ball a foot out from the side pocket\nAim the inside edge at the 4\nShoot slowly, dead centre\u2026" style="' + inp + 'height:' + (_writeStH > 0 ? _writeStH : 96) + 'px;min-height:26px;line-height:1.5;resize:vertical;"></textarea>'
+        + grab('bw-steps-grab')
+        // THE NUMBERS, HERE AND NOT ONLY IN THE READER. Same parser the reader
+        // uses — blank lines dropped, a hand-typed bullet or "1." stripped — so
+        // what shows is what the buyer will see, and a stray blank line shows up
+        // as a number that is missing rather than as a surprise later.
+        + '<div id="bw-steps-prev" style="display:' + (_stepsPrev ? 'block' : 'none') + ';margin:6px 0 0;padding:7px 10px;'
+          + 'background:rgba(120,220,140,0.07);border:1px solid rgba(120,220,140,0.28);border-radius:5px;'
+          + 'font-size:' + Math.max(11, _writeFontPx - 3) + 'px;line-height:1.45;color:#cfe6d4;"></div>'
         + '<label style="display:block;' + lbl + '">SHOT ' + (sel+1) + ' \u2014 LESSON TEXT</label>'
-        + '<textarea id="bw-intent" class="bw-typed" placeholder="Do-this steps\u2026" style="' + inp + 'height:' + ((_writeTaH > 0) ? _writeTaH : Math.max(120, Math.min(Math.round((window.innerHeight || 800) * 0.34), Math.round((window.innerHeight || 800) - 340)))) + 'px;min-height:26px;line-height:1.5;resize:vertical;"></textarea>';
+        + '<textarea id="bw-intent" class="bw-typed" placeholder="Do-this steps\u2026" style="' + inp + 'height:' + ((_writeTaH > 0) ? _writeTaH : Math.max(120, Math.min(Math.round((window.innerHeight || 800) * 0.34), Math.round((window.innerHeight || 800) - 340)))) + 'px;min-height:26px;line-height:1.5;resize:vertical;"></textarea>'
+        + grab('bw-intent-grab');
     } else {
       h += '<div style="color:#9fb0bd;font-size:14px;line-height:1.4;margin-top:10px;">Tap ADD SHOT on the strip to capture a shot, then write its summary and lesson text here.</div>';
     }
@@ -11924,14 +11949,23 @@ window.addEventListener('load',function(){
     // the panel. So it gets a proper bar at the top to move it by, and a bar at
     // the bottom to squeeze it with. Both are wide, both are obvious, and
     // neither is a field.
-    h = '<div id="bw-grip" style="height:22px;margin:-10px -12px 6px;border-radius:8px 8px 0 0;'
-      + 'background:rgba(120,220,140,0.18);cursor:move;touch-action:none;display:flex;'
-      + 'align-items:center;justify-content:center;gap:4px;">'
+    // BOTH BARS ARE STICKY. They were ordinary blocks at the two ends of a
+    // scrolling panel, so the squeeze bar could only be reached by scrolling to
+    // the very bottom of a long lesson text — the one thing you want when the
+    // panel is too big is buried under the reason it is too big. Sticky, they
+    // are on screen at every scroll position, which is what "resize from any
+    // state" means. z-index so the text boxes pass behind them.
+    h = '<div id="bw-grip" style="position:sticky;top:-10px;z-index:3;height:22px;margin:-10px -12px 6px;'
+      + 'border-radius:8px 8px 0 0;background:rgba(24,48,32,0.97);cursor:move;touch-action:none;display:flex;'
+      + 'align-items:center;justify-content:center;gap:10px;box-shadow:0 1px 0 rgba(120,220,140,0.35);">'
       + '<span style="color:#7ddc8c;font-size:11px;letter-spacing:0.06em;font-weight:800;">'
-      + '\u2630 drag to move \u00b7 tap to resize</span></div>' + h;
-    h += '<div id="bw-squeeze" style="height:20px;margin:8px -12px -10px;border-radius:0 0 8px 8px;'
-      + 'background:rgba(120,220,140,0.14);cursor:ns-resize;touch-action:none;display:flex;'
-      + 'align-items:center;justify-content:center;">'
+      + '\u2630 drag \u00b7 tap to resize</span>'
+      + '<span id="bw-reset" title="Back to the default size, place and text size" '
+      + 'style="color:#7ddc8c;font-size:12px;font-weight:900;cursor:pointer;touch-action:manipulation;'
+      + 'padding:0 7px;border:1px solid rgba(120,220,140,0.45);border-radius:4px;">\u21ba reset</span></div>' + h;
+    h += '<div id="bw-squeeze" style="position:sticky;bottom:-10px;z-index:3;height:20px;margin:8px -12px -10px;'
+      + 'border-radius:0 0 8px 8px;background:rgba(24,48,32,0.97);cursor:ns-resize;touch-action:none;display:flex;'
+      + 'align-items:center;justify-content:center;box-shadow:0 -1px 0 rgba(120,220,140,0.35);">'
       + '<span style="color:#7ddc8c;font-size:11px;letter-spacing:0.2em;">\u2261 drag to squeeze</span></div>';
     wr.innerHTML = h;
     positionWriter();
@@ -11977,9 +12011,14 @@ window.addEventListener('load',function(){
         var VH = window.innerHeight || 800;
         var sizes = [68, Math.round(VH * 0.45), Math.round(VH * 0.82)];
         var now = wr.getBoundingClientRect().height;
-        var i = 0;
-        for (var k = 0; k < sizes.length; k++) if (now > sizes[k] + 12) i = k + 1;
-        _writerH = sizes[i % sizes.length];
+        // WORK OUT WHICH SIZE IT IS AT, THEN GO TO THE NEXT ONE. The old line
+        // computed the bucket and then re-applied THAT bucket, so every tap set
+        // the panel to the size it already had. Squeezed down to the peek, the
+        // one control that should have brought it back did nothing at all —
+        // which is exactly the "minimise it and you cannot get it back" trap.
+        var at = 0;
+        for (var k = 0; k < sizes.length; k++) if (now > sizes[k] + 12) at = k + 1;
+        _writerH = sizes[(at + 1) % sizes.length];
         wr.style.maxHeight = _writerH + 'px';
         wr.style.height = _writerH + 'px';
         try { localStorage.setItem('lz-build-writer-h', String(_writerH)); } catch(_){}
@@ -12011,12 +12050,90 @@ window.addEventListener('load',function(){
       });
     }
     if (_writerH){ wr.style.maxHeight = _writerH + 'px'; wr.style.height = _writerH + 'px'; }
+
+    // Drag a strip, resize the box above it. Same gesture for both boxes.
+    var dragBox = function(stripId, taId, key, setter){
+      var strip = g(stripId), ta = g(taId);
+      if (!strip || !ta) return;
+      strip.addEventListener('pointerdown', function(e){
+        var h0 = ta.getBoundingClientRect().height, y0 = e.clientY;
+        var move = function(ev){ ta.style.height = Math.max(26, h0 + (ev.clientY - y0)) + 'px'; };
+        var up = function(){
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', up);
+          window.removeEventListener('pointercancel', up);
+          var hh = Math.round(ta.getBoundingClientRect().height);
+          setter(hh);
+          try { localStorage.setItem(key, String(hh)); } catch(_){}
+        };
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', up);
+        window.addEventListener('pointercancel', up);
+        e.preventDefault(); e.stopPropagation();
+      });
+    };
+    dragBox('bw-steps-grab',  'bw-steps',  'lz-build-write-st-h', function(h){ _writeStH = h; });
+    dragBox('bw-intent-grab', 'bw-intent', 'lz-build-write-ta-h', function(h){ _writeTaH = h; });
+
+    // BACK TO THE START, in one tap. Everything this panel remembers is
+    // forgotten together — height, where it was dragged to, text size, and both
+    // box heights — because a panel you have wedged into a bad shape is only
+    // recoverable if ONE control undoes all of it, not four.
+    if (g('bw-reset')) g('bw-reset').addEventListener('click', function(e){
+      e.stopPropagation();
+      _writerPos = null; _writerH = 0; _writeTaH = 0; _writeStH = 0; _writeFontPx = 16;
+      try {
+        localStorage.removeItem('lz-build-writer-pos');
+        localStorage.removeItem('lz-build-writer-h');
+        localStorage.removeItem('lz-build-write-ta-h');
+        localStorage.removeItem('lz-build-write-st-h');
+        localStorage.removeItem('lz-build-write-font');
+      } catch(_){}
+      wr.style.height = ''; wr.style.maxHeight = '';
+      wr.style.left = '50%'; wr.style.top = ''; wr.style.transform = 'translateX(-50%)';
+      renderWriter();
+    });
     var ti = g('bw-title'); if (ti){ ti.value = draft.title || ''; ti.addEventListener('input', function(){ draft.title = ti.value; }); }
     if (selShot){
       if (g('bw-update')) g('bw-update').addEventListener('click', function(){ commitLive(); renderToolbar(); renderWriter(); msg('Shot ' + (sel+1) + ' updated from table.'); });
       if (g('bw-del')) g('bw-del').addEventListener('click', deleteShot);
       var sm = g('bw-summary'); if (sm){ sm.value = selShot.summary || ''; sm.addEventListener('input', function(){ selShot.summary = sm.value; }); }
-      var st = g('bw-steps'); if (st){ st.value = selShot.steps || ''; st.addEventListener('input', function(){ selShot.steps = st.value; }); }
+      var st = g('bw-steps');
+      if (st){
+        st.value = selShot.steps || '';
+        // ONE PARSER, TWO PLACES. This must strip and skip exactly as the read
+        // overlay does, or the preview becomes a second opinion instead of a
+        // preview — and the writer would trust the wrong one.
+        var drawSteps = function(){
+          var box = g('bw-steps-prev'); if (!box) return;
+          var lines = (st.value || '').split('\n')
+            .map(function(x){ return x.replace(/^\s*(?:[-*\u2022]|\d+[.)])\s*/, '').trim(); })
+            .filter(function(x){ return !!x; });
+          box.innerHTML = '';
+          if (!lines.length){
+            box.innerHTML = '<span style="opacity:0.55;font-style:italic;">no steps yet \u2014 '
+              + 'the reader sees the title on its own</span>';
+            return;
+          }
+          var ol = document.createElement('ol');
+          ol.style.cssText = 'margin:0;padding-left:20px;';
+          for (var q = 0; q < lines.length; q++){
+            var li = document.createElement('li');
+            li.textContent = lines[q];
+            li.style.cssText = 'margin:0 0 3px;';
+            ol.appendChild(li);
+          }
+          box.appendChild(ol);
+        };
+        st.addEventListener('input', function(){ selShot.steps = st.value; drawSteps(); });
+        drawSteps();
+        if (g('bw-steps-eye')) g('bw-steps-eye').addEventListener('click', function(e){
+          e.stopPropagation();
+          _stepsPrev = !_stepsPrev;
+          try { localStorage.setItem('lz-build-steps-preview', _stepsPrev ? '1' : '0'); } catch(_){}
+          renderWriter();
+        });
+      }
       var it = g('bw-intent'); if (it){ it.value = selShot.intent || ''; it.addEventListener('input', function(){ selShot.intent = it.value; });
         if (window.ResizeObserver){
           var _ro = new ResizeObserver(function(){
