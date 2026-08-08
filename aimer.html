@@ -11552,6 +11552,10 @@ window.addEventListener('load',function(){
     var bar = document.getElementById('build-toolbar'), wr = document.getElementById('build-writer');
     if (!bar || !wr) return;
     if (_writerPos) { applyWriterPos(); return; }   // user-placed: don't tuck under the bar
+    // The dock shrinks to a 48px puck when it folds. Re-tucking against that
+    // would jump the writer a hundred pixels up the screen mid-sentence, so a
+    // writer that is already placed under the full dock stays where it is.
+    if (_dockMin && wr.style.top) return;
     var r = bar.getBoundingClientRect();
     wr.style.top = (r.bottom + 6) + 'px';
   }
@@ -11725,10 +11729,19 @@ window.addEventListener('load',function(){
     // stripped so only the puck shows.
     if (_dockMin){
       bar.style.background = 'transparent'; bar.style.border = 'none'; bar.style.boxShadow = 'none'; bar.style.padding = '0';
-      bar.innerHTML = '<span id="bt-expand" class="bt-btn" title="Open the build dock" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:48px;height:48px;padding:0 8px;border-radius:10px;background:rgba(0,0,0,0.88);border:2px solid rgba(120,220,140,0.7);color:#7ddc8c;cursor:pointer;box-shadow:0 3px 14px rgba(0,0,0,0.55);touch-action:manipulation;user-select:none;">'
+      // W RIDES ON THE PUCK. Independence has to work both ways: with the dock
+      // folded, the writer's own \u2013 would close it and leave no way back short
+      // of unfolding the dock again. This is that way back, and it keeps the
+      // whole build reachable from 100px of screen.
+      bar.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;">'
+        + '<span id="bt-expand" class="bt-btn" title="Open the build dock" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:48px;height:48px;padding:0 8px;border-radius:10px;background:rgba(0,0,0,0.88);border:2px solid rgba(120,220,140,0.7);color:#7ddc8c;cursor:pointer;box-shadow:0 3px 14px rgba(0,0,0,0.55);touch-action:manipulation;user-select:none;">'
         + '<span style="font-size:22px;line-height:1;">\u25ce</span>'
-        + '<span style="font-size:8px;font-weight:900;letter-spacing:0.04em;color:#7dd3fc;">' + kindShort(buildKind) + '</span></span>';
+        + '<span style="font-size:8px;font-weight:900;letter-spacing:0.04em;color:#7dd3fc;">' + kindShort(buildKind) + '</span></span>'
+        + '<span id="bt-write-mini" class="bt-btn" title="Show or hide the Write panel" style="display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:48px;border-radius:10px;background:' + (writerOpen ? 'rgba(120,220,140,0.34)' : 'rgba(0,0,0,0.88)') + ';border:2px solid rgba(120,220,140,0.7);color:#7ddc8c;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 3px 14px rgba(0,0,0,0.55);touch-action:manipulation;user-select:none;">W</span>'
+        + '</span>';
       var ex = document.getElementById('bt-expand'); if (ex) ex.addEventListener('click', function(){ setDockMin(false); });
+      var wm = document.getElementById('bt-write-mini');
+      if (wm) wm.addEventListener('click', function(){ writerOpen = !writerOpen; renderToolbar(); renderWriter(); });
       positionWriter();
       return;
     }
@@ -11885,7 +11898,10 @@ window.addEventListener('load',function(){
   }
   function renderWriter(){
     var wr = document.getElementById('build-writer'); if (!wr) return;
-    if (_dockMin){ wr.style.display = 'none'; return; }
+    // THE TWO PANELS ARE INDEPENDENT. Collapsing the dock used to take the Write
+    // panel down with it, which is backwards: on a tablet you fold the dock away
+    // precisely BECAUSE you want the room to write in. The dock's puck and the
+    // writer's own \u2013 each close only themselves now.
     wr.style.display = writerOpen ? 'block' : 'none';
     positionWriter();
     if (!writerOpen) return;
