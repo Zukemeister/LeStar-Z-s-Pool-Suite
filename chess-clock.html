@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>LeStar Z.'s Chess Clock</title>
+<!-- THE APP ICON, CARRIED INSIDE THE FILE. This page already needs no network
+     at all — no scripts, styles, fonts or images come from anywhere else, so
+     it runs in airplane mode from the tablet's own storage. What it lacked was
+     a face: added to a home screen it would have shown a blank page thumbnail.
+     Both the icon and the manifest are data URIs so the whole thing stays ONE
+     FILE with nothing to lose. -->
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="icon" href="data:image/png;base64,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">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22LeStar%20Z.%27s%20Chess%20Clock%22%2C%22short_name%22%3A%22Chess%20Clock%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%2315130f%22%2C%22theme_color%22%3A%22%2315130f%22%2C%22start_url%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage/png%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAIAAAB7GkOtAAALXUlEQVR42u3dMU5bWRTHYYysdMiF5ayGTWQX02VKCkoKyqTLLrIJVpMp6VJNgYSigMDY7917z/1/n6aYJvD8PDq/e54DsznsdxcA5Ll0CwAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAAFjHdrLX8/v2qzcVWM%2Bnu%2B/TvJbNYb8z9AECY1A4AOY%2BoARZATD3ASVYRLEPgU1/wIyK2wCMfsAqkLgBmP6AVSBuAzD6AatA4gZg%2BgNWgcQAmP6ABiQGwPQHNCAxAKY/oAGJATD9AQ1IDIDpD2hA7gYAQFwAHP8BS0BiAEx/QANyNwAA4gLg%2BA9YAhIDYPoDGpC7AQAgAABkBMDzHyBZ3xloAwCwAQAgAAm7D8AIOk5CGwCADQAAAQBAANbiAwCAvvPQBgBgAwBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEACAZFu3gAT//fPvR//I4cc39w0BgPnH/TFfRBIQAJhz4n/0u%2BgBAgCTz/13v7sSIAAQMfeVAAEAo//1y5MBBABS5r6FAAGA9NFvIUAAIH30ywACANGjXwYYnF8Fgenv1WEDAMPRKoAAgNEvAwgATDL9PzRtm/1uCQ1AADD9e477Y/74SpeqAQgARn//oX/8F1/24j0OQgAw/Uec%2B29/xwVfiFUAAcD0H3fur10CDaAxPwdAvel/%2BPFttEG51CX5QQFsABj945763728M1%2BpjwSwAWD6j37qX/VSrQIIAKZ/pdG/7GVrAAJA%2BvQv/fI1AAHA9E85%2BC/%2BQjQAASBu%2Bk92NzSAAflbQMwzKEu8NNMcGwCO/1nT/8zXKBsIAKa/BsBiPAKi//RvNvqPvLYG13Pa4yC/KwIbAKZ/7ipgD0AAyJ2A7gAIAOWP/2bfaffBEoAAYPprAAgApr8GgAAAIAA4/lsCQAAoO%2BPcHxAAZjj%2Bm26L3yVLAAJAgemPdwEBwMEW9woBIObgaaKt2gBLAAIAgADg%2BG8JAAGg0BTD3UMAmOf4j/cFAcABFvcQAQBAACjn%2BOcMjq7tlwBPgRAAAAQAx39LAAgAAALAKMdV3FUEgAI8W/BOIQAACAC84EmFe4sAMBVPFbxfCAAAAgAveEbhDiMAAAgAAAJAUT5R9K4hAPAWj6fdZwQAAAEAQAAAEAAABIDh%2Bcsk3jsEAN7ir6a42wgAAAIAgABAIR6dIwAQ3QAZQABABmBOW7cA3s3A07/4uzfYAMBCADYAKOXlEf6EgW4hwAYAM5zoLQQIACADxPEICJZcJjwXwgYAZUa2hQABAGSALB4BEerpWc2qY9pzIWwApJx5i2bg6Z9aC4H1AgGg3Uk54WW2yUDL2W3z4G0eAcErE7PBoyHTGRsAhC4EIACQmAF1YQQeAcGxw9pHr9gA4HXTz8dBngvpEAJAhyMwi2Sgzf30rvEuj4DgrPHqPI4NACwEIAAEiz0OH/8TxWfWwsKBAICFAASAVnPNTSiUAe8XAkAHnlH8lYE/Z7HnPwgAWAhAACg1xdyEEjfQO4UA0I0nFe4qAgCAADCF458tOK72Ov57/oMAACAAWAIc/0EAABAAxjq64h4iABTgOYP3BQEAB1h3DwHAYdMU6zr9Hf8RAAAEAEuA4z8IAOUmmnvlJiAAzLME4F1AAMidPg62i98l0x8BYM7p5v6AADDPEmDGLXhnHP8RAAAEAEuA4z8IABpg%2BoMAoAGmPwgAxWefOwACwCRLQPgEPOG1O/4jAMzWgLQMnPaSTX8EgAkbELUKnPZKTX8EAA0w/WEZW7eAAefjlPPO573YALAEJM7Kc16R4z8r2Rz2u17f%2B/ftV29AyIk%2Befa5A7zr0913GwD2gNlWAdOfkQkABRpQMQPnX7bpjwCgAcUysMilmv400PMzgAsfA%2BRZZIgPOxznfnWspNcHADYA6q0CY24DS12S6U9Lfg6ADg1YZFY%2Bf5GOQ3PZDpn%2BNNb5EdCFp0Cp1jjCNxugpS%2BeoXR8/mMDoOcesPgk/fOrLT5P13voZPQjAIRmYKXB%2BvLLfmjONvuMwfSno/6PgC48BYoX%2B0tyTP9wfZ//jBIADSAtA0Y/3af/hUdAjDYTp8%2BA0c84Rvk5gBFiiPno1RE18UZ5BPTEgyCeTbYKGP0MeN71CIihJ%2BYEGTD6GdZYG4AlgJm2AaOfkY//IwZAA6heAnOfEtN/0ABoAEUzYPRTaPqPGwANoFAJzH0qTv%2BhA6ABDF4Cc5/S03/0AGgAQ/XAxGem6V8gADJAryQY90w8%2BisFQAMA0z83ADIAGP3LunRnATJnVLENwDYAmPsCoASAuR8fADEADH0BAOBYl24BgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAA0Mh2stfzcH/lTQXWc33zOM1rmeH/B2DoA2KQFQBzH1CCrACY%2B4ASLKLYh8CmP2BGxW0ARj9gFUjcAEx/wCoQtwEY/YBVIHEDMP0Bq0BiAEx/QAMSA2D6AxqQGADTH9CAxACY/oAGJAbA9Ac0IHcDACAuAI7/gCUgMQCmP6ABuRsAAHEBcPwHLAGJATD9AQ3I3QAAEAAAMgLg%2BQ%2BQrO8MtAEA2AAAEICE3QdgBB0noQ0AwAYAgAAAIABr8QEAQN95aAMAsAEAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAgAC4BQACAIAAADC7rVvACL7c/TrtD/68/ezK4TSbw37X5Rs/3F%2B5%2B5wzQLsP07pXzoCubx7bf1OPgCg//Rf8OglXDgLAPNO//SSte%2BUgAMw2/VtO0rpXDgIAgAAw0fG/zVG67pWDAAAgAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACQAc/bz%2BX%2B8rVrxwEAAABYLoloM0huu6VgwAwZwNaztC6Vw4CwGwNaD9D6145PNsc9rsu3/jh/srd59mXu19FB2jdK2co1zePAgAgAI14BAQQSgAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEAAAkgLQ5XefAgyo1zy0AQDYAAAQAAAEYEU%2BBgDoOAltAAA2AAAEIGH3Aeiu7wy0AQDYAAAQgJwNCCB2%2Bl26CwCZc88jIIBQowTAEgA4/uduABoAmP6hAQAgNwCWAMDxP3cD0ADA9A8NgAYApn9uADQAMP1zA6ABgOmfGwANAEz/VW0O%2B934d/Dh/sp/RoDRH7QBWAUA0z99A7AKAEZ/6AZgFQDMqPQNwDYAmPsCoASAuR8fADEADH0BAOBYfh00gAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAArO9/ucHu8k6YtG4AAAAASUVORK5CYII%3D%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image/png%22%2C%22purpose%22%3A%22any%22%7D%5D%7D">
+<meta name="theme-color" content="#15130f">
+<style>
+/* ------------------------------------------------------------------
+   CHESS CLOCK  ·  2026-08-19 c1
+   Built for a tablet or phone lying flat between two players.
+
+   THE ONE UNUSUAL REQUIREMENT: the player to move must be able to tell,
+   at a glance and from across the table, that it is his turn AND which
+   colour he is. Don's brother-in-law forgets both. So the live pad does
+   not merely count down — it PULSES, and it says the colour in words.
+   The idle pad goes quiet and grey so there is never a question of
+   which of the two is asking for a move.
+   ------------------------------------------------------------------ */
+
+:root{
+  --ink:#15130f;
+  --paper:#faf7ee;
+  /* A COLOUR IS WHO YOU ARE, NOT WHAT STATE YOU ARE IN. Don asked for two
+     action colours; the useful version is one colour PER PLAYER, held for the
+     whole game. His brother-in-law forgets which side he is — if a pad were
+     teal on his turn and something else when short of time, the one cue he
+     could rely on would keep changing. White is always teal, black always
+     amber, and every other signal is carried by movement and by the numerals.
+     Teal is hue 172. Its true 180-degree complement is #8f0f20, a dark
+     crimson — which is exactly what the low-time warning needs, so it cannot
+     also mean "the other player." Amber at hue 42 is 130 degrees off: not the
+     textbook opposite, but unmistakably not teal, and it leaves red free to
+     mean the one thing red should mean. */
+  --white:#0f8f7e;         /* the player of the white pieces */
+  --black:#d99b1c;         /* the player of the black pieces */
+  --idle:#c9c4b6;
+  --danger:#b8402e;        /* under a minute */
+  --dead:#6b1b10;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent }
+html,body{
+  margin:0; height:100%; overflow:hidden;
+  background:var(--ink); color:var(--paper);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  touch-action:manipulation; user-select:none; -webkit-user-select:none;
+}
+
+/* ---------- the two pads ---------- */
+#board{ display:flex; flex-direction:column; height:100%; gap:4px }
+.pad{
+  flex:1 1 0; position:relative; border:none; margin:0; padding:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:var(--idle); color:#3a3630;
+  font:inherit; cursor:pointer; overflow:hidden;
+  transition:background .18s ease, color .18s ease;
+}
+/* The far player reads upside down, so his whole pad is turned around. */
+#padA{ transform:rotate(180deg) }
+
+.pad .who{ font-size:clamp(15px,3.6vh,26px); letter-spacing:.16em;
+  text-transform:uppercase; opacity:.72; margin-bottom:.35em; font-weight:600 }
+.pad .time{ font-size:clamp(56px,17vh,150px); font-weight:700; line-height:.94;
+  font-variant-numeric:tabular-nums; letter-spacing:-.02em }
+.pad .colour{ margin-top:.5em; font-size:clamp(17px,4.4vh,34px); font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; opacity:0; transition:opacity .18s }
+.pad .call{ margin-top:.25em; font-size:clamp(13px,2.8vh,20px); letter-spacing:.2em;
+  text-transform:uppercase; opacity:0; transition:opacity .18s }
+.pad .used{ margin-top:.55em; font-size:clamp(13px,2.6vh,19px); font-weight:600;
+  font-variant-numeric:tabular-nums; letter-spacing:.06em; opacity:0; transition:opacity .18s }
+.pad .moves{ position:absolute; bottom:10px; right:16px;
+  font-size:clamp(11px,2vh,15px); opacity:.5; font-variant-numeric:tabular-nums }
+
+/* THE LIVE PAD. Colour, both labels shown, and a slow breath so it is
+   moving even when nobody is looking straight at it. */
+.pad.live, .pad.ready{ color:#fff; animation:breathe 1.9s ease-in-out infinite }
+.pad.live.side-white, .pad.ready.side-white{ background:var(--white) }
+.pad.live.side-black, .pad.ready.side-black{ background:var(--black); color:#2a1f06 }
+.pad.live .colour, .pad.live .call, .pad.live .used{ opacity:1 }
+.pad.live .who{ opacity:.9 }
+/* WAITING TO BEGIN wears the player's own colour, breathing more slowly so it
+   never reads as a clock already running. */
+.pad.ready{ animation-duration:2.6s }
+.pad.ready .colour, .pad.ready .call{ opacity:1 }
+.pad.ready .who{ opacity:.85 }
+@keyframes breathe{
+  0%,100%{ box-shadow:inset 0 0 0 0 rgba(255,255,255,0) }
+  50%    { box-shadow:inset 0 0 0 14px rgba(255,255,255,.17) }
+}
+/* SHORT OF TIME CHANGES THE NUMERALS, NOT THE PAD. The pad keeps the player's
+   own colour so identity never wavers; the clock itself goes red and the
+   breath quickens, which is where the eye already is. */
+.pad.live.low .time{ color:var(--danger); text-shadow:0 0 22px rgba(255,255,255,.5) }
+.pad.live.low{ animation-duration:.85s }
+.pad.dead{ background:var(--dead); color:#fff; animation:none }
+.pad.dead .call{ opacity:1 }
+
+/* ---------- the bar between them ---------- */
+#bar{
+  flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:26px;
+  padding:10px 12px; background:var(--ink);
+}
+#bar button{
+  background:none; border:1.5px solid #4a463d; color:#cfcabb; border-radius:999px;
+  padding:9px 20px; font:inherit; font-size:14px; letter-spacing:.11em;
+  text-transform:uppercase; cursor:pointer;
+}
+#bar button:active{ background:#26231d }
+
+/* ---------- setup ---------- */
+#setup{
+  position:fixed; inset:0; background:var(--paper); color:var(--ink);
+  overflow-y:auto; padding:26px 20px 40px;
+}
+#setup .wrap{ max-width:520px; margin:0 auto }
+h1{ font-size:23px; letter-spacing:.2em; text-transform:uppercase; margin:.2em 0 .1em;
+  line-height:1.32 }
+.sub{ opacity:.6; font-size:14px; margin:0 0 26px }
+fieldset{ border:1.5px solid #ddd6c4; border-radius:14px; padding:16px 16px 20px; margin:0 0 18px }
+legend{ padding:0 9px; font-size:13px; letter-spacing:.16em; text-transform:uppercase; opacity:.65 }
+label{ display:block; font-size:13px; letter-spacing:.09em; text-transform:uppercase;
+  opacity:.65; margin:12px 0 5px }
+input[type=text], input[type=number]{
+  width:100%; padding:12px 13px; font:inherit; font-size:17px;
+  border:1.5px solid #ddd6c4; border-radius:10px; background:#fff; color:var(--ink);
+}
+.row{ display:flex; gap:12px }
+.row > div{ flex:1 }
+.presets{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px }
+.presets button{
+  flex:1 1 auto; padding:11px 8px; font:inherit; font-size:14px;
+  border:1.5px solid #ddd6c4; border-radius:10px; background:#fff; cursor:pointer;
+}
+.presets button:active{ background:#efeadc }
+#go{
+  width:100%; margin-top:6px; padding:17px; font:inherit; font-size:17px; font-weight:700;
+  letter-spacing:.16em; text-transform:uppercase; color:#fff; background:var(--white);
+  border:none; border-radius:12px; cursor:pointer;
+  transition:transform .08s ease, background .12s ease, box-shadow .12s ease;
+}
+/* PRESSED, VISIBLY. Don: "can you make the Start the Game button change states
+   when pushed? So I know it's alive." Worth having on its own merits, and worth
+   double on a phone — a button that dents under the finger separates "my tap
+   did not register" from "the tap registered and something after it failed",
+   which is a distinction I could not make for two builds.
+   :active alone is not enough — some mobile browsers never apply it — so the
+   handler adds a class as well. */
+#go:active, #go.pressed{
+  transform:scale(.97); background:#0b6f62;
+  box-shadow:inset 0 3px 12px rgba(0,0,0,.28);
+}
+#go.pressed::after{ content:' \2713' }
+#bar button:active, .presets button:active{ transform:scale(.96) }
+.note{ font-size:13px; opacity:.6; line-height:1.5; margin-top:16px }
+.stamp{ text-align:center; font-size:11px; opacity:.35; margin-top:26px; letter-spacing:.1em }
+</style>
+</head>
+<body>
+
+<div id="board" hidden>
+  <button type="button" class="pad" id="padA">
+    <span class="who"></span>
+    <span class="time">10:00</span>
+    <span class="colour"></span>
+    <span class="call">tap when you have moved</span>
+    <span class="used"></span>
+    <span class="moves"></span>
+  </button>
+
+  <div id="bar">
+    <button type="button" id="pause">Pause</button>
+    <button type="button" id="again">New game</button>
+  </div>
+
+  <button type="button" class="pad" id="padB">
+    <span class="who"></span>
+    <span class="time">10:00</span>
+    <span class="colour"></span>
+    <span class="call">tap when you have moved</span>
+    <span class="used"></span>
+    <span class="moves"></span>
+  </button>
+</div>
+
+<div id="setup">
+  <div class="wrap">
+    <h1>LeStar&nbsp;Z.&rsquo;s<br>Chess Clock</h1>
+    <p class="sub">Set it up, put the tablet between you, and play.</p>
+
+    <fieldset>
+      <legend>Who is playing</legend>
+      <label for="nW">Playing white</label>
+      <input type="text" id="nW" placeholder="White" autocomplete="off">
+      <label for="nB">Playing black</label>
+      <input type="text" id="nB" placeholder="Black" autocomplete="off">
+    </fieldset>
+
+    <fieldset>
+      <legend>Time for each side</legend>
+      <div class="row">
+        <div>
+          <label for="tW">White · minutes</label>
+          <input type="number" id="tW" value="10" min="1" max="180" inputmode="numeric">
+        </div>
+        <div>
+          <label for="tB">Black · minutes</label>
+          <input type="number" id="tB" value="10" min="1" max="180" inputmode="numeric">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="iW">White · seconds added a move</label>
+          <input type="number" id="iW" value="0" min="0" max="60" inputmode="numeric">
+        </div>
+        <div>
+          <label for="iB">Black · seconds added a move</label>
+          <input type="number" id="iB" value="0" min="0" max="60" inputmode="numeric">
+        </div>
+      </div>
+      <div class="presets">
+        <button type="button" data-set="5,0">5 min</button>
+        <button type="button" data-set="10,0">10 min</button>
+        <button type="button" data-set="15,10">15 + 10</button>
+        <button type="button" data-set="30,0">30 min</button>
+      </div>
+      <p class="note">The two sides need not match. Giving the stronger
+      player less time is the oldest handicap there is.</p>
+    </fieldset>
+
+    <button type="button" id="go">Start the game</button>
+
+    <p class="note">White moves first, so white's pad is the one that lights up.
+    After you move, tap <em>your own</em> pad — that stops your clock and starts
+    your opponent's. Space bar works too, if there is a keyboard.</p>
+
+    <p class="stamp" id="stamp"></p>
+    <p class="stamp" id="oops" style="color:#b8402e; opacity:1; white-space:pre-wrap"></p>
+  </div>
+</div>
+
+<script>
+const BUILD = '2026-08-19 · c7';
+
+/* A PHONE HAS NO CONSOLE YOU CAN READ. If anything in here throws, the only
+   symptom is a button that does nothing — which is exactly what Don saw. So
+   every error, thrown or unhandled, is written onto the setup screen where it
+   can be photographed. */
+function oops(e){
+  const box = document.getElementById('oops');
+  if (box) box.textContent = 'Something went wrong:\n' + (e && (e.message || e)) +
+                             (e && e.lineno ? '\nline ' + e.lineno : '');
+}
+addEventListener('error', ev => oops(ev.error || ev));
+addEventListener('unhandledrejection', ev => oops(ev.reason));
+document.getElementById('stamp').textContent = BUILD;
+
+/* ------------------------------------------------------------------
+   THE STATE. Two sides, each with its own remaining time and its own
+   increment, because Don asked for the times to be set individually and
+   an uneven clock is the standard way to handicap a friendly game.
+
+   TIME IS KEPT IN MILLISECONDS AND MEASURED AGAINST THE WALL CLOCK, not
+   counted down by adding up ticks. A tick-counter drifts, and it stops
+   entirely when a phone sleeps or a browser tab goes to the background —
+   which on a tablet lying on a table between two slow players is not an
+   edge case, it is Tuesday. Asking the clock what time it is now cannot
+   drift and cannot be paused by the operating system.
+   ------------------------------------------------------------------ */
+const S = {
+  white:{ left:600000, inc:0, name:'White', moves:0 },
+  black:{ left:600000, inc:0, name:'Black', moves:0 },
+  turn:null,          // 'white' | 'black' | null before the first move
+  since:0,            // wall-clock ms when the live side's turn began
+  running:false,
+  over:null           // whichever side ran out
+};
+
+/* padB is the near side and always plays white at setup; padA is across
+   the table. Which pad shows which side is fixed for the game. */
+const PAD = { black:document.getElementById('padA'), white:document.getElementById('padB') };
+
+const el = id => document.getElementById(id);
+const face = (pad, cls) => pad.querySelector('.' + cls);
+
+function clock(ms){
+  if (ms < 0) ms = 0;
+  const t = Math.ceil(ms / 1000);
+  const m = Math.floor(t / 60), s = t % 60;
+  // Under ten seconds the tenths appear — that is when they start to matter.
+  if (ms < 10000) return (ms / 1000).toFixed(1);
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function spent(ms){
+  const t = Math.floor(ms / 1000), m = Math.floor(t / 60), sec = t % 60;
+  return m ? m + 'm ' + String(sec).padStart(2,'0') + 's' : sec + 's';
+}
+
+/* How much this side has left RIGHT NOW: its stored figure, less however
+   long it has been sitting live. */
+function leftOf(side){
+  const base = S[side].left;
+  if (S.running && S.turn === side) return base - (Date.now() - S.since);
+  return base;
+}
+
+function paint(){
+  for (const side of ['white','black']){
+    const pad = PAD[side], ms = leftOf(side);
+    face(pad,'who').textContent   = S[side].name;
+    face(pad,'time').textContent  = clock(ms);
+    face(pad,'colour').textContent = 'You are ' + side;
+    face(pad,'moves').textContent = S[side].moves ? S[side].moves + ' moves' : '';
+    pad.classList.add('side-' + side);
+
+    // TIME SPENT ON THIS MOVE, counting up. Purely informative — it tells you
+    // you have been staring at the board for four minutes, which the falling
+    // number does not, because falling from 28:14 to 24:09 is arithmetic you
+    // are not going to do while thinking about a bishop.
+    face(pad,'used').textContent =
+      (S.running && S.turn === side && !S.over) ? 'this move ' + spent(Date.now() - S.since) : '';
+
+    const live  = S.running && S.turn === side && !S.over;
+    // BEFORE THE FIRST MOVE, WHITE'S PAD IS ALREADY ASKING. The opening state
+    // was neither live nor dead, so both pads painted flat grey with no text at
+    // all and the board looked broken. Don: "both sides open as gray and don't
+    // move." The invitation had been written once, straight after setup, and
+    // the very next frame of the paint loop erased it — because paint() clears
+    // that line for any pad that is not live.
+    // A STATE THE PAINTER DOES NOT KNOW ABOUT WILL BE PAINTED OVER. So the
+    // waiting state is a state the painter knows: white glows, says its colour,
+    // and says what to do.
+    const ready = !S.running && S.turn === null && !S.over && side === 'white';
+
+    pad.classList.toggle('live',  live);
+    pad.classList.toggle('ready', ready);
+    pad.classList.toggle('low',   live && ms < 60000);
+    pad.classList.toggle('dead',  S.over === side);
+
+    face(pad,'call').textContent =
+        S.over === side ? 'out of time'
+      : live            ? 'tap when you have moved'
+      : ready           ? 'tap here to start the game'
+      : '';
+  }
+  el('pause').textContent = S.over ? 'Paused' : (S.running ? 'Pause' : 'Resume');
+}
+
+let beat = 0;
+function run(){
+  cancelAnimationFrame(beat);
+  const step = () => {
+    if (S.running && S.turn && !S.over){
+      if (leftOf(S.turn) <= 0){
+        S[S.turn].left = 0;
+        S.over = S.turn;
+        S.running = false;
+        buzz([90, 70, 90, 70, 260]);
+      }
+    }
+    paint();
+    beat = requestAnimationFrame(step);
+  };
+  step();
+}
+
+/* A short pattern on the phone, where it is allowed. Silent is fine —
+   the point of this clock is that it is READ, not heard. */
+function buzz(pattern){
+  if (navigator.vibrate) try { navigator.vibrate(pattern); } catch(e){}
+}
+
+/* ------------------------------------------------------------------
+   TAPPING A PAD. The rule of a real chess clock: you press YOUR OWN
+   button after you move. Pressing the other player's does nothing —
+   which also means an idle tap by someone leaning on the table cannot
+   steal a turn.
+   ------------------------------------------------------------------ */
+function tap(side){
+  if (S.over) return;
+
+  // The very first tap starts the game, and only white can make it.
+  if (!S.running && S.turn === null){
+    if (side !== 'white') return;
+    S.turn = 'white'; S.since = Date.now(); S.running = true;
+    paint(); buzz(30); return;
+  }
+  if (!S.running) return;              // paused: pads are inert
+  if (side !== S.turn) return;         // not your clock to stop
+
+  // Bank what this turn used, add the increment, hand over.
+  S[side].left = leftOf(side) + S[side].inc;
+  S[side].moves++;
+  S.turn = side === 'white' ? 'black' : 'white';
+  S.since = Date.now();
+  paint(); buzz(30);
+}
+
+let tapped = 0;
+function arm(side){
+  return ev => {
+    if (Date.now() - tapped < 250) return;   // one gesture, not a click AND a touch
+    tapped = Date.now();
+    ev.preventDefault();
+    try { tap(side); } catch(err){ oops(err); }
+  };
+}
+for (const side of ['white','black']){
+  PAD[side].addEventListener('click', arm(side));
+  PAD[side].addEventListener('touchend', arm(side));
+}
+
+el('pause').addEventListener('click', () => {
+  if (S.over || S.turn === null) return;
+  if (S.running){
+    S[S.turn].left = leftOf(S.turn);   // bank it before stopping
+    S.running = false;
+  } else {
+    S.since = Date.now();
+    S.running = true;
+  }
+  paint();
+});
+
+el('again').addEventListener('click', () => {
+  el('board').hidden = true;
+  el('setup').hidden = false;
+});
+
+addEventListener('keydown', e => {
+  if (el('board').hidden) return;
+  if (e.code === 'Space'){ e.preventDefault(); if (S.turn) tap(S.turn); else tap('white'); }
+  if (e.code === 'KeyP'){ e.preventDefault(); el('pause').click(); }
+});
+
+/* ---------- setup ---------- */
+document.querySelectorAll('.presets button').forEach(b => {
+  b.addEventListener('click', () => {
+    const [m, i] = b.dataset.set.split(',');
+    el('tW').value = el('tB').value = m;
+    el('iW').value = el('iB').value = i;
+  });
+});
+
+function startGame(){
+  try{
+  const mins = (v, d) => Math.max(1, Math.min(180, +v || d));
+  const secs = v => Math.max(0, Math.min(60, +v || 0));
+  S.white = { left: mins(el('tW').value, 10) * 60000, inc: secs(el('iW').value) * 1000,
+              name: (el('nW').value || 'White').trim(), moves:0 };
+  S.black = { left: mins(el('tB').value, 10) * 60000, inc: secs(el('iB').value) * 1000,
+              name: (el('nB').value || 'Black').trim(), moves:0 };
+  S.turn = null; S.running = false; S.over = null;
+
+  el('setup').hidden = true;
+  el('board').hidden = false;
+
+  paint();
+  run();
+  keepAwake();          // asked for LAST, so it can never block the start
+  } catch(err){ oops(err); }
+}
+// BOTH FAMILIES, BECAUSE ONE OF THEM IS NOT FIRING. Tapping Start on the phone
+// did nothing at all, and a click that never arrives looks identical to a
+// handler that threw. touchend covers the first case, the guard above covers
+// the second, and `fired` stops the two from starting the game twice.
+let fired = 0;
+const armStart = ev => {
+  if (Date.now() - fired < 700) return;
+  fired = Date.now();
+  ev.preventDefault();
+  const go = el('go');
+  go.classList.add('pressed');
+  go.textContent = 'Starting';
+  // THE PRESS IS PAINTED BEFORE THE WORK BEGINS. Doing both in one turn of the
+  // event loop means the browser never draws the pressed state — it would go
+  // straight from untouched to a hidden screen. One frame's delay is invisible
+  // to a person and enough for the paint to land.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    startGame();
+    go.classList.remove('pressed');
+    go.textContent = 'Start the game';
+  }));
+};
+el('go').addEventListener('click', armStart);
+el('go').addEventListener('touchend', armStart);
+
+/* Keep the screen awake if the browser allows it — a clock that blanks
+   halfway through a game is worse than no clock. */
+let lock = null;
+async function keepAwake(){
+  try { if ('wakeLock' in navigator) lock = await navigator.wakeLock.request('screen'); } catch(e){}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') keepAwake();
+});
+
+
+paint();
+</script>
+</body>
+</html>
