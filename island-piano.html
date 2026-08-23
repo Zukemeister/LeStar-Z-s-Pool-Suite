@@ -191,7 +191,11 @@
     background:var(--paper); border:3px solid var(--ink); border-radius:10px;
     box-shadow:5px 5px 0 rgba(20,24,29,.25); padding:0 }
   #voices.floating{ right:auto }
-  #voices .vbody{ flex:1 1 auto; overflow:auto; padding:14px }
+  /* min-height:0 for the same reason #score needed it: a flex child will not
+     shrink below its content unless told to, and a panel that cannot shrink
+     cannot scroll. */
+  #voices .vbody{ flex:1 1 auto; min-height:0; overflow:auto; padding:14px;
+    -webkit-overflow-scrolling:touch }
   /* NOT ".bar" — that is the BARLINE class, `position:absolute; width:5px`,
      which collapsed every panel header to a stub with its title spilling out.
      The key panel had been quietly working around it with an explicit width. */
@@ -316,6 +320,7 @@
   #chords .more button{ background:#fff }
   #chords .more .tok{ font-size:13px }
   #lib{ position:fixed; right:20px; bottom:96px; width:400px; max-height:66vh; overflow:auto;
+    -webkit-overflow-scrolling:touch; touch-action:pan-y;
     background:#0d1013; color:#fff; border:2px solid #fff; border-radius:10px;
     padding:14px; z-index:60; box-shadow:0 10px 40px rgba(0,0,0,.5) }
   #lib h4{ margin:0 0 10px; font:800 13px/1 ui-monospace,Menlo,monospace;
@@ -1518,7 +1523,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-22 b175 min-height zero';
+const BUILD_STAMP = '2026-08-22 b178 look before you clear';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -9213,10 +9218,39 @@ function showLibrary(){
     open.innerHTML = '<b>' + n.replace(/</g,'&lt;') + '</b><i>'
                    + new Date(all[n].at).toLocaleDateString() + ' \u00b7 ' + nEv + ' notes</i>';
     open.onclick = () => {
+      // A FAILURE THAT REPORTS SUCCESS IS WORSE THAN A FAILURE. The catch set a
+      // message explaining what went wrong, and the very next line overwrote it
+      // with 'opened' — so on a machine where loading failed, the app said it
+      // had worked and left the old piece on screen. Don, on the tablet:
+      // "nothing in the library will load."
+      // WHICHEVER PATH RAN, SAY WHAT ACTUALLY HAPPENED.
+      // LOOK BEFORE YOU CLEAR. fromJSON empties the score and then fills it, so
+      // a piece that fails halfway leaves the app holding NOTHING — which is
+      // why the footer said "cleared" and undo brought the old piece back. Don:
+      // "when I went back for Mozart everything is frozen... footer says
+      // Cleared, command Z brings it back."
+      // The commonest reason a stored piece is unopenable is that it was never
+      // properly stored: a browser's storage is a few megabytes, the K.265 is
+      // most of one, and a write that overflows fails QUIETLY.
+      // A LOAD THAT CANNOT SUCCEED MUST NOT BE ALLOWED TO START.
+      const doc = all[n] && all[n].doc;
+      if (!doc || !doc.events){
+        box.remove();
+        say = '\u201c' + n + '\u201d is not in storage \u2014 it was too big to keep. '
+            + 'Bring the file in again, or use it on the desktop.';
+        render(); el.focus(); return;
+      }
       snap();
-      try { fromJSON(all[n].doc); afterOpen(); libName = n; }
-      catch (err){ say = 'that piece did not fit \u2014 ' + err.message; console.error(err); }
-      box.remove(); say = 'opened \u201c' + n + '\u201d'; render(); el.focus();
+      let ok = true;
+      try { fromJSON(doc); afterOpen(); libName = n; }
+      catch (err){
+        ok = false;
+        say = 'could not open \u201c' + n + '\u201d \u2014 ' + (err && err.message ? err.message : err);
+        console.error(err);
+      }
+      box.remove();
+      if (ok) say = 'opened \u201c' + n + '\u201d';
+      render(); el.focus();
     };
     const star = document.createElement('button');
     star.className = 'libbit star' + (stars[n] ? ' on' : '');
@@ -9287,7 +9321,10 @@ document.getElementById('fPick').onchange = ev => {
       else {
         const all = libAll();
         all[name] = { at: Date.now(), doc: doc };
-        if (libWrite(all)) kept++;
+        // libWrite returns false when the browser refuses the write. Counting it
+        // as kept is how a piece ends up listed in a library that does not hold
+        // it — visible, tappable, and empty.
+        if (libWrite(all)) kept++; else bad++;
       }
       finish();
     };
@@ -9707,6 +9744,35 @@ addEventListener('mouseup', () => {
 
 addEventListener('resize', render);
 el.focus();
+// ---------------------------------------------------------------------------
+//  A WAY BACK IN.
+//
+//  Everything this app remembers — the library, the starter shelf, the sizes,
+//  the switches — lives in the browser's storage, and any of it can end up in a
+//  state the app cannot start from. When that happens there is nothing to click
+//  on, because the page never finishes drawing: the app is simply frozen, on
+//  that device, for good. Don: "now the whole app is frozen."
+//
+//  SO THERE IS A DOOR THAT DOES NOT DEPEND ON THE APP WORKING. Add ?fresh to the
+//  address and it starts from nothing, touching no stored state. Add ?wipe and
+//  it clears the stored state first. Both are read before anything else runs,
+//  so neither needs a single button to have been drawn.
+//
+//  A TOOL YOU CAN BE LOCKED OUT OF IS A TOOL YOU CANNOT RELY ON.
+// ---------------------------------------------------------------------------
+try {
+  const q = String(location.search || '');
+  if (/[?&]wipe\b/.test(q)){
+    for (const k of ['island.library','island.shelf','island.stars','island.size',
+                     'island.loopwin2','island.leadin','island.clip','island.advance',
+                     'island.shelf.seeded',
+                     'island.chords','island.lay','island.keys','island.voices',
+                     'island.foot','island.ink','island.repeats','island.even',
+                     'island.tint','island.nums'])
+      try { localStorage.removeItem(k); } catch (err) {}
+  }
+} catch (err) {}
+
 render();
 </script>
 </body>
