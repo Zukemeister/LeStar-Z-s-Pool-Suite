@@ -477,6 +477,27 @@
   #loopWin.rolled h4{ margin:0 }
   #loopWin.rolled #loopGrip{ display:none }
 
+  /* A PANEL'S MANNERS, shared by the library and the loop window. */
+  .panelbar{ display:flex; align-items:center; justify-content:space-between;
+    cursor:move; touch-action:none; user-select:none; -webkit-user-select:none }
+  .panelkit{ display:flex; gap:2px; flex:0 0 auto }
+  .panelkit button{ border:none; background:none; color:inherit; opacity:.55;
+    cursor:pointer; font:700 19px/1 -apple-system,sans-serif; padding:0 6px }
+  .panelkit button:active{ opacity:1 }
+  .panelgrip{ position:absolute; right:0; bottom:0; width:20px; height:20px;
+    cursor:nwse-resize; touch-action:none;
+    background:linear-gradient(135deg, transparent 50%, rgba(255,255,255,.35) 50%,
+      rgba(255,255,255,.35) 62%, transparent 62%, transparent 74%,
+      rgba(255,255,255,.35) 74%, rgba(255,255,255,.35) 86%, transparent 86%) }
+  /* ROLLED UP: header only. The panel keeps its place and its settings — it
+     simply stops occupying the page, which is what a score in front of you
+     wants. */
+  #lib.rolled > *:not(h4), #loopWin.rolled > *:not(h4){ display:none }
+  #lib.rolled, #loopWin.rolled{ height:auto !important; min-height:0;
+    max-height:none !important; padding-bottom:10px }
+  #lib.rolled .panelgrip, #loopWin.rolled #loopGrip{ display:none }
+  #lib{ position:fixed }
+
   .lgroup{ margin-bottom:11px }
   .llabel{ display:block; margin-bottom:5px;
     font:600 10px/1 ui-monospace,Menlo,monospace; letter-spacing:.14em;
@@ -1563,7 +1584,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-24 b183 it moves by finger too';
+const BUILD_STAMP = '2026-08-25 b184 a panel behaves like a panel';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -9348,6 +9369,116 @@ function noteCount(doc){
   return Object.values(doc.events || {}).reduce((t, v) => t + (v ? v.length : 0), 0);
 }
 
+// ---------------------------------------------------------------------------
+//  MAKE A PANEL BEHAVE LIKE A PANEL.
+//
+//  The loop panel learned to drag, roll up and remember where it was; the
+//  library, built from the same card, could do none of it — Don, on the iPad:
+//  "the library is not moveable or diminishable or resizable." The behaviour
+//  was written into the loop panel's own wiring rather than into anything
+//  reusable, so the second panel inherited the look and none of the manners.
+//
+//  A HABIT WORTH HAVING TWICE IS WORTH WRITING ONCE. This takes a panel and its
+//  header and gives it the lot — by finger or by mouse, since the tablet is the
+//  machine these panels exist for.
+// ---------------------------------------------------------------------------
+function makePanel(box, head, key){
+  if (!box || !head) return;
+  head.classList.add('panelbar');
+
+  // Roll up and close, at the right end of the header.
+  const kit = document.createElement('span');
+  kit.className = 'panelkit';
+  const roll = document.createElement('button');
+  roll.type = 'button'; roll.innerHTML = '&minus;'; roll.title = 'roll it up';
+  const shut = document.createElement('button');
+  shut.type = 'button'; shut.innerHTML = '&times;'; shut.title = 'close';
+  kit.appendChild(roll); kit.appendChild(shut);
+  head.appendChild(kit);
+
+  roll.addEventListener('click', ev => {
+    ev.stopPropagation();
+    const on = !box.classList.contains('rolled');
+    box.classList.toggle('rolled', on);
+    roll.innerHTML = on ? '&plus;' : '&minus;';
+    roll.title = on ? 'open it out' : 'roll it up';
+  });
+  shut.addEventListener('click', ev => { ev.stopPropagation(); box.remove(); });
+
+  // Where it was left, per device.
+  const save = () => {
+    try {
+      const r = box.getBoundingClientRect();
+      localStorage.setItem(key, JSON.stringify({ x:Math.round(r.left), y:Math.round(r.top),
+                                                 w:Math.round(r.width) }));
+    } catch (err) {}
+  };
+  try {
+    const w = JSON.parse(localStorage.getItem(key) || 'null');
+    if (w){
+      box.style.left = w.x + 'px';  box.style.top = w.y + 'px';
+      box.style.right = 'auto';     box.style.bottom = 'auto';
+      if (w.w) box.style.width = w.w + 'px';
+    }
+  } catch (err) {}
+
+  // Dragging, by whichever pointing device the machine has.
+  const at = ev => (ev.touches && ev.touches[0]) ? ev.touches[0] : ev;
+  const begin = ev => {
+    if (ev.target.closest('button, input, select')) return;
+    const r = box.getBoundingClientRect();
+    const p0 = at(ev), x0 = p0.clientX, y0 = p0.clientY;
+    const move = e2 => {
+      const p = at(e2);
+      // Both anchors released, or an element pinned at two corners stretches
+      // instead of moving.
+      box.style.left = Math.max(4, Math.min(innerWidth - 80, r.left + p.clientX - x0)) + 'px';
+      box.style.top  = Math.max(4, Math.min(innerHeight - 44, r.top + p.clientY - y0)) + 'px';
+      box.style.right = 'auto'; box.style.bottom = 'auto';
+      e2.preventDefault();
+    };
+    const done = () => {
+      removeEventListener('mousemove', move); removeEventListener('mouseup', done);
+      removeEventListener('touchmove', move); removeEventListener('touchend', done);
+      save();
+    };
+    addEventListener('mousemove', move);
+    addEventListener('mouseup', done, { once:true });
+    addEventListener('touchmove', move, { passive:false });
+    addEventListener('touchend', done, { once:true });
+    ev.preventDefault();
+  };
+  head.addEventListener('mousedown', begin);
+  head.addEventListener('touchstart', begin, { passive:false });
+
+  // And a corner to resize by.
+  const grip = document.createElement('div');
+  grip.className = 'panelgrip'; grip.title = 'drag to resize';
+  box.appendChild(grip);
+  const gbegin = ev => {
+    const r = box.getBoundingClientRect();
+    const p0 = at(ev), x0 = p0.clientX, y0 = p0.clientY;
+    const move = e2 => {
+      const p = at(e2);
+      box.style.width = Math.max(260, r.width + p.clientX - x0) + 'px';
+      box.style.maxHeight = Math.max(140, r.height + p.clientY - y0) + 'px';
+      e2.preventDefault();
+    };
+    const done = () => {
+      removeEventListener('mousemove', move); removeEventListener('mouseup', done);
+      removeEventListener('touchmove', move); removeEventListener('touchend', done);
+      save();
+    };
+    addEventListener('mousemove', move);
+    addEventListener('mouseup', done, { once:true });
+    addEventListener('touchmove', move, { passive:false });
+    addEventListener('touchend', done, { once:true });
+    ev.preventDefault();
+  };
+  grip.addEventListener('mousedown', gbegin);
+  grip.addEventListener('touchstart', gbegin, { passive:false });
+}
+
 function showLibrary(){
   const had = document.getElementById('lib');
   if (had){ had.remove(); return; }
@@ -9481,6 +9612,9 @@ function showLibrary(){
   box.appendChild(done);
 
   document.body.appendChild(box);
+  // The panel is on the page before it is made draggable, so the header can be
+  // measured and the remembered position applied against a real element.
+  makePanel(box, box.querySelector('h4'), 'island.libwin');
 }
 document.getElementById('bOpen').onclick = showLibrary;
 seedShelf();
