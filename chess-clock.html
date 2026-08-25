@@ -51,6 +51,13 @@
   --dead:#6b1b10;
 }
 *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent }
+/* HIDDEN MUST MEAN HIDDEN. The browser gives [hidden] display:none, but any id
+   rule carrying a display beats it — and #board sets display:flex. So the board
+   never actually hid; it was only covered by the panels laid over it, and the
+   moment a panel closed the board came back regardless of what the code said.
+   Don: "I chose Don Won and then nothing happened." Something did happen: the
+   verdict closed onto a board that had never gone away. */
+[hidden]{ display:none !important }
 html,body{
   margin:0; height:100%; overflow:hidden;
   background:var(--ink); color:var(--paper);
@@ -67,8 +74,35 @@ html,body{
   font:inherit; cursor:pointer; overflow:hidden;
   transition:background .18s ease, color .18s ease;
 }
-/* The far player reads upside down, so his whole pad is turned around. */
-#padA{ transform:rotate(180deg) }
+/* THE FACE TURNS, THE PAD DOES NOT. Rotating the whole pad turned its BOX as
+   well as its writing — at a quarter turn the tall pad became a wide one laid
+   sideways, so the numbers ran off the screen and the little turn button went
+   with them. Both players doing it left nothing on screen to press: no way to
+   turn it back, no way to stop, no way out. Don: "all the controls are out of
+   view and it can't be rotated any more or closed or played."
+   A CONTROL MUST NEVER BE ABLE TO ROTATE ITSELF OUT OF REACH. So the writing
+   sits in a face that turns inside a pad that never moves, and the turn button
+   stays in the pad's corner where it started.
+
+   WHICH WAY EACH PLAYER READS. Across a board is only the commonest case —
+   Don: "not everybody sits across a board." Each pad turns on its own, a
+   quarter at a time, and the setting rides on the pad rather than being baked
+   into which pad it is. */
+.face{ display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition:transform .18s ease }
+.pad[data-turn="0"]   .face{ transform:none }
+.pad[data-turn="90"]  .face{ transform:rotate(90deg) }
+.pad[data-turn="180"] .face{ transform:rotate(180deg) }
+.pad[data-turn="270"] .face{ transform:rotate(270deg) }
+/* The turn button is fixed to the pad's own corner and is the one thing that
+   never turns, so there is always something to press. */
+.pad{ position:relative }
+.spin{
+  position:absolute; top:8px; right:10px; width:34px; height:34px; padding:0;
+  border:none; border-radius:50%; background:rgba(0,0,0,.14); color:inherit;
+  font:700 17px/1 -apple-system,sans-serif; cursor:pointer; z-index:3; opacity:.65;
+}
+.spin:active{ transform:scale(.92) }
 
 .pad .who{ font-size:clamp(15px,3.6vh,26px); letter-spacing:.16em;
   text-transform:uppercase; opacity:.72; margin-bottom:.35em; font-weight:600 }
@@ -80,30 +114,33 @@ html,body{
   text-transform:uppercase; opacity:0; transition:opacity .18s }
 .pad .used{ margin-top:.55em; font-size:clamp(13px,2.6vh,19px); font-weight:600;
   font-variant-numeric:tabular-nums; letter-spacing:.06em; opacity:0; transition:opacity .18s }
-.pad .moves{ position:absolute; bottom:10px; right:16px;
+.pad .moves{ position:absolute; bottom:-26px; right:0;
   font-size:clamp(11px,2vh,15px); opacity:.5; font-variant-numeric:tabular-nums }
 
 /* THE LIVE PAD. Colour, both labels shown, and a slow breath so it is
    moving even when nobody is looking straight at it. */
-.pad.live, .pad.ready{ color:#fff; animation:breathe 1.9s ease-in-out infinite }
-.pad.live.side-white, .pad.ready.side-white{ background:var(--white) }
-.pad.live.side-black, .pad.ready.side-black{ background:var(--black); color:#2a1f06 }
+.pad.live, .pad.ready{ animation:breathe 3.2s ease-in-out infinite }
+.pad.live, .pad.ready{ background:var(--mine); color:var(--onmine) }
 .pad.live .colour, .pad.live .call, .pad.live .used{ opacity:1 }
 .pad.live .who{ opacity:.9 }
 /* WAITING TO BEGIN wears the player's own colour, breathing more slowly so it
    never reads as a clock already running. */
-.pad.ready{ animation-duration:2.6s }
+.pad.ready{ animation-duration:4s }
 .pad.ready .colour, .pad.ready .call{ opacity:1 }
 .pad.ready .who{ opacity:.85 }
+/* SLOWER AND MORE OBVIOUS, which is not a contradiction: a fast shimmer reads
+   as texture, a slow swell reads as breathing. Don: "make the pulse slower, but
+   more obvious." The ring goes deeper and the whole pad lightens with it, so it
+   carries across a table rather than needing to be looked at. */
 @keyframes breathe{
-  0%,100%{ box-shadow:inset 0 0 0 0 rgba(255,255,255,0) }
-  50%    { box-shadow:inset 0 0 0 14px rgba(255,255,255,.17) }
+  0%,100%{ box-shadow:inset 0 0 0 0 rgba(255,255,255,0);  filter:brightness(1) }
+  50%    { box-shadow:inset 0 0 0 30px rgba(255,255,255,.30); filter:brightness(1.14) }
 }
 /* SHORT OF TIME CHANGES THE NUMERALS, NOT THE PAD. The pad keeps the player's
    own colour so identity never wavers; the clock itself goes red and the
    breath quickens, which is where the eye already is. */
 .pad.live.low .time{ color:var(--danger); text-shadow:0 0 22px rgba(255,255,255,.5) }
-.pad.live.low{ animation-duration:.85s }
+.pad.live.low{ animation-duration:1.4s }
 .pad.dead{ background:var(--dead); color:#fff; animation:none }
 .pad.dead .call{ opacity:1 }
 
@@ -119,12 +156,84 @@ html,body{
 }
 #bar button:active{ background:#26231d }
 
+
+
+
+
+
+
 /* ---------- setup ---------- */
+#verdict, #log{
+  position:fixed; inset:0; background:var(--paper); color:var(--ink);
+  overflow-y:auto; padding:26px 20px 40px;
+}
+.vbtn{
+  width:100%; margin-top:10px; padding:16px; font:inherit; font-size:16px; font-weight:700;
+  letter-spacing:.08em; color:#fff; background:var(--white);
+  border:none; border-radius:12px; cursor:pointer; text-align:left;
+}
+.vbtn:active{ transform:scale(.98) }
+#vB{ background:var(--black); color:#2a1f06 }
+#vD{ background:#6b6558 }
+.vbtn.chosen{ box-shadow:inset 0 0 0 3px var(--ink) }
+.vbtn.ghost{ background:none; color:var(--ink); border:1.5px solid #ddd6c4; font-weight:600 }
+/* THE RECORD, AS A TABLE. Don: "the info should be very scientifically
+   recorded... we don't need splashy." Two columns, one row a fact, nothing
+   decorative — a page you read across, the same shape the spreadsheet has. */
+#card{ width:100%; border-collapse:collapse; font-size:15px }
+#card th, #card td{ padding:6px 8px; border-bottom:1px solid #efe9d8; text-align:right }
+#card th{ font-size:11px; letter-spacing:.1em; text-transform:uppercase; opacity:.55 }
+#card td:first-child, #card th:first-child{
+  text-align:left; font-size:11px; letter-spacing:.1em; text-transform:uppercase; opacity:.55 }
+#card td{ font-variant-numeric:tabular-nums; font-weight:600 }
+#card tr:last-child td{ border-bottom:none }
+
+/* THE SAME SHEET, DIFFERENT CONTENT. Don asked for the closing panel to look
+   like the opening one — so it uses the same fieldsets, the same legends and
+   the same paper, and only the rows differ. Nothing here is a control except
+   the ending, the save and the way out. */
+#standings{ width:100%; border-collapse:collapse; font-size:15px }
+#standings td, #standings th{ padding:8px 6px; border-bottom:1px solid #efe9d8; text-align:right }
+#standings th{ font-size:11px; letter-spacing:.1em; text-transform:uppercase; opacity:.55; font-weight:600 }
+#standings td:first-child, #standings th:first-child{ text-align:left; font-weight:700 }
+#standings td{ font-variant-numeric:tabular-nums }
+#standings tr:last-child td{ border-bottom:none }
+.pair{ display:flex; align-items:baseline; gap:10px; padding:7px 0;
+  border-bottom:1px solid #efe9d8 }
+.pair:last-child{ border-bottom:none }
+.pair b{ flex:1 1 auto; font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  opacity:.6; font-weight:600 }
+.pair span{ flex:0 0 33%; text-align:right; font-variant-numeric:tabular-nums; font-weight:700 }
+#pW, #pB{ text-align:left; flex:1 1 50% }
+.won{ font-size:19px; font-weight:700; margin:14px 0 2px }
+#saveOne{
+  width:100%; padding:15px; font:inherit; font-size:15px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; color:#fff; background:var(--white);
+  border:none; border-radius:12px; cursor:pointer;
+}
+#csv{
+  width:100%; margin-top:18px; padding:15px; font:inherit; font-size:15px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; color:#fff; background:var(--white);
+  border:none; border-radius:12px; cursor:pointer;
+}
+.game{ border:1.5px solid #ddd6c4; border-radius:12px; padding:13px 15px; margin-bottom:10px }
+.game .top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px }
+.game .who{ font-weight:700; font-size:16px }
+.game .when{ font-size:12px; opacity:.55; white-space:nowrap }
+.game .line{ font-size:13px; opacity:.72; margin-top:5px; line-height:1.5 }
+.game.win-w{ border-left:6px solid var(--white) }
+.game.win-b{ border-left:6px solid var(--black) }
+.game.draw { border-left:6px solid #6b6558 }
 #setup{
   position:fixed; inset:0; background:var(--paper); color:var(--ink);
   overflow-y:auto; padding:26px 20px 40px;
 }
-#setup .wrap{ max-width:520px; margin:0 auto }
+/* EVERY SHEET IS THE SAME SHEET. This rule was written as #setup .wrap, so the
+   opening panel was held to a readable column and the scorecard and log book —
+   which use the identical markup — spread edge to edge on a desktop. Don: "the
+   closing box is spread out over the whole screen. It should be just like the
+   opening box." The narrower selector was the whole difference. */
+.wrap{ max-width:520px; margin:0 auto }
 h1{ font-size:23px; letter-spacing:.2em; text-transform:uppercase; margin:.2em 0 .1em;
   line-height:1.32 }
 .sub{ opacity:.6; font-size:14px; margin:0 0 26px }
@@ -144,6 +253,23 @@ input[type=text], input[type=number]{
   border:1.5px solid #ddd6c4; border-radius:10px; background:#fff; cursor:pointer;
 }
 .presets button:active{ background:#efeadc }
+/* THE SPECTRUM. Twelve steps round the wheel, which is enough to choose from
+   and few enough to tap accurately. Reds are left out deliberately: red means
+   short of time on the clock face, and a player wearing it would be shouting
+   that all game. */
+.swatches{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:4px }
+.swatches button{
+  width:38px; height:38px; padding:0; border:3px solid transparent; border-radius:50%;
+  cursor:pointer; box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);
+}
+.swatches button.on{ border-color:var(--ink); transform:scale(1.08) }
+.swatches button.taken{ opacity:.28; cursor:not-allowed }
+#flip{
+  width:100%; padding:14px; font:inherit; font-size:15px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
+  background:#fff; border:1.5px solid #ddd6c4; border-radius:12px; cursor:pointer;
+}
+#flip:active{ transform:scale(.98); background:#efeadc }
 #go{
   width:100%; margin-top:6px; padding:17px; font:inherit; font-size:17px; font-weight:700;
   letter-spacing:.16em; text-transform:uppercase; color:#fff; background:var(--white);
@@ -170,28 +296,90 @@ input[type=text], input[type=number]{
 <body>
 
 <div id="board" hidden>
-  <button type="button" class="pad" id="padA">
+  <button type="button" class="pad" id="padA" data-turn="180">
+    <span class="spin" id="spinA" title="turn this side">↻</span>
+    <span class="face">
     <span class="who"></span>
     <span class="time">10:00</span>
     <span class="colour"></span>
     <span class="call">tap when you have moved</span>
     <span class="used"></span>
     <span class="moves"></span>
+    </span>
   </button>
 
   <div id="bar">
     <button type="button" id="pause">Pause</button>
     <button type="button" id="again">New game</button>
+    <button type="button" id="done">Game over</button>
   </div>
 
-  <button type="button" class="pad" id="padB">
+  <button type="button" class="pad" id="padB" data-turn="0">
+    <span class="spin" id="spinB" title="turn this side">↻</span>
+    <span class="face">
     <span class="who"></span>
     <span class="time">10:00</span>
     <span class="colour"></span>
     <span class="call">tap when you have moved</span>
     <span class="used"></span>
     <span class="moves"></span>
+    </span>
   </button>
+</div>
+
+<!-- HOW A GAME ENDS. The clock knows the times, the names and the moves, but
+     it cannot know who won: most games end in a resignation or a mate, with
+     time left on both clocks. So the one fact it lacks is the one it asks for,
+     once, at the end. -->
+<div id="verdict" hidden>
+  <div class="wrap">
+    <h1>Game Over</h1>
+    <p class="sub" id="vdate"></p>
+
+    <fieldset>
+      <legend>The record</legend>
+      <table id="card">
+        <tr><th></th><th id="cW"></th><th id="cB"></th></tr>
+        <tr><td>Colour</td><td>white</td><td>black</td></tr>
+        <tr><td>Given</td><td id="sW"></td><td id="sB"></td></tr>
+        <tr><td>Used</td><td id="uW"></td><td id="uB"></td></tr>
+        <tr><td>Left</td><td id="lW"></td><td id="lB"></td></tr>
+        <tr><td>Moves</td><td id="mW"></td><td id="mB"></td></tr>
+      </table>
+    </fieldset>
+
+    <fieldset>
+      <legend>How did it end?</legend>
+      <p class="note" id="vsum"></p>
+      <button type="button" class="vbtn" id="vW"></button>
+      <button type="button" class="vbtn" id="vB"></button>
+      <button type="button" class="vbtn" id="vD">A draw</button>
+      <p class="won" id="wonline"></p>
+    </fieldset>
+
+    <button type="button" id="saveOne">Save this game to a file</button>
+    <button type="button" class="vbtn ghost" id="vLog">The log book</button>
+    <button type="button" class="vbtn ghost" id="vDone">Done</button>
+  </div>
+</div>
+
+<div id="log" hidden>
+  <div class="wrap">
+    <h1>The Log Book</h1>
+    <p class="sub" id="tally"></p>
+
+    <fieldset>
+      <legend>Everyone, all games</legend>
+      <table id="standings"></table>
+    </fieldset>
+
+    <fieldset>
+      <legend>Every game</legend>
+      <div id="games"></div>
+    </fieldset>
+    <button type="button" id="csv">Save as a spreadsheet</button>
+    <button type="button" class="vbtn ghost" id="logBack">Back</button>
+  </div>
 </div>
 
 <div id="setup">
@@ -201,32 +389,51 @@ input[type=text], input[type=number]{
 
     <fieldset>
       <legend>Who is playing</legend>
-      <label for="nW">Playing white</label>
-      <input type="text" id="nW" placeholder="White" autocomplete="off">
-      <label for="nB">Playing black</label>
-      <input type="text" id="nB" placeholder="Black" autocomplete="off">
+      <label for="n1">Player one</label>
+      <input type="text" id="n1" placeholder="Player one" autocomplete="off">
+      <label for="n2">Player two</label>
+      <input type="text" id="n2" placeholder="Player two" autocomplete="off">
     </fieldset>
 
     <fieldset>
-      <legend>Time for each side</legend>
+      <legend>Pick a colour each</legend>
+      <label id="l1c">Player one</label>
+      <div class="swatches" id="sw1"></div>
+      <label id="l2c">Player two</label>
+      <div class="swatches" id="sw2"></div>
+      <p class="note">A colour belongs to the PLAYER and is held all game, so the
+      one cue you can rely on never changes. Two players cannot take the same one.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Who takes white?</legend>
+      <button type="button" class="vbtn" id="w1">Player one</button>
+      <button type="button" class="vbtn" id="w2">Player two</button>
+      <button type="button" id="flip">Or flip a coin</button>
+      <p class="note" id="flipsaid">White moves first, so whoever takes it has
+      the small advantage. Choose, or let the coin decide.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Time for each player</legend>
       <div class="row">
         <div>
-          <label for="tW">White · minutes</label>
-          <input type="number" id="tW" value="10" min="1" max="180" inputmode="numeric">
+          <label for="t1" id="l1t">Player one · minutes</label>
+          <input type="number" id="t1" value="10" min="1" max="180" inputmode="numeric">
         </div>
         <div>
-          <label for="tB">Black · minutes</label>
-          <input type="number" id="tB" value="10" min="1" max="180" inputmode="numeric">
+          <label for="t2" id="l2t">Player two · minutes</label>
+          <input type="number" id="t2" value="10" min="1" max="180" inputmode="numeric">
         </div>
       </div>
       <div class="row">
         <div>
-          <label for="iW">White · seconds added a move</label>
-          <input type="number" id="iW" value="0" min="0" max="60" inputmode="numeric">
+          <label for="i1">Seconds added a move</label>
+          <input type="number" id="i1" value="0" min="0" max="60" inputmode="numeric">
         </div>
         <div>
-          <label for="iB">Black · seconds added a move</label>
-          <input type="number" id="iB" value="0" min="0" max="60" inputmode="numeric">
+          <label for="i2">Seconds added a move</label>
+          <input type="number" id="i2" value="0" min="0" max="60" inputmode="numeric">
         </div>
       </div>
       <div class="presets">
@@ -235,14 +442,15 @@ input[type=text], input[type=number]{
         <button type="button" data-set="15,10">15 + 10</button>
         <button type="button" data-set="30,0">30 min</button>
       </div>
-      <p class="note">The two sides need not match. Giving the stronger
-      player less time is the oldest handicap there is.</p>
+      <p class="note">The two need not match. Giving the stronger player less
+      time is the oldest handicap there is.</p>
     </fieldset>
 
     <button type="button" id="go">Start the game</button>
+    <button type="button" class="vbtn ghost" id="seeLog">The log book</button>
 
-    <p class="note">White moves first, so white's pad is the one that lights up.
-    After you move, tap <em>your own</em> pad — that stops your clock and starts
+    <p class="note">Whoever has white moves first, and that pad is the one that
+    lights up. After you move, tap <em>your own</em> pad — that stops your clock and starts
     your opponent's. Space bar works too, if there is a keyboard.</p>
 
     <p class="stamp" id="stamp"></p>
@@ -251,7 +459,7 @@ input[type=text], input[type=number]{
 </div>
 
 <script>
-const BUILD = '2026-08-19 · c7';
+const BUILD = '2026-08-20 · c17';
 
 /* A PHONE HAS NO CONSOLE YOU CAN READ. If anything in here throws, the only
    symptom is a button that does nothing — which is exactly what Don saw. So
@@ -344,6 +552,11 @@ function paint(){
     // and says what to do.
     const ready = !S.running && S.turn === null && !S.over && side === 'white';
 
+    // THE PLAYER'S OWN COLOUR, set from the spectrum rather than from a fixed
+    // pair in the stylesheet.
+    const hue = S[side].hue || WHEEL[0];
+    pad.style.setProperty('--mine', hue);
+    pad.style.setProperty('--onmine', inkOn(hue));
     pad.classList.toggle('live',  live);
     pad.classList.toggle('ready', ready);
     pad.classList.toggle('low',   live && ms < 60000);
@@ -368,6 +581,11 @@ function run(){
         S.over = S.turn;
         S.running = false;
         buzz([90, 70, 90, 70, 260]);
+        // A FLAG FALL IS A RESULT, but not always THE result — a player can run
+        // out in a position that was already lost, or agreed drawn. So it opens
+        // the same question every other ending does, with the likely answer
+        // sitting first.
+        setTimeout(askVerdict, 900);
       }
     }
     paint();
@@ -422,6 +640,19 @@ for (const side of ['white','black']){
   PAD[side].addEventListener('touchend', arm(side));
 }
 
+/* TURNING A PAD IS NOT A MOVE. The spin button sits inside the pad, so a tap on
+   it would otherwise also stop that player's clock — the handler claims the
+   event before the pad ever sees it. */
+for (const [btn, pad] of [['spinA', PAD.black], ['spinB', PAD.white]]){
+  const turn = ev => {
+    ev.stopPropagation(); ev.preventDefault();
+    const now = +(pad.dataset.turn || 0);
+    pad.dataset.turn = (now + 90) % 360;
+  };
+  el(btn).addEventListener('click', turn);
+  el(btn).addEventListener('touchend', turn);
+}
+
 el('pause').addEventListener('click', () => {
   if (S.over || S.turn === null) return;
   if (S.running){
@@ -435,8 +666,8 @@ el('pause').addEventListener('click', () => {
 });
 
 el('again').addEventListener('click', () => {
-  el('board').hidden = true;
-  el('setup').hidden = false;
+  S.turn = null; S.running = false; S.over = null;
+  show('setup');
 });
 
 addEventListener('keydown', e => {
@@ -446,11 +677,364 @@ addEventListener('keydown', e => {
 });
 
 /* ---------- setup ---------- */
+
+/* ------------------------------------------------------------------
+   THE LOG BOOK. Kept in the browser's own storage under one key — a list
+   of finished games, newest last.
+
+   IT IS THE CLOCK'S RECORD, NOT A SERVER'S. Nothing leaves the device, no
+   account, no network. The cost of that is the honest one: clear the
+   browser's data and it is gone, which is why the export exists. A
+   spreadsheet on your own disk is the archive; this is the workbench.
+   ------------------------------------------------------------------ */
+const LOGKEY = 'lestarz.chessclock.log';
+function readLog(){
+  try { return JSON.parse(localStorage.getItem(LOGKEY) || '[]'); }
+  catch(e){ return []; }
+}
+function writeLog(list){
+  try { localStorage.setItem(LOGKEY, JSON.stringify(list)); }
+  catch(e){ oops(e); }
+}
+
+function recordGame(result){
+  const g = {
+    at: Date.now(),
+    white: S.white.name, black: S.black.name,
+    result,                                   // 'white' | 'black' | 'draw'
+    // THE HANDICAP IS THE SETTING, not a separate field. Two sides with
+    // different times IS the handicap, so storing what each was given
+    // records it without anyone having to describe it.
+    setW: Math.round(S.white.start / 60000), setB: Math.round(S.black.start / 60000),
+    incW: Math.round(S.white.inc / 1000),     incB: Math.round(S.black.inc / 1000),
+    leftW: Math.max(0, Math.round(leftOf('white') / 1000)),
+    leftB: Math.max(0, Math.round(leftOf('black') / 1000)),
+    usedW: Math.max(0, Math.round((S.white.start - leftOf('white')) / 1000)),
+    usedB: Math.max(0, Math.round((S.black.start - leftOf('black')) / 1000)),
+    movesW: S.white.moves, movesB: S.black.moves,
+    flagged: S.over || null
+  };
+  const list = readLog(); list.push(g); writeLog(list);
+  return g;                       // handed back so the scorecard can save it
+}
+
+const dateOf = ms => new Date(ms).toLocaleDateString(undefined,
+  { month:'short', day:'numeric', year:'numeric' });
+const mmss = s => Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+
+/* THE COLLECTIVE HISTORY. Every player who has ever played, their record across
+   every game in the book, best first. The per-pairing tally above it answers
+   "how do I do against him"; this answers "how does everybody do".
+   WON, LOST AND DRAWN COUNT THE PERSON, not the colour — a win as black is a
+   win. That is the whole reason the log stores names beside the result rather
+   than storing the result alone. */
+function drawStandings(list){
+  const who = new Map();
+  for (const g of list){
+    for (const n of [g.white, g.black]){
+      if (!who.has(n)) who.set(n, { n, played:0, won:0, lost:0, drew:0, moves:0, used:0 });
+      who.get(n).played++;
+    }
+    who.get(g.white).moves += g.movesW || 0;
+    who.get(g.black).moves += g.movesB || 0;
+    who.get(g.white).used  += g.usedW  || 0;
+    who.get(g.black).used  += g.usedB  || 0;
+    if (g.result === 'draw'){ who.get(g.white).drew++; who.get(g.black).drew++; }
+    else {
+      const w = g.result === 'white' ? g.white : g.black;
+      const l = g.result === 'white' ? g.black : g.white;
+      who.get(w).won++; who.get(l).lost++;
+    }
+  }
+  const rows = [...who.values()].sort((a, b) =>
+    (b.won - b.lost) - (a.won - a.lost) || b.played - a.played || a.n.localeCompare(b.n));
+  const t = el('standings');
+  if (!rows.length){ t.innerHTML = ''; return; }
+  t.innerHTML =
+    '<tr><th>Player</th><th>Games</th><th>Won</th><th>Lost</th><th>Drawn</th>' +
+    '<th>Moves</th><th>Time played</th></tr>' +
+    rows.map(r => '<tr><td>' + esc(r.n) + '</td><td>' + r.played + '</td><td>' +
+      r.won + '</td><td>' + r.lost + '</td><td>' + r.drew + '</td><td>' + r.moves +
+      '</td><td>' + mmss(r.used) + '</td></tr>').join('');
+}
+
+function drawLog(){
+  const all = readLog();
+  drawStandings(all);
+  const list = all.slice().reverse();
+  const box = el('games');
+  box.innerHTML = '';
+  if (!list.length){
+    box.innerHTML = '<p class="note">No games recorded yet.</p>';
+    el('tally').textContent = '';
+    return;
+  }
+  // A HEAD TO HEAD ONLY MEANS SOMETHING BETWEEN THE SAME TWO PEOPLE, so the
+  // tally is drawn for the pairing of the most recent game rather than as a
+  // meaningless total across everyone who has ever played.
+  const top = list[0], pair = [top.white, top.black].sort().join(' vs ');
+  let w = 0, b = 0, d = 0, n = 0;
+  for (const g of list){
+    if ([g.white, g.black].sort().join(' vs ') !== pair) continue;
+    n++;
+    if (g.result === 'draw') d++;
+    else if (g[g.result] === top.white) w++;
+    else b++;
+  }
+  el('tally').textContent = n > 1
+    ? pair + ' \u2014 ' + top.white + ' ' + w + ', ' + top.black + ' ' + b +
+      (d ? ', ' + d + ' drawn' : '') + ' over ' + n + ' games'
+    : list.length + (list.length === 1 ? ' game recorded' : ' games recorded');
+
+  for (const g of list){
+    const d2 = document.createElement('div');
+    d2.className = 'game ' + (g.result === 'draw' ? 'draw' : g.result === 'white' ? 'win-w' : 'win-b');
+    const won = g.result === 'draw' ? 'Drawn'
+              : (g.result === 'white' ? g.white : g.black) + ' won';
+    const how = g.flagged ? ' on time' : '';
+    // THE TIME EACH PLAYER WAS GIVEN, ALWAYS — not only when it was uneven.
+    // Don, reasoning it out: the owner's own name looked redundant in his own
+    // log book, until the time assignments went in. "10 minutes against 15"
+    // says nothing unless you know which of the two was you. A HANDICAP IS A
+    // FACT ABOUT A PAIR OF PEOPLE, so it cannot be written without both names.
+    const clock = k => g['set' + k] + 'm' + (g['inc' + k] ? '+' + g['inc' + k] + 's' : '');
+    const even  = g.setW === g.setB && g.incW === g.incB;
+    const gave  = even
+      ? clock('W') + ' each'
+      : g.white + ' ' + clock('W') + ' \u00b7 ' + g.black + ' ' + clock('B') + '  (handicap)';
+
+    d2.innerHTML =
+      '<div class="top"><span class="who">' + esc(won + how) + '</span>' +
+      '<span class="when">' + dateOf(g.at) + '</span></div>' +
+      '<div class="line">' + esc(g.white + ' (white) vs ' + g.black + ' (black)') + '</div>' +
+      '<div class="line">' + esc('Given ' + gave) + '</div>' +
+      '<div class="line">' + esc(
+        'Used ' + mmss(g.usedW == null ? 0 : g.usedW) + ' and ' + mmss(g.usedB == null ? 0 : g.usedB) +
+        ' \u00b7 left ' + mmss(g.leftW) + ' and ' + mmss(g.leftB) +
+        ' \u00b7 ' + g.movesW + ' and ' + g.movesB + ' moves') + '</div>';
+    box.appendChild(d2);
+  }
+}
+const esc = t => String(t).replace(/[&<>"]/g, c =>
+  ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+
+// ONE PLACE THAT DECIDES WHICH SCREEN IS UP. Four panels, each shown by hiding
+// the other three: doing it by hand at every call site is how a screen ends up
+// half-open — and how a helper gets deleted with the block it happened to live
+// in, which is what just happened to this one.
+function show(which){
+  for (const id of ['setup','board','verdict','log'])
+    el(id).hidden = (id !== which);
+}
+
+function askVerdict(){
+  if (!el('verdict').hidden) return;
+  const use = side => S[side].start - leftOf(side);
+  const secs = ms => mmss(Math.max(0, Math.round(ms / 1000)));
+
+  el('vdate').textContent = new Date().toLocaleDateString(undefined,
+    { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  el('cW').textContent = S.white.name;
+  el('cB').textContent = S.black.name;
+  el('sW').textContent = secs(S.white.start) + (S.white.inc ? ' +' + Math.round(S.white.inc/1000) + 's' : '');
+  el('sB').textContent = secs(S.black.start) + (S.black.inc ? ' +' + Math.round(S.black.inc/1000) + 's' : '');
+  el('uW').textContent = secs(use('white'));
+  el('uB').textContent = secs(use('black'));
+  el('lW').textContent = secs(leftOf('white'));
+  el('lB').textContent = secs(leftOf('black'));
+  el('mW').textContent = S.white.moves;
+  el('mB').textContent = S.black.moves;
+
+  el('vsum').textContent = S.over
+    ? (S.over === 'white' ? S.white.name : S.black.name) + ' ran out of time \u2014 but who won?'
+    : 'The clock cannot know this one.';
+  el('vW').textContent = S.white.name + ' won';
+  el('vB').textContent = S.black.name + ' won';
+  el('wonline').textContent = '';
+  lastGame = null;
+  show('verdict');
+}
+
+// THE RESULT IS A LINE ON THE CARD, not a change of screen. Saving and leaving
+// are always on the panel — Don: "this one flamed out, no Save button." A
+// control that only exists after a choice is a control that can go missing, and
+// there is no reason for either of these to be conditional.
+let lastGame = null;
+function finish(result){
+  try { lastGame = recordGame(result); } catch(err){ oops(err); return; }
+  el('wonline').textContent = result === 'draw'
+    ? 'Drawn.'
+    : (result === 'white' ? S.white.name : S.black.name) + ' won.';
+}
+function leaveVerdict(){
+  S.turn = null; S.running = false; S.over = null;
+  show('setup');
+}
+el('vW').addEventListener('click', () => finish('white'));
+el('vB').addEventListener('click', () => finish('black'));
+el('vD').addEventListener('click', () => finish('draw'));
+el('vDone').addEventListener('click', leaveVerdict);
+// THE HISTORY IS REACHABLE FROM WHERE A RESULT JUST LANDED, which is the moment
+// anyone actually wants to see it.
+el('vLog').addEventListener('click', () => { drawLog(); show('log'); });
+
+// EXPORT SITS IN TWO PLACES BECAUSE THERE ARE TWO THINGS TO EXPORT: this game,
+// from the card in front of you, and every game, from the log book.
+el('saveOne').addEventListener('click', () => {
+  if (!lastGame){ el('wonline').textContent = 'Say how it ended first, then save.'; return; }
+  // SAYING WHETHER IT WORKED. A save that quietly does nothing is the worst
+  // kind, since there is no way to tell it from a save that worked.
+  const ok = saveCSV([lastGame], 'chess-game');
+  el('wonline').textContent = ok
+    ? el('wonline').textContent.replace(/ \u00b7 saved.*/, '') + ' \u00b7 saved to chess-game.csv'
+    : 'The file could not be saved here.';
+});
+
+
+
+el('done').addEventListener('click', () => {
+  if (S.turn === null) return;             // nothing has happened yet
+  if (S.running){ S[S.turn].left = leftOf(S.turn); S.running = false; }
+  askVerdict();
+});
+
+el('seeLog').addEventListener('click', () => { drawLog(); show('log'); });
+el('logBack').addEventListener('click', () => show('setup'));
+
+/* A SPREADSHEET IS THE ARCHIVE. The browser's storage is a workbench and can be
+   cleared by anything from a settings sweep to a new phone; a file on your own
+   disk cannot. Same rule the Island library follows. */
+/* ONE WRITER, TWO BUTTONS. The scorecard saves the game just played; the log
+   book saves the lot. Same columns either way, so a single-game file and a
+   season's file open the same and can be pasted together. */
+function saveCSV(list, stem){
+  if (!list || !list.length) return;
+  const head = ['Date','White','Black','Result','Won by','White start','Black start',
+                'White increment','Black increment','White used','Black used',
+                'White left','Black left','White moves','Black moves','Ran out'];
+  const rows = list.map(g => [
+    new Date(g.at).toISOString().slice(0,10),
+    g.white, g.black, g.result,
+    g.result === 'draw' ? '' : (g.result === 'white' ? g.white : g.black),
+    g.setW + 'm', g.setB + 'm', g.incW + 's', g.incB + 's',
+    mmss(g.usedW), mmss(g.usedB), mmss(g.leftW), mmss(g.leftB),
+    g.movesW, g.movesB, g.flagged || ''
+  ]);
+  const csv = [head, ...rows]
+    .map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\n');
+  // THE LINK HAS TO BE IN THE PAGE TO BE CLICKED. A detached anchor works in
+  // some browsers and is silently ignored in others — which is why Save did
+  // nothing rather than failing loudly. Don: "the save part failed."
+  // Put it in the document, click it, take it out again.
+  try {
+    const url = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8' }));
+    const a2 = document.createElement('a');
+    a2.href = url;
+    a2.download = stem + '.csv';
+    a2.style.display = 'none';
+    document.body.appendChild(a2);
+    a2.click();
+    setTimeout(() => { document.body.removeChild(a2); URL.revokeObjectURL(url); }, 4000);
+    return true;
+  } catch(err){ oops(err); return false; }
+}
+el('csv').addEventListener('click', () => saveCSV(readLog(), 'chess-log'));
+
+
+/* ---------- the spectrum, and the coin ---------- */
+// BLACK AND WHITE JOIN THE WHEEL, at Don's ask — and they are the obvious pair
+// for a chess clock, since a player can simply wear the colour of the pieces.
+// Reds stay out: red means short of time on the clock face.
+const WHEEL = ['#0f8f7e','#12a08a','#3f9d5a','#6f9b32','#9a9016','#c98a12',
+               '#d99b1c','#c47a2c','#8a6fbf','#6f5fc4','#3f6fc9','#1f8fb8',
+               '#f4f1e6','#141310'];
+
+/* WHAT COLOUR THE WRITING HAS TO BE. A pad wearing near-white cannot carry
+   white text, and one wearing near-black cannot carry dark text. Rather than a
+   lookup table that would rot the moment the wheel changed, the pad asks the
+   colour how bright it is and answers accordingly — the standard luminance
+   weighting, since green reads far brighter to the eye than blue. */
+function inkOn(hex){
+  const n = parseInt(hex.slice(1), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return (0.2126*r + 0.7152*g + 0.0722*b) > 150 ? '#141310' : '#ffffff';
+}
+
+/* A PLAYER IS NOT A COLOUR YET. The sheet used to ask for "playing white" and
+   "playing black" before anyone had decided who was which — Don: "it should be
+   non-commital at that point, just names." So everything on the opening sheet
+   belongs to PLAYER ONE and PLAYER TWO, and the one question that turns them
+   into white and black is asked on its own, once. */
+let picked = { p1:0, p2:6 };
+let whiteIs = null;                 // 'p1' | 'p2', decided before the game starts
+
+const nameOf = k => (el(k === 'p1' ? 'n1' : 'n2').value || '').trim()
+                 || (k === 'p1' ? 'Player one' : 'Player two');
+
+function paintSwatches(){
+  for (const k of ['p1','p2']){
+    const box = el(k === 'p1' ? 'sw1' : 'sw2');
+    const other = k === 'p1' ? 'p2' : 'p1';
+    box.innerHTML = '';
+    WHEEL.forEach((c, i) => {
+      const b2 = document.createElement('button');
+      b2.type = 'button';
+      b2.style.background = c;
+      if (picked[k] === i) b2.className = 'on';
+      else if (picked[other] === i) b2.className = 'taken';
+      b2.title = c;
+      b2.addEventListener('click', () => {
+        if (picked[other] === i) return;      // two players, two colours
+        picked[k] = i;
+        paintSwatches();
+      });
+      box.appendChild(b2);
+    });
+  }
+}
+
+/* THE NAMES FOLLOW THE PLAYERS through every label that mentions them, so the
+   sheet reads as two people rather than two slots. */
+function paintNames(){
+  const a1 = nameOf('p1'), a2 = nameOf('p2');
+  el('l1c').textContent = a1;
+  el('l2c').textContent = a2;
+  el('l1t').textContent = a1 + ' \u00b7 minutes';
+  el('l2t').textContent = a2 + ' \u00b7 minutes';
+  el('w1').textContent = a1 + ' takes white';
+  el('w2').textContent = a2 + ' takes white';
+  if (whiteIs) sayWhite();
+}
+el('n1').addEventListener('input', paintNames);
+el('n2').addEventListener('input', paintNames);
+
+function sayWhite(){
+  const w = nameOf(whiteIs), bl = nameOf(whiteIs === 'p1' ? 'p2' : 'p1');
+  el('flipsaid').textContent = w + ' takes white and moves first. ' + bl + ' plays black.';
+  el('w1').classList.toggle('chosen', whiteIs === 'p1');
+  el('w2').classList.toggle('chosen', whiteIs === 'p2');
+}
+function setWhite(k){ whiteIs = k; sayWhite(); }
+el('w1').addEventListener('click', () => setWhite('p1'));
+el('w2').addEventListener('click', () => setWhite('p2'));
+
+/* THE COIN IS ONE WAY TO ANSWER THE QUESTION, not the only way. It used to be
+   the only route to a decision, and it swapped the NAMES in the boxes — which
+   quietly carried each player's time and colour across to the other person.
+   Now it answers exactly the question the two buttons answer, and touches
+   nothing else. */
+el('flip').addEventListener('click', () => {
+  setWhite(Math.random() < 0.5 ? 'p1' : 'p2');
+  el('flipsaid').textContent = 'The coin says \u2014 ' + el('flipsaid').textContent;
+});
+
+paintSwatches();
+paintNames();
 document.querySelectorAll('.presets button').forEach(b => {
   b.addEventListener('click', () => {
     const [m, i] = b.dataset.set.split(',');
-    el('tW').value = el('tB').value = m;
-    el('iW').value = el('iB').value = i;
+    el('t1').value = el('t2').value = m;
+    el('i1').value = el('i2').value = i;
   });
 });
 
@@ -458,14 +1042,27 @@ function startGame(){
   try{
   const mins = (v, d) => Math.max(1, Math.min(180, +v || d));
   const secs = v => Math.max(0, Math.min(60, +v || 0));
-  S.white = { left: mins(el('tW').value, 10) * 60000, inc: secs(el('iW').value) * 1000,
-              name: (el('nW').value || 'White').trim(), moves:0 };
-  S.black = { left: mins(el('tB').value, 10) * 60000, inc: secs(el('iB').value) * 1000,
-              name: (el('nB').value || 'Black').trim(), moves:0 };
+
+  // NOBODY HAS TO DECIDE TWICE. If the white question was left alone, the coin
+  // answers it here rather than blocking the start with a nag.
+  if (!whiteIs) setWhite(Math.random() < 0.5 ? 'p1' : 'p2');
+  const blackIs = whiteIs === 'p1' ? 'p2' : 'p1';
+
+  // THE MAPPING HAPPENS ONCE, HERE. Everything above this line is about two
+  // people; everything below is about white and black. Each player's time,
+  // increment and colour travel with the PERSON to whichever side they took.
+  const of = k => ({
+    mins: mins(el(k === 'p1' ? 't1' : 't2').value, 10) * 60000,
+    inc:  secs(el(k === 'p1' ? 'i1' : 'i2').value) * 1000,
+    name: nameOf(k),
+    hue:  WHEEL[picked[k]]
+  });
+  const W = of(whiteIs), B = of(blackIs);
+  S.white = { left:W.mins, start:W.mins, inc:W.inc, name:W.name, hue:W.hue, moves:0 };
+  S.black = { left:B.mins, start:B.mins, inc:B.inc, name:B.name, hue:B.hue, moves:0 };
   S.turn = null; S.running = false; S.over = null;
 
-  el('setup').hidden = true;
-  el('board').hidden = false;
+  show('board');
 
   paint();
   run();
