@@ -54,6 +54,8 @@
        here, so buttons, captions and groups all grew with it. */
     font:600 16px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
     letter-spacing:.09em; text-transform:uppercase; flex:none;
+    position:relative;                 /* the fold button sits in its corner */
+    transition:max-height .18s ease;
   }
 
   .railname{ display:flex; flex-direction:column; justify-content:center; gap:4px;
@@ -427,79 +429,93 @@
   #countIn{
     position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
     z-index:80; pointer-events:none;
-    background:rgba(20,19,16,.90); color:#faf7ee;
-    border-radius:18px; padding:22px 30px 20px; text-align:center;
-    box-shadow:0 16px 50px rgba(0,0,0,.4);
+    background:#0d1013; color:#fff; border:2px solid #fff;
+    border-radius:10px; padding:20px 26px 18px; text-align:center;
+    box-shadow:0 10px 40px rgba(0,0,0,.5);
   }
   #countIn[hidden]{ display:none !important }
-  #countDots{ display:flex; gap:14px; justify-content:center }
-  #countDots i{
-    width:26px; height:26px; border-radius:50%;
-    border:3px solid rgba(250,247,238,.55); background:transparent;
-    transition:background .05s linear, transform .05s linear;
-  }
-  #countDots i.on{ background:#faf7ee; transform:scale(1.22) }
-  #countDots i.one{ border-color:#faf7ee }
-  #countWord{ display:block; margin-top:12px;
-    font:700 13px/1 ui-monospace,Menlo,monospace; letter-spacing:.22em;
+  #countDots{ display:flex; gap:12px; justify-content:center }
+  #countDots i{ width:22px; height:22px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.5); background:transparent;
+    transition:background .05s linear, transform .05s linear }
+  #countDots i.on{ background:#00a3ab; border-color:#00a3ab; transform:scale(1.2) }
+  #countDots i.one{ border-color:#fff }
+  #countWord{ display:block; margin-top:11px;
+    font:600 11px/1 ui-monospace,Menlo,monospace; letter-spacing:.14em;
     text-transform:uppercase; opacity:.7 }
 
-  /* THE LOOP WINDOW */
-  /* HIDDEN MUST MEAN HIDDEN. The browser gives [hidden] display:none, but an id
-     rule carrying a display beats it — and this one sets display:flex, so the
-     window would not close. Don: "the loop window opens and can't be closed."
-     The same fault, in the same shape, as the chess clock's panels. */
+  /* ---- THE LOOP PANEL ----
+     THE SAME PANEL AS THE LIBRARY, not a second design. It was a pale floating
+     window of its own invention, which made two panels in one app that agreed
+     about nothing. Don: "just like the one for the library — serious and in
+     design sync, with room for more features."
+     So it borrows the library's shell — same dark card, same white rule, same
+     h4, and the library's own .libbit and .libwide buttons — and adds only the
+     few things it needs that the library has no use for. ROOM FOR MORE is what
+     the shell buys: a new setting is a new .lgroup in the body, and it inherits
+     everything without a decision. */
+  #loopWin{ position:fixed; right:20px; bottom:96px; width:400px; max-height:66vh;
+    overflow:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y;
+    background:#0d1013; color:#fff; border:2px solid #fff; border-radius:10px;
+    padding:14px; z-index:60; box-shadow:0 10px 40px rgba(0,0,0,.5) }
   #loopWin[hidden]{ display:none !important }
-  #loopWin{
-    position:fixed; left:auto; right:20px; top:96px; z-index:60;
-    /* HEIGHT FITS WHAT IS IN IT. A fixed height plus a scrolling body meant the
-       window kept whatever size it had been given BEFORE the lead-in row was
-       added — and the body scrolls silently, so the new checkbox sat below the
-       fold with nothing to say it was there. Don ticked nothing because there
-       was nothing to tick. A CONTROL THAT CANNOT BE SEEN DOES NOT EXIST. */
-    width:290px; min-width:250px; height:auto; min-height:0;
-    background:var(--paper); color:var(--ink);
-    border:2px solid rgba(0,0,0,.28); border-radius:14px;
-    box-shadow:0 14px 40px rgba(0,0,0,.26);
-    display:flex; flex-direction:column; overflow:hidden;
-  }
-  #loopBar{
-    flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;
-    padding:9px 12px; cursor:move; user-select:none;
-    background:rgba(0,0,0,.06); border-bottom:1.5px solid rgba(0,0,0,.14);
-  }
-  #loopBar b{ font:800 12px/1 ui-monospace,Menlo,monospace; letter-spacing:.24em; opacity:.7 }
-  #loopX{ border:none; background:none; font:700 19px/1 -apple-system,sans-serif;
-    cursor:pointer; color:var(--ink); opacity:.5; padding:0 2px }
-  #loopBody{ flex:1 1 auto; padding:13px 14px; overflow:visible }
-  #loopWin .lprow{ display:flex; align-items:center; gap:7px; margin-bottom:9px }
-  #loopWin label{ font:600 11px/1 ui-monospace,Menlo,monospace; letter-spacing:.12em;
-    text-transform:uppercase; opacity:.55; min-width:40px }
-  #loopWin input{ width:100%; min-width:0; flex:1 1 auto; padding:7px; text-align:center;
-    font:700 16px/1 ui-monospace,Menlo,monospace;
-    border:1.5px solid rgba(0,0,0,.25); border-radius:8px; background:#fff; color:var(--ink) }
-  #loopWin button{ padding:7px 12px; font:700 14px/1 -apple-system,sans-serif;
-    border:1.5px solid rgba(0,0,0,.25); border-radius:8px;
-    background:#fff; color:var(--ink); cursor:pointer }
-  #loopWin button:active{ transform:scale(.96) }
-  .lpcheck{ display:flex; align-items:center; gap:8px; margin:2px 0 4px;
-    font:600 12px/1 -apple-system,sans-serif; letter-spacing:.03em; cursor:pointer;
-    text-transform:none; opacity:.85 }
-  .lpcheck input{ width:17px !important; height:17px; flex:0 0 auto; min-width:0;
-    margin:0; cursor:pointer }
-  #loopWin .lpnote{ font-size:12px; line-height:1.45; opacity:.62; margin:10px 0 11px }
-  #loopWin .lpdo{ margin-bottom:0 }
-  #loopWin .lpdo button{ flex:1 1 auto; padding:8px 4px }
-  /* THE GRIP. A corner you can actually hit, rather than the two-pixel edge a
-     browser's own resizer gives you. */
-  #loopGrip{
-    position:absolute; right:0; bottom:0; width:22px; height:22px;
+  #loopWin h4{ display:flex; align-items:center; justify-content:space-between;
+    margin:0 0 12px; font:800 13px/1 ui-monospace,Menlo,monospace;
+    letter-spacing:.14em; text-transform:uppercase; cursor:move;
+    /* the handle keeps the finger; the browser must not take it for a scroll */
+    touch-action:none; user-select:none; -webkit-user-select:none }
+  #loopGrip{ touch-action:none }
+  #loopX, #loopMin{ border:none; background:none; color:#fff; opacity:.55;
+    cursor:pointer; font:700 20px/1 -apple-system,sans-serif; padding:0 5px }
+  #loopWin h4 span{ display:flex; gap:2px }
+  /* ROLLED UP: the header stays, everything under it goes. The passage and the
+     speed are still set — you simply cannot see the controls that set them,
+     which is what you want with a score in front of you. A PANEL THAT CLOSES
+     LOSES ITS PLACE; A PANEL THAT ROLLS UP KEEPS IT. */
+  #loopWin.rolled{ height:auto !important; min-height:0 }
+  #loopWin.rolled > *:not(h4){ display:none }
+  #loopWin.rolled h4{ margin:0 }
+  #loopWin.rolled #loopGrip{ display:none }
+
+  .lgroup{ margin-bottom:11px }
+  .llabel{ display:block; margin-bottom:5px;
+    font:600 10px/1 ui-monospace,Menlo,monospace; letter-spacing:.14em;
+    text-transform:uppercase; opacity:.55 }
+  .lrow{ display:flex; gap:6px; align-items:stretch }
+  .lwide3{ flex:1 }
+  #loopWin .libbit{ padding:9px 0; font-size:13px }
+  #loopWin .libwide{ margin-top:0 }
+  .lnum{ flex:1; box-sizing:border-box; padding:8px 10px; text-align:center;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.28);
+    border-radius:6px; color:#fff; outline:none;
+    font:700 15px/1 ui-monospace,Menlo,monospace }
+  .lnum:focus{ border-color:#fff }
+  .lto{ align-self:center; font:600 11px/1 ui-monospace,Menlo,monospace; opacity:.55 }
+  .lcheck{ display:flex; align-items:center; gap:9px; cursor:pointer;
+    font:400 13px/1.4 ui-sans-serif,system-ui,sans-serif }
+  .lcheck input{ width:17px; height:17px; margin:0; cursor:pointer; accent-color:#00a3ab }
+  .lsaid{ margin:12px 0; font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif; opacity:.68 }
+  #loopGrip{ position:absolute; right:0; bottom:0; width:20px; height:20px;
     cursor:nwse-resize;
-    background:linear-gradient(135deg, transparent 50%, rgba(0,0,0,.28) 50%,
-      rgba(0,0,0,.28) 62%, transparent 62%, transparent 74%, rgba(0,0,0,.28) 74%,
-      rgba(0,0,0,.28) 86%, transparent 86%);
+    background:linear-gradient(135deg, transparent 50%, rgba(255,255,255,.35) 50%,
+      rgba(255,255,255,.35) 62%, transparent 62%, transparent 74%,
+      rgba(255,255,255,.35) 74%, rgba(255,255,255,.35) 86%, transparent 86%) }
+  @media print { #loopWin, #countIn{ display:none !important } }
+
+  #railFold{
+    position:absolute; top:6px; right:10px; z-index:30;
+    width:34px; height:26px; padding:0; cursor:pointer;
+    border:1.5px solid rgba(255,255,255,.45); border-radius:7px;
+    background:rgba(255,255,255,.10); color:#fff;
+    font:700 11px/1 -apple-system,sans-serif;
   }
-  @media print { #loopWin{ display:none !important } }
+  #railFold:active{ transform:scale(.94) }
+  /* FOLDED: the rail keeps only its own height and the one button that brings
+     it back. Nothing is destroyed — the controls are still there, one tap away
+     — which is the difference between folding and hiding. */
+  body.folded .rail{ max-height:34px; overflow:hidden; padding-top:0; padding-bottom:0 }
+  body.folded .rail > *{ opacity:0; pointer-events:none }
+  body.folded #railFold{ opacity:1; pointer-events:auto }
 
   .barnum{ cursor:pointer; position:absolute; z-index:6; border:none; background:none;
     padding:3px 7px; margin:-3px -7px; line-height:1;
@@ -1303,6 +1319,13 @@
 </head>
 <body>
 
+<!-- THE CONTROLS FOLD AWAY. Don, playing off a propped tablet: "it would be
+     good to be able to minimize the control section. It takes up half the
+     available space." Once you are playing, everything that is not the music is
+     in the way — so the rail collapses to a single strip, the loop panel closes
+     to a button, and the page is the page.
+     WHAT YOU ARE DOING DECIDES WHAT SHOULD BE ON SCREEN. -->
+<button type="button" id="railFold" title="hide the controls">&#9650;</button>
 <div class="rail">
   <!-- GROUPED BY WHAT A CONTROL IS FOR, with a caption over each group. Twenty
        six controls in one undifferentiated row is a list you have to read from
@@ -1403,28 +1426,45 @@
 <div id="countIn" hidden><div id="countDots"></div><span id="countWord"></span></div>
 
 <div id="loopWin" hidden>
-  <div id="loopBar"><b>LOOP</b><button type="button" id="loopX" title="close">&times;</button></div>
-  <div id="loopBody">
-    <div class="lprow">
-      <label for="loopA">bars</label>
-      <input id="loopA" type="number" min="1" step="1">
-      <label for="loopB">to</label>
-      <input id="loopB" type="number" min="1" step="1">
-    </div>
-    <div class="lprow">
-      <label>speed</label>
-      <button type="button" id="bDown">&minus;</button>
-      <button type="button" id="bSlow">100%</button>
-      <button type="button" id="bUp">+</button>
-    </div>
-    <label class="lpcheck"><input type="checkbox" id="bLead"> Lead-in: two bars of clicks</label>
-    <p class="lpnote" id="loopSaid"></p>
-    <div class="lprow lpdo">
-      <button type="button" id="bGoLoop">Play</button>
-      <button type="button" id="bStopLoop">Stop</button>
-      <button type="button" id="bClearLoop">Clear</button>
+  <h4 id="loopBar">LOOP<span><button type="button" id="loopMin" title="roll it up">&minus;</button><button type="button" id="loopX" title="close">&times;</button></span></h4>
+
+  <div class="lgroup">
+    <span class="llabel">Which bars</span>
+    <div class="lrow">
+      <input id="loopA" type="number" min="1" step="1" class="lnum">
+      <span class="lto">to</span>
+      <input id="loopB" type="number" min="1" step="1" class="lnum">
     </div>
   </div>
+
+  <div class="lgroup">
+    <span class="llabel">How fast</span>
+    <div class="lrow">
+      <button type="button" class="libbit lwide3" id="bDown">&minus;</button>
+      <button type="button" class="libbit lwide3" id="bSlow">100%</button>
+      <button type="button" class="libbit lwide3" id="bUp">+</button>
+    </div>
+  </div>
+
+  <div class="lgroup">
+    <span class="llabel">Before it starts</span>
+    <label class="lcheck"><input type="checkbox" id="bLead"> Two bars of clicks</label>
+  </div>
+
+  <div class="lgroup">
+    <span class="llabel">Metronome</span>
+    <label class="lcheck"><input type="checkbox" id="bMetro"> Click on every beat</label>
+    <p class="lsaid" id="metroSaid" style="margin:6px 0 0"></p>
+  </div>
+
+  <p class="lsaid" id="loopSaid"></p>
+
+  <div class="lrow">
+    <button type="button" class="libwide lwide3" id="bGoLoop">Play</button>
+    <button type="button" class="libwide lwide3" id="bStopLoop">Stop</button>
+    <button type="button" class="libwide lwide3" id="bClearLoop">Clear</button>
+  </div>
+  <button type="button" class="libwide close" id="loopHide">Close</button>
   <div id="loopGrip" title="drag to resize"></div>
 </div>
 
@@ -1523,7 +1563,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-22 b178 look before you clear';
+const BUILD_STAMP = '2026-08-24 b183 it moves by finger too';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -3953,6 +3993,14 @@ let CHIP_W = BASE.chip, CHIP_H = BASE.chipH, MIN_GAP = BASE.chip + BASE.gap;
 // itself, because a value declared below the code that wires a button to it can
 // never be reached — let and const do not hoist, and that mistake has cost two
 // builds already.
+// THE METRONOME. It runs on its own, whether or not the app is playing — which
+// is the point: the commonest use is to practise a passage YOURSELF against a
+// pulse, with nothing else sounding.
+let METRO = false;
+let metroTimer = 0;      // the look-ahead pump
+let metroAt = 0;         // the audio-clock second of the next beat
+let metroBeat = 0;       // which beat of the bar it will be
+
 let LOOP_SPEED = 1;
 let LEAD_IN = false;             // clicks before the passage
 const LEAD_BARS = 2;             // how many bars of them
@@ -7609,9 +7657,27 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
   //  It drags by its title bar and resizes by the corner, and remembers where
   //  you left it.
   // ---------------------------------------------------------------------
+  // FOLDING THE CONTROLS. Remembered per device, because a tablet propped on a
+  // piano wants them away and a desktop usually does not.
+  try {
+    const fb = document.getElementById('railFold');
+    if (fb){
+      const setFold = on => {
+        document.body.classList.toggle('folded', on);
+        fb.innerHTML = on ? '&#9660;' : '&#9650;';
+        fb.title = on ? 'show the controls' : 'hide the controls';
+        try { localStorage.setItem('island.folded', on ? '1' : '0'); } catch (err) {}
+      };
+      let was = false;
+      try { was = localStorage.getItem('island.folded') === '1'; } catch (err) {}
+      setFold(was);
+      fb.addEventListener('click', () => setFold(!document.body.classList.contains('folded')));
+    }
+  } catch (err) {}
+
   try {
     const win  = document.getElementById('loopWin');
-    const bar  = document.getElementById('loopBar');
+    const bar  = document.getElementById('loopBar');   // the h4 is the handle
     const grip = document.getElementById('loopGrip');
     const lb   = document.getElementById('bLoop');
     const iA   = document.getElementById('loopA');
@@ -7629,7 +7695,8 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
         // invisible on every machine that ever opened the old version.
         const w = JSON.parse(localStorage.getItem('island.loopwin2') || 'null');
         if (w){
-          win.style.left = w.x + 'px'; win.style.top = w.y + 'px'; win.style.right = 'auto';
+          win.style.left = w.x + 'px';  win.style.top = w.y + 'px';
+          win.style.right = 'auto';     win.style.bottom = 'auto';
           win.style.width = w.w + 'px';
           if (w.h) win.style.height = w.h + 'px';
         }
@@ -7643,6 +7710,27 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
         } catch (err) {}
       };
 
+      // THE METRONOME RUNS WHETHER OR NOT ANYTHING IS PLAYING, which is the
+      // whole use of it: a pulse to practise a passage against yourself.
+      const mt = document.getElementById('bMetro');
+      const msaid = document.getElementById('metroSaid');
+      const sayMetro = () => {
+        if (!msaid) return;
+        if (!METRO){ msaid.textContent = ''; return; }
+        const b = loop ? barAt(loop.from) : barAt(cur.tick);
+        const ts = tsAt(b), slow = (loop && playing) ? LOOP_SPEED : 1;
+        msaid.textContent = ts.beats + '/' + ts.unit + ' at '
+          + Math.round(tempoAt(b).bpm * slow) + ' — from ' + barName(b)
+          + (slow !== 1 ? ' (slowed with the loop)' : '');
+      };
+      if (mt) mt.addEventListener('change', () => {
+        if (mt.checked){
+          if (!metroStart()){ mt.checked = false; say = 'no sound available'; }
+          else say = 'the metronome is running';
+        } else { metroStop(); say = 'the metronome is off'; }
+        sayMetro();
+      });
+
       const ld = document.getElementById('bLead');
       // Writing to the DOM only when the value has changed. paint() is called
       // from render(), which runs on every frame while the music plays, and
@@ -7654,13 +7742,14 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
         if (iA && loop && document.activeElement !== iA) iA.value = barAt(loop.from) + 1;
         if (iB && loop && document.activeElement !== iB) iB.value = barAt(loop.to - 1) + 1;
         const lead = ld && ld.checked;
+        const on = win.hidden ? 'false' : 'true';
+        sayMetro();
         put(said, !loop
           ? 'Say which bars, then press Play.'
           : (playing ? 'Going round ' : 'Ready \u2014 ')
             + (lead ? 'a bar of clicks, then ' : '')
             + 'bars ' + (barAt(loop.from) + 1) + '\u2013' + (barAt(loop.to - 1) + 1)
             + '. Stop keeps them; Clear forgets them.');
-        const on = win.hidden ? 'false' : 'true';
         if (lb.getAttribute('aria-pressed') !== on) lb.setAttribute('aria-pressed', on);
       };
       window._paintLoop = paint;
@@ -7699,8 +7788,24 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
           setBars();                 // this one does redraw: the band moves
         } else paint();
       });
-      const xb = document.getElementById('loopX');
-      if (xb) xb.addEventListener('click', () => { win.hidden = true; paint(); });
+      // TWO WAYS OUT, because a panel this size wants a button at the foot as
+      // well as a cross in the corner — the library has both and so should this.
+      const mb = document.getElementById('loopMin');
+      if (mb) mb.addEventListener('click', ev => {
+        ev.stopPropagation();
+        const on = !win.classList.contains('rolled');
+        win.classList.toggle('rolled', on);
+        mb.innerHTML = on ? '&plus;' : '&minus;';
+        mb.title = on ? 'open it out' : 'roll it up';
+      });
+
+      for (const id of ['loopX','loopHide']){
+        const b2 = document.getElementById(id);
+        if (b2) b2.addEventListener('click', ev => {
+          ev.stopPropagation();          // the cross sits inside the drag handle
+          win.hidden = true; paint();
+        });
+      }
 
       // A SETTING IN THIS WINDOW MUST NOT REDRAW THE SCORE. Every handler here
       // used to call render(), and render lays out the whole piece — on the
@@ -7741,36 +7846,56 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       // DRAGGING AND RESIZING. Mouse events, matching the family the rest of
       // this file listens in — mixing pointer and mouse handlers is what left
       // the barline drag dead for two builds.
+      // DRAGGING AND RESIZING, BY FINGER OR BY MOUSE.
+      //
+      // It listened for mouse events only, so on a tablet — the machine this
+      // panel exists for — it could not be moved at all. Don: "the loop panel is
+      // not moveable." Touch and mouse are read together here, taking whichever
+      // the device sends.
+      const at = ev => ev.touches && ev.touches[0] ? ev.touches[0] : ev;
       const grab = (handle, onMove) => {
         if (!handle) return;
-        handle.addEventListener('mousedown', ev => {
+        const begin = ev => {
           if (ev.target.closest('button')) return;
           const r = win.getBoundingClientRect();
-          const x0 = ev.clientX, y0 = ev.clientY;
-          const move = e2 => onMove(e2.clientX - x0, e2.clientY - y0, r);
-          const up2 = () => {
+          const p0 = at(ev);
+          const x0 = p0.clientX, y0 = p0.clientY;
+          const move = e2 => { const p = at(e2); onMove(p.clientX - x0, p.clientY - y0, r);
+                               e2.preventDefault(); };
+          const done = () => {
             removeEventListener('mousemove', move);
-            removeEventListener('mouseup', up2);
+            removeEventListener('mouseup', done);
+            removeEventListener('touchmove', move);
+            removeEventListener('touchend', done);
             remember();
           };
           addEventListener('mousemove', move);
-          addEventListener('mouseup', up2, { once:true });
+          addEventListener('mouseup', done, { once:true });
+          addEventListener('touchmove', move, { passive:false });
+          addEventListener('touchend', done, { once:true });
           ev.preventDefault();
-        });
+        };
+        handle.addEventListener('mousedown', begin);
+        handle.addEventListener('touchstart', begin, { passive:false });
+      };
+
+      // PLACING IT MEANS UNPLACING IT FIRST. The panel is anchored bottom-right
+      // in the stylesheet, so setting `top` while `bottom` was still 96px left
+      // it pinned at BOTH ends — and an element pinned top and bottom does not
+      // move, it stretches. The corner it was anchored to has to be released
+      // before the corner you are dragging it to can mean anything.
+      const place = (x, y) => {
+        win.style.left = x + 'px';   win.style.top = y + 'px';
+        win.style.right = 'auto';    win.style.bottom = 'auto';
       };
       grab(bar, (dx, dy, r) => {
         // Kept on the screen: a window dragged off the top cannot be dragged back.
-        const x = Math.max(4, Math.min(innerWidth - 80, r.left + dx));
-        const y = Math.max(4, Math.min(innerHeight - 44, r.top + dy));
-        win.style.left = x + 'px'; win.style.top = y + 'px'; win.style.right = 'auto';
+        place(Math.max(4, Math.min(innerWidth - 80, r.left + dx)),
+              Math.max(4, Math.min(innerHeight - 44, r.top + dy)));
       });
       grab(grip, (dx, dy, r) => {
         win.style.width = Math.max(250, r.width + dx) + 'px';
-        // The floor is what the window actually needs, measured now, rather than
-        // a number typed into a stylesheet that goes stale the next time a row
-        // is added.
-        const need = (bar ? bar.offsetHeight : 34) + document.getElementById('loopBody').scrollHeight + 4;
-        win.style.height = Math.max(need, r.height + dy) + 'px';
+        win.style.height = Math.max(160, r.height + dy) + 'px';
       });
 
       paint();
@@ -8590,6 +8715,52 @@ function tick(at, strong){
   keep(o);
 }
 
+// ---------------------------------------------------------------------------
+//  THE METRONOME.
+//
+//  IT TAKES ITS PULSE FROM THE MUSIC, not from a slider. The bar under the
+//  cursor has a tempo and a time signature, and those are the right answer
+//  already — a metronome you have to set to match the piece is a second place
+//  the tempo can be wrong.
+//
+//  SCHEDULED AHEAD, LIKE EVERYTHING ELSE THAT HAS TO BE IN TIME. A beat fired
+//  from a timer lands wherever the browser was busy; a beat handed to the audio
+//  clock lands where it was told. So a timer only ever decides WHAT to promise,
+//  and the clock keeps the promise. Same shape as the note pump.
+// ---------------------------------------------------------------------------
+function metroStop(){
+  if (metroTimer){ clearInterval(metroTimer); metroTimer = 0; }
+  METRO = false;
+}
+function metroStart(){
+  if (!wake()) return false;
+  if (metroTimer) clearInterval(metroTimer);
+  METRO = true;
+  metroAt = audio.currentTime + 0.12;
+  metroBeat = 0;
+  const feedBeats = () => {
+    if (!METRO || !audio){ metroStop(); return; }
+    // The bar it counts is the one you are looking at, so moving the cursor to a
+    // bar in 6/8 counts six, and a slowed loop is counted slowly.
+    const b   = loop ? barAt(loop.from) : barAt(cur.tick);
+    const ts  = tsAt(b);
+    const slow = (loop && playing) ? LOOP_SPEED : 1;
+    const bpm = Math.max(20, tempoAt(b).bpm * slow);
+    // A beat is the time signature's own unit: 6/8 clicks eighths, 3/4 clicks
+    // quarters. The unit IS the beat, which is what the bottom number means.
+    const secs = (60 / bpm) * (4 / ts.unit);
+    const beats = Math.max(1, ts.beats);
+    while (metroAt < audio.currentTime + 0.4){
+      if (metroAt > audio.currentTime) tick(metroAt, metroBeat === 0);
+      metroAt += secs;
+      metroBeat = (metroBeat + 1) % beats;
+    }
+  };
+  feedBeats();                       // no waiting for the first interval
+  metroTimer = setInterval(feedBeats, 100);
+  return true;
+}
+
 function voice(f, at, dur, midi){
   if (!audio || !isFinite(f) || f <= 0) return;
   if (pianoReady && typeof midi === 'number'){
@@ -8694,8 +8865,28 @@ function soundTest(){
 // back. On the second time round that number ran off the end of the piece, the
 // red line vanished and no note lit up — the sound went on without anything on
 // the page to say where it was.
+// HOW LATE THE SOUND IS BEHIND THE CLOCK. audio.currentTime is when a sample
+// was HANDED to the system; the ear hears it after the buffers, the mixer and
+// the speakers have all had their turn. On Chrome that gap is a few
+// milliseconds and nobody notices. Safari runs a much larger buffer and reports
+// it honestly — so the playhead, which reads currentTime directly, ran ahead of
+// what could be heard. Don, in Safari: "a lag in the play, by about one beat."
+//
+// THE EYE SHOULD BE TOLD WHAT THE EAR IS HEARING, NOT WHAT THE SPEAKER HAS BEEN
+// SENT. Asking the context for its own latency is better than a fudge factor,
+// because it is right on every machine rather than on mine.
+function earTime(){
+  if (!audio) return 0;
+  const late = (typeof audio.outputLatency === 'number' ? audio.outputLatency : 0)
+             || (typeof audio.baseLatency   === 'number' ? audio.baseLatency   : 0)
+             || 0;
+  // A sane ceiling: a quarter second of reported latency is already unusual,
+  // and a wild figure from a browser should not drag the playhead off the page.
+  return audio.currentTime - Math.min(late, 0.25);
+}
+
 function tickNow(){
-  const gone = Math.max(0, audio.currentTime - t0);
+  const gone = Math.max(0, earTime() - t0);
   const st = window._stops;
   if (!st || !st.length) return timeToTick(playBase + gone);
   for (let k = 0; k < st.length; k++){
