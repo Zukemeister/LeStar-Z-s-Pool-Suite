@@ -11,6 +11,7 @@
   :root{
     --z:1;
     --chipw:28px; --chiph:22px; --gap:24px;
+    --mid:#d81f26;                 /* the middle of the keyboard: mark and line */
     /* How dark the staff lines and the rhythm grid are drawn. The screen can
        carry more ink than paper can: at 100% a printed page is a jumble, and
        the notes are what should be read, not the ruling they sit on. Barlines
@@ -348,6 +349,15 @@
   .librow.here .libmain{ border-color:#00a3ab; background:rgba(0,163,171,.22) }
   .librow .libmain b{ display:block; font:700 15px/1.25 ui-sans-serif,system-ui,sans-serif }
   .librow .libmain i{ display:block; font:400 11px/1.4 ui-monospace,Menlo,monospace; opacity:.65 }
+  /* A CHOSEN BUTTON LOOKS CHOSEN. Every one of these buttons has been setting
+     aria-pressed since it was built, and nothing in the stylesheet ever
+     answered it — so the panel knew what you had picked and never said. Don:
+     "when you make a selection in Loop, it should stay lit, so you know what
+     you have selected."
+     A SETTING YOU CANNOT SEE IS A SETTING YOU WILL SET TWICE. */
+  #loopWin .libbit[aria-pressed="true"], #loopWin .libwide[aria-pressed="true"]{
+    background:#00a3ab; border-color:#00a3ab; color:#04222a; font-weight:800;
+  }
   .libbit{ background:none; border:1px solid rgba(255,255,255,.25); border-radius:6px;
     color:#cfd6dd; font:600 11px/1 ui-monospace,Menlo,monospace; padding:0 8px; cursor:pointer }
   .libbit:hover{ border-color:#fff; color:#fff }
@@ -426,6 +436,25 @@
   .bar[data-grab]:hover{ background:var(--cursor) }
   .bar.widening{ background:var(--cursor) }
   @media print { .bar[data-grab]:hover, .bar.widening{ background:var(--ink) } }
+  #crier{
+    position:fixed; left:0; right:0; top:38%; z-index:90;
+    display:flex; justify-content:center; pointer-events:none;
+  }
+  #crier[hidden]{ display:none !important }
+  #crier b{
+    display:inline-block; max-width:86vw; text-align:center;
+    padding:18px 34px; border-radius:14px;
+    background:rgba(13,16,19,.93); color:#fff;
+    border:2px solid #fff;
+    font:800 clamp(22px, 4.4vw, 46px)/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.06em; text-transform:uppercase;
+    box-shadow:0 14px 44px rgba(0,0,0,.45);
+    opacity:0; transform:scale(.96);
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  #crier.up b{ opacity:1; transform:scale(1) }
+  @media print { #crier{ display:none !important } }
+
   #countIn{
     position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
     z-index:80; pointer-events:none;
@@ -537,6 +566,23 @@
   body.folded .rail{ max-height:34px; overflow:hidden; padding-top:0; padding-bottom:0 }
   body.folded .rail > *{ opacity:0; pointer-events:none }
   body.folded #railFold{ opacity:1; pointer-events:auto }
+
+  /* THE MIDDLE LINE, IN RED. I argued for ink at low weight — a horizon rather
+     than a warning — and Don's answer settled it: "I want to always know out of
+     the corner of my eye where the reference point is."
+     PERIPHERAL VISION READS COLOUR, NOT WEIGHT. A faint grey line among grey
+     staff lines is invisible unless you look straight at it, which is exactly
+     the looking-away this line exists to prevent. Red is the only thing on the
+     page that is not black, grey or cream, so it registers without being
+     looked at. Kept thin and behind the notes so it cannot crowd a notehead. */
+  /* NOT SUBTLE, at Don's instruction: "don't be subtle at this moment." Full
+     strength and half again the weight — this is the one landmark on the page
+     and it is meant to be seen without being looked at. */
+  .midline{
+    position:absolute; left:26px; right:0; height:0; z-index:1;
+    border-top:calc(3.5px * var(--z)) solid var(--mid); opacity:1;
+    pointer-events:none;
+  }
 
   .barnum{ cursor:pointer; position:absolute; z-index:6; border:none; background:none;
     padding:3px 7px; margin:-3px -7px; line-height:1;
@@ -705,15 +751,18 @@
      ties the whole page back to the keyboard. Now a filled arrow in the ink
      colour at more than twice the size, with the letter C beside it so it says
      what it is rather than only pointing. */
+  /* THE MARK AND ITS LINE ARE ONE THING, so they are one colour, named once.
+     Don: "make the arrow at the beginning of the line also that same red." He
+     is right that they were reading as two marks that happened to line up. */
   .midc{ position:absolute; left:calc(-46px * var(--z)); z-index:8;
     transform:translateY(-50%); pointer-events:none; white-space:nowrap;
     display:flex; align-items:center; gap:calc(2px * var(--z));
-    color:var(--ink) }
+    color:var(--mid) }
   .midc i{ font:400 calc(26px * var(--z))/1 ui-sans-serif,system-ui,sans-serif;
     font-style:normal }
   .midc s{ text-decoration:none;
     font:400 calc(30px * var(--z))/1 ui-sans-serif,system-ui,sans-serif }
-  @media print { .midc{ color:#000 !important } }
+  @media print { .midc{ color:var(--mid) !important } }
 
   .vtag{ position:absolute; left:-32px; width:26px; text-align:right;
     font:900 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.06em;
@@ -798,6 +847,10 @@
     left:calc(4px * var(--z)); top:calc(4px * var(--z));
     right:calc(10px * var(--z)); bottom:calc(4px * var(--z));
     background:#fff; clip-path:polygon(0 0, 100% 50%, 0 100%) }
+  /* A HUSHED VOICE: everything about it lightens, not only its noteheads —
+     stems, beams and flags too, or the page shows a quiet head on a loud stem. */
+  .voice-hushed .stem, .voice-hushed .beam, .voice-hushed .flag,
+  .voice-hushed .ledger, .voice-hushed .arc{ opacity:.32 }
   .chip.ghost{ background:#fff; border-color:#9a948a; border-style:dashed;
                color:#9a948a; box-shadow:none }
   /* A REST IS DRAWN. Whole hangs from the line, half sits on it, and a quarter
@@ -1369,6 +1422,7 @@
       <button id="bSave">Save</button>
       <button id="bSaveAs">Save as…</button>
       <button id="bOpen">Library</button>
+      <button id="bLoop" aria-pressed="false" title="work on a passage">LOOP</button>
       <button id="bPrint">Print</button>
       <button id="bHist">History</button>
       <button id="bClear">Clear</button>
@@ -1420,7 +1474,6 @@
       <span>Bars/line <select id="rBars"></select></span>
       <span>Page <select id="rPage"></select></span>
       <button id="bAdv" aria-pressed="true">Cursor moves on</button>
-      <button id="bLoop" aria-pressed="false" title="work on a passage">LOOP</button>
       <button id="bEven" aria-pressed="true">Even bars</button>
       <button id="bRep" aria-pressed="true">Play repeats</button>
 
@@ -1444,6 +1497,17 @@
      view at the beginning of the loop." A bar of sound you cannot see is a bar
      you have to take on trust — and taking it on trust is exactly why three
      builds went by without either of us knowing whether it had run. -->
+<!-- THE ANNOUNCER. Don: "I'd rather the message about what is happening showed
+     up right in front of my face... Big type, fades in fades out, not in the
+     little box."
+     At the piano your eyes are on the music and your hands are busy, so a line
+     of small text in a panel at the edge of the screen is not a message — it is
+     a thing you would have to go and look for, at the one moment you cannot.
+     THE APP MUST SAY WHAT IT IS DOING WHERE THE READER ALREADY IS. Across the
+     middle, big enough to read without focusing on it, gone before it becomes
+     clutter. -->
+<div id="crier" hidden><b id="crierText"></b></div>
+
 <div id="countIn" hidden><div id="countDots"></div><span id="countWord"></span></div>
 
 <div id="loopWin" hidden>
@@ -1469,13 +1533,49 @@
 
   <div class="lgroup">
     <span class="llabel">Before it starts</span>
-    <label class="lcheck"><input type="checkbox" id="bLead"> Two bars of clicks</label>
+    <label class="lcheck"><input type="checkbox" id="bLead"> Count me in</label>
+    <div class="lrow" id="leadRow">
+      <button type="button" class="libbit lwide3" id="lead1">1 beat</button>
+      <button type="button" class="libbit lwide3" id="lead2">2 beats</button>
+      <button type="button" class="libbit lwide3" id="lead4">a full bar</button>
+    </div>
   </div>
 
   <div class="lgroup">
     <span class="llabel">Metronome</span>
     <label class="lcheck"><input type="checkbox" id="bMetro"> Click on every beat</label>
     <p class="lsaid" id="metroSaid" style="margin:6px 0 0"></p>
+  </div>
+
+  <div class="lgroup">
+    <span class="llabel">Voices — each time round</span>
+    <div class="lrow">
+      <button type="button" class="libbit lwide3" id="vpOff">All of them</button>
+      <button type="button" class="libbit lwide3" id="vpEach">One at a time</button>
+      <button type="button" class="libbit lwide3" id="vpBuild">Add one each time</button>
+    </div>
+  </div>
+
+  <div class="lgroup">
+    <span class="llabel">Speed — each time round</span>
+    <div class="lrow">
+      <button type="button" class="libbit lwide3" id="spOff">Stays put</button>
+      <button type="button" class="libbit lwide3" id="spRamp">A little faster</button>
+    </div>
+  </div>
+
+  <div class="lgroup">
+    <label class="lcheck"><input type="checkbox" id="bCrier" checked> Show changes as they happen</label>
+  </div>
+
+  <div class="lgroup">
+    <span class="llabel">How many times round before it changes</span>
+    <div class="lrow">
+      <button type="button" class="libbit lwide3" id="laps1">1</button>
+      <button type="button" class="libbit lwide3" id="laps2">2</button>
+      <button type="button" class="libbit lwide3" id="laps3">3</button>
+      <button type="button" class="libbit lwide3" id="laps4">4</button>
+    </div>
   </div>
 
   <p class="lsaid" id="loopSaid"></p>
@@ -1584,7 +1684,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-25 b184 a panel behaves like a panel';
+const BUILD_STAMP = '2026-08-26 b198 one thing makes clicks';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -4021,11 +4121,121 @@ let METRO = false;
 let metroTimer = 0;      // the look-ahead pump
 let metroAt = 0;         // the audio-clock second of the next beat
 let metroBeat = 0;       // which beat of the bar it will be
+// The earliest moment the metronome is allowed to sound. During a count-in the
+// count IS the click, so the metronome must not add beats underneath it — and
+// it was: the two were scheduled from the same downbeat, so its first beat
+// landed on top of the count's. Don: "it still double clicks on the first beat
+// of the lead-in."
+// TWO THINGS COUNTING THE SAME BEAT IS ONE THING TOO MANY.
+let metroFrom = 0;
+// EVERY BEAT THIS METRONOME HAS PROMISED. A beat handed to the audio clock will
+// sound whatever happens afterwards — so re-basing the metronome onto the
+// music's downbeat left the OLD promises in the graph alongside the new ones,
+// and the two collided. Don: "the count-in is a double click on the first
+// beat." A PROMISE YOU CANNOT WITHDRAW IS A PROMISE YOU MUST NOT MAKE TWICE.
+let metroLive = [];
+function metroSilence(){
+  for (const o of metroLive){ try { o.stop(); } catch (err) {} }
+  metroLive = [];
+}
+
+// The speeds a loop can run at, slowest last. Declared HERE, above everything
+// that reads it — const does not hoist, and a value defined below the code that
+// uses it is a ReferenceError waiting for the first button press.
+const SPEEDS = [1, 0.75, 0.6, 0.5, 0.35, 0.25];
+
+// ---------------------------------------------------------------------------
+//  THE PROGRAM: what changes each time round.
+//
+//  TWO SETTINGS THAT COMBINE, rather than a list of named routines. A sequence
+//  and a slope are different kinds of thing — voices step through a list and
+//  start over; speed climbs to the written pace and stays. Folding them into
+//  one menu would mean inventing a name for every pairing, and the pairing
+//  nobody thought of would be unavailable. Two knobs give all of them.
+//
+//  A pass only ever sets the knobs that already exist — which voices, how fast.
+//  So the program adds no machinery: it decides what the loop's own settings
+//  are before each lap is queued.
+// ---------------------------------------------------------------------------
+let VOICE_PLAN = 'off';    // off | each | build
+let SPEED_PLAN = 'off';    // off | ramp
+let LAPS_EACH  = 2;        // times round before it moves on
+let LAP = 0;               // laps completed since the program started
+let LOOP_VOICES = null;    // null = all of them; otherwise a list of staff ids
+
+// The voices that actually carry notes — an empty staff is not a step.
+const singing = () => score.profile.staves
+  .filter(st => (eventsOf(st.id) || []).some(e => e.pitches.length));
+
+// WHICH STEP ARE WE ON. Laps are counted straight up; the step is the lap
+// divided by how many laps each step gets, so changing LAPS_EACH mid-session
+// does something sensible rather than losing your place.
+function planStep(){ return Math.floor(LAP / Math.max(1, LAPS_EACH)); }
+
+// SET THE KNOBS FOR THIS LAP. Called before a pass is queued, never during one.
+function applyPlan(){
+  const vs = singing();
+  if (VOICE_PLAN === 'off' || vs.length < 2) LOOP_VOICES = null;
+  else {
+    const n = vs.length + 1;                 // ...and then all of them together
+    const i = planStep() % n;
+    LOOP_VOICES = i === vs.length ? null
+      : VOICE_PLAN === 'each' ? [vs[i].id]                    // one at a time
+                              : vs.slice(0, i + 1).map(v => v.id);  // building up
+  }
+  if (SPEED_PLAN === 'ramp'){
+    // Starts at the slowest and climbs a step each time, then holds at written.
+    const i = Math.min(planStep(), SPEEDS.length - 1);
+    LOOP_SPEED = SPEEDS[SPEEDS.length - 1 - i];
+  }
+  if (window._paintKit) try { window._paintKit(); } catch (err) {}
+}
+
+// What this lap will sound like, in words, for the panel to show.
+// SAY IT OUT LOUD. Shown big, held, then faded — and a new call replaces
+// whatever was on screen rather than queueing behind it, because the latest
+// thing that happened is the only one worth reading.
+let crierTimer = 0, crierGone = 0;
+function cry(words, hold){
+  // THE SWITCH IS ASKED HERE, at the moment of speaking, rather than mirrored
+  // into a variable somewhere — the same lesson the lead-in checkbox taught.
+  // THE BOX IS THE SETTING.
+  const on = document.getElementById('bCrier');
+  if (on && !on.checked) return;
+  const box = document.getElementById('crier');
+  const txt = document.getElementById('crierText');
+  if (!box || !txt || !words) return;
+  clearTimeout(crierTimer); clearTimeout(crierGone);
+  txt.textContent = words;
+  box.hidden = false;
+  requestAnimationFrame(() => box.classList.add('up'));
+  crierTimer = setTimeout(() => {
+    box.classList.remove('up');
+    crierGone = setTimeout(() => { box.hidden = true; }, 260);
+  }, hold || 1600);
+}
+
+function planSays(){
+  if (VOICE_PLAN === 'off' && SPEED_PLAN === 'off') return '';
+  const bits = [];
+  if (LOOP_VOICES) bits.push('playing ' + LOOP_VOICES.map(id => 'V' + voiceNumber(id)).join(' and '));
+  else if (VOICE_PLAN !== 'off') bits.push('playing every voice');
+  if (SPEED_PLAN === 'ramp') bits.push('at ' + Math.round(LOOP_SPEED * 100) + '%');
+  // How many more times round before anything changes — the thing you actually
+  // want to know while it is circling.
+  const left = Math.max(1, LAPS_EACH) - (LAP % Math.max(1, LAPS_EACH));
+  return 'Time ' + (LAP + 1) + (bits.length ? ', ' + bits.join(' ') : '')
+       + (LAPS_EACH > 1 ? ' \u00b7 ' + left + ' more before it changes' : '');
+}
 
 let LOOP_SPEED = 1;
 let LEAD_IN = false;             // clicks before the passage
-const LEAD_BARS = 2;             // how many bars of them
-const SPEEDS = [1, 0.75, 0.6, 0.5, 0.35, 0.25];
+// HOW MUCH COUNT-IN. Don: "I'm just trying to give myself time to point my head
+// at the start. The four beat is too long." So this is not a musical count — it
+// is a moment to get ready, and the right length is however long that takes.
+// Beats rather than bars, because a bar is the wrong unit for a purpose that
+// has nothing to do with bars.
+let LEAD_BEATS = 2;
 
 let loop = null;                 // { from, to } in ticks — the passage circling
 let loopArm = false;             // O pressed, waiting for the sweep
@@ -4581,7 +4791,25 @@ const REST_GLYPH = {
 };
 
 let heads = [];
+// WHEN DRAWING FAILS, SAY SO. A fault inside the drawing leaves the page blank
+// — the score is cleared and then the redraw dies partway — and from outside
+// that is indistinguishable from "the piece did not load". Don has now hit this
+// twice and both times we spent the evening looking in the wrong half.
+// A SILENT FAILURE COSTS MORE THAN AN UGLY MESSAGE.
 function render(){
+  try { drawEverything(); }
+  catch (err){
+    console.error(err);
+    try {
+      say = 'the page could not be drawn \u2014 ' + (err && err.message ? err.message : err);
+      const f = document.getElementById('fSay');
+      if (f) f.textContent = say;
+      cry('COULD NOT DRAW THE PAGE', 4000);
+    } catch (e2) {}
+  }
+}
+
+function drawEverything(){
   if (window._paintLoop) try { window._paintLoop(); } catch (err) {}
   _routeCache = null;              // the route can change between renders
   _reachCache = null;              // and so can how far the music reaches
@@ -5041,6 +5269,19 @@ function render(){
                     + ' in octave ' + mc.oct + ' in this key';
             m.style.top = ym + 'px';
             box.appendChild(m);
+
+            // AND A LINE ALL THE WAY ACROSS AT THAT PITCH. The mark sits at the
+            // left margin, and the place it points at moves from line to line
+            // as the music moves — so a player reading in the middle of a bar
+            // had to look back to the margin to find the one landmark that ties
+            // the page to the instrument. Don: "we need to be able to see where
+            // that frequency is at all times."
+            // A LANDMARK YOU HAVE TO LOOK AWAY TO FIND IS NOT A LANDMARK.
+            const ml = document.createElement('div');
+            ml.className = 'midline';
+            ml.style.top = ym + 'px';
+            ml.title = WORDS.middleWhat;
+            box.appendChild(ml);
           }
         }
       }
@@ -5919,8 +6160,26 @@ function render(){
               box.appendChild(hb);
             }
           }
+          // A VOICE YOU CANNOT HEAR SHOULD LOOK LIKE ONE. When the program is
+          // playing V1 alone, V2 is still on the page in full black ink, and
+          // nothing says why it has gone quiet. Don: "if the voice is off, it
+          // ought to show as the dashed line / whited-out notehead that we have
+          // in place, so we know what we are not hearing."
+          // The mark already existed for the scaffolding notes; this is the
+          // same idea — WRITTEN, BUT NOT SOUNDING — so it reuses it rather than
+          // inventing a second way of saying the same thing.
+          // NAMED `loopQuiet`, NOT `hushed`. There is already a `hushed(e, st)`
+          // in this file — it decides whether a note is silenced by a mute, a
+          // parked voice or the faint switch — and a local const of the same
+          // name shadowed it. The next line down still called hushed(e, vc.id),
+          // which was now a boolean, so every draw died at the first notehead
+          // and the page went blank. Don, reading the message this build added:
+          // "hushed is not a function."
+          // A LOCAL NAME IS A GLOBAL DECISION when the scope it sits in is
+          // hundreds of lines long.
+          const loopQuiet = LOOP_VOICES && LOOP_VOICES.indexOf(vc.id) === -1;
           const c = document.createElement('div');
-          c.className = 'chip' + (e.ghost ? ' ghost' : '')
+          c.className = 'chip' + ((e.ghost || loopQuiet) ? ' ghost' : '')
             + (open ? (name === 'whole' ? ' breve' : ' open') : '')
             + (inHold(e, vc.id)
                && (!sel.only || (sel.only.ev === e.id && sel.only.i === pi)) ? ' picked' : '')
@@ -7744,13 +8003,114 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
           + Math.round(tempoAt(b).bpm * slow) + ' — from ' + barName(b)
           + (slow !== 1 ? ' (slowed with the loop)' : '');
       };
+      // THE CLICK BELONGS TO THE LOOP, and starts and stops with it.
+      //
+      // It was built to run on its own — tick the box and it clicks, whatever
+      // else is happening. That sounded useful and is confusing in practice: it
+      // begins the instant you tick it, and pressing Stop stops the music while
+      // the click carries on, because Stop had nothing to do with it. Don: "it
+      // starts immediately and will not shut off until everybody dies."
+      //
+      // A CONTROL INSIDE THE LOOP PANEL SHOULD OBEY THE LOOP'S BUTTONS. Play
+      // starts it, Stop stops it, and the box says whether it runs at all.
       if (mt) mt.addEventListener('change', () => {
-        if (mt.checked){
+        try { localStorage.setItem('island.metro', mt.checked ? '1' : '0'); } catch (err) {}
+        if (!mt.checked){ metroStop(); say = 'no click'; }
+        else if (playing){
           if (!metroStart()){ mt.checked = false; say = 'no sound available'; }
-          else say = 'the metronome is running';
-        } else { metroStop(); say = 'the metronome is off'; }
-        sayMetro();
+          else say = 'clicking on every beat';
+        } else say = 'it will click when you press Play';
+        sayMetro(); paint();
       });
+      try { mt.checked = localStorage.getItem('island.metro') === '1'; } catch (err) {}
+
+      // How long the count-in runs. A full bar asks the meter rather than
+      // assuming four, since a bar of 3/4 is three.
+      const leadBtns = { lead1:1, lead2:2, lead4:0 };   // 0 means "a whole bar"
+      const paintLead = () => {
+        for (const id of Object.keys(leadBtns)){
+          const b2 = document.getElementById(id);
+          if (b2) b2.setAttribute('aria-pressed',
+            (leadBtns[id] === LEAD_BEATS || (leadBtns[id] === 0 && LEAD_BEATS > 2)) ? 'true' : 'false');
+        }
+        const row = document.getElementById('leadRow');
+        const box2 = document.getElementById('bLead');
+        if (row && box2) row.style.opacity = box2.checked ? '1' : '.4';
+      };
+      for (const id of Object.keys(leadBtns)){
+        const b2 = document.getElementById(id);
+        if (b2) b2.addEventListener('click', () => {
+          if (leadBtns[id]) LEAD_BEATS = leadBtns[id];
+          else {
+            const b3 = loop ? barAt(loop.from) : barAt(cur.tick);
+            const ts = tsAt(b3);
+            LEAD_BEATS = Math.max(1, ts.beats);
+          }
+          try { localStorage.setItem('island.leadbeats', String(LEAD_BEATS)); } catch (err) {}
+          say = 'counting ' + LEAD_BEATS + (LEAD_BEATS === 1 ? ' beat in' : ' beats in');
+          paintLead(); paint();
+        });
+      }
+      try { LEAD_BEATS = Math.max(1, +localStorage.getItem('island.leadbeats') || 2); } catch (err) {}
+      paintLead();
+
+      // THE PROGRAM'S CONTROLS. Two rows: what happens to the voices, and what
+      // happens to the speed. They combine, so "one voice at a time, getting
+      // faster" needs no name of its own.
+      const planBtns = {
+        vpOff:  ['VOICE_PLAN','off'],  vpEach: ['VOICE_PLAN','each'],
+        vpBuild:['VOICE_PLAN','build'],
+        spOff:  ['SPEED_PLAN','off'],  spRamp: ['SPEED_PLAN','ramp']
+      };
+      const planState = { VOICE_PLAN: () => VOICE_PLAN, SPEED_PLAN: () => SPEED_PLAN };
+      const paintPlan = () => {
+        for (const id of Object.keys(planBtns)){
+          const b2 = document.getElementById(id);
+          if (!b2) continue;
+          const [which, val] = planBtns[id];
+          b2.setAttribute('aria-pressed', planState[which]() === val ? 'true' : 'false');
+        }
+        for (let n = 1; n <= 4; n++){
+          const b3 = document.getElementById('laps' + n);
+          if (b3) b3.setAttribute('aria-pressed', LAPS_EACH === n ? 'true' : 'false');
+        }
+      };
+      for (const id of Object.keys(planBtns)){
+        const b2 = document.getElementById(id);
+        if (!b2) continue;
+        b2.addEventListener('click', () => {
+          const [which, val] = planBtns[id];
+          if (which === 'VOICE_PLAN') VOICE_PLAN = val; else SPEED_PLAN = val;
+          // CHANGING THE PROGRAM STARTS IT AT ITS BEGINNING. Carrying a lap
+          // count across from another routine drops you into the middle of a
+          // sequence you have not heard the start of.
+          LAP = 0;
+          if (VOICE_PLAN === 'off') LOOP_VOICES = null;
+          if (SPEED_PLAN === 'off') LOOP_SPEED = 1;
+          applyPlan(); paintPlan(); paint();
+          render();                 // the pale voices change with the setting
+          if (playing){ stop(); play(false); }
+        });
+      }
+      // FOUR BUTTONS, NOT ONE THAT CYCLES. A button whose label is its current
+      // value and whose press changes it to something unstated is a puzzle —
+      // and it was squeezed to the width of one character besides.
+      for (let n = 1; n <= 4; n++){
+        const b2 = document.getElementById('laps' + n);
+        if (b2) b2.addEventListener('click', () => {
+          LAPS_EACH = n; LAP = 0; applyPlan(); paintPlan(); paint();
+        });
+      }
+
+      const cr = document.getElementById('bCrier');
+      if (cr){
+        try { cr.checked = localStorage.getItem('island.crier') !== '0'; } catch (err) {}
+        cr.addEventListener('change', () => {
+          try { localStorage.setItem('island.crier', cr.checked ? '1' : '0'); } catch (err) {}
+          say = cr.checked ? 'changes will be announced' : 'changes will not be announced';
+          if (cr.checked) cry('LIKE THIS', 1100);
+        });
+      }
 
       const ld = document.getElementById('bLead');
       // Writing to the DOM only when the value has changed. paint() is called
@@ -7765,12 +8125,15 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
         const lead = ld && ld.checked;
         const on = win.hidden ? 'false' : 'true';
         sayMetro();
-        put(said, !loop
+        const plan = planSays();
+        put(said, plan ? plan + ' \u2014 ' + (playing ? 'going round' : 'press Play')
+            : !loop
           ? 'Say which bars, then press Play.'
           : (playing ? 'Going round ' : 'Ready \u2014 ')
-            + (lead ? 'a bar of clicks, then ' : '')
+            + (lead ? LEAD_BEATS + (LEAD_BEATS === 1 ? ' beat in, then ' : ' beats in, then ') : '')
             + 'bars ' + (barAt(loop.from) + 1) + '\u2013' + (barAt(loop.to - 1) + 1)
             + '. Stop keeps them; Clear forgets them.');
+        paintPlan();
         if (lb.getAttribute('aria-pressed') !== on) lb.setAttribute('aria-pressed', on);
       };
       window._paintLoop = paint;
@@ -7784,7 +8147,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
         loop = { from: barStart(a2), to: barStart(b2) + capacityOf(b2) };
         // A NEW PASSAGE STARTS AT THE WRITTEN PACE — carrying 25% over to bars
         // you have not heard yet is a surprise, not a setting.
-        if (moved) LOOP_SPEED = 1;
+        if (moved){ LOOP_SPEED = 1; LAP = 0; applyPlan(); }
         paint(); render();
       };
       if (ld){
@@ -7793,7 +8156,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
         ld.addEventListener('change', () => {
           LEAD_IN = ld.checked;
           try { localStorage.setItem('island.leadin', LEAD_IN ? '1' : '0'); } catch (err) {}
-          paint();
+          paint(); paintLead();
           if (playing){ stop(); play(false); }   // hear it on the next pass
         });
       }
@@ -7860,6 +8223,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       const cl = document.getElementById('bClearLoop');
       if (cl) cl.addEventListener('click', () => {
         stop(); loop = null; LOOP_SPEED = 1;
+        LOOP_VOICES = null; LAP = 0;    // nothing is silenced once the loop is gone
         say = 'the passage is cleared';
         paint(); render();
       });
@@ -8260,10 +8624,11 @@ function play(fromStart){
     const bStart = barStart(step.bar), bEnd = bStart + capacityOf(step.bar);
 
     for (const st of score.profile.staves){
-      // ONE VOICE AT A TIME, when a loop asks for it. Muting is a property of
-      // the PIECE and is saved with it; this is a property of the listening and
-      // is not, which is why it is a separate test rather than a temporary
-      // entry in the hush list.
+      // ONE VOICE AT A TIME, when the program asks for it. Muting is a property
+      // of the PIECE and is saved with it; this is a property of the LISTENING
+      // and deliberately is not, so a practice session cannot quietly edit your
+      // music.
+      if (round && loop && LOOP_VOICES && LOOP_VOICES.indexOf(st.id) === -1) continue;
       const evs = evsBy[st.id];
       for (let i = 0; i < evs.length; i++){
         const e = evs[i];
@@ -8321,13 +8686,15 @@ function play(fromStart){
     const b0 = stops[0].bar;
     const ts = tsAt(b0), spt = stops[0].secPerTick;
     const perBeat = TPQ * 4 / ts.unit;
-    const beats = Math.max(1, Math.round(capacityOf(b0) / perBeat)) * LEAD_BARS;
+    const beats = Math.max(1, LEAD_BEATS);
     const secs = beats * perBeat * spt;
     // The music moves back to make room; t0 moves with it, so the playhead and
     // the sound stay in agreement.
     for (const n of pending) n.at += secs;
     t0 += secs; last += secs;
-    leadPlan = { beats, step: perBeat * spt, secs, perBar: beats / LEAD_BARS };
+    // With a short count the accent is on the first beat only — there is no bar
+    // to mark the start of.
+    leadPlan = { beats, step: perBeat * spt, secs, perBar: beats };
   }
 
   // Writing leaves the cursor AFTER the last note, so "from the cursor" would
@@ -8413,9 +8780,23 @@ function play(fromStart){
       + '\u2013' + (barAt(loop.to - 1) + 1);
     if (box) box.hidden = false;
 
+    // ONE THING MAKES CLICKS.
+    //
+    // The count-in had its own ticks and the metronome had its own beats, and I
+    // have now spent three builds keeping the two out of each other's way — a
+    // silence guard, then an earliest-allowed moment, and each time the double
+    // came back from a direction I had not covered. Don, twice: "the double
+    // click on the first beat is back."
+    //
+    // TWO THINGS THAT MUST NEVER COINCIDE SHOULD BE ONE THING. So when the
+    // metronome is running it counts the lead-in too — it just starts a few
+    // beats earlier — and the count-in makes no sound of its own. There is
+    // nothing left to collide with.
+    const metroBox = document.getElementById('bMetro');
+    const metroWillCount = !!(metroBox && metroBox.checked);
     for (let i = 0; i < leadPlan.beats; i++){
       const at = base + i * leadPlan.step;
-      tick(at, i % leadPlan.perBar === 0);
+      if (!metroWillCount) tick(at, i % leadPlan.perBar === 0);
       setTimeout(() => {
         if (!dots) return;
         dots.querySelectorAll('i').forEach((n, k) => n.classList.toggle('on', k === i));
@@ -8426,8 +8807,34 @@ function play(fromStart){
       if (dots) dots.querySelectorAll('i').forEach(n => n.classList.remove('on'));
     }, Math.max(0, (t0 - audio.currentTime) * 1000));
 
+    if (LAP === 0) cry(LOOP_VOICES
+      ? (LOOP_VOICES.length === 1
+          ? 'VOICE ' + voiceNumber(LOOP_VOICES[0]) + ' ALONE'
+          : LOOP_VOICES.map(id => 'V' + voiceNumber(id)).join(' AND '))
+      : 'EVERY VOICE', 1200);
     say = leadPlan.beats + ' clicks, then bars ' + (barAt(loop.from) + 1)
         + '\u2013' + (barAt(loop.to - 1) + 1);
+  }
+
+  // THE METRONOME COUNTS THE MUSIC'S BEATS, NOT ITS OWN. It was started on its
+  // own free-running clock whenever you ticked the box, so once a loop began
+  // the two had no relationship at all — the click landed wherever it happened
+  // to have started. Don: "in the looper, the metronome is not on beat."
+  // TWO CLOCKS TELLING THE SAME TIME MUST BE SET FROM ONE OF THEM. Re-basing it
+  // on t0 at the moment of playing puts beat one on the downbeat, and the same
+  // spacing keeps them together from there.
+  // The click runs while the music does. Asked for here rather than when the
+  // box was ticked, so it can never be running on its own.
+  {
+    const mbox = document.getElementById('bMetro');
+    // WHERE THE COUNTING BEGINS. With a count-in it begins at the count, so the
+    // clicks run unbroken into the music; without one it begins on the
+    // downbeat. Either way it is the only thing clicking.
+    if (mbox && mbox.checked){
+      const from = leadPlan ? t0 - leadPlan.secs : t0;
+      metroStart(from, from);
+    }
+    else metroStop();
   }
 
   playing = true; stopAt = last;
@@ -8457,7 +8864,31 @@ function play(fromStart){
     // ROUND AGAIN. Re-arming at the end of each pass rather than scheduling a
     // hundred repeats keeps it honest — edit a note while it circles and the
     // next time round plays what you just wrote.
-    if (round && loop){ playing = false; play(false); return; }
+    if (round && loop){
+      // THE PASS THAT JUST ENDED IS DONE, so the next one may ask for more.
+      const was = LOOP_VOICES ? LOOP_VOICES.join(',') : 'all';
+      const wasSpeed = LOOP_SPEED;
+      LAP++; applyPlan();
+      const now = LOOP_VOICES ? LOOP_VOICES.join(',') : 'all';
+      // AND THE PAGE HAS TO BE TOLD. applyPlan changes which voices sound, and
+      // the noteheads are drawn from that — but nothing redrew, so the page
+      // kept whatever it looked like when the loop began and the silent voice
+      // never went pale. Don: "the notes not playing are NOT showing as white."
+      // A CHANGE NOBODY REDRAWS IS A CHANGE THAT DID NOT HAPPEN, on screen.
+      if (now !== was) render();
+      // ONLY WHEN SOMETHING ACTUALLY CHANGED. A notice that appears every lap
+      // saying the same thing stops being read by the third time round.
+      if (now !== was){
+        cry(LOOP_VOICES
+          ? (LOOP_VOICES.length === 1
+              ? 'NOW VOICE ' + voiceNumber(LOOP_VOICES[0]) + ' ALONE'
+              : 'NOW ' + LOOP_VOICES.map(id => 'V' + voiceNumber(id)).join(' AND '))
+          : 'NOW EVERY VOICE');
+      } else if (LOOP_SPEED !== wasSpeed){
+        cry(Math.round(LOOP_SPEED * 100) + '% SPEED');
+      }
+      playing = false; play(false); return;
+    }
     stop();
   }, 250);
 }
@@ -8708,7 +9139,7 @@ const PEAK = 0.115;                 // so the six together sit where b9's one di
 // sits higher and louder, which is the whole of what a lead-in has to say —
 // here is the pulse, and here is where the bar begins.
 function tick(at, strong){
-  if (!audio) return;
+  if (!audio) return null;
   // A CLICK YOU CAN ACTUALLY HEAR.
   //
   // The first recipe was a noise burst through a bandpass at Q=3. It ran, it
@@ -8734,6 +9165,7 @@ function tick(at, strong){
   o.connect(g); g.connect(audio.destination);
   o.start(at); o.stop(at + 0.07);
   keep(o);
+  return o;                    // so a re-based metronome can take it back
 }
 
 // ---------------------------------------------------------------------------
@@ -8751,14 +9183,19 @@ function tick(at, strong){
 // ---------------------------------------------------------------------------
 function metroStop(){
   if (metroTimer){ clearInterval(metroTimer); metroTimer = 0; }
+  metroSilence();
   METRO = false;
 }
-function metroStart(){
+// `from` is the audio-clock second of beat one. Playback passes the music's own
+// downbeat so the two agree; with nothing playing it starts a moment from now.
+function metroStart(from, notBefore){
   if (!wake()) return false;
   if (metroTimer) clearInterval(metroTimer);
+  metroSilence();
   METRO = true;
-  metroAt = audio.currentTime + 0.12;
+  metroAt = (typeof from === 'number') ? from : audio.currentTime + 0.12;
   metroBeat = 0;
+  metroFrom = (typeof notBefore === 'number') ? notBefore : 0;
   const feedBeats = () => {
     if (!METRO || !audio){ metroStop(); return; }
     // The bar it counts is the one you are looking at, so moving the cursor to a
@@ -8772,7 +9209,10 @@ function metroStart(){
     const secs = (60 / bpm) * (4 / ts.unit);
     const beats = Math.max(1, ts.beats);
     while (metroAt < audio.currentTime + 0.4){
-      if (metroAt > audio.currentTime) tick(metroAt, metroBeat === 0);
+      if (metroAt > audio.currentTime && metroAt >= metroFrom - 0.001){
+        const o = tick(metroAt, metroBeat === 0);
+        if (o) metroLive.push(o);
+      }
       metroAt += secs;
       metroBeat = (metroBeat + 1) % beats;
     }
@@ -8953,6 +9393,7 @@ function follow(){
 // clicked. Stopping walks the notes actually scheduled and silences those.
 function stop(){
   if (endWatch){ clearInterval(endWatch); endWatch = 0; }
+  metroStop();                 // the click stops when the music does
   if (pump){ clearInterval(pump); pump = 0; }
   pending = [];                     // nothing queued survives a stop
   // STOPPING LEAVES THE CURSOR WHERE THE MUSIC STOPPED, so space picks it up
@@ -9416,9 +9857,18 @@ function makePanel(box, head, key){
   try {
     const w = JSON.parse(localStorage.getItem(key) || 'null');
     if (w){
-      box.style.left = w.x + 'px';  box.style.top = w.y + 'px';
+      // A REMEMBERED PLACE MUST STILL BE A PLACE. The position was stored
+      // against whatever window it was dragged in — a wider desktop, a
+      // landscape tablet — and restored blind. On a narrower screen that puts
+      // the panel past the right edge or below the bottom, where it is open,
+      // working, and completely unreachable. Don: "nothing from the library
+      // loads." It was loading; he could not see it to press it.
+      // CLAMP ON THE WAY IN, NOT ONLY ON THE WAY OUT.
+      const wide = Math.min(w.w || 400, Math.max(260, innerWidth - 24));
+      box.style.left = Math.max(4, Math.min(innerWidth - 80, w.x)) + 'px';
+      box.style.top  = Math.max(4, Math.min(innerHeight - 60, w.y)) + 'px';
       box.style.right = 'auto';     box.style.bottom = 'auto';
-      if (w.w) box.style.width = w.w + 'px';
+      box.style.width = wide + 'px';
     }
   } catch (err) {}
 
@@ -10088,7 +10538,8 @@ el.focus();
 try {
   const q = String(location.search || '');
   if (/[?&]wipe\b/.test(q)){
-    for (const k of ['island.library','island.shelf','island.stars','island.size',
+    for (const k of ['island.libwin','island.loopwin2',
+                     'island.library','island.shelf','island.stars','island.size',
                      'island.loopwin2','island.leadin','island.clip','island.advance',
                      'island.shelf.seeded',
                      'island.chords','island.lay','island.keys','island.voices',
