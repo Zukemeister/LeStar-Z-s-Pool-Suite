@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Island Piano</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230d1013'/%3E%3Ctext x='32' y='44' font-size='34' font-family='monospace' font-weight='700' fill='%23faf7ee' text-anchor='middle'%3E1%3C/text%3E%3C/svg%3E">
+<style>
+  html,body{margin:0;height:100%;background:#0d1013;color:#faf7ee;
+    font:600 15px/1.6 ui-monospace,Menlo,monospace;
+    display:flex;align-items:center;justify-content:center;text-align:center}
+  div{padding:24px}
+  b{display:block;font-size:19px;letter-spacing:.18em;margin-bottom:10px}
+  a{color:#00a3ab}
+</style>
+</head>
+<body>
+<div>
+  <b>ISLAND PIANO</b>
+  fetching the newest build…
+  <p><a id="manual" href="#">tap here if nothing happens</a></p>
+</div>
+<script>
+/* ---------------------------------------------------------------------------
+   A DOOR, NOT A COPY.
+   
+   The trouble was never publishing — a commit is live on GitHub Pages within a
+   minute. It was that a browser, and a home-screen icon especially, will happily
+   show a copy it saved days ago and never ask the server whether there is a
+   newer one. So the app looked unchanged after every build.
+   
+   THE ADDRESS HAS TO LOOK NEW FOR THE FILE TO BE FETCHED NEW. This page adds
+   the current time to the address and sends you on. The app ignores it; the
+   browser sees an address it has never met and goes and gets it.
+   
+   Keep this file on the desktop and open it instead of the app. Put a copy in
+   the repo too, and add THAT to the tablet's home screen — then the icon is a
+   door to the newest build rather than a snapshot of an old one.
+   --------------------------------------------------------------------------- */
+var APP = 'https://zukemeister.github.io/LeStar-Z-s-Pool-Suite/island-piano.html';
+var url = APP + '?v=' + Date.now();
+document.getElementById('manual').href = url;
+/* replace() rather than assign() so the back button does not land you here. */
+location.replace(url);
+</script>
+</body>
+</html>
