@@ -5,7 +5,17 @@
 <!-- PINCH IS ALWAYS AVAILABLE. Whatever the Size control says, a tablet reader
      should be able to spread two fingers and look closer; a page that forbids
      it is a page that has decided it knows better than the person holding it. -->
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.25, maximum-scale=5, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.25, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+<!-- ADDED TO THE HOME SCREEN, IT SHOULD BE AN APP. Without these a home-screen
+     icon opens Safari — address bar, tabs and all — and a music stand loses two
+     inches of staff to browser furniture. Don: "how can I get the pure app
+     filling the screen?" These tell iOS and Android to open it standalone.
+     viewport-fit=cover above lets the page use the whole glass on a device with
+     rounded corners rather than leaving a band top and bottom. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Island Piano">
 <title>Island Notes: Piano</title>
 <style>
   :root{
@@ -31,6 +41,11 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
+  /* STANDALONE MEANS NO BROWSER CHROME TO PROTECT YOU. Full screen puts the
+     page under the rounded corners and the home indicator, so the app keeps its
+     own margins there. */
+  body{ padding:env(safe-area-inset-top) env(safe-area-inset-right)
+               env(safe-area-inset-bottom) env(safe-area-inset-left) }
   body{
     background:var(--paper); color:var(--ink);
     font:14px/1.5 ui-sans-serif,-apple-system,"Segoe UI",system-ui,sans-serif;
@@ -1684,7 +1699,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-26 b198 one thing makes clicks';
+const BUILD_STAMP = '2026-08-26 b199 full screen';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
