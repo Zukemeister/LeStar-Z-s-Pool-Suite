@@ -41,11 +41,16 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
-  /* STANDALONE MEANS NO BROWSER CHROME TO PROTECT YOU. Full screen puts the
-     page under the rounded corners and the home indicator, so the app keeps its
-     own margins there. */
-  body{ padding:env(safe-area-inset-top) env(safe-area-inset-right)
-               env(safe-area-inset-bottom) env(safe-area-inset-left) }
+  /* THE BARS WERE THE PAGE SHOWING THROUGH. Padding the body to clear the
+     rounded corners pushed the app inward and left the html element visible
+     behind it — and html is white by default. Don: "there is a white bar at the
+     top (and bottom)." PADDING MOVES A THING; IT DOES NOT COLOUR WHAT IT
+     UNCOVERS. So the page itself takes the paper colour, and the safe area is
+     handled by the rail and the footer keeping their own margins rather than by
+     shrinking the whole app. */
+  html{ background:var(--paper) }
+  .rail{ padding-top:calc(12px + env(safe-area-inset-top)) }
+  .foot{ padding-bottom:calc(6px + env(safe-area-inset-bottom)) }
   body{
     background:var(--paper); color:var(--ink);
     font:14px/1.5 ui-sans-serif,-apple-system,"Segoe UI",system-ui,sans-serif;
@@ -581,12 +586,16 @@
   body.footshut .foot .now > *:not(#footFold):not(.drag){ display:none }
   body.footshut .foot{ padding-top:4px; padding-bottom:4px }
 
+  /* PINNED TO THE WINDOW, NOT TO THE RAIL. It sat inside the rail, so folding
+     the rail — or scrolling it sideways on a narrow screen — took the size
+     buttons with it. Don: "I can't see any +/- or diminish." A CONTROL THAT
+     TRAVELS WITH THE THING IT HIDES IS NOT ALWAYS ON. */
   #alwaysOn{
-    position:absolute; top:6px; right:10px; z-index:30;
-    display:flex; gap:5px;
+    position:fixed; top:calc(6px + env(safe-area-inset-top)); right:12px; z-index:70;
+    display:flex; gap:6px;
   }
   #alwaysOn button{
-    width:34px; height:26px; padding:0; cursor:pointer;
+    width:40px; height:34px; padding:0; cursor:pointer;
     border:1.5px solid rgba(255,255,255,.45); border-radius:7px;
     background:rgba(255,255,255,.10); color:#fff;
     font:700 13px/1 -apple-system,sans-serif;
@@ -1437,6 +1446,7 @@
      folding the controls to make room for the music also took away the one
      control that changes how much music fits. Don: "I can't resize the music."
      A CONTROL YOU NEED WHILE READING MUST SURVIVE HIDING THE ONES YOU DO NOT. -->
+
 <div id="alwaysOn">
   <button type="button" id="zoomOut" title="smaller">&minus;</button>
   <button type="button" id="zoomIn" title="bigger">+</button>
@@ -1727,7 +1737,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-28 b201 the page counts its own work';
+const BUILD_STAMP = '2026-08-28 b202 pinch, and no white bars';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8028,7 +8038,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
   // SIZE, WHEREVER YOU ARE. The same list the rail's Size menu uses, so the two
   // cannot disagree — press either and both show the same figure.
   try {
-    const stepSize = d => {
+    function stepSize(d){
       const sel = document.getElementById('rSize');
       if (!sel) return;
       const vals = Array.from(sel.options).map(o => parseFloat(o.value));
@@ -8040,7 +8050,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       try { localStorage.setItem('island.size', String(ZOOM)); } catch (err) {}
       say = 'size ' + Math.round(ZOOM * 100) + '%';
       render();
-    };
+    }
     // Long-press the minus to be told what the last draw cost. A tablet has no
     // console, so this is the only place the figure can go.
     const zoBtn = document.getElementById('zoomOut');
@@ -8056,6 +8066,37 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       zoBtn.addEventListener('mousedown', start);
       zoBtn.addEventListener('mouseup', end);
     }
+    // PINCH TO RESIZE. Don: "can we make the resize from finger controls?" On a
+    // tablet that is the gesture everyone already knows, and hunting for a
+    // button while holding an instrument is the thing we keep trying to remove.
+    //
+    // IT CHANGES THE MUSIC'S SIZE, NOT THE PAGE'S. A browser pinch magnifies
+    // everything including the rail and the footer, and leaves the staff just as
+    // many bars wide; this steps the app's own Size, so the notes get bigger and
+    // the page relays out around them.
+    try {
+      const sc = document.getElementById('score');
+      if (sc){
+        let apart = 0;
+        const gap = ev => {
+          const a = ev.touches[0], b = ev.touches[1];
+          return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+        };
+        sc.addEventListener('touchstart', ev => {
+          if (ev.touches.length === 2) apart = gap(ev);
+        }, { passive:true });
+        sc.addEventListener('touchmove', ev => {
+          if (ev.touches.length !== 2 || !apart) return;
+          const now = gap(ev);
+          // A fifth wider or narrower is one step. Big enough that a wobble does
+          // nothing, small enough that a deliberate pinch is one size at a time.
+          if (now > apart * 1.2){ stepSize(1);  apart = now; ev.preventDefault(); }
+          else if (now < apart * 0.8){ stepSize(-1); apart = now; ev.preventDefault(); }
+        }, { passive:false });
+        sc.addEventListener('touchend', () => { apart = 0; });
+      }
+    } catch (err) {}
+
     const zi = document.getElementById('zoomIn'), zo = document.getElementById('zoomOut');
     if (zi) zi.addEventListener('click', () => stepSize(1));
     if (zo) zo.addEventListener('click', () => stepSize(-1));
