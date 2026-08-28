@@ -1208,7 +1208,11 @@
   }
   .foot.floating .now{ flex-wrap:wrap; gap:8px 18px }
   .foot.floating .now .sp{ flex:0 }
-  .foot .drag{ cursor:grab; color:#b6bec6; font-size:15px; letter-spacing:-2px;
+  /* The handle must keep the finger rather than letting the page scroll under
+     it, and must not select text on a slow drag. */
+  .foot .drag{ touch-action:none; user-select:none; -webkit-user-select:none;
+    font-size:20px; padding:0 6px }
+  #footFold{ cursor:grab; color:#b6bec6; font-size:15px; letter-spacing:-2px;
     user-select:none; padding:0 2px }
   .foot .drag:active{ cursor:grabbing }
   .foot .now{ display:flex; gap:24px; align-items:baseline }
@@ -1737,7 +1741,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-28 b202 pinch, and no white bars';
+const BUILD_STAMP = '2026-08-28 b203 the footer moves by finger';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -7326,8 +7330,14 @@ function floatable(box, handle, key){
       box.style.top  = y + 'px';
     }
   }
-  handle.addEventListener('mousedown', dn => {
-    if (dn.target.closest('button, select, input')) return;
+  // BY FINGER TOO. This was written for a mouse, so on the tablet — the machine
+  // the footer is most in the way on — it could not be moved at all. Don: "the
+  // bar at the bottom is in the way and not moveable." Same fault the loop and
+  // library panels had, in the third place I had not yet looked.
+  const at = ev => (ev.touches && ev.touches[0]) ? ev.touches[0] : ev;
+  const grab = dn0 => {
+    const dn = at(dn0);
+    if (dn0.target.closest('button, select, input')) return;
     // Pick it up from wherever it is sitting, so it does not jump on grab.
     if (!box.classList.contains('floating')){
       const r = box.getBoundingClientRect();
@@ -7336,14 +7346,24 @@ function floatable(box, handle, key){
     }
     const x0 = dn.clientX, y0 = dn.clientY;
     const l0 = parseFloat(box.style.left), t0 = parseFloat(box.style.top);
-    const move = mv => {
+    const move = mv0 => {
+      const mv = at(mv0);
       box.style.left = Math.max(-box.offsetWidth + 140, Math.min(innerWidth - 140, l0 + mv.clientX - x0)) + 'px';
       box.style.top  = Math.max(0, Math.min(innerHeight - 40, t0 + mv.clientY - y0)) + 'px';
+      if (mv0.preventDefault) mv0.preventDefault();
     };
-    const up = () => { removeEventListener('mousemove', move); removeEventListener('mouseup', up); keep(); };
+    const up = () => {
+      removeEventListener('mousemove', move); removeEventListener('mouseup', up);
+      removeEventListener('touchmove', move); removeEventListener('touchend', up);
+      keep();
+    };
     addEventListener('mousemove', move); addEventListener('mouseup', up);
-    dn.preventDefault();
-  });
+    addEventListener('touchmove', move, { passive:false });
+    addEventListener('touchend', up);
+    if (dn0.preventDefault) dn0.preventDefault();
+  };
+  handle.addEventListener('mousedown', grab);
+  handle.addEventListener('touchstart', grab, { passive:false });
   handle.addEventListener('dblclick', () => {
     box.classList.remove('floating');
     box.style.left = ''; box.style.top = '';
@@ -8051,6 +8071,30 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       say = 'size ' + Math.round(ZOOM * 100) + '%';
       render();
     }
+    // WHERE THE PIECES ARE KEPT. A browser stores a page's library against its
+    // ADDRESS, so the same app reached two ways has two libraries — and that is
+    // invisible from inside. Don keeps having to re-import after every build,
+    // which is exactly what a second library looks like from the outside.
+    // Long-press the plus and it says where it thinks it is and what it holds.
+    const ziBtn = document.getElementById('zoomIn');
+    if (ziBtn){
+      let held2 = 0;
+      const s2 = () => { held2 = setTimeout(() => {
+        let n = 0;
+        try { n = Object.keys(JSON.parse(localStorage.getItem('island.library') || '{}')).length; } catch (e) {}
+        say = n + ' pieces stored for ' + location.origin + location.pathname;
+        const f2 = document.getElementById('fSay');
+        if (f2) f2.textContent = say;
+        cry(n + ' PIECES STORED HERE', 3000);
+        held2 = 0;
+      }, 700); };
+      const e2 = () => { if (held2){ clearTimeout(held2); held2 = 0; } };
+      ziBtn.addEventListener('touchstart', s2, { passive:true });
+      ziBtn.addEventListener('touchend', e2);
+      ziBtn.addEventListener('mousedown', s2);
+      ziBtn.addEventListener('mouseup', e2);
+    }
+
     // Long-press the minus to be told what the last draw cost. A tablet has no
     // console, so this is the only place the figure can go.
     const zoBtn = document.getElementById('zoomOut');
