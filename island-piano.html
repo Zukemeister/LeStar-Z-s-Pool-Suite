@@ -1727,7 +1727,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-28 b200 out of the way, and awake';
+const BUILD_STAMP = '2026-08-28 b201 the page counts its own work';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -4839,7 +4839,16 @@ let heads = [];
 // that is indistinguishable from "the piece did not load". Don has now hit this
 // twice and both times we spent the evening looking in the wrong half.
 // A SILENT FAILURE COSTS MORE THAN AN UGLY MESSAGE.
+// HOW BIG IS THE JOB. A freeze is not an error — nothing throws, the page
+// simply stops answering — so the wrapper below catches nothing and we learn
+// nothing. Don has now lost three evenings to this, and each of my guesses
+// (memory, a redraw, repeat marks) was wrong.
+// SO THE PAGE COUNTS ITS OWN WORK. If a draw takes longer than a person would
+// wait, it says how long and how much it was drawing. On a tablet with no
+// console that is the only way to find out anything at all.
+let drawLog = { ms:0, marks:0 };
 function render(){
+  const t0d = (window.performance && performance.now) ? performance.now() : Date.now();
   try { drawEverything(); }
   catch (err){
     console.error(err);
@@ -4849,7 +4858,21 @@ function render(){
       if (f) f.textContent = say;
       cry('COULD NOT DRAW THE PAGE', 4000);
     } catch (e2) {}
+    return;
   }
+  try {
+    const t1d = (window.performance && performance.now) ? performance.now() : Date.now();
+    drawLog.ms = Math.round(t1d - t0d);
+    const sc = document.getElementById('score');
+    drawLog.marks = sc ? sc.getElementsByTagName('*').length : 0;
+    // A quarter of a second is the point at which a page stops feeling alive.
+    if (drawLog.ms > 250){
+      const msg = 'drew ' + drawLog.marks + ' marks in ' + drawLog.ms + 'ms';
+      const f = document.getElementById('fSay');
+      if (f) f.textContent = msg;
+      say = msg;
+    }
+  } catch (e3) {}
 }
 
 function drawEverything(){
@@ -8018,6 +8041,21 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       say = 'size ' + Math.round(ZOOM * 100) + '%';
       render();
     };
+    // Long-press the minus to be told what the last draw cost. A tablet has no
+    // console, so this is the only place the figure can go.
+    const zoBtn = document.getElementById('zoomOut');
+    if (zoBtn){
+      let held = 0;
+      const start = () => { held = setTimeout(() => {
+        cry(drawLog.marks + ' MARKS  ' + drawLog.ms + 'MS', 3000);
+        held = 0;
+      }, 700); };
+      const end = () => { if (held){ clearTimeout(held); held = 0; } };
+      zoBtn.addEventListener('touchstart', start, { passive:true });
+      zoBtn.addEventListener('touchend', end);
+      zoBtn.addEventListener('mousedown', start);
+      zoBtn.addEventListener('mouseup', end);
+    }
     const zi = document.getElementById('zoomIn'), zo = document.getElementById('zoomOut');
     if (zi) zi.addEventListener('click', () => stepSize(1));
     if (zo) zo.addEventListener('click', () => stepSize(-1));
