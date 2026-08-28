@@ -1767,7 +1767,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-28 b205 pages, the way paper works';
+const BUILD_STAMP = '2026-08-29 b206 the page turns itself';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -4985,6 +4985,8 @@ function drawEverything(){
   if (bars > WINDOW_BARS){
     // The playhead turns the page for you while the music runs; otherwise the
     // page is wherever you last turned to.
+    // While the music runs the page follows it; the draw is asked for only when
+    // the music actually leaves the page (see follow()), not on every frame.
     if (playing) PAGE_AT = Math.floor(barAt(tickNow()) / WINDOW_BARS);
     const pages = Math.ceil(bars / WINDOW_BARS);
     PAGE_AT = Math.max(0, Math.min(pages - 1, PAGE_AT));
@@ -9696,6 +9698,22 @@ function tickNow(){
 function follow(){
   if (!playing || !audio) return;
   const tick = tickNow();
+
+  // TURN THE PAGE WHEN THE MUSIC LEAVES IT.
+  //
+  // The draw decides which page is shown, and this loop never asks for a draw —
+  // it only slides the playhead along marks that already exist. So on a long
+  // piece the music ran off the end of page one and kept playing to bars nobody
+  // could see. Don: "it only loads and plays bars 1-24."
+  // A PAGE THAT CANNOT TURN ITSELF IS NOT FOLLOWING THE MUSIC.
+  if (window._pages && window._pages.at >= 0){
+    const pg = window._pages, here = barAt(tick);
+    if (here >= pg.to || here < pg.from){
+      render();                  // the draw works out which page that is
+      frame = requestAnimationFrame(follow);   // and carries on with new marks
+      return;
+    }
+  }
   for (const h of heads){
     if (tick >= h.from && tick <= h.to){
       h.el.style.display = '';
