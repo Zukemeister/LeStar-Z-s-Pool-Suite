@@ -1741,7 +1741,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-28 b203 the footer moves by finger';
+const BUILD_STAMP = '2026-08-28 b204 only what you could be looking at';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -4910,7 +4910,31 @@ function drawEverything(){
   const widthOf = b => GUTTER + capacityOf(b) * PX_TICK * scaleOf(b) + TAILGAP;
   el.innerHTML = '';
 
-  for (let first = 0; first < bars; ){
+  // ONLY WHAT YOU COULD BE LOOKING AT.
+  //
+  // Every bar of the piece was laid out on every draw — all 344 of the K.265,
+  // several thousand notes, tens of thousands of marks — whether one system was
+  // on screen or twenty. A desktop absorbs that. A tablet does not: the draw
+  // never finishes and the app appears to freeze. Don, for three evenings:
+  // "clicking Mozart freezes the whole thing."
+  //
+  // A LONG PIECE IS NOT A BIG PICTURE, IT IS A LOT OF SMALL ONES. So a long
+  // piece is drawn as a window of bars around wherever you are, and the window
+  // moves with you. Nothing is lost — the music is all still there — you are
+  // simply not being asked to draw the parts of it nobody can see.
+  //
+  // Short pieces are untouched: a study of eight bars draws whole, as before.
+  const WINDOW_BARS = 48;
+  let winFrom = 0, winTo = bars;
+  if (bars > WINDOW_BARS){
+    // Centred on the playhead while it runs, on the cursor while you write.
+    const here = playing ? barAt(tickNow()) : barAt(cur.tick);
+    winFrom = Math.max(0, here - Math.floor(WINDOW_BARS / 3));
+    winTo   = Math.min(bars, winFrom + WINDOW_BARS);
+    winFrom = Math.max(0, winTo - WINDOW_BARS);
+  }
+
+  for (let first = winFrom; first < winTo; ){
     // ASKING FOR A NUMBER OF BARS IS AN INSTRUCTION, NOT A HINT. Don: "I can't
     // change the number of bars per line." The count was decided by the WIDTH
     // test first and the requested number only got to stop it early — fine when
@@ -4945,7 +4969,8 @@ function drawEverything(){
     const SQUEEZE = 1.30;   // a line may hold up to 30% more music than fits
     const STRETCH = 1.30;   // and is never spread more than 30% past natural
     let last = first, used = 0;
-    while (last < bars && (BARS_PER_LINE
+    // The line stops at the window's edge as well as the piece's.
+    while (last < winTo && (BARS_PER_LINE
                             ? last - first < BARS_PER_LINE
                             : (used === 0 || used + widthOf(last) <= room * SQUEEZE))){
       used += widthOf(last); last++;
