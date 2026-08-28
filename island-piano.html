@@ -590,6 +590,25 @@
      the rail — or scrolling it sideways on a narrow screen — took the size
      buttons with it. Don: "I can't see any +/- or diminish." A CONTROL THAT
      TRAVELS WITH THE THING IT HIDES IS NOT ALWAYS ON. */
+  #pager{
+    position:fixed; left:50%; transform:translateX(-50%);
+    bottom:calc(74px + env(safe-area-inset-bottom)); z-index:70;
+    display:flex; align-items:center; gap:10px;
+    background:#0d1013; color:#fff; border:2px solid #fff; border-radius:10px;
+    padding:6px 10px; box-shadow:0 8px 26px rgba(0,0,0,.4);
+  }
+  #pager[hidden]{ display:none !important }
+  #pager button{
+    width:46px; height:36px; padding:0; cursor:pointer;
+    border:1.5px solid rgba(255,255,255,.4); border-radius:8px;
+    background:rgba(255,255,255,.1); color:#fff;
+    font:700 20px/1 -apple-system,sans-serif;
+  }
+  #pager button:active{ transform:scale(.94) }
+  #pageSays{ font:700 13px/1 ui-monospace,Menlo,monospace; letter-spacing:.08em;
+    min-width:96px; text-align:center }
+  @media print { #pager{ display:none !important } }
+
   #alwaysOn{
     position:fixed; top:calc(6px + env(safe-area-inset-top)); right:12px; z-index:70;
     display:flex; gap:6px;
@@ -1451,6 +1470,13 @@
      control that changes how much music fits. Don: "I can't resize the music."
      A CONTROL YOU NEED WHILE READING MUST SURVIVE HIDING THE ONES YOU DO NOT. -->
 
+<!-- TURNING THE PAGE. Shown only when a piece is long enough to have pages. -->
+<div id="pager" hidden>
+  <button type="button" id="pagePrev" title="the page before">&#8249;</button>
+  <span id="pageSays"></span>
+  <button type="button" id="pageNext" title="the next page">&#8250;</button>
+</div>
+
 <div id="alwaysOn">
   <button type="button" id="zoomOut" title="smaller">&minus;</button>
   <button type="button" id="zoomIn" title="bigger">+</button>
@@ -1741,7 +1767,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-28 b204 only what you could be looking at';
+const BUILD_STAMP = '2026-08-28 b205 pages, the way paper works';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -4285,6 +4311,10 @@ function planSays(){
        + (LAPS_EACH > 1 ? ' \u00b7 ' + left + ' more before it changes' : '');
 }
 
+// Which page of a long piece is on screen. Nothing to do with printing — this
+// is the reading page, and it only exists for pieces too long to draw at once.
+let PAGE_AT = 0;
+
 let LOOP_SPEED = 1;
 let LEAD_IN = false;             // clicks before the passage
 // HOW MUCH COUNT-IN. Don: "I'm just trying to give myself time to point my head
@@ -4875,6 +4905,20 @@ function render(){
     return;
   }
   try {
+    // Show or hide the page turners, and say where you are.
+    try {
+      const pg = window._pages, box = document.getElementById('pager');
+      if (box && pg){
+        box.hidden = pg.at < 0;
+        const lbl = document.getElementById('pageSays');
+        if (lbl && pg.at >= 0)
+          lbl.textContent = 'bars ' + (pg.from + 1) + '\u2013' + pg.to;
+        const pv = document.getElementById('pagePrev'), nx = document.getElementById('pageNext');
+        if (pv) pv.disabled = pg.at <= 0;
+        if (nx) nx.disabled = pg.at >= pg.of - 1;
+      }
+    } catch (e4) {}
+
     const t1d = (window.performance && performance.now) ? performance.now() : Date.now();
     drawLog.ms = Math.round(t1d - t0d);
     const sc = document.getElementById('score');
@@ -4924,15 +4968,32 @@ function drawEverything(){
   // simply not being asked to draw the parts of it nobody can see.
   //
   // Short pieces are untouched: a study of eight bars draws whole, as before.
-  const WINDOW_BARS = 48;
+  // PAGES, NOT A SLIDING WINDOW.
+  //
+  // The first attempt centred the drawn bars on the cursor — and scrolling does
+  // not move the cursor, so the piece simply stopped at bar 48 with nothing to
+  // say why. Don: "why does the piece end at 48 bars?" A worse fault than the
+  // freeze it cured.
+  //
+  // So the music is paged, the way paper is. A page holds as many bars as the
+  // machine can draw briskly, and you turn it. NOTHING REDRAWS WHILE YOU ARE
+  // READING, which on a music stand matters more than smooth scrolling: a page
+  // that relays itself under your eyes mid-phrase is worse than one that sits
+  // still and waits to be turned.
+  const WINDOW_BARS = 24;
   let winFrom = 0, winTo = bars;
   if (bars > WINDOW_BARS){
-    // Centred on the playhead while it runs, on the cursor while you write.
-    const here = playing ? barAt(tickNow()) : barAt(cur.tick);
-    winFrom = Math.max(0, here - Math.floor(WINDOW_BARS / 3));
+    // The playhead turns the page for you while the music runs; otherwise the
+    // page is wherever you last turned to.
+    if (playing) PAGE_AT = Math.floor(barAt(tickNow()) / WINDOW_BARS);
+    const pages = Math.ceil(bars / WINDOW_BARS);
+    PAGE_AT = Math.max(0, Math.min(pages - 1, PAGE_AT));
+    winFrom = PAGE_AT * WINDOW_BARS;
     winTo   = Math.min(bars, winFrom + WINDOW_BARS);
-    winFrom = Math.max(0, winTo - WINDOW_BARS);
   }
+  window._pages = { at: winFrom > 0 || winTo < bars ? PAGE_AT : -1,
+                    of: Math.ceil(bars / WINDOW_BARS),
+                    from: winFrom, to: winTo };
 
   for (let first = winFrom; first < winTo; ){
     // ASKING FOR A NUMBER OF BARS IS AN INSTRUCTION, NOT A HINT. Don: "I can't
@@ -8096,6 +8157,18 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       say = 'size ' + Math.round(ZOOM * 100) + '%';
       render();
     }
+    // THE PAGE TURNERS. Repainted after every draw, since only the draw knows
+    // whether the piece is long enough to need them.
+    const turn = d => {
+      PAGE_AT += d;
+      render();
+      const sc2 = document.getElementById('score');
+      if (sc2) sc2.scrollTop = 0;      // a new page starts at its top
+    };
+    const pp = document.getElementById('pagePrev'), pn = document.getElementById('pageNext');
+    if (pp) pp.addEventListener('click', () => turn(-1));
+    if (pn) pn.addEventListener('click', () => turn(1));
+
     // WHERE THE PIECES ARE KEPT. A browser stores a page's library against its
     // ADDRESS, so the same app reached two ways has two libraries — and that is
     // invisible from inside. Don keeps having to re-import after every build,
