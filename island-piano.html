@@ -567,20 +567,39 @@
       rgba(255,255,255,.35) 74%, rgba(255,255,255,.35) 86%, transparent 86%) }
   @media print { #loopWin, #countIn{ display:none !important } }
 
-  #railFold{
+  /* THE STATUS LINE FOLDS TOO. Don: "I never look at it, so I'd like to get it
+     out of sight until I need it." It is a readout, not a control — useful when
+     you are writing, dead weight when you are reading music off a propped
+     tablet. Folded it leaves a small tab, so it is one tap back rather than
+     gone. */
+  #footFold{
+    width:30px; height:24px; padding:0; margin-left:6px; flex:0 0 auto;
+    border:1.5px solid rgba(255,255,255,.4); border-radius:6px;
+    background:rgba(255,255,255,.1); color:#fff; cursor:pointer;
+    font:700 10px/1 -apple-system,sans-serif;
+  }
+  body.footshut .foot .now > *:not(#footFold):not(.drag){ display:none }
+  body.footshut .foot{ padding-top:4px; padding-bottom:4px }
+
+  #alwaysOn{
     position:absolute; top:6px; right:10px; z-index:30;
+    display:flex; gap:5px;
+  }
+  #alwaysOn button{
     width:34px; height:26px; padding:0; cursor:pointer;
     border:1.5px solid rgba(255,255,255,.45); border-radius:7px;
     background:rgba(255,255,255,.10); color:#fff;
-    font:700 11px/1 -apple-system,sans-serif;
+    font:700 13px/1 -apple-system,sans-serif;
   }
-  #railFold:active{ transform:scale(.94) }
+  #alwaysOn button:active{ transform:scale(.94) }
+  /* Folded, the strip keeps its place at the top right of the collapsed rail. */
+  body.folded #alwaysOn{ opacity:1; pointer-events:auto }
   /* FOLDED: the rail keeps only its own height and the one button that brings
      it back. Nothing is destroyed — the controls are still there, one tap away
      — which is the difference between folding and hiding. */
   body.folded .rail{ max-height:34px; overflow:hidden; padding-top:0; padding-bottom:0 }
   body.folded .rail > *{ opacity:0; pointer-events:none }
-  body.folded #railFold{ opacity:1; pointer-events:auto }
+  body.folded #alwaysOn, body.folded #alwaysOn button{ opacity:1; pointer-events:auto }
 
   /* THE MIDDLE LINE, IN RED. I argued for ink at low weight — a horizon rather
      than a warning — and Don's answer settled it: "I want to always know out of
@@ -1414,7 +1433,15 @@
      in the way — so the rail collapses to a single strip, the loop panel closes
      to a button, and the page is the page.
      WHAT YOU ARE DOING DECIDES WHAT SHOULD BE ON SCREEN. -->
-<button type="button" id="railFold" title="hide the controls">&#9650;</button>
+<!-- SIZE LIVES OUT HERE TOO. It was only in the rail — which folds away — so
+     folding the controls to make room for the music also took away the one
+     control that changes how much music fits. Don: "I can't resize the music."
+     A CONTROL YOU NEED WHILE READING MUST SURVIVE HIDING THE ONES YOU DO NOT. -->
+<div id="alwaysOn">
+  <button type="button" id="zoomOut" title="smaller">&minus;</button>
+  <button type="button" id="zoomIn" title="bigger">+</button>
+  <button type="button" id="railFold" title="hide the controls">&#9650;</button>
+</div>
 <div class="rail">
   <!-- GROUPED BY WHAT A CONTROL IS FOR, with a caption over each group. Twenty
        six controls in one undifferentiated row is a list you have to read from
@@ -1609,6 +1636,7 @@
 <div class="foot" id="foot">
   <div class="now">
     <span class="drag" id="footGrab" aria-hidden="true">⠿</span>
+    <button type="button" id="footFold" title="hide the status line">&#9660;</button>
     <span class="grp"><i>at</i> <b id="fBar2">bar 1</b>, <b id="fBeat">beat 1.00</b></span>
     <span class="grp"><i>writing in</i> <b id="fHand">V1</b></span>
     <span class="grp"><i>writing</i> <b id="fDur">eighth</b> <i>in octave</i> <b id="fOct">5</b></span>
@@ -1699,7 +1727,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-26 b199 full screen';
+const BUILD_STAMP = '2026-08-28 b200 out of the way, and awake';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -7954,6 +7982,47 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
   // ---------------------------------------------------------------------
   // FOLDING THE CONTROLS. Remembered per device, because a tablet propped on a
   // piano wants them away and a desktop usually does not.
+  // THE STATUS LINE'S OWN FOLD, remembered like the rail's.
+  try {
+    const ff = document.getElementById('footFold');
+    if (ff){
+      const setFoot = on => {
+        document.body.classList.toggle('footshut', on);
+        ff.innerHTML = on ? '&#9650;' : '&#9660;';
+        ff.title = on ? 'show the status line' : 'hide the status line';
+        try { localStorage.setItem('island.footshut', on ? '1' : '0'); } catch (err) {}
+      };
+      let was = false;
+      try { was = localStorage.getItem('island.footshut') === '1'; } catch (err) {}
+      setFoot(was);
+      ff.addEventListener('click', ev => {
+        ev.stopPropagation();      // the footer is a drag handle
+        setFoot(!document.body.classList.contains('footshut'));
+      });
+    }
+  } catch (err) {}
+
+  // SIZE, WHEREVER YOU ARE. The same list the rail's Size menu uses, so the two
+  // cannot disagree — press either and both show the same figure.
+  try {
+    const stepSize = d => {
+      const sel = document.getElementById('rSize');
+      if (!sel) return;
+      const vals = Array.from(sel.options).map(o => parseFloat(o.value));
+      let i = vals.findIndex(v => Math.abs(v - ZOOM) < 0.001);
+      if (i < 0) i = vals.indexOf(1);
+      i = Math.max(0, Math.min(vals.length - 1, i + d));
+      sel.value = String(vals[i]);
+      setSize(vals[i]);
+      try { localStorage.setItem('island.size', String(ZOOM)); } catch (err) {}
+      say = 'size ' + Math.round(ZOOM * 100) + '%';
+      render();
+    };
+    const zi = document.getElementById('zoomIn'), zo = document.getElementById('zoomOut');
+    if (zi) zi.addEventListener('click', () => stepSize(1));
+    if (zo) zo.addEventListener('click', () => stepSize(-1));
+  } catch (err) {}
+
   try {
     const fb = document.getElementById('railFold');
     if (fb){
@@ -8853,6 +8922,7 @@ function play(fromStart){
   }
 
   playing = true; stopAt = last;
+  holdAwake();                    // keep the screen on while the music runs
   // THE PUMP STARTS AFTER `playing` IS TRUE, not before. Its first act is to
   // hand over everything inside the opening window — but the very first thing
   // it checks is whether we are playing, so starting it two hundred lines
@@ -9196,6 +9266,35 @@ function tick(at, strong){
 //  clock lands where it was told. So a timer only ever decides WHAT to promise,
 //  and the clock keeps the promise. Same shape as the note pump.
 // ---------------------------------------------------------------------------
+// THE SCREEN GOING DARK STOPS THE MUSIC.
+//
+// A browser suspends audio when its page is no longer on screen, so a tablet
+// that dims and locks takes the piece with it. Don, playing Schumann through
+// the car: "upon shutting the screen off, the app stopped playing."
+//
+// A wake lock asks the device to keep the screen on, which covers the common
+// case — a tablet dimming by itself partway through a long piece. It cannot
+// help with a screen you switch off deliberately: audio behind a locked screen
+// needs a different sound engine entirely, and this one cannot do it. Better to
+// solve the case that can be solved than to pretend at the one that cannot.
+let awake = null;
+async function holdAwake(){
+  try {
+    if (awake || !navigator.wakeLock) return;
+    awake = await navigator.wakeLock.request('screen');
+    awake.addEventListener('release', () => { awake = null; });
+  } catch (err) { awake = null; }
+}
+function letSleep(){
+  try { if (awake) awake.release(); } catch (err) {}
+  awake = null;
+}
+// A lock is dropped whenever the page is hidden, so it has to be taken again
+// when the page comes back — otherwise it silently never returns.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && playing) holdAwake();
+});
+
 function metroStop(){
   if (metroTimer){ clearInterval(metroTimer); metroTimer = 0; }
   metroSilence();
@@ -9409,6 +9508,7 @@ function follow(){
 function stop(){
   if (endWatch){ clearInterval(endWatch); endWatch = 0; }
   metroStop();                 // the click stops when the music does
+  letSleep();
   if (pump){ clearInterval(pump); pump = 0; }
   pending = [];                     // nothing queued survives a stop
   // STOPPING LEAVES THE CURSOR WHERE THE MUSIC STOPPED, so space picks it up
