@@ -619,7 +619,8 @@
      laid out so the numbers keep the order they have on the page. */
   #padNums{ display:grid; grid-template-columns:repeat(6, 1fr); gap:5px }
   #padDurs{ display:grid; grid-template-columns:repeat(6, 1fr); gap:5px; margin-top:5px }
-  #padRow, #padRow2{ display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; margin-top:5px }
+  #padRow, #padRow2, #padRow3{ display:grid; grid-template-columns:repeat(4, 1fr);
+    gap:5px; margin-top:5px }
   #pad button:not(#padShut){
     padding:11px 0; cursor:pointer; color:#fff;
     border:1.5px solid rgba(255,255,255,.35); border-radius:8px;
@@ -1664,6 +1665,17 @@
     <button type="button" class="padwide" id="padPrev">&#8249; back</button>
     <button type="button" class="padwide" id="padNext">on &#8250;</button>
   </div>
+  <div id="padRow3">
+    <!-- A LATCH, NOT A CHORD BUTTON. A chord is not a thing you pick from a
+         list, it is notes stacked on the note you just wrote — so the pad needs
+         only to say "the next number joins this one instead of following it."
+         Held down, it stays on until you turn it off, so a four-note chord is
+         four taps rather than four modified taps. -->
+    <button type="button" class="padwide" id="padStack" aria-pressed="false">stack</button>
+    <button type="button" class="padwide" id="padDown">&#9660; down</button>
+    <button type="button" class="padwide" id="padUp">&#9650; up</button>
+    <button type="button" class="padwide" id="padSave">save</button>
+  </div>
 </div>
 
 <div id="tuner" hidden>
@@ -1986,7 +1998,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-31 b224 writing without a keyboard';
+const BUILD_STAMP = '2026-08-31 b225 stack, nudge, save';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8735,8 +8747,11 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
         const b = document.createElement('button');
         b.type = 'button'; b.textContent = n;
         b.addEventListener('click', () => {
-          // Same order the key handler uses: change a selected note, or write.
-          if (!retune(n)) place([n]);
+          // STACK LATCHED means this number joins the note just written rather
+          // than following it — which is exactly what shift-number does on the
+          // keyboard, and therefore what a chord is.
+          if (padStacking) stack(n);
+          else if (!retune(n)) place([n]);
           say = ''; render(); padSay();
         });
         nums.appendChild(b);
@@ -8757,6 +8772,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
         durs.appendChild(b);
       }
 
+      let padStacking = false;
       const padSay = () => {
         const el2 = document.getElementById('padSays');
         if (el2) el2.textContent = 'bar ' + (barAt(cur.tick) + 1)
@@ -8766,6 +8782,8 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
           b.setAttribute('aria-pressed', b.dataset.dur === pend.dur ? 'true' : 'false');
         const db = document.getElementById('padDot');
         if (db) db.setAttribute('aria-pressed', pend.dot ? 'true' : 'false');
+        const sb = document.getElementById('padStack');
+        if (sb) sb.setAttribute('aria-pressed', padStacking ? 'true' : 'false');
       };
       window._padSay = padSay;
 
@@ -8784,6 +8802,16 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       wire('padOctDn', () => { shiftOct(-1); });
       wire('padPrev',  () => { sel = null; moveCursor(-1); });
       wire('padNext',  () => { sel = null; moveCursor(1); });
+      // UP AND DOWN move the selected note by a step, which is how a written
+      // note gets corrected without deleting and retyping it.
+      wire('padUp',    () => nudge(1));
+      wire('padDown',  () => nudge(-1));
+      wire('padStack', () => { padStacking = !padStacking;
+                               say = padStacking ? 'the next number joins this note'
+                                                 : 'the next number follows on'; });
+      // The pad's Save presses the rail's Save, so there is one saving path and
+      // it cannot behave differently depending on where it was asked from.
+      wire('padSave',  () => { const b2 = document.getElementById('bSave'); if (b2) b2.click(); });
 
       const shut = document.getElementById('padShut');
       if (shut) shut.addEventListener('click', ev => { ev.stopPropagation(); pad.hidden = true; });
