@@ -1063,6 +1063,16 @@
     left:calc(4px * var(--z)); top:calc(4px * var(--z));
     right:calc(10px * var(--z)); bottom:calc(4px * var(--z));
     background:#fff; clip-path:polygon(0 0, 100% 50%, 0 100%) }
+  /* AN OPEN SHARP MUST SHOW THAT IT IS SELECTED. A hollow notehead is drawn as
+     a filled triangle with a smaller white one laid on top — and selecting it
+     coloured the outer triangle, which the white one then covered. Don: "the
+     triangular notes don't turn blue when selected, at least some of them."
+     THE MARK THAT SAYS 'THIS IS HOLLOW' MUST NOT ALSO SAY 'THIS IS UNSELECTED'.
+     The hole takes the cursor colour too, so the note reads as picked while
+     staying visibly open. */
+  .chip.shp.open.picked, .chip.shp.breve.picked{ background:var(--ink) !important }
+  .chip.shp.open.picked::before, .chip.shp.breve.picked::before{
+    background:var(--cursor) }
   /* A HUSHED VOICE: everything about it lightens, not only its noteheads —
      stems, beams and flags too, or the page shows a quiet head on a loud stem. */
   .voice-hushed .stem, .voice-hushed .beam, .voice-hushed .flag,
@@ -1250,6 +1260,9 @@
 
   .chip.picked{ background:var(--cursor) !important; border-color:var(--ink);
     color:#fff !important; box-shadow:2px 2px 0 rgba(20,24,29,.3) }
+  /* Round open heads are built the same way — a hole punched by an inner
+     element — so they need the same treatment. */
+  .chip.open.picked::before, .chip.breve.picked::before{ background:var(--cursor) }
   .chip.sounding{ box-shadow:0 0 0 5px rgba(0,163,171,.55), 2px 2px 0 rgba(20,24,29,.22) }
   /* A CLIP-PATH CLIPS THE SHADOW TOO. box-shadow is painted OUTSIDE the border
      box, and the pennant's clip removes everything outside its triangle — so a
@@ -2005,7 +2018,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-31 b227 nothing moves while it is tied down';
+const BUILD_STAMP = '2026-08-31 b229 one library, three devices';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8733,11 +8746,19 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
         }, { passive:true });
         sc.addEventListener('touchmove', ev => {
           if (ev.touches.length !== 2 || !apart) return;
+          // THE PAGE MUST NOT ZOOM ALONG WITH THE MUSIC. The gesture was only
+          // swallowed on the frames where it crossed a size step — every other
+          // frame went through to Safari, which magnified the whole page,
+          // panels and all. Don: "when I magnify the notes, all the other panels
+          // magnify too, making it very hard to use them."
+          // TAKE THE WHOLE GESTURE OR NONE OF IT. Two fingers on the music
+          // means the music resizes and nothing else does.
+          ev.preventDefault();
           const now = gap(ev);
           // A fifth wider or narrower is one step. Big enough that a wobble does
           // nothing, small enough that a deliberate pinch is one size at a time.
-          if (now > apart * 1.2){ stepSize(1);  apart = now; ev.preventDefault(); }
-          else if (now < apart * 0.8){ stepSize(-1); apart = now; ev.preventDefault(); }
+          if (now > apart * 1.2){ stepSize(1);  apart = now; }
+          else if (now < apart * 0.8){ stepSize(-1); apart = now; }
         }, { passive:false });
         sc.addEventListener('touchend', () => { apart = 0; });
       }
@@ -10750,6 +10771,90 @@ function seedShelf(){
     localStorage.setItem('island.shelf.seeded', '1');
   } catch (err){ console.warn('shelf not seeded:', err); }
 }
+// ---------------------------------------------------------------------------
+//  THE SHELF: one library, three devices.
+//
+//  A browser keeps a page's data per device AND per container, so the desktop,
+//  the tablet and a home-screen icon each had their own library and none of them
+//  could see the others. Don, on what this actually has to be: "a real world
+//  app, with thousands of titles in its library, many of them 300 bars. They
+//  need to all be there, all the time, all modifiable and all accurate."
+//
+//  So the pieces live in a private repository and the devices are just windows
+//  onto it. THE LIBRARY IS NOT IN THE BROWSER; THE BROWSER IS LOOKING AT THE
+//  LIBRARY. Local storage stays as a cache, so the app still opens and works
+//  with no network — but the shelf itself is somewhere all three can reach.
+//
+//  This is the development answer, not the shipping one: it needs a token, and
+//  no musician will ever paste a token. When it goes public a server takes this
+//  job. The shape is the same either way, which is the point of building it now.
+// ---------------------------------------------------------------------------
+// NAMED `REPO`, NOT `SHELF`. There is already a SHELF in this file — the key
+// the history is kept under — and a second one would have shadowed it. The same
+// collision as `hushed`, caught by the parser this time instead of by Don
+// staring at a blank page.
+const REPO = { owner:'Zukemeister', repo:'island-library', path:'pieces' };
+let REPO_TOKEN = '';
+try { REPO_TOKEN = localStorage.getItem('island.shelf.token') || ''; } catch (err) {}
+
+const shelfOn = () => !!REPO_TOKEN;
+
+// A piece's name becomes its filename, so it has to survive being one.
+const shelfFile = name => encodeURIComponent(
+  String(name).replace(/[\\/:*?"<>|]+/g, '-').slice(0, 120)) + '.json';
+
+async function shelfCall(method, path, body){
+  const url = 'https://api.github.com/repos/' + REPO.owner + '/' + REPO.repo
+            + '/contents/' + path;
+  const r = await fetch(url, {
+    method,
+    headers: { 'Authorization': 'Bearer ' + REPO_TOKEN,
+               'Accept': 'application/vnd.github+json',
+               'X-GitHub-Api-Version': '2022-11-28' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (r.status === 404 && method === 'GET') return null;   // not there yet
+  if (!r.ok) throw new Error('shelf ' + r.status + ' ' + (await r.text()).slice(0, 120));
+  return r.status === 204 ? null : r.json();
+}
+
+// WHAT IS ON THE SHELF. One request, and it returns names rather than pieces —
+// so a thousand titles cost one small answer instead of a thousand downloads.
+async function shelfList(){
+  const rows = await shelfCall('GET', REPO.path);
+  if (!rows || !Array.isArray(rows)) return [];
+  return rows.filter(f => /\.json$/i.test(f.name))
+             .map(f => ({ file:f.name, sha:f.sha,
+                          name:decodeURIComponent(f.name.replace(/\.json$/i, '')) }));
+}
+
+async function shelfGet(file){
+  const row = await shelfCall('GET', REPO.path + '/' + file);
+  if (!row || !row.content) return null;
+  // GitHub hands base64 back with newlines in it, which atob will not take.
+  const text = decodeURIComponent(escape(atob(String(row.content).replace(/\s+/g, ''))));
+  return JSON.parse(text);
+}
+
+// PUTTING A PIECE BACK NEEDS ITS SHA, because GitHub refuses a write that would
+// overwrite something the writer has not seen — the same guard our own memory
+// uses, and for the same reason.
+async function shelfPut(name, doc, sha){
+  const file = shelfFile(name);
+  const text = JSON.stringify(doc);
+  const b64 = btoa(unescape(encodeURIComponent(text)));
+  return shelfCall('PUT', REPO.path + '/' + file, {
+    message: 'island: ' + name,
+    content: b64,
+    sha: sha || undefined
+  });
+}
+
+async function shelfDelete(file, sha){
+  return shelfCall('DELETE', REPO.path + '/' + file,
+                   { message: 'island: remove ' + file, sha });
+}
+
 function libAll(){
   try { return JSON.parse(localStorage.getItem(LIB_KEY) || '{}'); }
   catch (err){ return {}; }
@@ -11157,6 +11262,66 @@ function showLibrary(){
   // him doing it again. Whatever the browser is doing with its storage, the
   // answer that does not depend on the browser is a file on his own disk.
   // A LIBRARY THAT LIVES ONLY IN A BROWSER IS A LIBRARY ON LOAN.
+  // ---- THE SHARED SHELF -------------------------------------------------
+  const shelfBtn = document.createElement('button');
+  shelfBtn.className = 'libwide';
+  shelfBtn.textContent = shelfOn()
+    ? 'sync with the shelf \u2014 all three devices'
+    : 'connect the shared shelf\u2026';
+  shelfBtn.onclick = async () => {
+    if (!shelfOn()){
+      const t = prompt('Paste the GitHub token for island-library.\n\n'
+        + 'It stays on this device and is never sent anywhere but GitHub.');
+      if (!t) return;
+      REPO_TOKEN = t.trim();
+      try { localStorage.setItem('island.shelf.token', REPO_TOKEN); } catch (err) {}
+    }
+    shelfBtn.textContent = 'talking to the shelf\u2026';
+    try {
+      // BOTH WAYS, AND NEWEST WINS. Anything here that the shelf lacks goes up;
+      // anything there this device lacks comes down. A piece both have is
+      // settled by which was saved later — the only rule that does not need a
+      // human to arbitrate, and the one a server will use later too.
+      const remote = await shelfList();
+      const byName = {};
+      for (const r of remote) byName[r.name] = r;
+      const local = libAll();
+      let up = 0, down = 0;
+
+      for (const name of Object.keys(local)){
+        const mine = local[name], theirs = byName[name];
+        if (!theirs){ await shelfPut(name, mine); up++; continue; }
+        const got = await shelfGet(theirs.file);
+        if (got && (got.at || 0) >= (mine.at || 0)) continue;   // theirs is newer
+        await shelfPut(name, mine, theirs.sha); up++;
+      }
+      for (const r of remote){
+        if (local[r.name] && (local[r.name].at || 0) >= 0 && local[r.name].doc) {
+          const got = await shelfGet(r.file);
+          if (!got || (got.at || 0) <= (local[r.name].at || 0)) continue;
+          local[r.name] = got; down++; continue;
+        }
+        const got = await shelfGet(r.file);
+        if (got){ local[r.name] = got; down++; }
+      }
+      libWrite(local);
+      say = 'shelf: sent ' + up + ', brought back ' + down
+          + ' \u00b7 ' + Object.keys(local).length + ' pieces here now';
+      box.remove(); showLibrary(); render();
+    } catch (err){
+      const m = String(err && err.message ? err.message : err);
+      say = 'the shelf could not be reached \u2014 ' + m.slice(0, 90);
+      if (/40[13]/.test(m)){
+        say += ' \u00b7 the token may be wrong or lack Contents write';
+        try { localStorage.removeItem('island.shelf.token'); } catch (e2) {}
+        REPO_TOKEN = '';
+      }
+      shelfBtn.textContent = 'connect the shared shelf\u2026';
+      render();
+    }
+  };
+  box.appendChild(shelfBtn);
+
   const dump = document.createElement('button');
   dump.className = 'libwide'; dump.textContent = 'save the whole library to a file';
   dump.onclick = () => {
