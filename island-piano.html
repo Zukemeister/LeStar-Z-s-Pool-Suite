@@ -607,7 +607,14 @@
     padding:8px 10px 10px; box-shadow:0 12px 40px rgba(0,0,0,.45);
   }
   #pad[hidden]{ display:none !important }
-  #pad.floating{ left:auto; transform:none }
+  /* RELEASE EVERY ANCHOR BEFORE SETTING A NEW ONE. The pad is pinned to the
+     bottom of the window; dragging sets top and left but nothing let go of
+     bottom, so it was held at both ends and stretched instead of moving. Don:
+     "resizable somewhat, but not moveable" — which is exactly what a box held
+     top and bottom does when you drag it.
+     This is the third panel to have it, after the loop window and the chess
+     clock. A THING CANNOT BE MOVED WHILE IT IS STILL TIED DOWN. */
+  #pad.floating{ left:auto; right:auto; bottom:auto; transform:none }
   #padBar{ display:flex; align-items:center; justify-content:space-between;
     cursor:move; touch-action:none; user-select:none; -webkit-user-select:none;
     padding-bottom:6px }
@@ -671,7 +678,7 @@
   #pager .pgrab{ cursor:move; opacity:.5; font-size:18px; padding:0 4px;
     touch-action:none; user-select:none; -webkit-user-select:none }
   #pager .pgap{ width:10px; display:inline-block }
-  #pager.floating{ left:auto; transform:none }
+  #pager.floating{ left:auto; right:auto; bottom:auto; transform:none }
   #pageLoop{ width:auto !important; padding:0 12px !important;
     font:800 12px/1 ui-monospace,Menlo,monospace !important; letter-spacing:.1em }
   #pageLoop[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
@@ -1998,7 +2005,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-31 b226 the library as a file';
+const BUILD_STAMP = '2026-08-31 b227 nothing moves while it is tied down';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -7830,7 +7837,12 @@ function floatable(box, handle, key){
     if (!box.classList.contains('floating')){
       const r = box.getBoundingClientRect();
       box.classList.add('floating');
+      // Every anchor released, not only the ones this panel happens to use —
+      // a panel pinned to the bottom or the right is held there while you drag
+      // it from the top left, and stretches rather than moves.
+      box.style.right = 'auto'; box.style.bottom = 'auto';
       box.style.left = r.left + 'px'; box.style.top = r.top + 'px';
+      box.style.width = r.width + 'px';
     }
     const x0 = dn.clientX, y0 = dn.clientY;
     const l0 = parseFloat(box.style.left), t0 = parseFloat(box.style.top);
