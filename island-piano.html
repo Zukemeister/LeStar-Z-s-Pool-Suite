@@ -599,6 +599,38 @@
      the rail — or scrolling it sideways on a narrow screen — took the size
      buttons with it. Don: "I can't see any +/- or diminish." A CONTROL THAT
      TRAVELS WITH THE THING IT HIDES IS NOT ALWAYS ON. */
+  #pad{
+    position:fixed; left:50%; transform:translateX(-50%);
+    bottom:calc(8px + env(safe-area-inset-bottom)); z-index:95;
+    width:min(560px, calc(100vw - 16px));
+    background:#0d1013; color:#fff; border:2px solid #fff; border-radius:14px;
+    padding:8px 10px 10px; box-shadow:0 12px 40px rgba(0,0,0,.45);
+  }
+  #pad[hidden]{ display:none !important }
+  #pad.floating{ left:auto; transform:none }
+  #padBar{ display:flex; align-items:center; justify-content:space-between;
+    cursor:move; touch-action:none; user-select:none; -webkit-user-select:none;
+    padding-bottom:6px }
+  #padBar b{ font:800 12px/1 ui-monospace,Menlo,monospace; letter-spacing:.22em }
+  #padSays{ font:600 11px/1 ui-monospace,Menlo,monospace; opacity:.6 }
+  #padBar button{ border:none; background:none; color:#fff; opacity:.6;
+    font:700 20px/1 -apple-system,sans-serif; cursor:pointer; padding:0 4px }
+  /* THE TWELVE, IN ONE ROW OF SIX AND ONE OF SIX. Big enough for a thumb, and
+     laid out so the numbers keep the order they have on the page. */
+  #padNums{ display:grid; grid-template-columns:repeat(6, 1fr); gap:5px }
+  #padDurs{ display:grid; grid-template-columns:repeat(6, 1fr); gap:5px; margin-top:5px }
+  #padRow, #padRow2{ display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; margin-top:5px }
+  #pad button:not(#padShut){
+    padding:11px 0; cursor:pointer; color:#fff;
+    border:1.5px solid rgba(255,255,255,.35); border-radius:8px;
+    background:rgba(255,255,255,.08);
+    font:800 17px/1 ui-monospace,Menlo,monospace;
+  }
+  #pad .padwide{ font:700 12px/1 ui-monospace,Menlo,monospace; letter-spacing:.06em }
+  #pad button:active{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
+  #pad button[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
+  @media print { #pad{ display:none !important } }
+
   #tuner{
     position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
     z-index:85; width:236px; text-align:center;
@@ -1603,6 +1635,37 @@
      wrong. It answers one question, continuously: WHAT NUMBER IS THAT? He hums,
      reads the number, and taps it. The judgement stays with him.
      -->
+<!-- THE PAD: writing without a keyboard.
+     Island is typed — numbers for pitch, letters for length — which works
+     beautifully at a desk and not at all on a tablet, where there are no keys to
+     press. "All the keys" turned out to be a reference card listing what the
+     keys do, not a way of pressing them. Don: "I cannot edit notes on the
+     tablet."
+     A TOOL THAT ONLY ANSWERS TO A KEYBOARD IS A DESK TOOL. This is the same
+     small set of decisions a writer actually makes — which of the twelve, how
+     long, which octave, and go — as things a thumb can hit. -->
+<div id="pad" hidden>
+  <div id="padBar">
+    <b>WRITE</b>
+    <span id="padSays"></span>
+    <span><button type="button" id="padShut">&times;</button></span>
+  </div>
+  <div id="padNums"></div>
+  <div id="padRow">
+    <button type="button" class="padwide" id="padRest">rest</button>
+    <button type="button" class="padwide" id="padDot">dot</button>
+    <button type="button" class="padwide" id="padTie">tie</button>
+    <button type="button" class="padwide" id="padBack">&#9003;</button>
+  </div>
+  <div id="padDurs"></div>
+  <div id="padRow2">
+    <button type="button" class="padwide" id="padOctDn">octave &minus;</button>
+    <button type="button" class="padwide" id="padOctUp">octave +</button>
+    <button type="button" class="padwide" id="padPrev">&#8249; back</button>
+    <button type="button" class="padwide" id="padNext">on &#8250;</button>
+  </div>
+</div>
+
 <div id="tuner" hidden>
   <b id="tunerNum">–</b>
   <span id="tunerOct"></span>
@@ -1653,6 +1716,7 @@
       <button id="bOpen">Library</button>
       <button id="bLoop" aria-pressed="false" title="work on a passage">LOOP</button>
       <button id="bTuner" title="hum a note and be told its number">Hum</button>
+      <button id="bPad" title="write without a keyboard">Write pad</button>
       <button id="bPrint">Print</button>
       <button id="bHist">History</button>
       <button id="bClear">Clear</button>
@@ -1922,7 +1986,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-31 b223 smaller still';
+const BUILD_STAMP = '2026-08-31 b224 writing without a keyboard';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8658,6 +8722,78 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
     const zi = document.getElementById('zoomIn'), zo = document.getElementById('zoomOut');
     if (zi) zi.addEventListener('click', () => stepSize(1));
     if (zo) zo.addEventListener('click', () => stepSize(-1));
+  } catch (err) {}
+
+  // THE WRITE PAD. Every button here does exactly what its key does — it calls
+  // the same functions the keyboard calls, so the two can never drift apart.
+  // ONE SET OF ACTIONS, TWO WAYS IN.
+  try {
+    const pad = document.getElementById('pad');
+    if (pad){
+      const nums = document.getElementById('padNums');
+      for (let n = 1; n <= 12; n++){
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = n;
+        b.addEventListener('click', () => {
+          // Same order the key handler uses: change a selected note, or write.
+          if (!retune(n)) place([n]);
+          say = ''; render(); padSay();
+        });
+        nums.appendChild(b);
+      }
+
+      // The lengths, named plainly — and each does exactly what its key does:
+      // change the selected note if there is one, otherwise set what comes next.
+      const durs = document.getElementById('padDurs');
+      const DURS = [['whole','whole'], ['half','half'], ['quarter','quarter'],
+                    ['8th','eighth'], ['16th','sixteenth'], ['32nd','thirtysecond']];
+      for (const [label, name] of DURS){
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = label; b.dataset.dur = name;
+        b.addEventListener('click', () => {
+          if (!redur(name)) { pend.dur = name; say = ''; }
+          render(); padSay();
+        });
+        durs.appendChild(b);
+      }
+
+      const padSay = () => {
+        const el2 = document.getElementById('padSays');
+        if (el2) el2.textContent = 'bar ' + (barAt(cur.tick) + 1)
+          + ' \u00b7 ' + pend.dur + (pend.dot ? ' dotted' : '')
+          + ' \u00b7 octave ' + pend.oct;
+        for (const b of durs.children)
+          b.setAttribute('aria-pressed', b.dataset.dur === pend.dur ? 'true' : 'false');
+        const db = document.getElementById('padDot');
+        if (db) db.setAttribute('aria-pressed', pend.dot ? 'true' : 'false');
+      };
+      window._padSay = padSay;
+
+      const wire = (id, fn) => {
+        const b = document.getElementById(id);
+        if (b) b.addEventListener('click', () => { fn(); render(); padSay(); });
+      };
+      wire('padRest',  () => { if (!toRest()) { place([], true); say = 'rest'; } });
+      wire('padDot',   () => { if (!reshape('dot')) { pend.dot = !pend.dot;
+                                say = pend.dot ? 'dotted on' : 'dotted off'; } });
+      wire('padTie',   () => { const ev = heldEvent(); if (ev){ remember();
+                                ev.tie = !ev.tie; ev.slur = false;
+                                say = ev.tie ? 'tied' : 'released'; } });
+      wire('padBack',  () => del());
+      wire('padOctUp', () => { shiftOct(1); });
+      wire('padOctDn', () => { shiftOct(-1); });
+      wire('padPrev',  () => { sel = null; moveCursor(-1); });
+      wire('padNext',  () => { sel = null; moveCursor(1); });
+
+      const shut = document.getElementById('padShut');
+      if (shut) shut.addEventListener('click', ev => { ev.stopPropagation(); pad.hidden = true; });
+      const pb = document.getElementById('bPad');
+      if (pb) pb.addEventListener('click', () => {
+        pad.hidden = !pad.hidden;
+        if (!pad.hidden) padSay();
+      });
+      floatable(pad, document.getElementById('padBar'), 'island.pad.pos');
+    }
   } catch (err) {}
 
   try {
