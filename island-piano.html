@@ -1998,7 +1998,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-31 b225 stack, nudge, save';
+const BUILD_STAMP = '2026-08-31 b226 the library as a file';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -11137,6 +11137,63 @@ function showLibrary(){
   imp.textContent = 'Bring in a file\u2026';
   imp.onclick = () => { box.remove(); document.getElementById('fPick').click(); };
   box.appendChild(imp);
+
+  // THE WHOLE LIBRARY, AS ONE FILE.
+  //
+  // Don has re-imported the same four pieces a dozen times, and every
+  // explanation I have offered — the address, the launcher, the wipe — has left
+  // him doing it again. Whatever the browser is doing with its storage, the
+  // answer that does not depend on the browser is a file on his own disk.
+  // A LIBRARY THAT LIVES ONLY IN A BROWSER IS A LIBRARY ON LOAN.
+  const dump = document.createElement('button');
+  dump.className = 'libwide'; dump.textContent = 'save the whole library to a file';
+  dump.onclick = () => {
+    const all = libAll();
+    const n = Object.keys(all).length;
+    if (!n){ say = 'nothing to save yet'; render(); return; }
+    try {
+      const blob = new Blob([JSON.stringify({ format:'island-library', v:1, at:Date.now(), pieces:all })],
+                            { type:'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a2 = document.createElement('a');
+      a2.href = url; a2.download = 'island-library.json'; a2.style.display = 'none';
+      document.body.appendChild(a2); a2.click();
+      setTimeout(() => { document.body.removeChild(a2); URL.revokeObjectURL(url); }, 4000);
+      say = 'saved ' + n + ' piece' + (n === 1 ? '' : 's') + ' to island-library.json';
+    } catch (err){ say = 'could not save the library \u2014 ' + (err && err.message ? err.message : err); }
+    render();
+  };
+  box.appendChild(dump);
+
+  const load = document.createElement('button');
+  load.className = 'libwide'; load.textContent = 'bring a whole library back in';
+  load.onclick = () => {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = '.json,application/json';
+    inp.onchange = () => {
+      const f = inp.files && inp.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        let doc = null;
+        try { doc = JSON.parse(r.result); } catch (err) { doc = null; }
+        const pieces = doc && (doc.pieces || (doc.format === 'island-library' ? doc.pieces : null));
+        if (!pieces){ say = 'that is not an Island library file'; render(); return; }
+        // ADDED TO WHAT IS THERE, never replacing it — a restore should not be
+        // able to lose work that the file being restored does not know about.
+        const all = libAll();
+        let n = 0;
+        for (const k of Object.keys(pieces)){ all[k] = pieces[k]; n++; }
+        if (libWrite(all)){
+          say = 'brought back ' + n + ' piece' + (n === 1 ? '' : 's');
+          box.remove(); showLibrary();
+        }
+      };
+      r.readAsText(f);
+    };
+    inp.click();
+  };
+  box.appendChild(load);
 
   const done = document.createElement('button');
   done.className = 'libwide close'; done.textContent = 'close';
