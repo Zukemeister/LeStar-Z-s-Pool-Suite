@@ -432,9 +432,16 @@
   .staff{ position:absolute; left:26px; right:0 }
   /* The 6/7 space. Behind everything — lines, notes and the grey seam strips
      all draw over it — so it tints without hiding anything. */
+  /* THE 6/7 STRIPE, IN THREE ARRANGEMENTS.
+     All gold, all blue, or alternating — chosen from the rail. The alternating
+     one does a job the single colours cannot: it makes ADJACENT OCTAVES
+     DIFFERENT, so a leap of an octave is visible as a change of ground rather
+     than as a notehead in a similar-looking place. Whether that helps or
+     clutters is a question about eyes, so it is offered rather than decided. */
   .midspace{ position:absolute; left:0; right:0; z-index:0;
     background:rgba(246,206,74,.26); pointer-events:none }
-  .midspace.field{ background:rgba(74,158,214,.26) }
+  .midspace.blue{ background:rgba(74,158,214,.26) }
+  .midspace.off{ background:none }
   /* THE TINTS ARE A TRAINING AID, like the numerals, and come off the same way.
      Don: "the blue and yellow are very good locaters. I think they are probably
      more training aides, like the numbers, and we should be able to turn them
@@ -682,9 +689,16 @@
      corner of the eye; dashed so it cannot be taken for a staff line or a
      ledger — a solid rule among solid rules is one more rule, but a broken one
      is plainly a different KIND of mark. */
+  /* CENTRED ON THE LINE IT MARKS. A border draws DOWNWARD from the position it
+     is given, so a 7px stroke placed on the 1 line has its middle three and a
+     half pixels below it — and the thicker I made it, the further it drifted.
+     Don: "the dashed lines are no longer on the 1 line."
+     A THICK MARK HAS A MIDDLE, AND THE MIDDLE IS WHAT THE EYE READS. Lifting it
+     by half its own weight puts the stroke back where the number is. */
   .midline{
     position:absolute; left:26px; right:0; height:0; z-index:1;
     border-top:calc(7px * var(--z)) dashed var(--mid); opacity:1;
+    margin-top:calc(-3.5px * var(--z));
     pointer-events:none;
   }
   /* ONE OCTAVE EITHER SIDE in blue, TWO in green. Symmetrical on purpose: the
@@ -721,11 +735,21 @@
      separate them. A BACKGROUND THAT NO LONGER HAS TO BE READ CAN GET OUT OF
      THE WAY, and a lighter page makes the notes and the coloured lines louder
      without either of them changing. */
-  .bandgap{ position:absolute; left:0; right:0; background:rgba(20,24,29,.11); z-index:0 }
+  /* HALVED, THEN PUT BACK PART WAY. At 11% the strip between one octave's 12
+     and the next octave's 1 could not be seen at all — and that strip is the
+     seam between octaves, which is exactly the thing the page must show. Don:
+     "the gray spaces between 12 and 1 are not visible."
+     LIGHTENING A MARK IS NOT THE SAME AS REMOVING ITS JOB. */
+  .bandgap{ position:absolute; left:0; right:0; background:rgba(20,24,29,.17); z-index:0 }
   /* And at FOUR bands or more the grid becomes a maze, so the MIDDLE GAP is
      darker — one horizontal line of shade across the centre of the system for
      the eye to land on first. Three bands need no such help. */
-  .bandgap.mid{ background:rgba(20,24,29,.20) }
+  /* ONE GREY. A heavier strip used to mark the two edges of the open ledger
+     field — the only thing saying where a stretch with no lines began. That
+     field is gone, and the coloured octave rules do the locating now, so a
+     second weight of grey is a distinction with nothing left to distinguish.
+     Don: "all gray bands equally light." */
+  .bandgap.mid{ background:rgba(20,24,29,.17) }
   /* The seam shown outside the bands, where a ledger note has crossed it. Same
      ink as an ordinary gap, so it reads as the same thing and not a new one. */
   .bandgap.out{ right:auto }
@@ -1473,8 +1497,8 @@
        be read on paper needs to clear roughly 15%. */
     /* Print keeps a touch more than the screen: ink on paper reads lighter than
        the same value on a lit display. */
-    .bandgap{ background:rgba(20,24,29,.12) !important }
-    .bandgap.mid{ background:rgba(20,24,29,.19) !important }
+    .bandgap{ background:rgba(20,24,29,.18) !important }
+    .bandgap.mid{ background:rgba(20,24,29,.18) !important }
     /* BACKGROUNDS DO NOT PRINT unless forced — the ordinary gaps are already
        forced here, and anything drawn the same way has to join them or it is
        right on screen and invisible on paper. */
@@ -1646,7 +1670,13 @@
   <div class="railgrp">
     <span class="railcap">The page</span>
     <div class="railrow">
-      <span>Staff <select id="rStaff"><option value="octaves">octave bands, 4 lines each</option><option value="standard">5 lines, sharps square</option><option value="ladder">6 lines, one each</option></select></span>
+
+      <!-- WHAT THE PAGE SHOWS. Three switches, and the grey bands are not among
+           them: they are the seams between octaves and are always on. Don:
+           "all gray bands equally light, and ALWAYS on, no shutoff option."
+           A THING THE READER MUST HAVE IS NOT A PREFERENCE. -->
+      <button id="bStaffLines" aria-pressed="true">Staff lines</button>
+      <span>Spaces <select id="rStripe"><option value="both">alternating</option><option value="gold">all yellow</option><option value="blue">all blue</option><option value="none">none</option></select></span>
       <span>Bands <select id="rBands"><option value="0">auto</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="split" selected>two staves, an open ledger field between</option><option value="grand">a staff per hand, treble over bass</option></select></span>
       <span>Size <select id="rSize"></select></span>
       <span>Bars/line <select id="rBars"></select></span>
@@ -1863,7 +1893,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-30 b212 the ledger octaves get their stripe';
+const BUILD_STAMP = '2026-08-30 b219 on the line, and clear of it';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -2011,7 +2041,7 @@ function fitStaff(id){
 
 function fitStaves(quiet){
   anchorsFresh();                       // a silent hand still has a 1 somewhere
-  if (STAFF_MODE === 'octaves'){
+  if (banded()){
     refitBands();
     if (!quiet){ const b = bands(); say = 'bands set to octaves ' + b.lo + ' to ' + b.hi; render(); return 1; }
   }
@@ -2037,10 +2067,10 @@ const homeOf = st => st.on || st.id;
 const ALL_STAFF = { id:'all', label:'', centre:60, on:'all' };
 const primaries = () => score.profile.staves.filter(st => homeOf(st) === st.id);
 const voicesOf = id => score.profile.staves.filter(st => homeOf(st) === id);
-const drawStaves = () => (STAFF_MODE === 'octaves' && !GRAND) ? [ALL_STAFF] : primaries();
+const drawStaves = () => (banded() && !GRAND) ? [ALL_STAFF] : primaries();
 // PARKED VOICES ARE NOT DRAWN. This is the only place that decides what
 // appears, so one filter takes them off the page everywhere.
-const drawVoices = id => ((STAFF_MODE === 'octaves' && !GRAND) ? score.profile.staves.slice() : voicesOf(id))
+const drawVoices = id => ((banded() && !GRAND) ? score.profile.staves.slice() : voicesOf(id))
                           .filter(v => !isParked(v.id));
 
 // The second voice is made when it is first asked for, not before.
@@ -4243,6 +4273,29 @@ let SHOW_HELD = false;            // the length bars: the wrong answer to the ri
 // The staff then says the REGISTER and the stem says the HAND, which separates
 // two facts the grand staff has always conflated.
 let STAFF_MODE = 'octaves';
+// BARE IS OCTAVES WITHOUT THE LINES — everything else about the layout is the
+// same. That is a dozen separate tests for "are we in octave bands", and a mode
+// that answers no to one of them lays itself out as a five-line staff by
+// accident. ONE QUESTION, ASKED IN ONE PLACE, declared here so every one of
+// those tests can reach it.
+function banded(){ return STAFF_MODE === 'octaves' || STAFF_MODE === 'bare'; }
+
+// HOW THE 6/7 STRIPE IS COLOURED: all gold, all blue, or alternating.
+// The alternation is counted from octave 4 — the middle of the instrument —
+// rather than from the top band on the page, so the colours belong to the
+// OCTAVES rather than to the layout. A piece written an octave higher gets the
+// same colour on the same octave, which is the whole point of using them as
+// landmarks.
+let STRIPE_STYLE = 'both';        // both | gold | blue | none
+function stripeTone(oct){
+  if (STRIPE_STYLE === 'none') return ' off';
+  if (STRIPE_STYLE === 'blue') return ' blue';
+  // THE MIDDLE OCTAVE TAKES THE BLUE, at Don's ask. The alternation still runs
+  // from octave 4, so the colours stay tied to the instrument — but the octave a
+  // player spends most of his time in is now the one that reads as the centre.
+  if (STRIPE_STYLE === 'both') return (((oct - 4) % 2) + 2) % 2 === 0 ? ' blue' : '';
+  return '';
+}
 const BAND_LINES = 4;
 const DIATONIC = [0,0,1,1,2,3,3,4,4,5,5,6];    // note 1..12 to its letter step
 const IS_SHARP = [0,1,0,1,0,0,1,0,1,0,1,0];
@@ -4469,11 +4522,11 @@ const BAR_W  = () => 5 * ZOOM;      // a barline's own thickness, matching .bar
 // so the strip overran by 24px and took the right edge of the staff with it.
 // The strip is given this width explicitly in CSS as well, so the number here
 // and the thing on the page cannot disagree.
-const VSTRIP_W = () => STAFF_MODE === 'octaves' ? 132 * ZOOM : 0;
+const VSTRIP_W = () => banded() ? 132 * ZOOM : 0;
 const stemDX = up => up ? (CHIP_W / 2 - STEM_W() - 1) : (-CHIP_W / 2 + 1);
 
 const nLines = () => STAFF_MODE === 'standard' ? LINES_STANDARD
-                   : STAFF_MODE === 'octaves'  ? BAND_LINES : LINES_LADDER;
+                   : banded()                  ? BAND_LINES : LINES_LADDER;
 const BANDH  = () => GAP() * (BAND_LINES - 1);      // one octave band, 4 lines
 const BAND_GAP = () => Math.round(GAP() * 0.7);     // air between bands
 const STEP_PX = () => GAP() / 2;               // one staff position, any mode
@@ -4547,7 +4600,13 @@ let SPLIT_BANDS = true;
 // drawn at a time.
 let GRAND = false;
 let GEO_ST = null;
-const bandRuled = k => !SPLIT_BANDS || k !== 1;
+// LINES ON MEANS LINES EVERYWHERE. One octave used to be left unruled — the
+// open field between the staves — so a note landing there had no lines to sit
+// on and needed ledgers of its own. Don: "when the lines are on, they are on in
+// all octaves: there are no ledger lines."
+// A GAP IN A RULER IS A PLACE THE RULER DOES NOT WORK. Ruling every octave
+// removes the ledger problem entirely rather than solving it with more marks.
+const bandRuled = k => STAFF_MODE !== 'bare';
 // The ruled octave nearest a given letter-step — what a reader can count from.
 function nearestRuled(d, b){
   let best = b.lo, bd = Infinity;
@@ -4686,7 +4745,7 @@ function autoBands(max){
   BAND_COUNT = Math.min(max || 4, Math.max(3, was));
   return BAND_COUNT;
 }
-const STAFFH = () => STAFF_MODE === 'octaves'
+const STAFFH = () => banded()
   ? bands().n * BANDH() + (bands().n - 1) * BAND_GAP()
   : GAP() * (nLines() - 1);
 
@@ -4754,7 +4813,7 @@ function reach(){
     if (_reachCache && _reachCache.key === key) return _reachCache;
   } else if (_reachCache && !_reachCache.key) return _reachCache;
   let up = 0, down = 0;
-  if (STAFF_MODE === 'octaves'){
+  if (banded()){
     // MEASURED, NOT ASSUMED. Ask where the highest and lowest marks actually
     // land and how far their stems run past them, rather than adding a fixed
     // allowance to every system. A piece sitting in the middle of its bands
@@ -4788,7 +4847,23 @@ function reach(){
 // bass, and vice versa — a system paid twice for a reach it made once. On a
 // three-band staff that was two hundred pixels of padding around two hundred
 // and fifty of music.
-const PAD  = () => Math.round(GAP() * 0.9) + reach().up;     // above
+// THE HEADER SITS ABOVE THE STAFF, INCLUDING ABOVE ITS GREY EDGE.
+//
+// PAD reserved nine tenths of a staff gap and the bar number was placed inside
+// that — but a banded staff also draws a grey strip along its top edge, running
+// from -BAND_GAP() to 0. With a 24px gap that strip reaches -15 and the number
+// lands at -20: inside it, drawn ON the grey rather than above it. Don, twice:
+// "the bar numbers and other controls are inside the staff and not above."
+//
+// RESERVING ROOM MEANS RESERVING ROOM FOR EVERYTHING THAT IS ALREADY THERE. The
+// strip is part of the staff, so the header has to clear it as well.
+// WHAT ACTUALLY STANDS ABOVE A SYSTEM: the grey strip along the staff's top
+// edge, and then the bar number — which is set in 44px type — with its repeat
+// lamp and arm button beside it. Reserving a band gap cleared the strip and
+// still left the number sitting on the staff's shoulder.
+// MEASURE THE TALLEST THING, NOT THE NEAREST ONE.
+const HEADROOM = () => (banded() ? BAND_GAP() : 0) + Math.round(GAP() * 1.9);
+const PAD  = () => HEADROOM() + reach().up;     // above
 const PADB = () => Math.round(GAP() * 0.9) + reach().down;   // below
 const PAD0 = () => Math.round(GAP() * 0.9);   // the staves are consecutive octaves, so this is
                                               // spacing between them, not a gap in the scale
@@ -5215,7 +5290,7 @@ function drawEverything(){
     // actually use, then put the ruled bands over them. Nothing is invented:
     // the count is the one already chosen, only its position moves — so a line
     // living high sits its bands high and grows no ledgers underneath.
-    if (STAFF_MODE === 'octaves' && !bandLock && !GRAND){
+    if (banded() && !bandLock && !GRAND){
       const base = (bandWin && bandWin.n === BAND_COUNT) ? bandWin : fitBands();
       let hi = null, lo = null;
       for (const st2 of score.profile.staves){
@@ -5284,7 +5359,7 @@ function drawEverything(){
       box.className = 'staff ' + (drawVoices(st.id).some(v => v.id === cur.staff) ? 'awake' : 'asleep');
       box.dataset.st = st.id; box.dataset.x0 = barStart(first); box.dataset.first = first;
       box.style.top = top + 'px'; box.style.height = STAFFH() + 'px';
-      if (STAFF_MODE === 'octaves'){
+      if (banded()){
         const b = bands();
         const gapAt = new Set();
         reachTop = 0; reachBot = STAFFH();
@@ -5320,17 +5395,40 @@ function drawEverything(){
           // that: the tint marks WHERE THE MIDDLE SPACE WOULD BE even where no
           // lines are drawn, which is what makes the field readable at all.
           const mid = document.createElement('div');
-          // AZURE IN THE OPEN FIELD, gold everywhere else. Don's call, and it
-          // does real work: the tint already tells you WHERE the 6/7 space is,
-          // and changing its colour in the one unruled octave makes it also
-          // tell you WHICH KIND OF GROUND you are standing on — ruled band or
-          // open field — without adding a mark. The same stripe, two jobs.
-          mid.className = 'midspace' + (bandRuled(k) ? '' : ' field');
+          // ONE RULE, EVERYWHERE. The stripe used to change colour depending on
+          // whether the octave happened to be ruled — azure in the open field,
+          // gold in a band. Don: "if we make a blue 6/7 space and a yellow 6/7
+          // space, we should do it uniformly."
+          //
+          // He is right, and the reason is that the page already carries a
+          // colour system: red, blue and green say WHICH OCTAVE. A second scheme
+          // saying WHAT KIND OF GROUND is a different sort of statement in the
+          // same language, and two meanings for colour on one page is how a
+          // notation stops being readable at a glance.
+          // A MARK SHOULD MEAN ONE THING WHEREVER IT APPEARS.
+          // WHICH COLOUR THIS OCTAVE'S STRIPE TAKES. Counted from the middle
+          // peg so the pattern is anchored to the instrument rather than to
+          // whichever band happens to be drawn first — otherwise a piece that
+          // starts an octave higher would flip every colour on the page.
+          mid.className = 'midspace' + stripeTone(b.hi - k);
           mid.style.top = (top + GAP()) + 'px';
           mid.style.height = GAP() + 'px';
           box.appendChild(mid);
 
-          if (bandRuled(k)) for (let i = 0; i < BAND_LINES; i++){
+          // NO LINES AT ALL, when asked for. Don: "I am even thinking that we
+          // don't need staff lines at all, so long as we have the colored
+          // bands."
+          //
+          // The four lines exist to be COUNTED FROM — they are the ruler a
+          // reader measures a notehead against. But this page now has two
+          // landmarks that need no counting: the coloured octave rules, and the
+          // tinted 6/7 stripe at the middle of every octave. If those are
+          // enough, the lines are a ruler nobody is using, and counting lines is
+          // the single hardest thing about learning to read music.
+          //
+          // OFFERED, NOT IMPOSED. Whether it reads better is a question about
+          // eyes, not about code, so it is a mode you can switch to and back.
+          if (STAFF_MODE !== 'bare' && bandRuled(k)) for (let i = 0; i < BAND_LINES; i++){
             const ln = document.createElement('div');
             ln.className = 'line' + (i === 0 || i === BAND_LINES - 1 ? ' edge' : '');
             ln.style.top = (top + i * GAP()) + 'px';
@@ -5650,7 +5748,7 @@ function drawEverything(){
       //  Drawn per MEASURE, not per system, so the mark sits where the
       //  exception is instead of costing every line the height.
       // ---------------------------------------------------------------------
-      if (STAFF_MODE === 'octaves'){
+      if (banded()){
         const bb = bands();
         const topD = (bb.hi + 1) * 7 - 1, botD = bb.lo * 7;
         for (let b = first; b < last; b++){
@@ -5691,18 +5789,33 @@ function drawEverything(){
             // A RULE THAT HELPS IN ONE PLACE SHOULD NOT STOP AT ITS EDGE. The
             // tint was drawn for every region inside the staff and simply had
             // not been extended to the ones outside it.
-            const oct = document.createElement('div');
-            oct.className = 'midspace field out';
-            oct.style.left = L + 'px';
-            oct.style.width = W + 'px';
-            oct.style.right = 'auto';
-            oct.style.height = GAP() + 'px';
-            // The octave beyond the staff runs seven steps out; its middle space
-            // sits one gap into that octave, measured from the staff's edge.
-            oct.style.top = (side === 'up'
+            // THE STRIPE FOR THAT LEDGER OCTAVE — but only if there is room for
+            // it. It sits a full octave beyond the staff, and the space above a
+            // system is not empty: the bar number, its repeat lamp and its arm
+            // button all live there. Drawn without asking, the stripe lands
+            // behind them and the header reads as part of the first measure.
+            // Don: "all the bar numbers and other controls are inside the
+            // measure, and not above."
+            // A DRAWING MUST ASK WHETHER THE SPACE IT WANTS IS SPOKEN FOR. The
+            // room above a system is reserved by PAD, which grows only as far as
+            // the music actually reaches — so if the stripe would go past it,
+            // the octave is out of view anyway and the stripe is not wanted.
+            const oy = (side === 'up'
               ? -BAND_GAP() - BANDH() + GAP()
-              : STAFFH() + BAND_GAP() + GAP()) + 'px';
-            box.appendChild(oct);
+              : STAFFH() + BAND_GAP() + GAP());
+            const fits = side === 'up' ? (oy > -PAD() + GAP())
+                                       : (oy + GAP() < STAFFH() + PADB());
+            if (fits){
+              const oct = document.createElement('div');
+              oct.className = 'midspace out'
+                + stripeTone(side === 'up' ? bands().hi + 1 : bands().lo - 1);
+              oct.style.left = L + 'px';
+              oct.style.width = W + 'px';
+              oct.style.right = 'auto';
+              oct.style.height = GAP() + 'px';
+              oct.style.top = oy + 'px';
+              box.appendChild(oct);
+            }
           }
         }
       }
@@ -6004,7 +6117,7 @@ function drawEverything(){
       // opposite direction from its own hand: a hand playing one line still
       // says which hand it is, and a hand playing two separates them.
       let forced;
-      if (STAFF_MODE === 'octaves'){
+      if (banded()){
         const mine2 = shownVoices(homeOf(vc));
         const idx = mine2.findIndex(x => x.id === vc.id);
         const handUp = (homeOf(vc) === 'rh');
@@ -6043,7 +6156,7 @@ function drawEverything(){
       // by a position of its own. dBottom is the letter-step of the bottom line.
       const dBase = st.dBottom !== undefined ? st.dBottom : 30;
       const foldOf = p => {
-        if (STAFF_MODE === 'octaves') return 0;      // every octave has its own band
+        if (banded()) return 0;      // every octave has its own band
         if (STAFF_MODE !== 'standard') return octShift(pitchOf(p), centre);
         let f = 0, d = dOf(p) - dBase;
         while (d > 12 && f < 3){ f++; d -= 7; }
@@ -6051,7 +6164,7 @@ function drawEverything(){
         return f;
       };
       const yOf = p => {
-        if (STAFF_MODE === 'octaves') return yBand(p);
+        if (banded()) return yBand(p);
         const f = foldOf(p);
         if (STAFF_MODE !== 'standard') return mid - (pitchOf(p) - f * 12 - centre) * PX_SEMI;
         return STAFFH() - (dOf(p) - f * 7 - dBase) * STEP_PX();
@@ -6375,7 +6488,7 @@ function drawEverything(){
         // Outside the staff a height means nothing without a rung to read it
         // against, so every position a note reaches gets its ledger line.
         const ledgers = new Set();
-        if (STAFF_MODE === 'octaves'){
+        if (banded()){
           const b = bands();
           for (const p of e.pitches){
             const d = dOf(p) - bandFold(p) * 7;
@@ -6436,6 +6549,11 @@ function drawEverything(){
           }
         }
         for (const yy of ledgers){
+          // AND NO LEDGERS WHEN THERE ARE NO LINES. A ledger line is a piece of
+          // staff lent to a note that has left the staff — meaningless on a page
+          // that has chosen to have none. Don: "when the lines are off, there
+          // are no ledger lines."
+          if (STAFF_MODE === 'bare') continue;
           const lg = document.createElement('div');
           lg.className = 'ledger';
           // A LEDGER OVERHANGS ITS NOTEHEAD, and it has to overhang enough to
@@ -6544,7 +6662,7 @@ function drawEverything(){
             box.appendChild(nl);
           }
           if (hushed(e, vc.id)) c.classList.add('hush');
-          if (STAFF_MODE === 'octaves'){
+          if (banded()){
             const f = bandFold(p);
             if (f){
               // OUTSIDE THE HEAD, not inside it. The pennant is cut with a
@@ -6770,7 +6888,7 @@ function drawEverything(){
           const fam = voicesOf(homeOf(me));
           const vi = fam.findIndex(v => v.id === cur.staff);
           const handUp = (homeOf(me) === 'rh');
-          const up = STAFF_MODE === 'octaves'
+          const up = banded()
             ? ((fam.length > 1 && vi > 0) ? !handUp : handUp)
             : (fam.length > 1 ? (vi === 0) : handUp);
           car.classList.add(up ? 'up' : 'down');
@@ -8068,17 +8186,28 @@ document.getElementById('bWords').addEventListener('click', ev => {
   });
   bd.addEventListener('keydown', ev => ev.stopPropagation());
 
-  const stf = document.getElementById('rStaff');
-  stf.addEventListener('change', ev => {
-    STAFF_MODE = ev.target.value;
-    say = STAFF_MODE === 'octaves'
-      ? 'octave bands \u00b7 the staff says the register, the stem says the hand'
-      : STAFF_MODE === 'standard'
-      ? 'five lines \u00b7 round is the natural, square the sharp \u00b7 the 1 is middle C'
-      : 'six lines \u00b7 every note its own line or space';
-    render(); el.focus();
-  });
-  stf.addEventListener('keydown', ev => ev.stopPropagation());
+  // STAFF LINES ON OR OFF. The two staff modes reduced to the one thing that
+  // separates them, since Don has retired the five- and six-line staves: "the
+  // world will learn our four-line staff, or it will DIE."
+  const sl = document.getElementById('bStaffLines');
+  if (sl){
+    let on = true;
+    try { on = localStorage.getItem('island.stafflines') !== '0'; } catch (err) {}
+    STAFF_MODE = on ? 'octaves' : 'bare';
+    const paintSL = () => sl.setAttribute('aria-pressed', STAFF_MODE === 'octaves' ? 'true' : 'false');
+    paintSL();
+    sl.addEventListener('click', () => {
+      STAFF_MODE = STAFF_MODE === 'octaves' ? 'bare' : 'octaves';
+      try { localStorage.setItem('island.stafflines', STAFF_MODE === 'octaves' ? '1' : '0'); } catch (err) {}
+      say = STAFF_MODE === 'octaves'
+        ? 'staff lines on'
+        : 'no staff lines \u00b7 the coloured octave rules and the tinted spaces are the landmarks';
+      paintSL(); fitStaves(true); refitBands(); render(); el.focus();
+    });
+  }
+
+  // The Staff menu is gone — its one remaining choice is the Staff lines switch
+  // above, and the five- and six-line staves have been retired.
 
   const sz = document.getElementById('rSize');
 
@@ -8821,6 +8950,23 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
 
   // WRAPPED, because everything below is wired after it. A rail control that
   // throws must lose itself, not the Play button.
+  try {
+    const stp = document.getElementById('rStripe');
+    if (stp){
+      try { STRIPE_STYLE = localStorage.getItem('island.stripe') || 'both'; } catch (err) {}
+      stp.value = STRIPE_STYLE;
+      stp.addEventListener('change', ev => {
+        STRIPE_STYLE = ev.target.value;
+        try { localStorage.setItem('island.stripe', STRIPE_STYLE); } catch (err) {}
+        say = STRIPE_STYLE === 'both'
+          ? 'the middle spaces alternate, so next-door octaves look different'
+          : STRIPE_STYLE === 'none' ? 'no space tints'
+          : 'every middle space is ' + (STRIPE_STYLE === 'gold' ? 'yellow' : 'blue');
+        render(); el.focus();
+      });
+    }
+  } catch (err) {}
+
   try {
     const rb = document.getElementById('bRep');
     if (rb){
