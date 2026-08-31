@@ -22,6 +22,8 @@
     --z:1;
     --chipw:28px; --chiph:22px; --gap:24px;
     --mid:#d81f26;                 /* the middle of the keyboard: mark and line */
+    --mid2:#1268d8;                /* one octave either side */
+    --mid3:#1a7a4a;                /* two octaves either side */
     /* How dark the staff lines and the rhythm grid are drawn. The screen can
        carry more ink than paper can: at 100% a printed page is a jumble, and
        the notes are what should be read, not the ruling they sit on. Barlines
@@ -590,6 +592,34 @@
      the rail — or scrolling it sideways on a narrow screen — took the size
      buttons with it. Don: "I can't see any +/- or diminish." A CONTROL THAT
      TRAVELS WITH THE THING IT HIDES IS NOT ALWAYS ON. */
+  #tuner{
+    position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+    z-index:85; width:236px; text-align:center;
+    background:#0d1013; color:#fff; border:2px solid #fff; border-radius:14px;
+    padding:18px 20px 16px; box-shadow:0 14px 44px rgba(0,0,0,.5);
+  }
+  #tuner[hidden]{ display:none !important }
+  #tunerNum{ display:block; font:800 76px/1 ui-monospace,Menlo,monospace }
+  #tunerOct{ display:block; margin-top:4px;
+    font:700 12px/1 ui-monospace,Menlo,monospace; letter-spacing:.16em;
+    text-transform:uppercase; opacity:.65 }
+  /* HOW FAR OFF, not just which note. A hum lands between notes as often as on
+     one, and seeing the drift is what teaches an ear to correct it. */
+  #tunerBar{ position:relative; height:8px; margin:14px 0 10px;
+    background:rgba(255,255,255,.14); border-radius:4px }
+  #tunerBar::after{ content:''; position:absolute; left:50%; top:-4px;
+    width:2px; height:16px; background:rgba(255,255,255,.55) }
+  #tunerNeedle{ position:absolute; top:-3px; width:8px; height:14px;
+    border-radius:3px; background:#00a3ab; left:50%; margin-left:-4px;
+    transition:left .06s linear }
+  #tunerSays{ display:block; font:600 12px/1.4 ui-sans-serif,system-ui,sans-serif;
+    opacity:.6; margin-bottom:12px }
+  #tunerShut{ width:100%; padding:9px; cursor:pointer;
+    border:1.5px solid rgba(255,255,255,.4); border-radius:8px;
+    background:rgba(255,255,255,.1); color:#fff;
+    font:700 13px/1 -apple-system,sans-serif; letter-spacing:.08em }
+  @media print { #tuner{ display:none !important } }
+
   #pager{
     position:fixed; left:50%; transform:translateX(-50%);
     bottom:calc(74px + env(safe-area-inset-bottom)); z-index:70;
@@ -598,6 +628,14 @@
     padding:6px 10px; box-shadow:0 8px 26px rgba(0,0,0,.4);
   }
   #pager[hidden]{ display:none !important }
+  #pager .pgrab{ cursor:move; opacity:.5; font-size:18px; padding:0 4px;
+    touch-action:none; user-select:none; -webkit-user-select:none }
+  #pager .pgap{ width:10px; display:inline-block }
+  #pager.floating{ left:auto; transform:none }
+  #pageLoop{ width:auto !important; padding:0 12px !important;
+    font:800 12px/1 ui-monospace,Menlo,monospace !important; letter-spacing:.1em }
+  #pageLoop[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
+  #pageRate{ font:700 13px/1 ui-monospace,Menlo,monospace; min-width:52px; text-align:center }
   #pager button{
     width:46px; height:36px; padding:0; cursor:pointer;
     border:1.5px solid rgba(255,255,255,.4); border-radius:8px;
@@ -640,11 +678,28 @@
   /* NOT SUBTLE, at Don's instruction: "don't be subtle at this moment." Full
      strength and half again the weight — this is the one landmark on the page
      and it is meant to be seen without being looked at. */
+  /* TWICE THE WEIGHT AND DASHED, at Don's ask. Thicker so it registers in the
+     corner of the eye; dashed so it cannot be taken for a staff line or a
+     ledger — a solid rule among solid rules is one more rule, but a broken one
+     is plainly a different KIND of mark. */
   .midline{
     position:absolute; left:26px; right:0; height:0; z-index:1;
-    border-top:calc(3.5px * var(--z)) solid var(--mid); opacity:1;
+    border-top:calc(7px * var(--z)) dashed var(--mid); opacity:1;
     pointer-events:none;
   }
+  /* ONE OCTAVE EITHER SIDE in blue, TWO in green. Symmetrical on purpose: the
+     colour says how far from the middle, and the side you are on is obvious
+     from the page. That makes the pattern read the same going up as coming
+     down, which is what lets a glance place you. */
+  .midline.oct1{ border-top-color:var(--mid2) }
+  .midc.oct1{ color:var(--mid2) }
+  .midline.oct2{ border-top-color:var(--mid3) }
+  .midc.oct2{ color:var(--mid3) }
+  /* The further out, the quieter — the middle should always win the eye. */
+  .midline.oct1{ opacity:.85 }
+  .midline.oct2{ opacity:.7 }
+  @media print { .midc.oct1{ color:var(--mid2) !important }
+                 .midc.oct2{ color:var(--mid3) !important } }
 
   .barnum{ cursor:pointer; position:absolute; z-index:6; border:none; background:none;
     padding:3px 7px; margin:-3px -7px; line-height:1;
@@ -660,11 +715,17 @@
      either. */
   /* The strip between one octave band and the next. Darker than it was — it is
      the thing that separates the bands, so it has to be seen doing it. */
-  .bandgap{ position:absolute; left:0; right:0; background:rgba(20,24,29,.22); z-index:0 }
+  /* HALVED, at Don's ask, now that the coloured octave lines do the locating.
+     The grey was carrying that job before — it had to be strong enough to count
+     bands by — and with red, blue and green marking the octaves it only needs to
+     separate them. A BACKGROUND THAT NO LONGER HAS TO BE READ CAN GET OUT OF
+     THE WAY, and a lighter page makes the notes and the coloured lines louder
+     without either of them changing. */
+  .bandgap{ position:absolute; left:0; right:0; background:rgba(20,24,29,.11); z-index:0 }
   /* And at FOUR bands or more the grid becomes a maze, so the MIDDLE GAP is
      darker — one horizontal line of shade across the centre of the system for
      the eye to land on first. Three bands need no such help. */
-  .bandgap.mid{ background:rgba(20,24,29,.40) }
+  .bandgap.mid{ background:rgba(20,24,29,.20) }
   /* The seam shown outside the bands, where a ledger note has crossed it. Same
      ink as an ordinary gap, so it reads as the same thing and not a new one. */
   .bandgap.out{ right:auto }
@@ -1409,8 +1470,10 @@
        printers put down at all, and invisible where they do. A TINT CHOSEN ON
        SCREEN IS NOT A TINT UNTIL A PRINTER CAN LAY IT DOWN; anything meant to
        be read on paper needs to clear roughly 15%. */
-    .bandgap{ background:rgba(20,24,29,.20) !important }
-    .bandgap.mid{ background:rgba(20,24,29,.32) !important }
+    /* Print keeps a touch more than the screen: ink on paper reads lighter than
+       the same value on a lit display. */
+    .bandgap{ background:rgba(20,24,29,.12) !important }
+    .bandgap.mid{ background:rgba(20,24,29,.19) !important }
     /* BACKGROUNDS DO NOT PRINT unless forced — the ordinary gaps are already
        forced here, and anything drawn the same way has to join them or it is
        right on screen and invisible on paper. */
@@ -1471,10 +1534,41 @@
      A CONTROL YOU NEED WHILE READING MUST SURVIVE HIDING THE ONES YOU DO NOT. -->
 
 <!-- TURNING THE PAGE. Shown only when a piece is long enough to have pages. -->
+<!-- THE READER'S BAR.
+     Don, learning to read the notation off a propped tablet: the page turner
+     "should be moveable" and could carry "loop 1-5, flip page, scroll page."
+     What a reader actually reaches for is narrower than that, and narrow is the
+     point — this is read at a glance from piano distance, so every item on it
+     costs the legibility of the others.
+     FOUR THINGS: where you are, loop what you can see, play, and how fast.
+     Everything else stays in the panels where it lives. -->
+<!-- THE TUNER.
+     Don, on how he would write on a phone: "Humming how I'd do it, and try to
+     match tones." So the phone listens and says which number he is singing.
+     NOT A TRANSCRIBER. It does not decide rhythm, or write anything down, or
+     guess what he meant — those are the hard parts and the parts that get it
+     wrong. It answers one question, continuously: WHAT NUMBER IS THAT? He hums,
+     reads the number, and taps it. The judgement stays with him.
+     -->
+<div id="tuner" hidden>
+  <b id="tunerNum">–</b>
+  <span id="tunerOct"></span>
+  <div id="tunerBar"><i id="tunerNeedle"></i></div>
+  <span id="tunerSays">listening…</span>
+  <button type="button" id="tunerShut">Done</button>
+</div>
+
 <div id="pager" hidden>
+  <span class="pgrab" id="pagerGrab" aria-hidden="true">⠿</span>
   <button type="button" id="pagePrev" title="the page before">&#8249;</button>
   <span id="pageSays"></span>
   <button type="button" id="pageNext" title="the next page">&#8250;</button>
+  <span class="pgap"></span>
+  <button type="button" id="pageLoop" title="loop the bars on this page">LOOP PAGE</button>
+  <button type="button" id="pagePlay" title="play from here">&#9654;</button>
+  <button type="button" id="pageSlow" title="slower">&minus;</button>
+  <span id="pageRate">100%</span>
+  <button type="button" id="pageFast" title="faster">+</button>
 </div>
 
 <div id="alwaysOn">
@@ -1505,6 +1599,7 @@
       <button id="bSaveAs">Save as…</button>
       <button id="bOpen">Library</button>
       <button id="bLoop" aria-pressed="false" title="work on a passage">LOOP</button>
+      <button id="bTuner" title="hum a note and be told its number">Hum</button>
       <button id="bPrint">Print</button>
       <button id="bHist">History</button>
       <button id="bClear">Clear</button>
@@ -1767,7 +1862,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-29 b206 the page turns itself';
+const BUILD_STAMP = '2026-08-30 b211 a lighter page';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -4909,13 +5004,22 @@ function render(){
     try {
       const pg = window._pages, box = document.getElementById('pager');
       if (box && pg){
-        box.hidden = pg.at < 0;
+        // SHOWN FOR EVERY PIECE, not only long ones. The page arrows go quiet
+        // on a short piece, but loop, play and speed are wanted just as much on
+        // an eight-bar study as on the K.265.
+        box.hidden = false;
+        const arrows = pg.at < 0;
+        const pv0 = document.getElementById('pagePrev'), nx0 = document.getElementById('pageNext');
+        if (pv0) pv0.style.display = arrows ? 'none' : '';
+        if (nx0) nx0.style.display = arrows ? 'none' : '';
         const lbl = document.getElementById('pageSays');
-        if (lbl && pg.at >= 0)
-          lbl.textContent = 'bars ' + (pg.from + 1) + '\u2013' + pg.to;
+        if (lbl) lbl.textContent = pg.at >= 0
+          ? 'bars ' + (pg.from + 1) + '\u2013' + pg.to
+          : 'bars 1\u2013' + pg.to;
         const pv = document.getElementById('pagePrev'), nx = document.getElementById('pageNext');
         if (pv) pv.disabled = pg.at <= 0;
         if (nx) nx.disabled = pg.at >= pg.of - 1;
+        if (window._paintPager) window._paintPager();
       }
     } catch (e4) {}
 
@@ -5413,42 +5517,70 @@ function drawEverything(){
         // unmoored from the keyboard. THIS IS THE PEG THAT TIES THE PAGE BACK
         // TO IT. Island pitch p sounds as middle C when p = 48 - keyShift, so
         // the mark follows the key without being told.
+        // TWO PEGS, AN OCTAVE APART.
+        //
+        // One landmark tells you where the middle of the instrument is. It does
+        // not tell you which octave you are READING — and on a piece like the
+        // K.265, where the right hand ranges over three, Don found the mark
+        // jumping an octave and back with nothing to say which was which.
+        // A SINGLE LANDMARK GIVES YOU A PLACE, NOT A SCALE. Two give you a
+        // spacing to judge everything else against: this one, the one above it,
+        // and by extension the ones beyond.
+        //
+        // Different colours because they must never be mistaken for each other
+        // — that is the entire job. Red for the middle, blue for the octave
+        // above, and the arrow at the margin takes the colour of its own line so
+        // a glance at either end says the same thing.
         {
           const kk = score.key || 0, kshift = kk > 6 ? kk - 12 : kk;
-          const pc = 48 - kshift;
-          const mc = { num: ((pc % 12) + 12) % 12 + 1, oct: Math.floor(pc / 12) };
-          const ym = yBand(mc);
-          if (ym >= reachTop - GAP() && ym <= reachBot + GAP()){
+          const base = 48 - kshift;
+          // FIVE PEGS, AN OCTAVE APART, IN THREE COLOURS.
+          //
+          // Don, reading the K.265: "the relationship from blue to red should
+          // tell you where you are." That is the correction — one landmark gives
+          // a place, two give a spacing, and a repeating pattern of colours
+          // gives POSITION. Red is the middle; blue is one octave either side of
+          // it; green is two. A player who sees blue above and red below knows
+          // exactly which octave the notes between them are in, without counting
+          // anything.
+          //
+          // And these are not extra marks on the page. Don: "it actually IS a
+          // staff line: it's always the ONE note or the TWO note." The octave
+          // landmark falls on a line the staff already has — so this is not
+          // clutter added, it is a line already there being COLOURED so it can
+          // be told from its neighbours.
+          const pegs = [];
+          for (const k of [-2, -1, 0, 1, 2])
+            pegs.push({ p: base + 12 * k,
+                        cls: k === 0 ? '' : (Math.abs(k) === 1 ? ' oct1' : ' oct2'),
+                        away: k, label: WORDS.middleMark });
+          for (const peg of pegs){
+            const pc = peg.p;
+            const mc = { num: ((pc % 12) + 12) % 12 + 1, oct: Math.floor(pc / 12) };
+            const ym = yBand(mc);
+            if (ym < reachTop - GAP() || ym > reachBot + GAP()) continue;
+
             const m = document.createElement('div');
-            m.className = 'midc';
-            // "M", NOT "C". Don: "we write in one pattern for all keys, so saying
-            // that the landmark in the octaves is Middle C reverts to outdated
-            // language."
-            //
-            // He is right, and the rename is more accurate rather than merely
-            // more consistent. WHAT THIS MARK POINTS AT IS NOT A PITCH CLASS,
-            // IT IS A PLACE ON THE INSTRUMENT — the same physical key whatever
-            // the piece is written in. Calling it C named it by the one system
-            // this notation set out to leave behind, and named it wrongly in
-            // every key but one: in G the key it points at is written 6.
-            // M is for middle, and middle is what a player needs to find.
-            m.innerHTML = '<i>' + WORDS.middleMark + '</i><s>\u25b6</s>';
-            m.title = WORDS.middleWhat + ' \u2014 written ' + mc.num
-                    + ' in octave ' + mc.oct + ' in this key';
+            m.className = 'midc' + peg.cls;
+            // "M", NOT "C". Don: "we write in one pattern for all keys, so
+            // saying that the landmark in the octaves is Middle C reverts to
+            // outdated language." What this mark points at is not a pitch class,
+            // it is a place on the instrument — the same physical key whatever
+            // the piece is written in.
+            m.innerHTML = '<i>' + peg.label + '</i><s>\u25b6</s>';
+            m.title = (peg.away === 0 ? WORDS.middleWhat
+                       : Math.abs(peg.away) + ' octave' + (Math.abs(peg.away) > 1 ? 's' : '')
+                         + (peg.away > 0 ? ' above' : ' below') + ' the middle')
+                    + ' \u2014 written ' + mc.num + ' in octave ' + mc.oct + ' in this key';
             m.style.top = ym + 'px';
             box.appendChild(m);
 
-            // AND A LINE ALL THE WAY ACROSS AT THAT PITCH. The mark sits at the
-            // left margin, and the place it points at moves from line to line
-            // as the music moves — so a player reading in the middle of a bar
-            // had to look back to the margin to find the one landmark that ties
-            // the page to the instrument. Don: "we need to be able to see where
-            // that frequency is at all times."
-            // A LANDMARK YOU HAVE TO LOOK AWAY TO FIND IS NOT A LANDMARK.
+            // AND A LINE ALL THE WAY ACROSS AT THAT PITCH, since a landmark you
+            // have to look away to find is not a landmark.
             const ml = document.createElement('div');
-            ml.className = 'midline';
+            ml.className = 'midline' + peg.cls;
             ml.style.top = ym + 'px';
-            ml.title = WORDS.middleWhat;
+            ml.title = m.title;
             box.appendChild(ml);
           }
         }
@@ -8171,6 +8303,63 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
     if (pp) pp.addEventListener('click', () => turn(-1));
     if (pn) pn.addEventListener('click', () => turn(1));
 
+    // LOOP WHAT YOU CAN SEE. A reader already knows which bars he wants — they
+    // are the ones in front of him. Typing their numbers into a panel is a
+    // detour round a decision he has already made.
+    const plp = document.getElementById('pageLoop');
+    if (plp) plp.addEventListener('click', () => {
+      const pg = window._pages;
+      if (loop){ stop(); loop = null; LOOP_VOICES = null; LAP = 0; say = 'the loop is let go'; }
+      else if (pg && pg.at >= 0){
+        loop = { from: barStart(pg.from), to: barStart(pg.to - 1) + capacityOf(pg.to - 1) };
+        LOOP_SPEED = 1; LAP = 0;
+        say = 'looping bars ' + (pg.from + 1) + '\u2013' + pg.to;
+      } else {
+        // A short piece has no pages, so the whole of it is what you can see.
+        loop = { from: 0, to: barStart(lastBar()) + capacityOf(lastBar()) };
+        LOOP_SPEED = 1; LAP = 0;
+        say = 'looping the whole piece';
+      }
+      render();
+      const ia = document.getElementById('loopA'), ib = document.getElementById('loopB');
+      if (loop && ia && ib){ ia.value = barAt(loop.from) + 1; ib.value = barAt(loop.to - 1) + 1; }
+      if (window._paintLoop) window._paintLoop();
+    });
+
+    const ppl = document.getElementById('pagePlay');
+    if (ppl) ppl.addEventListener('click', () => {
+      if (playing) stop(); else play(false);
+      if (window._paintLoop) window._paintLoop();
+    });
+
+    // SPEED WHERE A LEARNER REACHES FOR IT. It lives in the loop panel too, and
+    // both move the same setting — a reader slowing a passage down should not
+    // have to open a window to do the commonest thing there is.
+    const rate = () => {
+      const r = document.getElementById('pageRate');
+      if (r) r.textContent = Math.round(LOOP_SPEED * 100) + '%';
+      const pl = document.getElementById('pageLoop');
+      if (pl) pl.setAttribute('aria-pressed', loop ? 'true' : 'false');
+      const pb = document.getElementById('pagePlay');
+      if (pb) pb.innerHTML = playing ? '&#9632;' : '&#9654;';
+    };
+    window._paintPager = rate;
+    const nudgeRate = d => {
+      const i = SPEEDS.indexOf(LOOP_SPEED);
+      LOOP_SPEED = SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, (i < 0 ? 0 : i) + d))];
+      say = 'the loop runs at ' + Math.round(LOOP_SPEED * 100) + '% of the written pace';
+      rate();
+      if (window._paintLoop) window._paintLoop();
+      if (playing && loop){ stop(); play(false); }
+    };
+    const psl = document.getElementById('pageSlow'), pfa = document.getElementById('pageFast');
+    if (psl) psl.addEventListener('click', () => nudgeRate(1));
+    if (pfa) pfa.addEventListener('click', () => nudgeRate(-1));
+
+    // AND IT MOVES, like every other thing on this page that gets in the way.
+    const pbar = document.getElementById('pager'), pgb = document.getElementById('pagerGrab');
+    if (pbar && pgb) floatable(pbar, pgb, 'island.pager.pos');
+
     // WHERE THE PIECES ARE KEPT. A browser stores a page's library against its
     // ADDRESS, so the same app reached two ways has two libraries — and that is
     // invisible from inside. Don keeps having to re-import after every build,
@@ -8244,6 +8433,15 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
     const zi = document.getElementById('zoomIn'), zo = document.getElementById('zoomOut');
     if (zi) zi.addEventListener('click', () => stepSize(1));
     if (zo) zo.addEventListener('click', () => stepSize(-1));
+  } catch (err) {}
+
+  try {
+    const tb = document.getElementById('bTuner');
+    if (tb) tb.addEventListener('click', () => {
+      if (tunerOn) tunerStop(); else tunerStart();
+    });
+    const ts = document.getElementById('tunerShut');
+    if (ts) ts.addEventListener('click', tunerStop);
   } catch (err) {}
 
   try {
@@ -9474,6 +9672,117 @@ function tick(at, strong){
   o.start(at); o.stop(at + 0.07);
   keep(o);
   return o;                    // so a re-based metronome can take it back
+}
+
+// ---------------------------------------------------------------------------
+//  THE TUNER: what number am I humming?
+//
+//  Pitch is found by AUTOCORRELATION — the signal is compared with itself at
+//  every plausible delay, and the delay that matches best is the period of the
+//  note. It suits a voice far better than counting zero crossings, because a
+//  hummed note is a stack of harmonics and the loudest part is often not the
+//  note itself; correlation finds the repeat rate of the whole shape.
+//
+//  A HUM IS NOT A CLEAN TONE. It slides into pitch, wobbles, and dies away. So
+//  the reading is smoothed over several frames and a poor match is reported as
+//  nothing rather than as a guess — SILENCE IS A BETTER ANSWER THAN A WRONG
+//  NUMBER, especially for someone learning to trust the system.
+// ---------------------------------------------------------------------------
+let tunerOn = false, tunerStream = null, tunerTimer = 0, tunerSmooth = [];
+
+function pitchFromBuffer(buf, rate){
+  // Too quiet to bother with.
+  let power = 0;
+  for (let i = 0; i < buf.length; i++) power += buf[i] * buf[i];
+  if (Math.sqrt(power / buf.length) < 0.008) return -1;
+
+  // Delays worth testing: about 65Hz to 1100Hz covers a hummed voice with room.
+  const lo = Math.floor(rate / 1100), hi = Math.floor(rate / 65);
+  let bestLag = -1, best = 0;
+  for (let lag = lo; lag <= hi; lag++){
+    let sum = 0;
+    for (let i = 0; i < buf.length - lag; i++) sum += buf[i] * buf[i + lag];
+    sum /= (buf.length - lag);
+    if (sum > best){ best = sum; bestLag = lag; }
+  }
+  if (bestLag < 0 || best < 0.004) return -1;
+  return rate / bestLag;
+}
+
+// The frequency the app itself would use for a given written pitch — so the
+// tuner and the piano cannot disagree about what a number sounds like.
+function numberFromHz(f){
+  const semis = 12 * Math.log2(f / 261.63) + MIDDLE_C - keyShift();
+  const near = Math.round(semis);
+  return { pitch: near, cents: Math.round((semis - near) * 100) };
+}
+
+function tunerStop(){
+  tunerOn = false;
+  if (tunerTimer){ cancelAnimationFrame(tunerTimer); tunerTimer = 0; }
+  try { if (tunerStream) tunerStream.getTracks().forEach(t => t.stop()); } catch (err) {}
+  tunerStream = null;
+  const box = document.getElementById('tuner');
+  if (box) box.hidden = true;
+}
+
+async function tunerStart(){
+  const box = document.getElementById('tuner');
+  const num = document.getElementById('tunerNum');
+  const oct = document.getElementById('tunerOct');
+  const says = document.getElementById('tunerSays');
+  const needle = document.getElementById('tunerNeedle');
+  if (!box) return;
+  box.hidden = false;
+  says.textContent = 'asking for the microphone\u2026';
+  try {
+    if (!wake()) throw new Error('no audio');
+    tunerStream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation:false, noiseSuppression:false, autoGainControl:false } });
+  } catch (err){
+    says.textContent = 'no microphone \u2014 ' + (err && err.message ? err.message : err);
+    return;
+  }
+  const src = audio.createMediaStreamSource(tunerStream);
+  const an = audio.createAnalyser();
+  an.fftSize = 2048;
+  src.connect(an);
+  const buf = new Float32Array(an.fftSize);
+  tunerOn = true;
+  says.textContent = 'hum a note';
+
+  const look = () => {
+    if (!tunerOn) return;
+    an.getFloatTimeDomainData(buf);
+    const f = pitchFromBuffer(buf, audio.sampleRate);
+    if (f > 0){
+      const r = numberFromHz(f);
+      // Steadied over the last few readings, so a wobble does not flicker the
+      // number back and forth.
+      tunerSmooth.push(r.pitch);
+      if (tunerSmooth.length > 6) tunerSmooth.shift();
+      const counts = {};
+      let win = r.pitch, most = 0;
+      for (const p of tunerSmooth){
+        counts[p] = (counts[p] || 0) + 1;
+        if (counts[p] > most){ most = counts[p]; win = p; }
+      }
+      const isl = { num: ((win % 12) + 12) % 12 + 1, oct: Math.floor(win / 12) };
+      num.textContent = isl.num;
+      oct.textContent = 'octave ' + isl.oct + '  \u00b7  ' + Math.round(f) + ' Hz';
+      needle.style.left = Math.max(0, Math.min(100, 50 + r.cents / 2)) + '%';
+      says.textContent = Math.abs(r.cents) < 12 ? 'on it'
+        : (r.cents > 0 ? 'a little sharp' : 'a little flat');
+    } else {
+      tunerSmooth.length = 0;
+      num.textContent = '\u2013';
+      oct.textContent = '';
+      needle.style.left = '50%';
+      says.textContent = 'hum a note';
+    }
+    tunerTimer = requestAnimationFrame(look);
+  };
+  look();
 }
 
 // ---------------------------------------------------------------------------
