@@ -654,9 +654,18 @@
     min-width:96px; text-align:center }
   @media print { #pager{ display:none !important } }
 
+  /* ABOVE EVERYTHING, AND VISIBLE AGAINST ANYTHING. On the tablet these sat
+     behind the white staff — Don: "the +, - and the up arrow are all obscured
+     by the white staff box." They are the controls that resize the music and
+     fold the rail away, so they are the last things that should be hidden by
+     the music.
+     A CONTROL THAT FLOATS OVER THE PAGE MUST CARRY ITS OWN BACKGROUND, or it is
+     legible only over whatever happens to be behind it. */
   #alwaysOn{
-    position:fixed; top:calc(6px + env(safe-area-inset-top)); right:12px; z-index:70;
+    position:fixed; top:calc(6px + env(safe-area-inset-top)); right:12px; z-index:200;
     display:flex; gap:6px;
+    background:rgba(13,16,19,.92); border-radius:10px; padding:4px;
+    box-shadow:0 4px 16px rgba(0,0,0,.3);
   }
   #alwaysOn button{
     width:40px; height:34px; padding:0; cursor:pointer;
@@ -1677,7 +1686,7 @@
            A THING THE READER MUST HAVE IS NOT A PREFERENCE. -->
       <button id="bStaffLines" aria-pressed="true">Staff lines</button>
       <span>Spaces <select id="rStripe"><option value="both">alternating</option><option value="gold">all yellow</option><option value="blue">all blue</option><option value="none">none</option></select></span>
-      <span>Bands <select id="rBands"><option value="0">auto</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="split" selected>two staves, an open ledger field between</option><option value="grand">a staff per hand, treble over bass</option></select></span>
+
       <span>Size <select id="rSize"></select></span>
       <span>Bars/line <select id="rBars"></select></span>
       <span>Page <select id="rPage"></select></span>
@@ -1893,7 +1902,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-30 b219 on the line, and clear of it';
+const BUILD_STAMP = '2026-08-30 b220 seams stay, bands go, buttons on top';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -4606,7 +4615,15 @@ let GEO_ST = null;
 // all octaves: there are no ledger lines."
 // A GAP IN A RULER IS A PLACE THE RULER DOES NOT WORK. Ruling every octave
 // removes the ledger problem entirely rather than solving it with more marks.
+// WHETHER THIS OCTAVE'S FOUR LINES ARE DRAWN. Nothing else hangs off this —
+// the grey seams between octaves are drawn whatever the answer, because they
+// are the boundary between one octave and the next and the page is unreadable
+// without them. Don: "shutting off staff lines shuts off the gray bands. They
+// need to stay on."
+// A SWITCH SHOULD TURN OFF THE THING IT NAMES AND NOTHING ELSE.
 const bandRuled = k => STAFF_MODE !== 'bare';
+// ...and this is what the seams ask instead: always yes.
+const bandEdged = k => true;
 // The ruled octave nearest a given letter-step — what a reader can count from.
 function nearestRuled(d, b){
   let best = b.lo, bd = Infinity;
@@ -5373,14 +5390,13 @@ function drawEverything(){
           // sits that is exactly the edge you need marked.
           // Deduped by position, because two adjacent ruled bands share the one
           // strip between them and drawing it twice doubles its ink.
-          if (bandRuled(k)) for (const y of [top - BAND_GAP(), top + BANDH()]){
+          if (bandEdged(k)) for (const y of [top - BAND_GAP(), top + BANDH()]){
             if (gapAt.has(y)) continue;
             gapAt.add(y);
             const strip = document.createElement('div');
             // The two that bound the open field are the heavier pair: they are
             // the only thing saying where a stretch with no lines begins.
-            const bounds = SPLIT_BANDS && (k === 0 ? y > top : y < top);
-            strip.className = 'bandgap' + (bounds ? ' mid' : '');
+            strip.className = 'bandgap';
             strip.style.top = y + 'px';
             strip.style.height = BAND_GAP() + 'px';
             box.appendChild(strip);
@@ -8164,27 +8180,12 @@ document.getElementById('bWords').addEventListener('click', ev => {
   ink.addEventListener('change', () => el.focus());
   ink.addEventListener('keydown', ev => ev.stopPropagation());
 
-  const bd = document.getElementById('rBands');
-  bd.addEventListener('change', ev => {
-    const raw = ev.target.value;
-    SPLIT_BANDS = (raw === 'split');
-    GRAND = (raw === 'grand');
-    if (GRAND){
-      BAND_COUNT = 1;          // one band each; ledgers carry the rest
-      say = 'a staff per hand \u2014 each fitted to its own music';
-    } else if (SPLIT_BANDS){
-      BAND_COUNT = 3;          // ruled, unruled, ruled
-      say = 'two staves an octave apart \u2014 ledgers cross the space between';
-    } else {
-      const v = parseInt(raw, 10);
-      if (v) BAND_COUNT = v; else autoBands(5);
-      say = BAND_COUNT + ' octave band' + (BAND_COUNT === 1 ? '' : 's')
-          + (v ? '' : ', chosen for the music');
-    }
-    refitBands();
-    render(); el.focus();
-  });
-  bd.addEventListener('keydown', ev => ev.stopPropagation());
+  // The Bands menu is gone. It offered a split staff with an open ledger field
+  // — which b216 removed by ruling every octave — and a band count that
+  // autoBands works out better from the music than anyone would choose by hand.
+  // A MENU THAT PROMISES WHAT IT NO LONGER DOES IS WORSE THAN NO MENU.
+  SPLIT_BANDS = false; GRAND = false;
+
 
   // STAFF LINES ON OR OFF. The two staff modes reduced to the one thing that
   // separates them, since Don has retired the five- and six-line staves: "the
