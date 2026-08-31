@@ -714,6 +714,25 @@
      colour says how far from the middle, and the side you are on is obvious
      from the page. That makes the pattern read the same going up as coming
      down, which is what lets a glance place you. */
+  /* A SET FOR EYES THAT DO NOT READ COLOUR.
+     About one man in twelve has some colour blindness, and red-green is the
+     common form — which is exactly the pair carrying octave 0 and octave ±2.
+     Don: "I would like all those colorblind re-structures to exist as an
+     optional set."
+     THE CUE BECOMES THE STROKE ITSELF. The middle octave runs solid, one octave
+     out is long-dashed, two is dotted, so the three are told apart by pattern
+     with no colour needed. The colours stay underneath for anyone switching
+     back, and the marks keep their positions exactly. */
+  body.plainsight .midline{ border-top-style:solid; border-top-color:#141310 }
+  body.plainsight .midline.oct1{ border-top-style:dashed; border-top-color:#141310 }
+  body.plainsight .midline.oct2{ border-top-style:dotted; border-top-color:#141310;
+    opacity:.85 }
+  body.plainsight .midc{ color:#141310 }
+  /* And the alternating spaces separate by LIGHTNESS instead of hue, so they
+     still alternate for an eye that sees neither. */
+  body.plainsight .midspace{ background:rgba(20,24,29,.13) }
+  body.plainsight .midspace.blue{ background:rgba(20,24,29,.04) }
+
   .midline.oct1{ border-top-color:var(--mid2) }
   .midc.oct1{ color:var(--mid2) }
   .midline.oct2{ border-top-color:var(--mid3) }
@@ -1685,6 +1704,7 @@
            "all gray bands equally light, and ALWAYS on, no shutoff option."
            A THING THE READER MUST HAVE IS NOT A PREFERENCE. -->
       <button id="bStaffLines" aria-pressed="true">Staff lines</button>
+      <button id="bPlain" aria-pressed="false" title="tell the octave rules apart by their stroke rather than their color">Colorblind</button>
       <span>Spaces <select id="rStripe"><option value="both">alternating</option><option value="gold">all yellow</option><option value="blue">all blue</option><option value="none">none</option></select></span>
 
       <span>Size <select id="rSize"></select></span>
@@ -1902,7 +1922,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-30 b220 seams stay, bands go, buttons on top';
+const BUILD_STAMP = '2026-08-31 b223 smaller still';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -5110,8 +5130,8 @@ function render(){
           ? 'bars ' + (pg.from + 1) + '\u2013' + pg.to
           : 'bars 1\u2013' + pg.to;
         const pv = document.getElementById('pagePrev'), nx = document.getElementById('pageNext');
-        if (pv) pv.disabled = pg.at <= 0;
-        if (nx) nx.disabled = pg.at >= pg.of - 1;
+        if (pv) pv.disabled = pg.from <= 0;
+        if (nx) nx.disabled = pg.to >= pg.bars;
         if (window._paintPager) window._paintPager();
       }
     } catch (e4) {}
@@ -5177,24 +5197,35 @@ function drawEverything(){
   // READING, which on a music stand matters more than smooth scrolling: a page
   // that relays itself under your eyes mid-phrase is worse than one that sits
   // still and waits to be turned.
+  // A PAGE BEGINS WHERE YOU ARE, NOT ON A FIXED BOUNDARY.
+  //
+  // Pages were blocks of 24 bars counted from the start of the piece, so a turn
+  // threw the whole page away and put the bar being played at the very top of a
+  // new one — arriving at the instant you began it. Don: "the page should turn
+  // sometime before the cursor reaches the end of the page, and the new page
+  // should start with the line the cursor is playing."
+  //
+  // So a page now has a START BAR rather than a number, and the turn happens
+  // when the music reaches the LAST SYSTEM on screen: that system becomes the
+  // FIRST system of the new page. THE LINE YOU ARE PLAYING SURVIVES THE TURN,
+  // which is exactly what a human page-turner does — move early, and never take
+  // away the bar being read.
   const WINDOW_BARS = 24;
   let winFrom = 0, winTo = bars;
   if (bars > WINDOW_BARS){
-    // The playhead turns the page for you while the music runs; otherwise the
-    // page is wherever you last turned to.
-    // While the music runs the page follows it; the draw is asked for only when
-    // the music actually leaves the page (see follow()), not on every frame.
-    if (playing) PAGE_AT = Math.floor(barAt(tickNow()) / WINDOW_BARS);
-    const pages = Math.ceil(bars / WINDOW_BARS);
-    PAGE_AT = Math.max(0, Math.min(pages - 1, PAGE_AT));
-    winFrom = PAGE_AT * WINDOW_BARS;
+    PAGE_AT = Math.max(0, Math.min(Math.max(0, bars - 1), PAGE_AT));
+    winFrom = PAGE_AT;
     winTo   = Math.min(bars, winFrom + WINDOW_BARS);
   }
-  window._pages = { at: winFrom > 0 || winTo < bars ? PAGE_AT : -1,
-                    of: Math.ceil(bars / WINDOW_BARS),
-                    from: winFrom, to: winTo };
+  // The first bar of every system drawn, so a turn can land on a system rather
+  // than in the middle of one.
+  const sysFirst = [];
+  window._pages = { at: (winFrom > 0 || winTo < bars) ? winFrom : -1,
+                    from: winFrom, to: winTo, sys: sysFirst,
+                    bars: bars, span: WINDOW_BARS };
 
   for (let first = winFrom; first < winTo; ){
+    sysFirst.push(first);
     // ASKING FOR A NUMBER OF BARS IS AN INSTRUCTION, NOT A HINT. Don: "I can't
     // change the number of bars per line." The count was decided by the WIDTH
     // test first and the requested number only got to stop it early — fine when
@@ -8190,6 +8221,24 @@ document.getElementById('bWords').addEventListener('click', ev => {
   // STAFF LINES ON OR OFF. The two staff modes reduced to the one thing that
   // separates them, since Don has retired the five- and six-line staves: "the
   // world will learn our four-line staff, or it will DIE."
+  const pl = document.getElementById('bPlain');
+  if (pl){
+    let on = false;
+    try { on = localStorage.getItem('island.plainsight') === '1'; } catch (err) {}
+    document.body.classList.toggle('plainsight', on);
+    pl.setAttribute('aria-pressed', on ? 'true' : 'false');
+    pl.addEventListener('click', () => {
+      const now = !document.body.classList.contains('plainsight');
+      document.body.classList.toggle('plainsight', now);
+      pl.setAttribute('aria-pressed', now ? 'true' : 'false');
+      try { localStorage.setItem('island.plainsight', now ? '1' : '0'); } catch (err) {}
+      say = now
+        ? 'the octave rules read by their stroke \u2014 solid is the middle, dashed one out, dotted two'
+        : 'the octave rules read by their color';
+      render(); el.focus();
+    });
+  }
+
   const sl = document.getElementById('bStaffLines');
   if (sl){
     let on = true;
@@ -8216,7 +8265,13 @@ document.getElementById('bWords').addEventListener('click', ev => {
   // idea of small — on an iPad the staff arrived far wider than the screen and
   // there was nothing below 80 to choose. Don: "grossly oversized and cannot be
   // reduced." A CONTROL WITH NO SETTING THAT FITS IS NOT A CONTROL.
-  const SIZES = [40,50,60,70,80,100,125,150,175,200,250];
+  // DOWN TO 20%. A backlit tablet renders small notation far better than paper
+  // does, and Don reads it comfortably — 40% was simply the floor I happened to
+  // pick, not a limit of the drawing. Going smaller also means more bars on a
+  // page, which means fewer turns.
+  // A RANGE SHOULD END WHERE THE THING STOPS WORKING, not where the author
+  // stopped imagining.
+  const SIZES = [20,25,30,35,40,50,60,70,80,100,125,150,175,200,250];
 
   // AND IT IS REMEMBERED, PER DEVICE. Size is a property of the screen you are
   // reading on, not of the music, so it belongs beside the window position
@@ -8451,6 +8506,19 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
     // THE PAGE TURNERS. Repainted after every draw, since only the draw knows
     // whether the piece is long enough to need them.
     const turn = d => {
+      const pg = window._pages;
+      if (pg && pg.at >= 0){
+        // Forward: the last system on screen becomes the first of the next page,
+        // so nothing is skipped over the join. Back: a page's worth earlier.
+        const lastSys = pg.sys && pg.sys.length > 1
+          ? pg.sys[pg.sys.length - 1] : pg.from + pg.span;
+        PAGE_AT = d > 0 ? Math.min(Math.max(0, pg.bars - 1), lastSys)
+                        : Math.max(0, pg.from - pg.span);
+        render();
+        const sc0 = document.getElementById('score');
+        if (sc0) sc0.scrollTop = 0;
+        return;
+      }
       PAGE_AT += d;
       render();
       const sc2 = document.getElementById('score');
@@ -10191,9 +10259,22 @@ function follow(){
   // A PAGE THAT CANNOT TURN ITSELF IS NOT FOLLOWING THE MUSIC.
   if (window._pages && window._pages.at >= 0){
     const pg = window._pages, here = barAt(tick);
-    if (here >= pg.to || here < pg.from){
-      render();                  // the draw works out which page that is
-      frame = requestAnimationFrame(follow);   // and carries on with new marks
+    // TURN EARLY, AND KEEP THE LINE. The trigger is the first bar of the LAST
+    // system on the page — reach that and the page is remade beginning at that
+    // same system, so the music you are reading stays on screen and a fresh
+    // page's worth of what comes next appears below it.
+    const lastSys = pg.sys && pg.sys.length ? pg.sys[pg.sys.length - 1] : pg.to;
+    const turnAt = (pg.sys && pg.sys.length > 1) ? lastSys : pg.to;
+    if (here >= turnAt && pg.to < pg.bars){
+      PAGE_AT = turnAt;
+      render();
+      frame = requestAnimationFrame(follow);
+      return;
+    }
+    if (here < pg.from){                    // gone backwards, a repeat perhaps
+      PAGE_AT = Math.max(0, here);
+      render();
+      frame = requestAnimationFrame(follow);
       return;
     }
   }
