@@ -2018,7 +2018,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-08-31 b229 one library, three devices';
+const BUILD_STAMP = '2026-08-31 b230 the peg belongs to the writing';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -5774,8 +5774,20 @@ function drawEverything(){
         // above, and the arrow at the margin takes the colour of its own line so
         // a glance at either end says the same thing.
         {
-          const kk = score.key || 0, kshift = kk > 6 ? kk - 12 : kk;
-          const base = 48 - kshift;
+          // THE PEG BELONGS TO THE WRITING, NOT TO CONCERT PITCH.
+          //
+          // It used to be placed at concert middle C, which in a transposed
+          // piece is not the written 1 — so on the K.545 Andante, written in 1
+          // from a different key, the octave rules landed on written 11 or 6:
+          // in the middle of a space, with no line under them. Don: "the dashed
+          // lines are in the middle of the color spaces. Why only on that one?"
+          //
+          // Because every other piece happened to be untransposed. THE WHOLE
+          // POINT OF THIS NOTATION IS THAT EVERYTHING IS WRITTEN IN ONE PATTERN
+          // whatever key it sounds in — so the landmark a reader steers by has
+          // to be the written 1, always, in every piece. The peg is a feature of
+          // the PAGE, not of the piano.
+          const base = 48;
           // FIVE PEGS, AN OCTAVE APART, IN THREE COLOURS.
           //
           // Don, reading the K.265: "the relationship from blue to red should
