@@ -701,6 +701,11 @@
      two independent switches. */
   #pagerBuild{ font:700 11px/1 ui-monospace,Menlo,monospace; opacity:.5;
     padding:0 4px; cursor:pointer; white-space:nowrap }
+  /* WHILE PICKING, THE BAR NUMBERS ARE THE CONTROL. They light up so it is
+     obvious what to tap, and the rest of the page waits. */
+  body.picking .barnum{ outline:2px solid #00a3ab; outline-offset:2px;
+    cursor:pointer; background:#00a3ab !important; color:#04222a !important }
+  body.picking .chip{ opacity:.5 }
   #pageVoices{ width:auto !important; min-width:44px; padding:0 10px !important;
     font:800 12px/1 ui-monospace,Menlo,monospace !important; letter-spacing:.06em }
   #pageVoices[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
@@ -811,7 +816,25 @@
     body.phone #pageLoop{ padding:0 8px !important; font-size:11px !important }
     body.phone #pagerMode button{ padding:0 9px !important; font-size:11px !important }
     body.phone #pager button{ width:38px; height:34px }
-    body.phone #pager{ gap:4px; overflow-x:auto; flex-wrap:nowrap }
+    /* THE MENU FIRST, AND NOTHING SCROLLS OFF.
+       Every time a button was added the bar grew, and because it scrolls
+       sideways the newest ones went past the edge — present, and unreachable
+       without knowing to drag a bar nobody would think to drag. The menu has
+       been off-screen for four builds. Don, four times: "can't open the menu on
+       the phone."
+       A BAR THAT SCROLLS HIDES ITS OWN CONTENTS. So on a phone it does not
+       scroll: the menu sits first, where it cannot be pushed anywhere, and
+       everything else is trimmed until the row fits. */
+    body.phone #pager{ gap:3px; overflow-x:visible; flex-wrap:nowrap;
+      justify-content:flex-start }
+    body.phone #pagerMenu{ order:-1; flex:0 0 auto; margin-right:2px }
+    body.phone #pageSays{ order:0; flex:1 1 auto; overflow:hidden;
+      text-overflow:ellipsis; font-size:10px }
+    body.phone #pagerBuild{ display:none }        /* tap the menu to see it */
+    body.phone #pageLoop{ font-size:0 !important; padding:0 10px !important }
+    body.phone #pageLoop::after{ content:'\21BB'; font-size:17px }
+    body.phone #pagePrev, body.phone #pageNext{ width:32px }
+    body.phone #pageVoices{ min-width:36px; padding:0 6px !important }
     body.phone #alwaysOn{ top:calc(4px + env(safe-area-inset-top)); right:6px;
       padding:3px; gap:4px }
     body.phone #alwaysOn button{ width:34px; height:30px }
@@ -833,6 +856,8 @@
     body.phone #padShut{ font-size:30px !important; padding:0 10px !important }
     /* The bar is always the topmost thing on a phone. */
     body.phone #pager{ z-index:340 }
+    /* Open or shut, the way out is always on top. */
+    body.phone.railopen #pagerMenu{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
     body.phone #tuner, body.phone .libbox, body.phone #loopWin{
       position:fixed !important; left:0 !important; right:0 !important;
       top:0 !important; bottom:0 !important; width:auto !important;
@@ -846,7 +871,7 @@
 
   #railShut{ display:none }
   #alwaysOn{
-    position:fixed; top:calc(6px + env(safe-area-inset-top)); right:12px; z-index:200;
+    position:fixed; top:calc(6px + env(safe-area-inset-top)); right:12px; z-index:500;
     display:flex; gap:6px;
     background:rgba(13,16,19,.92); border-radius:10px; padding:4px;
     box-shadow:0 4px 16px rgba(0,0,0,.3);
@@ -1923,6 +1948,7 @@
       <button id="bTuner" title="hum a note and be told its number">Hum</button>
       <button id="bPad" title="write without a keyboard">Write pad</button>
       <button id="bMenu" title="the controls">Menu</button>
+      <button id="bQuit" title="stop everything and put the piece away">Finish</button>
       <button id="bPrint">Print</button>
       <button id="bHist">History</button>
       <button id="bClear">Clear</button>
@@ -2192,7 +2218,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-02 b250 the build, where you can see it';
+const BUILD_STAMP = '2026-09-02 b254 loop from the page';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8707,8 +8733,13 @@ document.getElementById('bWords').addEventListener('click', ev => {
       r.classList.toggle('railpage', open);
       document.body.classList.toggle('railopen', open);
       if (open){
+        // BELOW THE BUTTONS THAT OPEN IT. At 400 the panel covered both the
+        // arrow and the menu button, so the two controls that toggle it were
+        // underneath it and there was no way back. Don: "there is no way to
+        // close it, once opened."
+        // WHATEVER OPENS A PANEL MUST OUTRANK THE PANEL.
         r.style.cssText = 'display:block !important;position:fixed;inset:0;'
-          + 'z-index:400;max-height:none;overflow:auto;background:#0d1013;'
+          + 'z-index:300;max-height:none;overflow:auto;background:#0d1013;'
           + 'padding:calc(56px + env(safe-area-inset-top)) 10px '
           + 'calc(80px + env(safe-area-inset-bottom)) 10px;';
         // The fold empties the rail by dimming its children; undo that here too.
@@ -8835,6 +8866,15 @@ document.getElementById('bWords').addEventListener('click', ev => {
     // one does not go through a class at all: the handler is attached directly
     // to the element, and it also answers a plain onclick — belt and braces,
     // because a control nobody can reach is the whole app on that device.
+    // THE ARROW AT THE TOP IS THE MENU, ON A PHONE.
+    //
+    // That button folds the rail — which on a phone is already hidden, so it
+    // folded nothing and appeared dead. Don: "the call arrow is there, but does
+    // not respond." It was responding; there was simply nothing for it to do.
+    // A CONTROL MUST DO THE JOB THAT MAKES SENSE WHERE IT IS. Folding is a
+    // desk idea; on a phone the same arrow opens and closes the controls.
+    window._openRail = openRail;
+
     const pm = document.getElementById('pagerMenu');
     if (pm){
       pm.addEventListener('click', openRail);
@@ -9165,6 +9205,74 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
     if (pp) pp.addEventListener('click', () => turn(-1));
     if (pn) pn.addEventListener('click', () => turn(1));
 
+    // LOOPING, FROM THE PAGE ITSELF.
+    //
+    // Looping is the one control every mode wants — reading a passage over,
+    // drilling a bar while writing it, hearing a phrase again. Don: "in all of
+    // those, we might want to loop. So let's make looping easy, and at our
+    // fingertips."
+    //
+    // It now has three ways in, from the coarsest to the most exact, and no
+    // typing in any of them:
+    //   tap  the loop button   — the page you are on
+    //   hold the loop button   — pick bars: tap the first, tap the last
+    //   tap  a bar number      — that bar alone, while picking
+    // THE BARS ARE ON THE SCREEN. Asking a reader to name them in a box, when
+    // his finger is already resting on the one he means, is the detour.
+    let pickFrom = null;
+    const setLoop = (fromBar, toBar) => {
+      loop = { from: barStart(fromBar),
+               to: barStart(toBar) + capacityOf(toBar) };
+      LOOP_SPEED = 1; LAP = 0; LOOP_VOICES = null;
+      say = fromBar === toBar
+        ? 'looping bar ' + (fromBar + 1)
+        : 'looping bars ' + (fromBar + 1) + '\u2013' + (toBar + 1);
+      const ia2 = document.getElementById('loopA'), ib2 = document.getElementById('loopB');
+      if (ia2 && ib2){ ia2.value = fromBar + 1; ib2.value = toBar + 1; }
+      document.body.classList.remove('picking');
+      pickFrom = null;
+      render();
+      if (window._paintLoop) window._paintLoop();
+      if (window._paintPager) window._paintPager();
+    };
+    window._setLoop = setLoop;
+
+    // A tap on a bar number, while picking, is one end of the passage.
+    const sc3 = document.getElementById('score');
+    if (sc3) sc3.addEventListener('click', ev => {
+      if (!document.body.classList.contains('picking')) return;
+      const nm2 = ev.target.closest && ev.target.closest('.barnum');
+      if (!nm2 || nm2.dataset.bar == null) return;
+      ev.preventDefault(); ev.stopPropagation();
+      const b2 = +nm2.dataset.bar;
+      if (pickFrom == null){
+        pickFrom = b2;
+        say = 'bar ' + (b2 + 1) + ' \u2014 now tap the last bar of the passage';
+        cry('NOW THE LAST BAR', 1600);
+        render();
+      } else setLoop(Math.min(pickFrom, b2), Math.max(pickFrom, b2));
+    }, true);
+
+    // Hold the loop button to pick bars instead of taking the page.
+    const lpBtn = document.getElementById('pageLoop');
+    if (lpBtn){
+      let hold = 0;
+      const startHold = () => { hold = setTimeout(() => {
+        hold = 0;
+        document.body.classList.add('picking');
+        pickFrom = null;
+        say = 'tap the first bar of the passage, then the last';
+        cry('TAP THE FIRST BAR', 2000);
+        render();
+      }, 600); };
+      const endHold = () => { if (hold){ clearTimeout(hold); hold = 0; } };
+      lpBtn.addEventListener('touchstart', startHold, { passive:true });
+      lpBtn.addEventListener('touchend', endHold);
+      lpBtn.addEventListener('mousedown', startHold);
+      lpBtn.addEventListener('mouseup', endHold);
+      lpBtn.addEventListener('mouseleave', endHold);
+    }
+
     // LOOP WHAT YOU CAN SEE. A reader already knows which bars he wants — they
     // are the ones in front of him. Typing their numbers into a panel is a
     // detour round a decision he has already made.
@@ -9412,6 +9520,32 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
     }
   } catch (err) {}
 
+  // FINISHING, HONESTLY.
+  //
+  // A page cannot close itself — a browser only allows that for a window a
+  // script opened, and a home-screen app is not one. Don: "there is no way to
+  // simply quit the app. We need an exit."
+  // SO IT DOES THE PART THAT IS REAL. Everything that is running gets stopped:
+  // the music, the click, the microphone, the screen lock. Then it says plainly
+  // how to put the app away, rather than pretending to a power it does not have.
+  try {
+    const q = document.getElementById('bQuit');
+    if (q) q.addEventListener('click', () => {
+      try { stop(); } catch (err) {}
+      try { metroStop(); } catch (err) {}
+      try { tunerStop(); } catch (err) {}
+      try { letSleep(); } catch (err) {}
+      try { if (audio && audio.suspend) audio.suspend(); } catch (err) {}
+      say = 'everything is stopped \u00b7 your work is saved in the library';
+      cry('STOPPED \u00b7 SWIPE UP TO PUT IT AWAY', 4000);
+      const r2 = document.querySelector('.rail');
+      if (r2 && r2.classList.contains('railpage') && window._openRail) window._openRail();
+      render();
+      // If this window WAS opened by a script, closing is allowed and works.
+      setTimeout(() => { try { window.close(); } catch (err) {} }, 400);
+    });
+  } catch (err) {}
+
   try {
     const tb = document.getElementById('bTuner');
     if (tb) tb.addEventListener('click', () => {
@@ -9433,7 +9567,15 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       let was = false;
       try { was = localStorage.getItem('island.folded') === '1'; } catch (err) {}
       setFold(was);
-      fb.addEventListener('click', () => setFold(!document.body.classList.contains('folded')));
+      fb.addEventListener('click', () => {
+        // ON A PHONE THIS ARROW IS THE MENU. Folding hides the rail, and on a
+        // phone the rail is hidden already — so the button folded nothing and
+        // looked dead. Don: "the call arrow is there, but does not respond."
+        // It was responding; there was nothing for it to do.
+        // A CONTROL MUST DO THE JOB THAT MAKES SENSE WHERE IT IS.
+        if (screenShape() === 'phone' && window._openRail){ window._openRail(); return; }
+        setFold(!document.body.classList.contains('folded'));
+      });
     }
   } catch (err) {}
 
