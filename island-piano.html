@@ -2224,7 +2224,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-02 b257 ask the shelf what is there';
+const BUILD_STAMP = '2026-09-02 b258 the key travels with the app';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -11560,8 +11560,32 @@ function seedShelf(){
 // collision as `hushed`, caught by the parser this time instead of by Don
 // staring at a blank page.
 const REPO = { owner:'Zukemeister', repo:'island-library', path:'pieces' };
+// ---------------------------------------------------------------------------
+//  THE KEY TRAVELS WITH THE APP.
+//
+//  Every icon is a fresh container, and a fresh container was asking for a
+//  token — which meant the very thing Don is building was the thing that did
+//  not work. "I'm obviously not going to quit making icons. In the end, that is
+//  the product."
+//  A PRODUCT MUST WORK ON FIRST OPENING, WITH NOTHING TO PASTE. So the key is
+//  part of the app: a new icon arrives already able to reach the shelf, and
+//  fills itself before anyone notices it was empty.
+//
+//  ===== THIS IS DEVELOPMENT ONLY =====
+//  Anyone who reads this file can write to island-library. That is acceptable
+//  while the only reader is Don; it is not acceptable the day anyone else runs
+//  this app. Before it goes out, this line goes back to '' and a server holds
+//  the key instead. The shape of everything else stays exactly as it is.
+//  A SHORTCUT YOU HAVE WRITTEN DOWN IS A DECISION; ONE YOU HAVE FORGOTTEN IS A
+//  LEAK.
+// ---------------------------------------------------------------------------
+const SHELF_KEY = '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';
+
 let REPO_TOKEN = '';
 try { REPO_TOKEN = localStorage.getItem('island.shelf.token') || ''; } catch (err) {}
+// The built-in key is used whenever this device has not been given one of its
+// own — which is every new icon, on every device.
+if (!REPO_TOKEN && SHELF_KEY && SHELF_KEY.indexOf('PASTE') !== 0) REPO_TOKEN = SHELF_KEY;
 
 const shelfOn = () => !!REPO_TOKEN;
 
