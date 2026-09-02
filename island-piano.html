@@ -699,6 +699,25 @@
   #pager.floating{ left:auto; right:auto; bottom:auto; transform:none }
   /* One control made of two halves, so it reads as a single choice rather than
      two independent switches. */
+  #pageVoices{ width:auto !important; min-width:44px; padding:0 10px !important;
+    font:800 12px/1 ui-monospace,Menlo,monospace !important; letter-spacing:.06em }
+  #pageVoices[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
+  /* The voices, opened from that button — a row above the bar rather than a
+     strip down the page. */
+  #voiceRow{ position:fixed; z-index:350; display:none; gap:6px;
+    background:#0d1013; border:2px solid #fff; border-radius:12px; padding:8px;
+    box-shadow:0 10px 34px rgba(0,0,0,.45) }
+  #voiceRow.up{ display:flex }
+  #voiceRow button{ min-width:64px; padding:10px 12px; cursor:pointer;
+    border:1.5px solid rgba(255,255,255,.35); border-radius:9px;
+    background:rgba(255,255,255,.08); color:#fff;
+    font:700 13px/1 ui-monospace,Menlo,monospace }
+  /* LIT MEANS HEARD. The white outline says which voice you are writing into,
+     and only appears in WRITE — a reader has no use for it. */
+  #voiceRow button[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
+  body.editing #voiceRow button.writing{ box-shadow:0 0 0 2px #fff inset }
+  @media print { #voiceRow{ display:none !important } }
+
   #pagerMode{ display:inline-flex; border:1.5px solid rgba(255,255,255,.4);
     border-radius:8px; overflow:hidden }
   #pagerMode button{ width:auto !important; padding:0 13px !important; height:36px;
@@ -1852,11 +1871,13 @@
        is editing a document, they are writing music. Edit is a software word;
        write is what the person is doing — and the pair is the two things anyone
        does with notation. -->
+  <div id="voiceRow"></div>
   <span id="pagerMode">
     <button type="button" id="pagerRead" aria-pressed="true" title="follow the music">READ</button>
     <button type="button" id="pagerEdit" aria-pressed="false" title="change the notes">WRITE</button>
   </span>
   <button type="button" id="pagerMenu" title="the controls">&#9776;</button>
+  <button type="button" id="pageVoices" title="which voices you hear">V</button>
   <button type="button" id="pageLoop" title="loop the bars on this page">LOOP PAGE</button>
   <button type="button" id="pagePlay" title="play from here">&#9654;</button>
   <button type="button" id="pageSlow" title="slower">&minus;</button>
@@ -2164,7 +2185,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-01 b241 read and write';
+const BUILD_STAMP = '2026-09-02 b249 only overpack what gets squeezed';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -4687,6 +4708,18 @@ let VOICE_PLAN = 'off';    // off | each | build
 let SPEED_PLAN = 'off';    // off | ramp
 let LAPS_EACH  = 2;        // times round before it moves on
 let LAP = 0;               // laps completed since the program started
+// WHICH VOICES YOU ARE LISTENING TO, right now, on this device.
+//
+// NOT THE SAME THING AS score.hush. That one is part of the PIECE — a voice
+// deliberately written and deliberately not sounded, saved with the file and
+// shared with anyone you send it to. This is a practice setting: silence the
+// left hand for ten minutes while you learn the right. Don: "in learning a
+// piece, it might be good to shut off one voice at a time."
+// A THING YOU DO WHILE PRACTISING SHOULD NOT END UP IN THE FILE. So it lives
+// for the session and is forgotten when the piece is next opened — you would
+// not expect to open a piece tomorrow and find half of it missing.
+let HEARD = null;               // null means every voice
+
 let LOOP_VOICES = null;    // null = all of them; otherwise a list of staff ids
 
 // The voices that actually carry notes — an empty staff is not a step.
@@ -4758,6 +4791,18 @@ function planSays(){
 // is the reading page, and it only exists for pieces too long to draw at once.
 let PAGE_AT = 0;
 
+// HOW FAST THE PIECE PLAYS, when you are simply playing it.
+//
+// There were two speeds already and neither did this job: the tempo written in
+// the piece belongs to the MUSIC and is saved with it, and the loop's speed
+// only applies while a passage is circling. Playing a piece straight through,
+// there was no way to slow it down at all. Don: "a playback speed control...
+// this is for playing/reading."
+// SLOWING SOMETHING DOWN TO LEARN IT IS NOT AN EDIT. So this multiplies the
+// written tempo for listening and never touches it — the piece still says 120,
+// and you hear it at 60 until you say otherwise.
+let PLAY_SPEED = 1;
+
 let LOOP_SPEED = 1;
 let LEAD_IN = false;             // clicks before the passage
 // HOW MUCH COUNT-IN. Don: "I'm just trying to give myself time to point my head
@@ -4816,7 +4861,15 @@ const BAR_W  = () => 5 * ZOOM;      // a barline's own thickness, matching .bar
 // so the strip overran by 24px and took the right edge of the staff with it.
 // The strip is given this width explicitly in CSS as well, so the number here
 // and the thing on the page cannot disagree.
-const VSTRIP_W = () => banded() ? 132 * ZOOM : 0;
+// NOTHING STANDS BESIDE THE STAFF ANY MORE. This reserved room for the voice
+// strip, which b243 moved onto the bar — so the layout went on subtracting it
+// from the space available AND adding it to the width of the first system.
+// Every line was laid out 132px narrower than the page and then drawn 132px
+// wider, which is how the staff came to run off the right-hand edge. Don: "the
+// staff lines exceed the page right, and are thusly clipped."
+// A MEASUREMENT FOR SOMETHING THAT IS GONE IS NOT ZERO BY ITSELF — it has to be
+// taken out by hand, in both places, or it goes on being paid for.
+const VSTRIP_W = () => 0;
 const stemDX = up => up ? (CHIP_W / 2 - STEM_W() - 1) : (-CHIP_W / 2 + 1);
 
 const nLines = () => STAFF_MODE === 'standard' ? LINES_STANDARD
@@ -5413,10 +5466,34 @@ function render(){
 
     const t1d = (window.performance && performance.now) ? performance.now() : Date.now();
     drawLog.ms = Math.round(t1d - t0d);
+    // WHAT THE PAGE ACTUALLY MEASURED. Three fixes have failed to stop the
+    // clipping, which means the number I keep correcting is not the number that
+    // decides the width. So the page reports what it used, and we stop guessing.
+    try {
+      const sc2 = document.getElementById('score');
+      let widest = 0;
+      for (const b of sc2.querySelectorAll('.staff'))
+        widest = Math.max(widest, b.offsetLeft + b.offsetWidth);
+      drawLog.room   = Math.round(window._roomUsed || 0);
+      drawLog.widest = Math.round(widest);
+      drawLog.holds  = sc2.clientWidth;
+      drawLog.win    = innerWidth;
+    } catch (e5) {}
     const sc = document.getElementById('score');
     drawLog.marks = sc ? sc.getElementsByTagName('*').length : 0;
+    // IT SAYS SO BY ITSELF. The long press reported the numbers and then the
+    // release triggered the button's own click, which redrew the page and wiped
+    // the message before it could be read. Don: "it doesn't say any of that."
+    // A DIAGNOSTIC THAT NEEDS A GESTURE IS A DIAGNOSTIC THAT CAN BE MISSED.
+    if (drawLog.widest > drawLog.holds + 1){
+      const msg = 'WIDTH: room ' + drawLog.room + ' \u00b7 widest line ' + drawLog.widest
+                + ' \u00b7 score holds ' + drawLog.holds + ' \u00b7 window ' + drawLog.win;
+      const f4 = document.getElementById('fSay');
+      if (f4) f4.textContent = msg;
+      say = msg;
+    }
     // A quarter of a second is the point at which a page stops feeling alive.
-    if (drawLog.ms > 250){
+    else if (drawLog.ms > 250){
       const msg = 'drew ' + drawLog.marks + ' marks in ' + drawLog.ms + 'ms';
       const f = document.getElementById('fSay');
       if (f) f.textContent = msg;
@@ -5442,6 +5519,7 @@ function drawEverything(){
   // The music gets the page LESS the voice strip, so a justified line still
   // fits once the controls are standing beside it.
   const room = (PAGE_W || (el.clientWidth - 90)) - VSTRIP_W();
+  window._roomUsed = room;
   let lineGut = 1;   // how much of the safe space this line can afford
   const widthOf = b => GUTTER + capacityOf(b) * PX_TICK * scaleOf(b) + TAILGAP;
   el.innerHTML = '';
@@ -5536,12 +5614,36 @@ function drawEverything(){
     const STRETCH = 1.30;   // and is never spread more than 30% past natural
     let last = first, used = 0;
     // The line stops at the window's edge as well as the piece's.
+    // ONLY OVERPACK A LINE THAT WILL BE SQUEEZED BACK.
+    //
+    // The line was allowed 30% more music than fits on the promise that
+    // justification would shrink it — but justification lives inside
+    // if (EVEN_BARS), and with Even bars switched off nothing ever squeezed.
+    // The surplus was simply drawn, and ran off the page: room 2430, line 3046.
+    // Don, four times: "still clips."
+    //
+    // A LICENCE TO OVERRUN IS ONLY SAFE WHERE SOMETHING COLLECTS THE DEBT. With
+    // even bars on, the squeeze is real and the allowance stands; with it off,
+    // a line takes what actually fits and no more.
+    const allow = EVEN_BARS ? room * SQUEEZE : room;
     while (last < winTo && (BARS_PER_LINE
                             ? last - first < BARS_PER_LINE
-                            : (used === 0 || used + widthOf(last) <= room * SQUEEZE))){
+                            : (used === 0 || used + widthOf(last) <= allow))){
       used += widthOf(last); last++;
     }
     if (last === first) last = first + 1;
+    // A BAR COUNT ASKED FOR BY HAND IS STILL SUBJECT TO THE PAGE. Bars/line set
+    // to a number ignored the width entirely, so eight bars of sixteenths ran
+    // off the edge however narrow the window was. It keeps as many as fit.
+    if (BARS_PER_LINE && !EVEN_BARS){
+      let w2 = 0, keep = first;
+      while (keep < last){
+        const nw = w2 + widthOf(keep);
+        if (nw > room && keep > first) break;
+        w2 = nw; keep++;
+      }
+      if (keep > first) last = keep;
+    }
     // JUSTIFY. One scale for the whole line, so equal-length bars come out
     // equal width and the line always fits the page. Never on the last line.
     if (EVEN_BARS){
@@ -5598,7 +5700,34 @@ function drawEverything(){
       let nat = 0;
       for (let b = first; b < last; b++) nat += widthOf(b);
       const goal = Math.min(room, nat * STRETCH);
-      const fit = (goal - want * lineGut) / (cap * PX_TICK);
+      // NO PARTIAL BARS, EVER.
+      //
+      // The packing loop lets a line take up to 30% more music than fits and
+      // trusts justification to squeeze it back — and when the squeeze cannot
+      // reach (a fit of zero or less leaves every bar at natural width), the
+      // surplus simply runs off the right-hand edge. Don, twice: "still
+      // clipping bars... only whole bars should be seen, no partials."
+      //
+      // So the rule is enforced rather than trusted. A line keeps only the bars
+      // that FIT, and anything that does not fit belongs to the next line.
+      // A GUARANTEE THAT DEPENDS ON A CALCULATION COMING OUT RIGHT IS NOT A
+      // GUARANTEE.
+      let fit = (goal - want * lineGut) / (cap * PX_TICK);
+      while (fit <= 0 && last > first + 1){
+        last--;                       // this line is asking for too much
+        cap = 0; nat = 0; want = 0;
+        for (let b = first; b < last; b++){
+          cap  += capacityOf(b) * barWide(b);
+          nat  += widthOf(b);
+          want += GUTTER;
+        }
+        lineGut = Math.min(1, (room * 0.34) / Math.max(1, want));
+        fit = (Math.min(room, nat * STRETCH) - want * lineGut) / (cap * PX_TICK);
+      }
+      // And the drawn line is never wider than the page, whatever the
+      // arithmetic above concluded.
+      const widest = (room - want * lineGut) / (cap * PX_TICK);
+      if (widest > 0) fit = Math.min(fit, widest);
       if (fit > 0) for (let b = first; b < last; b++) scale[b] = fit * barWide(b);
       }
     } else lineGut = 1;
@@ -6547,7 +6676,12 @@ function drawEverything(){
       //  voice is being written in and which are silent. Only drawn on the
       //  first staff box, since the voices listed are the same for all of them.
       // ---------------------------------------------------------------------
-      if (si === 0){
+      // THE STRIP IS GONE FROM THE PAGE. It repeated on every system — the same
+      // few facts, several times down a page — and it is now one control on the
+      // bar. A PAGE OF MUSIC SHOULD CARRY MUSIC.
+      // Disabled at the condition rather than by a `continue`, which would have
+      // skipped the rest of the staff along with it.
+      if (false && si === 0){
         const strip = document.createElement('div');
         strip.className = 'vstrip';
         strip.style.left = (barX(last) + BAR_W() + 14) + 'px';
@@ -6956,7 +7090,8 @@ function drawEverything(){
           // "hushed is not a function."
           // A LOCAL NAME IS A GLOBAL DECISION when the scope it sits in is
           // hundreds of lines long.
-          const loopQuiet = LOOP_VOICES && LOOP_VOICES.indexOf(vc.id) === -1;
+          const loopQuiet = (LOOP_VOICES && LOOP_VOICES.indexOf(vc.id) === -1)
+                         || (HEARD && HEARD.indexOf(vc.id) === -1);
           const c = document.createElement('div');
           c.className = 'chip' + ((e.ghost || loopQuiet) ? ' ghost' : '')
             + (open ? (name === 'whole' ? ' breve' : ' open') : '')
@@ -8549,11 +8684,34 @@ document.getElementById('bWords').addEventListener('click', ev => {
     // ON A PHONE THE RAIL IS A PAGE, NOT A STRIP. It opens over everything,
     // scrolls, and closes again — rather than eating the top third of a screen
     // that has no third to spare.
+    // OPENED BY HAND, NOT BY CASCADE.
+    //
+    // This has now failed twice on the phone and worked every time on the
+    // tablet, which is the signature of a rule losing a specificity fight I
+    // cannot see from here. The rail is hidden by one rule, folded by another,
+    // and emptied by a third — and the panel only appears if the class I add
+    // beats all three.
+    // WHEN A THING MUST WORK, SET IT DIRECTLY. Inline styles beat every
+    // stylesheet rule that is not !important, so nothing has to be won.
     const openRail = () => {
       const r = document.querySelector('.rail');
       if (!r) return;
-      const open = r.classList.toggle('railpage');
+      const open = !r.classList.contains('railpage');
+      r.classList.toggle('railpage', open);
       document.body.classList.toggle('railopen', open);
+      if (open){
+        r.style.cssText = 'display:block !important;position:fixed;inset:0;'
+          + 'z-index:400;max-height:none;overflow:auto;background:#0d1013;'
+          + 'padding:calc(56px + env(safe-area-inset-top)) 10px '
+          + 'calc(80px + env(safe-area-inset-bottom)) 10px;';
+        // The fold empties the rail by dimming its children; undo that here too.
+        for (const kid of r.children){
+          kid.style.opacity = '1'; kid.style.pointerEvents = 'auto';
+        }
+      } else {
+        r.style.cssText = '';
+        for (const kid of r.children){ kid.style.opacity = ''; kid.style.pointerEvents = ''; }
+      }
       // A PANEL THAT COVERS THE SCREEN NEEDS ITS OWN WAY OUT. The bar it was
       // opened from is underneath it.
       let x = document.getElementById('railShut');
@@ -8564,7 +8722,12 @@ document.getElementById('bWords').addEventListener('click', ev => {
         x.addEventListener('click', openRail);
         r.appendChild(x);
       }
-      x.style.display = open ? '' : 'none';
+      x.style.cssText = open
+        ? 'position:fixed;top:calc(8px + env(safe-area-inset-top));right:10px;z-index:410;'
+          + 'width:48px;height:48px;padding:0;border-radius:12px;'
+          + 'border:1.5px solid rgba(255,255,255,.55);background:#0d1013;color:#fff;'
+          + 'font:700 26px/1 -apple-system,sans-serif;'
+        : 'display:none';
       if (open) r.scrollTop = 0;
     };
     // WHICH MODE, SAID IN ONE PLACE. Both buttons call this, so the lit half,
@@ -8598,6 +8761,59 @@ document.getElementById('bWords').addEventListener('click', ev => {
     let wasWriting = false;
     try { wasWriting = localStorage.getItem('island.mode') === 'edit'; } catch (err) {}
     setMode(wasWriting, false);
+
+    // ONE CONTROL, TWO JOBS. The lit buttons say what you HEAR; the white
+    // outline says which voice you are WRITING into. The second only shows in
+    // WRITE, so a reader sees a mute panel and nothing else.
+    const paintVoices = () => {
+      const row = document.getElementById('voiceRow');
+      const btn = document.getElementById('pageVoices');
+      if (!row || !btn) return;
+      const list = shownAll();
+      row.innerHTML = '';
+      for (const v of list){
+        const b = document.createElement('button');
+        b.type = 'button';
+        const on = !HEARD || HEARD.indexOf(v.id) !== -1;
+        b.textContent = 'V' + voiceNumber(v.id);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (v.id === cur.staff) b.className = 'writing';
+        b.title = (on ? 'heard' : 'silent')
+          + (v.id === cur.staff ? ' \u00b7 writing here' : '');
+        b.addEventListener('click', () => {
+          const all = shownAll().map(x => x.id);
+          let now = HEARD ? HEARD.slice() : all.slice();
+          const i2 = now.indexOf(v.id);
+          if (i2 === -1) now.push(v.id); else now.splice(i2, 1);
+          // Silencing everything would leave nothing to practise against.
+          if (!now.length) now = all.slice();
+          HEARD = now.length === all.length ? null : now;
+          say = HEARD
+            ? 'hearing ' + HEARD.map(id => 'V' + voiceNumber(id)).join(' and ')
+            : 'hearing every voice';
+          paintVoices(); render();
+        });
+        row.appendChild(b);
+      }
+      const quiet = HEARD && HEARD.length < list.length;
+      btn.textContent = quiet ? 'V' + HEARD.map(id => voiceNumber(id)).join('') : 'V';
+      btn.setAttribute('aria-pressed', quiet ? 'true' : 'false');
+    };
+    window._paintVoices = paintVoices;
+    const vb = document.getElementById('pageVoices');
+    if (vb) vb.addEventListener('click', () => {
+      const row = document.getElementById('voiceRow');
+      if (!row) return;
+      const open = !row.classList.contains('up');
+      row.classList.toggle('up', open);
+      if (open){
+        paintVoices();
+        const r = vb.getBoundingClientRect();
+        row.style.left = Math.max(6, Math.min(innerWidth - 220, r.left - 20)) + 'px';
+        row.style.top  = Math.max(6, r.top - 62) + 'px';
+      }
+    });
+    paintVoices();
 
     const pm = document.getElementById('pagerMenu');
     if (pm) pm.addEventListener('click', openRail);
@@ -8959,20 +9175,34 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
     // have to open a window to do the commonest thing there is.
     const rate = () => {
       const r = document.getElementById('pageRate');
-      if (r) r.textContent = Math.round(LOOP_SPEED * 100) + '%';
+      if (r){
+        const now = loop ? LOOP_SPEED : PLAY_SPEED;
+        r.textContent = Math.round(now * 100) + '%';
+        r.title = loop ? 'the speed this passage circles at'
+                       : 'the speed the piece plays at';
+      }
       const pl = document.getElementById('pageLoop');
       if (pl) pl.setAttribute('aria-pressed', loop ? 'true' : 'false');
       const pb = document.getElementById('pagePlay');
       if (pb) pb.innerHTML = playing ? '&#9632;' : '&#9654;';
     };
     window._paintPager = rate;
+    // THE SAME BUTTONS, THE SPEED THAT IS IN USE. With a passage circling they
+    // move the loop's speed; otherwise they move the reading speed. One pair of
+    // buttons, because a reader has one question — "slower please" — and should
+    // not have to know which of two settings is currently in charge.
     const nudgeRate = d => {
-      const i = SPEEDS.indexOf(LOOP_SPEED);
-      LOOP_SPEED = SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, (i < 0 ? 0 : i) + d))];
-      say = 'the loop runs at ' + Math.round(LOOP_SPEED * 100) + '% of the written pace';
+      const which = loop ? 'loop' : 'play';
+      const now = which === 'loop' ? LOOP_SPEED : PLAY_SPEED;
+      const i = SPEEDS.indexOf(now);
+      const next = SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, (i < 0 ? 0 : i) + d))];
+      if (which === 'loop') LOOP_SPEED = next; else PLAY_SPEED = next;
+      say = (which === 'loop' ? 'the loop runs at ' : 'playing at ')
+          + Math.round(next * 100) + '% of the written pace';
+      try { if (which === 'play') localStorage.setItem('island.playspeed', String(next)); } catch (err) {}
       rate();
       if (window._paintLoop) window._paintLoop();
-      if (playing && loop){ stop(); play(false); }
+      if (playing){ stop(); play(false); }
     };
     const psl = document.getElementById('pageSlow'), pfa = document.getElementById('pageFast');
     if (psl) psl.addEventListener('click', () => nudgeRate(1));
@@ -9013,6 +9243,11 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       let held = 0;
       const start = () => { held = setTimeout(() => {
         cry(drawLog.marks + ' MARKS  ' + drawLog.ms + 'MS', 3000);
+        const f3 = document.getElementById('fSay');
+        if (f3) f3.textContent = 'room ' + drawLog.room + ' \u00b7 widest line '
+          + drawLog.widest + ' \u00b7 score holds ' + drawLog.holds
+          + ' \u00b7 window ' + drawLog.win
+          + (drawLog.widest > drawLog.holds ? '  \u2190 OVERFLOWING' : '  \u00b7 fits');
         held = 0;
       }, 700); };
       const end = () => { if (held){ clearTimeout(held); held = 0; } };
@@ -9274,6 +9509,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
           paintLead(); paint();
         });
       }
+      try { PLAY_SPEED = parseFloat(localStorage.getItem('island.playspeed')) || 1; } catch (err) {}
       try { LEAD_BEATS = Math.max(1, +localStorage.getItem('island.leadbeats') || 2); } catch (err) {}
       paintLead();
 
@@ -9845,7 +10081,10 @@ function play(fromStart){
   // even when nothing is playing, so the slowdown asks whether we are actually
   // going round — otherwise choosing a passage once would slow every later play
   // of the whole piece.
-  const slow = (round && loop) ? LOOP_SPEED : 1;
+  // The loop's own speed while a passage circles; the reading speed otherwise.
+  // They are separate settings on purpose — a passage you are drilling at 50%
+  // should not force the whole piece to play at 50% when you leave the loop.
+  const slow = (round && loop) ? LOOP_SPEED : PLAY_SPEED;
   for (const b of path){
     const secPerTick = 60 / (tempoAt(b).bpm * slow) / TPQ;
     stops.push({ bar:b, at:clock, secPerTick });
@@ -9869,6 +10108,10 @@ function play(fromStart){
       // and deliberately is not, so a practice session cannot quietly edit your
       // music.
       if (round && loop && LOOP_VOICES && LOOP_VOICES.indexOf(st.id) === -1) continue;
+      // And the same for the practice mute, which applies whether or not a loop
+      // is running — silencing a hand to learn the other one is not a thing you
+      // should have to set up a loop to do.
+      if (HEARD && HEARD.indexOf(st.id) === -1) continue;
       const evs = evsBy[st.id];
       for (let i = 0; i < evs.length; i++){
         const e = evs[i];
@@ -10583,7 +10826,7 @@ function metroStart(from, notBefore){
     // bar in 6/8 counts six, and a slowed loop is counted slowly.
     const b   = loop ? barAt(loop.from) : barAt(cur.tick);
     const ts  = tsAt(b);
-    const slow = (loop && playing) ? LOOP_SPEED : 1;
+    const slow = (loop && playing) ? LOOP_SPEED : PLAY_SPEED;
     const bpm = Math.max(20, tempoAt(b).bpm * slow);
     // A beat is the time signature's own unit: 6/8 clicks eighths, 3/4 clicks
     // quarters. The unit IS the beat, which is what the bottom number means.
@@ -10739,6 +10982,32 @@ function tickNow(){
   return lastTick();
 }
 
+// KEEPING THE MUSIC IN THE MIDDLE OF THE PAGE.
+//
+// The page turns when the music leaves it, but within a page the playhead ran
+// from the top of the screen to the bottom and the reader's eye had to chase
+// it. Don: "in play mode I would like the screen to scroll so the active bar is
+// always around the center of the page, no matter the magnification."
+//
+// SCROLLED TO THE MARK, NOT TO A GUESS AT WHERE IT MIGHT BE. The playhead is a
+// real element on the page, so its position is measured rather than computed —
+// which is what makes this hold at any size, from 20% to 250%.
+let _lastScroll = -1;
+function centreOnPlayhead(){
+  const sc = document.getElementById('score');
+  if (!sc) return;
+  const head = sc.querySelector('.head:not([style*="display: none"])')
+            || sc.querySelector('.playhead') || sc.querySelector('.head');
+  if (!head) return;
+  const want = head.offsetTop - (sc.clientHeight / 2) + (head.offsetHeight / 2);
+  const top = Math.max(0, Math.min(sc.scrollHeight - sc.clientHeight, want));
+  // Only when it has actually moved, or every frame fights the user's own
+  // scrolling and the page shudders.
+  if (Math.abs(top - _lastScroll) < 2) return;
+  _lastScroll = top;
+  sc.scrollTo({ top, behavior:'smooth' });
+}
+
 function follow(){
   if (!playing || !audio) return;
   const tick = tickNow();
@@ -10777,6 +11046,8 @@ function follow(){
       h.el.style.left = h.map(tick) + 'px';
     } else h.el.style.display = 'none';
   }
+  centreOnPlayhead();
+
   const live = new Set();
   for (const st of score.profile.staves)
     for (const e of eventsOf(st.id))
@@ -10802,6 +11073,7 @@ function follow(){
 // So: ONE CONTEXT FOR THE LIFE OF THE PAGE, made on the first note played or
 // clicked. Stopping walks the notes actually scheduled and silences those.
 function stop(){
+  _lastScroll = -1;              // the next play starts its own following
   if (endWatch){ clearInterval(endWatch); endWatch = 0; }
   metroStop();                 // the click stops when the music does
   letSleep();
