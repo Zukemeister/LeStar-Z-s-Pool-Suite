@@ -752,6 +752,21 @@
       justify-content:space-between;
     }
     body.phone #pager .pgrab{ display:none }     /* nothing to drag on a phone */
+    /* THE BAR HAS TO FIT, OR ITS LAST BUTTONS DO NOT EXIST. On a 390px screen
+       the row overflowed and READ/EDIT were pushed off the end — present in the
+       page, invisible on the glass, which is the worst of both. Don: "where are
+       the new buttons?"
+       So the phone bar carries only what cannot be had elsewhere. The size
+       controls are already up in the corner, and a percentage readout is not
+       worth a button's width when the notes themselves show you the size.
+       A CONTROL SHOWN TWICE IS ONE CONTROL AND ONE PIECE OF CLUTTER. */
+    body.phone #pageSlow, body.phone #pageFast, body.phone #pageRate{ display:none }
+    body.phone #pager .pgap{ display:none }
+    body.phone #pageSays{ min-width:0; font-size:11px }
+    body.phone #pageLoop{ padding:0 8px !important; font-size:11px !important }
+    body.phone #pagerMode button{ padding:0 9px !important; font-size:11px !important }
+    body.phone #pager button{ width:38px; height:34px }
+    body.phone #pager{ gap:4px; overflow-x:auto; flex-wrap:nowrap }
     body.phone #alwaysOn{ top:calc(4px + env(safe-area-inset-top)); right:6px;
       padding:3px; gap:4px }
     body.phone #alwaysOn button{ width:34px; height:30px }
@@ -2104,7 +2119,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-01 b234 read or edit, one lit';
+const BUILD_STAMP = '2026-09-01 b235 the bar fits the phone';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8554,8 +8569,18 @@ document.getElementById('bWords').addEventListener('click', ev => {
   if (!want){
     // First time on this device: guess from the screen rather than assuming a
     // laptop. The staff is drawn about 1100px wide at 100%.
-    const w = Math.min(innerWidth, innerHeight * 1.4);
-    want = w < 700 ? 0.5 : w < 900 ? 0.6 : w < 1200 ? 0.8 : 1;
+    // A PHONE OPENS SMALL. The old guess bottomed out at half size, which on a
+    // 390px screen still put two bars across the whole width and one system on
+    // the page. Don: "can we reduce the staff size for the opening?"
+    // THE FIRST THING SOMEONE SEES SHOULD BE A PAGE OF MUSIC, not a bar and a
+    // half of it — and the sizes now go down to 20%, which the old guess never
+    // knew about.
+    if (screenShape() === 'phone'){
+      want = innerWidth < 400 ? 0.3 : 0.35;
+    } else {
+      const w = Math.min(innerWidth, innerHeight * 1.4);
+      want = w < 900 ? 0.6 : w < 1200 ? 0.8 : 1;
+    }
   }
   if (SIZES.indexOf(Math.round(want * 100)) === -1) want = 1;
 
