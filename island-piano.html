@@ -380,8 +380,10 @@
   #loopWin .libbit[aria-pressed="true"], #loopWin .libwide[aria-pressed="true"]{
     background:#00a3ab; border-color:#00a3ab; color:#04222a; font-weight:800;
   }
-  .libship{ font:600 10px/1 ui-monospace,Menlo,monospace; letter-spacing:.08em;
-    color:#8fb8c4; opacity:.75; padding:0 6px; white-space:nowrap }
+  .libship{ font:700 13px/1 ui-monospace,Menlo,monospace;
+    color:#8fb8c4; opacity:.8; padding:0 4px }
+  .libnote{ display:block; padding:6px 4px 2px; opacity:.6;
+    font:600 11px/1.4 ui-monospace,Menlo,monospace; color:#8fb8c4 }
   .libbit{ background:none; border:1px solid rgba(255,255,255,.25); border-radius:6px;
     color:#cfd6dd; font:600 11px/1 ui-monospace,Menlo,monospace; padding:0 8px; cursor:pointer }
   .libbit:hover{ border-color:#fff; color:#fff }
@@ -794,7 +796,23 @@
     body.phone #alwaysOn button{ width:34px; height:30px }
     /* A PANEL IS A PAGE, NOT A WINDOW. Full screen, one at a time, with room
        for a thumb. */
-    body.phone #pad, body.phone #tuner, body.phone .libbox, body.phone #loopWin{
+    /* THE WRITE PAD IS A SHEET, NOT A SCREEN. Full screen it covered the bar it
+       is closed from — READ, EDIT and the menu were all underneath it — so the
+       app opened writing and there was no way back out. Don: "I cannot get past
+       the write panel."
+       A PANEL MUST NEVER COVER ITS OWN WAY OUT. It now sits along the bottom
+       with the music above it, and the bar stays on top of everything. */
+    body.phone #pad{
+      position:fixed !important; left:0 !important; right:0 !important;
+      top:auto !important; bottom:calc(58px + env(safe-area-inset-bottom)) !important;
+      width:auto !important; max-width:none !important;
+      transform:none !important; border-radius:14px 14px 0 0 !important;
+      z-index:90;
+    }
+    body.phone #padShut{ font-size:30px !important; padding:0 10px !important }
+    /* The bar is always the topmost thing on a phone. */
+    body.phone #pager{ z-index:340 }
+    body.phone #tuner, body.phone .libbox, body.phone #loopWin{
       position:fixed !important; left:0 !important; right:0 !important;
       top:0 !important; bottom:0 !important; width:auto !important;
       max-width:none !important; max-height:none !important;
@@ -1830,9 +1848,13 @@
        app... but when any music is playing, we ought to have the score
        running." A listening mode that keeps the score IS the reading mode, so
        there is no third thing to build. -->
+  <!-- READ and WRITE, not READ and EDIT. Don's word, and the better one: nobody
+       is editing a document, they are writing music. Edit is a software word;
+       write is what the person is doing — and the pair is the two things anyone
+       does with notation. -->
   <span id="pagerMode">
     <button type="button" id="pagerRead" aria-pressed="true" title="follow the music">READ</button>
-    <button type="button" id="pagerEdit" aria-pressed="false" title="change the notes">EDIT</button>
+    <button type="button" id="pagerEdit" aria-pressed="false" title="change the notes">WRITE</button>
   </span>
   <button type="button" id="pagerMenu" title="the controls">&#9776;</button>
   <button type="button" id="pageLoop" title="loop the bars on this page">LOOP PAGE</button>
@@ -2142,7 +2164,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-01 b238 room for the number';
+const BUILD_STAMP = '2026-09-01 b241 read and write';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -2880,6 +2902,10 @@ function noteName(t){
 }
 
 function place(nums, asRest){
+  // THE LAST DOOR. Writing can also be reached from the pad and from the score
+  // itself, so the guard belongs here too — one place every written note passes
+  // through, whatever asked for it.
+  if (!document.body.classList.contains('editing')) return;
   if (shut(cur.tick)) return;
   remember();
   const usedExplicit = pend.octSet;
@@ -7440,6 +7466,32 @@ document.addEventListener('keydown', e => {
   if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT'
             || t.isContentEditable)) return;
   const k = (e.key || '').toLowerCase();
+
+  // READING MEANS READING. Hiding the caret and the bar controls made the page
+  // LOOK like a score, but every key still wrote — so a tap on a note and a
+  // number changed the music with nothing on screen saying it could. Don, on
+  // the tablet: "in READ mode, the notes are perfectly editable."
+  //
+  // A MODE THAT ONLY CHANGES THE VIEW IS A COSTUME, NOT A MODE. In READ the
+  // keys that MOVE, PLAY or LOOK stay live — space, the arrows, page turns,
+  // the size — and everything that would change a note is refused, with a word
+  // about how to turn writing on rather than silence.
+  if (!document.body.classList.contains('editing')){
+    const cmd0 = e.metaKey || e.ctrlKey;
+    const reading = new Set([' ', 'spacebar', 'arrowleft', 'arrowright', 'arrowup',
+                             'arrowdown', 'home', 'end', 'pageup', 'pagedown',
+                             'escape', 'tab', 'enter']);
+    if (!cmd0 && !reading.has(k)){
+      // A number or a letter is someone trying to write.
+      if (/^[a-z0-9]$/.test(k) || k === 'backspace' || k === 'delete'){
+        e.preventDefault();
+        say = 'this is READ \u2014 press WRITE to change the notes';
+        cry('PRESS WRITE TO CHANGE THE NOTES', 1800);
+        render();
+      }
+      return;
+    }
+  }
   const cmdKey = e.metaKey || e.ctrlKey;
 
   // In lyric mode the keyboard belongs to the words.
@@ -11511,10 +11563,13 @@ function showLibrary(){
     // should be able to see which pieces are the app's and which are his own
     // without having to try something and be told.
     if (isShipped(n)){
+      // AN ASTERISK, NOT A SENTENCE. The words took half the width of a panel
+      // that has names to show. Don: "it could be just an asterisk, with a note
+      // at the bottom." A MARK THAT CROWDS WHAT IT MARKS IS TOO BIG.
       const lock = document.createElement('span');
       lock.className = 'libship';
-      lock.textContent = 'ships with the app';
-      lock.title = 'editing is fine \u2014 saving will make your own copy';
+      lock.textContent = '\u2731';
+      lock.title = 'ships with the app \u2014 editing is fine, saving makes your own copy';
       row.appendChild(lock);
     }
     const star = document.createElement('button');
@@ -11564,6 +11619,12 @@ function showLibrary(){
   // answer that does not depend on the browser is a file on his own disk.
   // A LIBRARY THAT LIVES ONLY IN A BROWSER IS A LIBRARY ON LOAN.
   // ---- THE SHARED SHELF -------------------------------------------------
+  // The one line that explains every asterisk above it.
+  const foot = document.createElement('span');
+  foot.className = 'libnote';
+  foot.textContent = '\u2731 ships with the app \u2014 editing is fine; saving makes your own copy';
+  box.appendChild(foot);
+
   const shelfBtn = document.createElement('button');
   shelfBtn.className = 'libwide';
   shelfBtn.textContent = shelfOn()
