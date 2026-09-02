@@ -858,7 +858,13 @@
     body.phone #pager{ z-index:340 }
     /* Open or shut, the way out is always on top. */
     body.phone.railopen #pagerMenu{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
+    /* ABOVE THE MENU THEY WERE OPENED FROM. The Library button lives in the
+       menu page, which sits at z-index 300 — so the library opened underneath
+       it and the phone looked as though the button did nothing. Don: "on the
+       phone I cannot open the library."
+       A PANEL OPENED FROM A PANEL MUST SIT ON TOP OF IT. */
     body.phone #tuner, body.phone .libbox, body.phone #loopWin{
+      z-index:360;
       position:fixed !important; left:0 !important; right:0 !important;
       top:0 !important; bottom:0 !important; width:auto !important;
       max-width:none !important; max-height:none !important;
@@ -2218,7 +2224,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-02 b254 loop from the page';
+const BUILD_STAMP = '2026-09-02 b257 ask the shelf what is there';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -11603,6 +11609,24 @@ async function shelfPut(name, doc, sha){
   const file = shelfFile(name);
   const text = JSON.stringify(doc);
   const b64 = btoa(unescape(encodeURIComponent(text)));
+  // ASK THE SHELF WHAT IS THERE, RATHER THAN INFER IT.
+  //
+  // GitHub refuses to overwrite a file whose sha the writer has not seen — a
+  // sensible guard, and the app kept walking into it: '422 "sha" wasn't
+  // supplied'. It decided a piece was new by comparing names, and the name it
+  // compares is mangled on the way to being a filename. The Mozart title has
+  // quotation marks in it; they become hyphens and never come back, so the
+  // piece looked new on every single sync.
+  //
+  // A NAME THAT SURVIVES A ROUND TRIP IS A FACT; ONE THAT DOES NOT IS A GUESS.
+  // So the filename is the only thing compared, and the sha is fetched from the
+  // shelf at the moment of writing.
+  if (!sha){
+    try {
+      const row = await shelfCall('GET', REPO.path + '/' + file);
+      if (row && row.sha) sha = row.sha;
+    } catch (err) {}
+  }
   return shelfCall('PUT', REPO.path + '/' + file, {
     message: 'island: ' + name,
     content: b64,
@@ -11903,6 +11927,13 @@ function makePanel(box, head, key){
 }
 
 function showLibrary(){
+  // AND THE MENU STANDS ASIDE. On a phone the menu is a full page; leaving it
+  // open behind the library means two full screens stacked, and closing the
+  // library returns you to a menu you had finished with.
+  try {
+    const r3 = document.querySelector('.rail');
+    if (r3 && r3.classList.contains('railpage') && window._openRail) window._openRail();
+  } catch (err) {}
   const had = document.getElementById('lib');
   if (had){ had.remove(); return; }
   const all = libAll(), stars = libStars();
@@ -12084,22 +12115,27 @@ function showLibrary(){
       // human to arbitrate, and the one a server will use later too.
       const remote = await shelfList();
       const byName = {};
-      for (const r of remote) byName[r.name] = r;
+      // Keyed by FILENAME, which is what actually exists on the shelf. Keying by
+      // the decoded name matched nothing for any title with punctuation in it.
+      for (const r of remote) byName[r.file] = r;
       const local = libAll();
       let up = 0, down = 0;
 
       for (const name of Object.keys(local)){
-        const mine = local[name], theirs = byName[name];
+        const mine = local[name], theirs = byName[shelfFile(name)];
         if (!theirs){ await shelfPut(name, mine); up++; continue; }
         const got = await shelfGet(theirs.file);
         if (got && (got.at || 0) >= (mine.at || 0)) continue;   // theirs is newer
         await shelfPut(name, mine, theirs.sha); up++;
       }
+      const mineByFile = {};
+      for (const n2 of Object.keys(local)) mineByFile[shelfFile(n2)] = n2;
       for (const r of remote){
-        if (local[r.name] && (local[r.name].at || 0) >= 0 && local[r.name].doc) {
+        const localName = mineByFile[r.file];
+        if (localName){
           const got = await shelfGet(r.file);
-          if (!got || (got.at || 0) <= (local[r.name].at || 0)) continue;
-          local[r.name] = got; down++; continue;
+          if (!got || (got.at || 0) <= (local[localName].at || 0)) continue;
+          local[localName] = got; down++; continue;
         }
         const got = await shelfGet(r.file);
         if (got){ local[r.name] = got; down++; }
@@ -12184,6 +12220,46 @@ function showLibrary(){
 }
 document.getElementById('bOpen').onclick = showLibrary;
 seedShelf();
+
+// ---------------------------------------------------------------------------
+//  FILLING ITSELF, ON OPEN.
+//
+//  Don has now lost his working pieces four times, and every time the remedy
+//  has been a button he had to know to press. That is not a remedy, it is a
+//  chore with a warning attached — and a library that empties without warning
+//  is worse than one that was never there.
+//
+//  So the app asks the shelf every time it opens. Anything on the shelf that
+//  this device does not have comes down, quietly, before he notices it was
+//  missing. Nothing is sent — pushing on open could overwrite good work with a
+//  stale copy, and the whole point is to be safe rather than clever.
+//  A RECOVERY THAT DEPENDS ON REMEMBERING IS NOT A RECOVERY.
+// ---------------------------------------------------------------------------
+(async function fillFromShelf(){
+  try {
+    if (!shelfOn()) return;                    // no token on this device yet
+    const remote = await shelfList();
+    if (!remote || !remote.length) return;
+    const local = libAll();
+    const here = {};
+    for (const n3 of Object.keys(local)) here[shelfFile(n3)] = true;
+    let got = 0;
+    for (const r of remote){
+      if (here[r.file]) continue;              // already here, leave it alone
+      const doc = await shelfGet(r.file);
+      if (doc){ local[r.name] = doc; got++; }
+    }
+    if (got){
+      libWrite(local);
+      say = 'brought back ' + got + ' piece' + (got === 1 ? '' : 's') + ' from the shelf';
+      render();
+    }
+  } catch (err){
+    // A shelf that cannot be reached is not an error worth interrupting for —
+    // the app works offline and the pieces that are here are still here.
+    console.warn('shelf', err);
+  }
+})();
 
 // BRINGING IN FILES — one, or a folderful. Don asked for several at once, and
 // it is the right shape for the job: a person arriving with a stack of pieces
