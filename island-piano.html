@@ -644,8 +644,16 @@
   /* READING IS THE DEFAULT. The caret, its hand tag and the voice strip are
      answers to "what am I about to type" — a question a reader never asks. They
      appear when EDIT is pressed and stay out of the way until then. */
+  /* READING IS NOT A WORKSPACE. The lock and the arm button sit above every bar
+     and do nothing at all while you are reading — they lock a bar against being
+     written over, and mark it for deletion. Don: "that is my point, exactly."
+     A PAGE OF MUSIC SHOULD BE A PAGE OF MUSIC. In READ the header carries the
+     bar number and nothing else; press EDIT and the controls come back. */
+  body:not(.editing) .lamp, body:not(.editing) .arm{ display:none }
   body:not(.editing) .caret, body:not(.editing) .caretag{ opacity:.25 }
   body.phone:not(.editing) .caret, body.phone:not(.editing) .caretag{ display:none }
+  /* The voice strip is the same: it says which voice you would write into. */
+  body.phone:not(.editing) .vstrip{ display:none }
 
   #tuner{
     position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
@@ -734,13 +742,27 @@
     /* The rail is not shown; its contents live behind the menu button. */
     body.phone .rail{ display:none !important }
     /* ...unless it has been asked for, in which case it is the whole screen. */
-    body.phone .rail.railpage{
+    /* AND IT MUST NOT STILL BE FOLDED. The rail fold sets everything inside the
+       rail to opacity 0 and pointer-events none — so the menu opened a full
+       screen panel that was invisible and untouchable. Don: "can't open the
+       control panel on the phone."
+       OPENING A THING MUST UNDO EVERY REASON IT WAS HIDDEN, not just the most
+       recent one. */
+    body.phone .rail.railpage, body.phone.folded .rail.railpage{
       display:block !important; position:fixed; inset:0; z-index:300;
-      max-height:none; overflow:auto;
+      max-height:none !important; padding-bottom:0;
+      overflow:auto;
       padding-top:calc(10px + env(safe-area-inset-top));
       padding-bottom:calc(70px + env(safe-area-inset-bottom));
     }
+    body.phone .rail.railpage > *{ opacity:1 !important; pointer-events:auto !important }
     body.phone.railopen #pager{ z-index:320 }
+    body.phone .rail.railpage #railShut{
+      position:fixed; top:calc(6px + env(safe-area-inset-top)); right:10px; z-index:330;
+      width:44px; height:44px; padding:0; border-radius:10px;
+      border:1.5px solid rgba(255,255,255,.5); background:#0d1013; color:#fff;
+      font:700 24px/1 -apple-system,sans-serif;
+    }
     body.phone.railopen #pagerMenu{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
     body.phone #score{ padding-top:6px }
     /* One bar, along the bottom, above the home indicator. */
@@ -783,6 +805,7 @@
     body.phone #padBar, body.phone .libhead{ cursor:default }
   }
 
+  #railShut{ display:none }
   #alwaysOn{
     position:fixed; top:calc(6px + env(safe-area-inset-top)); right:12px; z-index:200;
     display:flex; gap:6px;
@@ -2119,7 +2142,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-01 b235 the bar fits the phone';
+const BUILD_STAMP = '2026-09-01 b238 room for the number';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -5115,7 +5138,17 @@ function reach(){
 // lamp and arm button beside it. Reserving a band gap cleared the strip and
 // still left the number sitting on the staff's shoulder.
 // MEASURE THE TALLEST THING, NOT THE NEAREST ONE.
-const HEADROOM = () => (banded() ? BAND_GAP() : 0) + Math.round(GAP() * 1.9);
+// AND THE HEADER SHRINKS WITH ITS CONTENTS. Reading needs room for a bar
+// number; writing needs room for the number, its lock and its arm button in a
+// row. Reserving the writing height while reading wastes a strip of every
+// system on a screen that has none to spare.
+const HEADROOM = () => (banded() ? BAND_GAP() : 0)
+  + Math.round(GAP() * (document.body.classList.contains('editing') ? 1.9 : 1.5));
+// 1.5, NOT 1.15. Reading needs less room than writing, but it still needs room
+// for the bar NUMBER — which is set in 44px type, about 32px of ink. At 1.15
+// the header reserved 28px above the grey strip and the number dropped into the
+// top octave. Don: "the bar numbers are now sitting within the top octave."
+// TAKING SPACE BACK IS ONLY WORTH IT DOWN TO WHAT IS STILL THERE.
 const PAD  = () => HEADROOM() + reach().up;     // above
 const PADB = () => Math.round(GAP() * 0.9) + reach().down;   // below
 const PAD0 = () => Math.round(GAP() * 0.9);   // the staves are consecutive octaves, so this is
@@ -8469,6 +8502,18 @@ document.getElementById('bWords').addEventListener('click', ev => {
       if (!r) return;
       const open = r.classList.toggle('railpage');
       document.body.classList.toggle('railopen', open);
+      // A PANEL THAT COVERS THE SCREEN NEEDS ITS OWN WAY OUT. The bar it was
+      // opened from is underneath it.
+      let x = document.getElementById('railShut');
+      if (!x){
+        x = document.createElement('button');
+        x.id = 'railShut'; x.type = 'button'; x.innerHTML = '&times;';
+        x.title = 'back to the music';
+        x.addEventListener('click', openRail);
+        r.appendChild(x);
+      }
+      x.style.display = open ? '' : 'none';
+      if (open) r.scrollTop = 0;
     };
     // WHICH MODE, SAID IN ONE PLACE. Both buttons call this, so the lit half,
     // the writing tools and the caret can never disagree about what is going on.
@@ -8482,6 +8527,9 @@ document.getElementById('bWords').addEventListener('click', ev => {
       document.body.classList.toggle('editing', writing);
       try { localStorage.setItem('island.mode', writing ? 'edit' : 'read'); } catch (err) {}
       if (writing && window._padSay) window._padSay();
+      // The header height depends on the mode, so the page has to be laid out
+      // again rather than merely restyled.
+      try { fitStaves(true); refitBands(); } catch (err) {}
       if (tell) say = writing
         ? (screenShape() === 'desk'
             ? 'tap a note to pick it, then a number to change it \u2014 or just type'
