@@ -699,6 +699,8 @@
   #pager.floating{ left:auto; right:auto; bottom:auto; transform:none }
   /* One control made of two halves, so it reads as a single choice rather than
      two independent switches. */
+  #pagerBuild{ font:700 11px/1 ui-monospace,Menlo,monospace; opacity:.5;
+    padding:0 4px; cursor:pointer; white-space:nowrap }
   #pageVoices{ width:auto !important; min-width:44px; padding:0 10px !important;
     font:800 12px/1 ui-monospace,Menlo,monospace !important; letter-spacing:.06em }
   #pageVoices[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
@@ -1876,6 +1878,11 @@
     <button type="button" id="pagerRead" aria-pressed="true" title="follow the music">READ</button>
     <button type="button" id="pagerEdit" aria-pressed="false" title="change the notes">WRITE</button>
   </span>
+  <!-- THE BUILD, WHERE IT CAN ALWAYS BE SEEN. It was printed under the title,
+       which the phone layout hides — so Don could not tell whether a fix had
+       arrived, and neither of us could tell whether a failure was old or new.
+       YOU CANNOT TEST A VERSION YOU CANNOT IDENTIFY. -->
+  <span id="pagerBuild" title="tap for the full build stamp"></span>
   <button type="button" id="pagerMenu" title="the controls">&#9776;</button>
   <button type="button" id="pageVoices" title="which voices you hear">V</button>
   <button type="button" id="pageLoop" title="loop the bars on this page">LOOP PAGE</button>
@@ -2185,7 +2192,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-02 b249 only overpack what gets squeezed';
+const BUILD_STAMP = '2026-09-02 b250 the build, where you can see it';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8815,8 +8822,25 @@ document.getElementById('bWords').addEventListener('click', ev => {
     });
     paintVoices();
 
+    // The build number, short, on the bar. Tap it for the whole stamp.
+    const bs = document.getElementById('pagerBuild');
+    if (bs){
+      const m = /b(\d+)/i.exec(BUILD_STAMP);
+      bs.textContent = m ? ('b' + m[1]) : BUILD_STAMP.slice(0, 10);
+      bs.addEventListener('click', () => { cry(BUILD_STAMP.toUpperCase(), 3500); });
+    }
+
+    // THE MENU, WIRED TWO WAYS. It has failed on the phone through four builds
+    // while working on the tablet, and every fix has been to the CSS. So this
+    // one does not go through a class at all: the handler is attached directly
+    // to the element, and it also answers a plain onclick — belt and braces,
+    // because a control nobody can reach is the whole app on that device.
     const pm = document.getElementById('pagerMenu');
-    if (pm) pm.addEventListener('click', openRail);
+    if (pm){
+      pm.addEventListener('click', openRail);
+      pm.onclick = openRail;
+      pm.addEventListener('touchend', ev => { ev.preventDefault(); openRail(); });
+    }
     const bm = document.getElementById('bMenu');
     if (bm) bm.addEventListener('click', openRail);
   } catch (err) {}
