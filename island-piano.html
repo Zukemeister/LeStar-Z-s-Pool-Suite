@@ -2224,7 +2224,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-02 b258 the key travels with the app';
+const BUILD_STAMP = '2026-09-02 b260 which key was sent';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -11579,13 +11579,14 @@ const REPO = { owner:'Zukemeister', repo:'island-library', path:'pieces' };
 //  A SHORTCUT YOU HAVE WRITTEN DOWN IS A DECISION; ONE YOU HAVE FORGOTTEN IS A
 //  LEAK.
 // ---------------------------------------------------------------------------
-const SHELF_KEY = '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';
+const SHELF_KEY = 'PASTE_YOUR_GITHUB_TOKEN_HERE';
 
 let REPO_TOKEN = '';
 try { REPO_TOKEN = localStorage.getItem('island.shelf.token') || ''; } catch (err) {}
 // The built-in key is used whenever this device has not been given one of its
 // own — which is every new icon, on every device.
 if (!REPO_TOKEN && SHELF_KEY && SHELF_KEY.indexOf('PASTE') !== 0) REPO_TOKEN = SHELF_KEY;
+REPO_TOKEN = String(REPO_TOKEN || '').trim();
 
 const shelfOn = () => !!REPO_TOKEN;
 
@@ -11593,18 +11594,51 @@ const shelfOn = () => !!REPO_TOKEN;
 const shelfFile = name => encodeURIComponent(
   String(name).replace(/[\\/:*?"<>|]+/g, '-').slice(0, 120)) + '.json';
 
-async function shelfCall(method, path, body){
+async function shelfCall(method, path, body, tokenOverride){
   const url = 'https://api.github.com/repos/' + REPO.owner + '/' + REPO.repo
             + '/contents/' + path;
+  // TRIMMED. A token copied from a web page arrives with a space or a newline
+  // more often than not, and a header with a stray character in it is refused
+  // exactly like a wrong password.
+  const key = String(tokenOverride || REPO_TOKEN || '').trim();
   const r = await fetch(url, {
     method,
-    headers: { 'Authorization': 'Bearer ' + REPO_TOKEN,
+    headers: { 'Authorization': 'Bearer ' + key,
                'Accept': 'application/vnd.github+json',
                'X-GitHub-Api-Version': '2022-11-28' },
     body: body ? JSON.stringify(body) : undefined
   });
   if (r.status === 404 && method === 'GET') return null;   // not there yet
-  if (!r.ok) throw new Error('shelf ' + r.status + ' ' + (await r.text()).slice(0, 120));
+
+  // A STALE KEY ON THE DEVICE MUST NOT BEAT A GOOD ONE IN THE APP.
+  //
+  // The stored token is read first, so a device that was given a token days ago
+  // goes on using it forever — and the built-in key, which is current, never
+  // gets a turn. Don's tablet was refusing with 401 while holding a perfectly
+  // good key in the file it had just loaded.
+  // WHEN THE KEY YOU ARE USING IS REFUSED, TRY THE OTHER ONE. Once, and then
+  // forget the bad one so it cannot cause this again.
+  if ((r.status === 401 || r.status === 403) && !tokenOverride
+      && SHELF_KEY && SHELF_KEY.indexOf('PASTE') !== 0
+      && key !== String(SHELF_KEY).trim()){
+    try { localStorage.removeItem('island.shelf.token'); } catch (err) {}
+    REPO_TOKEN = String(SHELF_KEY).trim();
+    return shelfCall(method, path, body, REPO_TOKEN);
+  }
+  if (!r.ok){
+    // WHICH KEY, AND WHERE IT CAME FROM. A 401 says the key was refused and
+    // nothing about WHICH key was sent — and this app now has two possible
+    // sources for it. Don is certain the token is good, and the 422 he saw two
+    // builds ago proves he is right: a 422 only happens AFTER authentication
+    // succeeds. So the question is not whether the token works, it is which
+    // string is being sent in its place.
+    // WHEN SOMEONE IS SURE, BELIEVE THEM AND MEASURE SOMETHING ELSE.
+    const src = tokenOverride ? 'built-in (retry)'
+              : (REPO_TOKEN === String(SHELF_KEY).trim() ? 'built-in' : 'stored on this device');
+    const shown = key ? (key.slice(0, 10) + '\u2026 ' + key.length + ' chars') : 'EMPTY';
+    throw new Error('shelf ' + r.status + ' \u00b7 key: ' + src + ' \u00b7 ' + shown
+                  + ' \u00b7 ' + (await r.text()).slice(0, 80));
+  }
   return r.status === 204 ? null : r.json();
 }
 
