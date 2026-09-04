@@ -706,6 +706,7 @@
   body.picking .barnum{ outline:2px solid #00a3ab; outline-offset:2px;
     cursor:pointer; background:#00a3ab !important; color:#04222a !important }
   body.picking .chip{ opacity:.5 }
+  #pageClick[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
   #pageVoices{ width:auto !important; min-width:44px; padding:0 10px !important;
     font:800 12px/1 ui-monospace,Menlo,monospace !important; letter-spacing:.06em }
   #pageVoices[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
@@ -1915,6 +1916,7 @@
        YOU CANNOT TEST A VERSION YOU CANNOT IDENTIFY. -->
   <span id="pagerBuild" title="tap for the full build stamp"></span>
   <button type="button" id="pagerMenu" title="the controls">&#9776;</button>
+  <button type="button" id="pageClick" title="a click on every beat">&#9834;</button>
   <button type="button" id="pageVoices" title="which voices you hear">V</button>
   <button type="button" id="pageLoop" title="loop the bars on this page">LOOP PAGE</button>
   <button type="button" id="pagePlay" title="play from here">&#9654;</button>
@@ -2224,7 +2226,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-02 b260 which key was sent';
+const BUILD_STAMP = '2026-09-03 b264 a refusal names what it refused';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8844,6 +8846,53 @@ document.getElementById('bWords').addEventListener('click', ev => {
       btn.setAttribute('aria-pressed', quiet ? 'true' : 'false');
     };
     window._paintVoices = paintVoices;
+    const cb2 = document.getElementById('pageClick');
+    const paintClick = () => {
+      if (!cb2) return;
+      cb2.setAttribute('aria-pressed', CLICK_ON ? 'true' : 'false');
+      cb2.innerHTML = CLICK_WITH ? '&#9834;&#8202;&#8226;' : '&#9834;';
+      cb2.title = CLICK_WITH
+        ? 'clicks with the music, from the downbeat \u00b7 hold to make it independent'
+        : 'clicks on its own, for playing along \u00b7 hold to make it follow the music';
+    };
+    window._paintClick = paintClick;
+    if (cb2){
+      cb2.addEventListener('click', () => {
+        if (CLICK_ON){ clickStop(); say = 'the click is off'; }
+        else {
+          clickStart().then(ok => {
+            if (ok) say = (CLICK_WITH ? 'clicking with the music' : 'clicking on its own')
+                        + ' at ' + Math.round(clickBpm()) + ' a minute, '
+                        + clickPerBar() + ' to the bar';
+            paintClick(); render();
+          });
+          return;
+        }
+        paintClick(); render();
+      });
+      // HOLD TO CHANGE WHICH KIND IT IS. One button, because it is one click —
+      // the setting is what it belongs to, not a separate control.
+      let hc = 0;
+      const hcStart = () => { hc = setTimeout(() => {
+        hc = 0;
+        CLICK_WITH = !CLICK_WITH;
+        try { localStorage.setItem('island.clickwith', CLICK_WITH ? '1' : '0'); } catch (err) {}
+        if (CLICK_ON){ clickStop(); clickStart(); }
+        say = CLICK_WITH
+          ? 'the click now starts with the music, on its downbeat'
+          : 'the click now runs on its own, for playing along to';
+        cry(CLICK_WITH ? 'CLICK WITH THE MUSIC' : 'CLICK ON ITS OWN', 2000);
+        paintClick(); render();
+      }, 600); };
+      const hcEnd = () => { if (hc){ clearTimeout(hc); hc = 0; } };
+      cb2.addEventListener('touchstart', hcStart, { passive:true });
+      cb2.addEventListener('touchend', hcEnd);
+      cb2.addEventListener('mousedown', hcStart);
+      cb2.addEventListener('mouseup', hcEnd);
+      cb2.addEventListener('mouseleave', hcEnd);
+      paintClick();
+    }
+
     const vb = document.getElementById('pageVoices');
     if (vb) vb.addEventListener('click', () => {
       const row = document.getElementById('voiceRow');
@@ -10489,6 +10538,13 @@ function play(fromStart){
       const from = leadPlan ? t0 - leadPlan.secs : t0;
       metroStart(from, from);
     }
+    // AND THE BAR'S CLICK, IF IT IS SET TO KEEP COMPANY. Restarted from the
+    // downbeat so its accent is the barline, not wherever it happened to be.
+    if (CLICK_ON && CLICK_WITH){
+      clickStop();
+      clickStart(leadPlan ? t0 - leadPlan.secs : t0);
+      CLICK_ON = true;
+    }
     else metroStop();
   }
 
@@ -10933,6 +10989,111 @@ async function tunerStart(){
     tunerTimer = requestAnimationFrame(look);
   };
   look();
+}
+
+// ---------------------------------------------------------------------------
+//  THE CLICK: a metronome that does nothing else.
+//
+//  There is an older one in this file that counts the lead-in, follows the loop,
+//  re-bases itself when playback starts and is switched from inside a panel.
+//  Don: "let's make it actually click on the beat, and without hesitation. That
+//  one you see doesn't do that."
+//
+//  A THING THAT DOES ONE JOB CANNOT BE INTERRUPTED BY ITS OTHER JOBS. This one
+//  has no relationship with the music at all. It starts when you press it,
+//  stops when you press it again, and until then it lays down beats on the
+//  audio clock — which is driven by the sound card and does not care what the
+//  page is doing. A slow redraw cannot make it late, because every beat for the
+//  next second is already scheduled before the redraw begins.
+// ---------------------------------------------------------------------------
+let CLICK_ON = false, clickAt = 0, clickBeat = 0, clickTimer = 0, clickLive = [];
+
+// TWO TOOLS THAT HAPPEN TO MAKE THE SAME SOUND.
+//
+//   ON ITS OWN  — a steady click you play along to. It starts when you press it
+//                 and knows nothing about the music; nothing can make it late.
+//   WITH THE MUSIC — the same click, started FROM the downbeat, so its accents
+//                 fall on the barlines you are hearing.
+//
+// The second is not the first with a connection bolted on: it is the first,
+// started at a different moment. THE ONLY DIFFERENCE BETWEEN A CLICK THAT
+// FIGHTS THE MUSIC AND ONE THAT AGREES WITH IT IS WHEN IT BEGAN.
+let CLICK_WITH = false;
+try { CLICK_WITH = localStorage.getItem('island.clickwith') === '1'; } catch (err) {}
+
+function clickBpm(){
+  // The written tempo, at the reading speed — so slowing the piece down slows
+  // the click with it, which is what a person practising expects.
+  const t = (typeof tempoAt === 'function' ? tempoAt(0) : (score.tempo || 90));
+  return Math.max(20, Math.min(300, (t || 90) * (PLAY_SPEED || 1)));
+}
+function clickPerBar(){
+  try { return Math.max(1, tsAt(0).beats || 4); } catch (err) { return 4; }
+}
+
+function clickTick(at, strong){
+  if (!audio) return;
+  const o = audio.createOscillator(), g = audio.createGain();
+  o.type = 'square';
+  o.frequency.setValueAtTime(strong ? 1600 : 1100, at);
+  g.gain.setValueAtTime(0.0001, at);
+  g.gain.exponentialRampToValueAtTime(strong ? 0.30 : 0.18, at + 0.001);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + 0.045);
+  o.connect(g); g.connect(audio.destination);
+  o.start(at); o.stop(at + 0.06);
+  clickLive.push(o);
+  if (clickLive.length > 24) clickLive = clickLive.slice(-24);
+}
+
+function clickFeed(){
+  if (!CLICK_ON || !audio) return;
+  const step = 60 / clickBpm();
+  const perBar = clickPerBar();
+  // A SECOND OF BEATS, ALWAYS IN HAND. Scheduling further ahead than the page
+  // can ever stall for is the whole of why this does not hesitate.
+  while (clickAt < audio.currentTime + 1.0){
+    if (clickAt > audio.currentTime + 0.005)
+      clickTick(clickAt, clickBeat % perBar === 0);
+    clickAt += step;
+    clickBeat++;
+  }
+}
+
+async function clickStart(from){
+  if (!wake()) return false;
+  // WOKEN, AND PROVED AWAKE.
+  //
+  // A browser starts its audio suspended and only resumes on a real gesture —
+  // and resuming takes a moment. The old code asked for the wake and carried
+  // straight on, so every beat was scheduled onto a clock that was not running
+  // yet: silence, with the button lit and nothing wrong to see. Don: "I can't
+  // hear the metronome."
+  // Speak the Beat hit this and got round it by speaking four beats to warm the
+  // engine up. The cleaner form of the same trick is to WAIT for the context to
+  // say it is running before laying anything down.
+  try { if (audio.state !== 'running' && audio.resume) await audio.resume(); } catch (err) {}
+  if (audio.state !== 'running'){
+    say = 'the browser has not let the sound start \u2014 press play once, then the click';
+    return false;
+  }
+  CLICK_ON = true;
+  clickBeat = 0;
+  // Given a moment, the click counts from THAT — which is how it lands on the
+  // music's barlines rather than beside them.
+  // A BEAT SCHEDULED AT THE CURRENT INSTANT IS ALREADY PAST. A fifth of a
+  // second is enough for the first one to be heard and short enough to feel
+  // immediate.
+  clickAt = (typeof from === 'number') ? from : audio.currentTime + 0.2;
+  clickFeed();
+  if (clickTimer) clearInterval(clickTimer);
+  clickTimer = setInterval(clickFeed, 250);
+  return true;
+}
+function clickStop(){
+  CLICK_ON = false;
+  if (clickTimer){ clearInterval(clickTimer); clickTimer = 0; }
+  for (const o of clickLive){ try { o.stop(); } catch (err) {} }
+  clickLive = [];
 }
 
 // ---------------------------------------------------------------------------
@@ -11579,7 +11740,7 @@ const REPO = { owner:'Zukemeister', repo:'island-library', path:'pieces' };
 //  A SHORTCUT YOU HAVE WRITTEN DOWN IS A DECISION; ONE YOU HAVE FORGOTTEN IS A
 //  LEAK.
 // ---------------------------------------------------------------------------
-const SHELF_KEY = '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';
+const SHELF_KEY = 'PASTE_YOUR_GITHUB_TOKEN_HERE';
 
 let REPO_TOKEN = '';
 try { REPO_TOKEN = localStorage.getItem('island.shelf.token') || ''; } catch (err) {}
@@ -12240,25 +12401,64 @@ function showLibrary(){
   load.className = 'libwide'; load.textContent = 'bring a whole library back in';
   load.onclick = () => {
     const inp = document.createElement('input');
-    inp.type = 'file'; inp.accept = '.json,application/json';
+    // iOS hands a .json file over as text/plain or as a public.data type as
+    // often as not, and a narrow accept list makes it UNPICKABLE in the file
+    // browser — greyed out, with no explanation.
+    inp.type = 'file';
     inp.onchange = () => {
       const f = inp.files && inp.files[0];
       if (!f) return;
       const r = new FileReader();
       r.onload = () => {
-        let doc = null;
-        try { doc = JSON.parse(r.result); } catch (err) { doc = null; }
-        const pieces = doc && (doc.pieces || (doc.format === 'island-library' ? doc.pieces : null));
-        if (!pieces){ say = 'that is not an Island library file'; render(); return; }
+        // SAY WHAT WAS IN THE FILE. "That is not an Island library file" is true
+        // and useless — it does not say whether the file failed to parse, held
+        // one piece instead of many, or arrived empty. Don: "Island does not get
+        // any new files from it."
+        // A REFUSAL SHOULD NAME WHAT IT REFUSED.
+        let doc = null, why = '';
+        try { doc = JSON.parse(r.result); }
+        catch (err) { why = 'it is not readable as JSON \u2014 ' + (err.message || '').slice(0, 40); }
+
+        let pieces = null;
+        if (doc && doc.pieces) pieces = doc.pieces;
+        // A SINGLE EXPORTED PIECE IS ALSO WORTH ACCEPTING. It has events rather
+        // than pieces, and refusing it because it is the wrong SHAPE of Island
+        // file helps nobody.
+        else if (doc && doc.events){
+          const nm4 = (doc.title || f.name.replace(/\.json$/i, '') || 'Untitled');
+          pieces = {}; pieces[nm4] = { at: Date.now(), doc };
+        }
+        else if (doc && typeof doc === 'object' && !Array.isArray(doc)){
+          // An older whole-library file: names at the top level, each with a doc.
+          const keys = Object.keys(doc).filter(k => doc[k] && doc[k].doc);
+          if (keys.length){ pieces = {}; for (const k of keys) pieces[k] = doc[k]; }
+        }
+
+        if (!pieces){
+          say = 'nothing to bring in \u2014 ' + (why ||
+                ('the file has ' + (doc ? Object.keys(doc).join(', ').slice(0, 60) : 'nothing')
+                 + ' in it, not pieces'));
+          render(); return;
+        }
         // ADDED TO WHAT IS THERE, never replacing it — a restore should not be
         // able to lose work that the file being restored does not know about.
         const all = libAll();
         let n = 0;
         for (const k of Object.keys(pieces)){ all[k] = pieces[k]; n++; }
         if (libWrite(all)){
-          say = 'brought back ' + n + ' piece' + (n === 1 ? '' : 's');
+          say = 'brought back ' + n + ' piece' + (n === 1 ? '' : 's')
+              + ' \u00b7 ' + Object.keys(all).length + ' here now';
+          cry('BROUGHT BACK ' + n, 2200);
           box.remove(); showLibrary();
+        } else {
+          say = 'read ' + n + ' piece' + (n === 1 ? '' : 's')
+              + ' from the file, but they could not be stored on this device';
+          render();
         }
+      };
+      r.onerror = () => {
+        say = 'the file could not be read \u2014 ' + (r.error && r.error.name ? r.error.name : 'unknown');
+        render();
       };
       r.readAsText(f);
     };
