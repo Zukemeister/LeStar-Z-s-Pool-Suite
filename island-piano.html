@@ -2226,7 +2226,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-03 b264 a refusal names what it refused';
+const BUILD_STAMP = '2026-09-03 b265 a way in that depends on nothing';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -2376,7 +2376,8 @@ function fitStaves(quiet){
   anchorsFresh();                       // a silent hand still has a 1 somewhere
   if (banded()){
     refitBands();
-    if (!quiet){ const b = bands(); say = 'bands set to octaves ' + b.lo + ' to ' + b.hi; render(); return 1; }
+    if (!quiet){ const b = bands(); say = 'bands set to octaves ' + b.lo + ' to ' + b.hi; 
+render(); return 1; }
   }
   let any = false;
   for (const p of primaries())
@@ -13000,6 +13001,60 @@ try {
 } catch (err) {}
 
 render();
+
+// ---------------------------------------------------------------------------
+//  A WAY IN THAT DEPENDS ON NOTHING.
+//
+//  The menu has failed on the phone through six builds. Each time it was a real
+//  cause — a stylesheet rule, a fold, a z-index, a button pushed off the end of
+//  a scrolling bar — and each fix was correct and did not fix it, because the
+//  next cause was waiting behind it. Don, again: "now I cannot open the control
+//  panel on the phone."
+//
+//  So this button is made in code, at the end of everything, and owes nothing to
+//  the markup, the stylesheet, the layout or any class. It is fixed to the
+//  screen, it is large, it is above everything, and it opens the controls by
+//  setting them visible itself rather than asking a rule to do it.
+//  WHEN SIX FIXES HAVE FAILED, STOP FIXING AND BUILD SOMETHING THAT CANNOT.
+// ---------------------------------------------------------------------------
+(function alwaysAWayIn(){
+  try {
+    if (innerWidth >= 600 && innerHeight >= 460) return;   // phones only
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = 'MENU';
+    b.setAttribute('style',
+      'position:fixed;right:10px;bottom:calc(66px + env(safe-area-inset-bottom));'
+      + 'z-index:9999;width:74px;height:44px;border-radius:12px;'
+      + 'border:2px solid #fff;background:#00a3ab;color:#04222a;'
+      + 'font:800 13px/1 ui-monospace,Menlo,monospace;letter-spacing:.1em;'
+      + 'box-shadow:0 6px 20px rgba(0,0,0,.4);padding:0;');
+    let open = false;
+    b.addEventListener('click', ev => {
+      ev.preventDefault(); ev.stopPropagation();
+      const r = document.querySelector('.rail');
+      if (!r) return;
+      open = !open;
+      if (open){
+        r.setAttribute('style',
+          'display:block !important;position:fixed;left:0;right:0;top:0;bottom:0;'
+          + 'z-index:9990;max-height:none;overflow:auto;background:#0d1013;'
+          + 'padding:calc(14px + env(safe-area-inset-top)) 10px '
+          + 'calc(120px + env(safe-area-inset-bottom)) 10px;');
+        for (const kid of r.children){
+          kid.style.opacity = '1'; kid.style.pointerEvents = 'auto';
+        }
+        b.textContent = 'CLOSE';
+      } else {
+        r.setAttribute('style', '');
+        for (const kid of r.children){ kid.style.opacity = ''; kid.style.pointerEvents = ''; }
+        b.textContent = 'MENU';
+      }
+    });
+    document.body.appendChild(b);
+  } catch (err) {}
+})();
+
 </script>
 </body>
 </html>
