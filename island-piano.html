@@ -706,6 +706,11 @@
   body.picking .barnum{ outline:2px solid #00a3ab; outline-offset:2px;
     cursor:pointer; background:#00a3ab !important; color:#04222a !important }
   body.picking .chip{ opacity:.5 }
+  /* READING AHEAD. The bar under the playhead fades, so the eye has nowhere to
+     rest but the bar in front of it. The notes are still there — faint enough
+     to be no use, present enough that the page does not jump. */
+  #pageAhead[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
+  body.ahead .chip.faded{ opacity:.06 !important; transition:opacity .1s linear }
   #pageClick[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
   #pageVoices{ width:auto !important; min-width:44px; padding:0 10px !important;
     font:800 12px/1 ui-monospace,Menlo,monospace !important; letter-spacing:.06em }
@@ -1916,6 +1921,7 @@
        YOU CANNOT TEST A VERSION YOU CANNOT IDENTIFY. -->
   <span id="pagerBuild" title="tap for the full build stamp"></span>
   <button type="button" id="pagerMenu" title="the controls">&#9776;</button>
+  <button type="button" id="pageAhead" title="hide the bar you are playing, so your eyes go forward">&#128065;</button>
   <button type="button" id="pageClick" title="a click on every beat">&#9834;</button>
   <button type="button" id="pageVoices" title="which voices you hear">V</button>
   <button type="button" id="pageLoop" title="loop the bars on this page">LOOP PAGE</button>
@@ -2226,7 +2232,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-03 b267 it knows how to step aside';
+const BUILD_STAMP = '2026-09-04 b270 reading ahead';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -4832,6 +4838,8 @@ function planSays(){
 // Which page of a long piece is on screen. Nothing to do with printing — this
 // is the reading page, and it only exists for pieces too long to draw at once.
 let PAGE_AT = 0;
+// While this is true the drawing lays out every bar, not a page of them.
+let PRINTING = false;
 
 // HOW FAST THE PIECE PLAYS, when you are simply playing it.
 //
@@ -5607,7 +5615,7 @@ function drawEverything(){
   // away the bar being read.
   const WINDOW_BARS = 24;
   let winFrom = 0, winTo = bars;
-  if (bars > WINDOW_BARS){
+  if (bars > WINDOW_BARS && !PRINTING){
     PAGE_AT = Math.max(0, Math.min(Math.max(0, bars - 1), PAGE_AT));
     winFrom = PAGE_AT;
     winTo   = Math.min(bars, winFrom + WINDOW_BARS);
@@ -6909,6 +6917,11 @@ function drawEverything(){
           const c = document.createElement('div');
           c.className = 'chip rest' + (inHold(e, vc.id) ? ' picked' : '');
           c.dataset.ev = e.id; c.dataset.st = vc.id; c.dataset.pi = 0;
+          // THE BAR A NOTE BELONGS TO. Nothing on the page knew this — chips
+          // carried their event and their voice, and the bar was only ever a
+          // position. Reading ahead needs to dim a BAR, so the bar has to be
+          // something a notehead can be asked about.
+          c.dataset.bar = e._bar != null ? e._bar : barAt(e.start);
           // A REST SITS WITH THE NOTES EITHER SIDE OF IT. It was pinned to the
           // middle of the staff — which on a three-band page is the middle
           // BAND, so a rest in a line played high or low sat an octave away
@@ -7191,6 +7204,11 @@ function drawEverything(){
           if (STAFF_MODE !== 'ladder') c.classList.add(sharpOf(p) ? 'shp' : 'nat');
           if (p.num === 1 || p.num === 5 || p.num === 6 || p.num === 12) c.classList.add('land');
           c.dataset.ev = e.id; c.dataset.st = vc.id; c.dataset.pi = pi;
+          // THE BAR A NOTE BELONGS TO. Nothing on the page knew this — chips
+          // carried their event and their voice, and the bar was only ever a
+          // position. Reading ahead needs to dim a BAR, so the bar has to be
+          // something a notehead can be asked about.
+          c.dataset.bar = e._bar != null ? e._bar : barAt(e.start);
           c.style.left = (x + shift) + 'px'; c.style.top = y + 'px';
           box.appendChild(c);
           if (pc.dot){
@@ -8823,6 +8841,13 @@ document.getElementById('bWords').addEventListener('click', ev => {
         b.type = 'button';
         const on = !HEARD || HEARD.indexOf(v.id) !== -1;
         b.textContent = 'V' + voiceNumber(v.id);
+        b.style.cssText = 'flex:1;min-width:64px;padding:12px 10px;cursor:pointer;'
+          + 'border:1.5px solid ' + (on ? '#00a3ab' : 'rgba(255,255,255,.35)') + ';'
+          + 'border-radius:9px;background:' + (on ? '#00a3ab' : 'rgba(255,255,255,.08)') + ';'
+          + 'color:' + (on ? '#04222a' : '#fff') + ';'
+          + 'font:800 14px/1 ui-monospace,Menlo,monospace;'
+          + (v.id === cur.staff && document.body.classList.contains('editing')
+             ? 'box-shadow:0 0 0 2px #fff inset;' : '');
         b.setAttribute('aria-pressed', on ? 'true' : 'false');
         if (v.id === cur.staff) b.className = 'writing';
         b.title = (on ? 'heard' : 'silent')
@@ -8847,6 +8872,22 @@ document.getElementById('bWords').addEventListener('click', ev => {
       btn.setAttribute('aria-pressed', quiet ? 'true' : 'false');
     };
     window._paintVoices = paintVoices;
+    const ah = document.getElementById('pageAhead');
+    if (ah) ah.addEventListener('click', () => {
+      const on = !document.body.classList.contains('ahead');
+      document.body.classList.toggle('ahead', on);
+      ah.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (!on){
+        const sc5 = document.getElementById('score');
+        if (sc5) for (const e5 of sc5.querySelectorAll('.faded')) e5.classList.remove('faded');
+        _aheadBar = -1;
+      }
+      say = on
+        ? 'reading ahead \u00b7 the bar you are playing fades, so your eyes go forward'
+        : 'the whole page is visible again';
+      render();
+    });
+
     const cb2 = document.getElementById('pageClick');
     const paintClick = () => {
       if (!cb2) return;
@@ -8894,18 +8935,40 @@ document.getElementById('bWords').addEventListener('click', ev => {
       paintClick();
     }
 
+    // SHOWN BY HAND, LIKE THE MENU.
+    //
+    // This opened by adding a class and trusting a stylesheet rule to reveal it
+    // — the same arrangement that left the menu invisible for six builds. Don:
+    // "on the tablet, it is not working."
+    // ONCE A PATTERN HAS FAILED, STOP USING IT. The row is positioned and shown
+    // by setting its style directly, it is centred over the bar rather than
+    // hung off one button's corner, and it says something even when there is
+    // nothing to list — a panel that opens empty looks exactly like one that
+    // did not open.
     const vb = document.getElementById('pageVoices');
-    if (vb) vb.addEventListener('click', () => {
+    if (vb) vb.addEventListener('click', ev => {
+      ev.preventDefault(); ev.stopPropagation();
       const row = document.getElementById('voiceRow');
       if (!row) return;
       const open = !row.classList.contains('up');
       row.classList.toggle('up', open);
-      if (open){
-        paintVoices();
-        const r = vb.getBoundingClientRect();
-        row.style.left = Math.max(6, Math.min(innerWidth - 220, r.left - 20)) + 'px';
-        row.style.top  = Math.max(6, r.top - 62) + 'px';
+      if (!open){ row.style.display = 'none'; return; }
+      paintVoices();
+      if (!row.children.length){
+        const note = document.createElement('span');
+        note.style.cssText = 'color:#fff;font:700 12px/1 ui-monospace,Menlo,monospace;padding:8px';
+        note.textContent = 'this piece has one voice';
+        row.appendChild(note);
       }
+      const r = vb.getBoundingClientRect();
+      const w = Math.min(innerWidth - 20, Math.max(160, row.children.length * 78 + 24));
+      row.style.cssText =
+        'position:fixed;z-index:9500;display:flex;gap:6px;'
+        + 'background:#0d1013;border:2px solid #fff;border-radius:12px;padding:8px;'
+        + 'box-shadow:0 10px 34px rgba(0,0,0,.45);'
+        + 'left:' + Math.max(10, Math.min(innerWidth - w - 10, r.left + r.width / 2 - w / 2)) + 'px;'
+        + 'top:'  + Math.max(10, r.top - 66) + 'px;'
+        + 'width:' + w + 'px;';
     });
     paintVoices();
 
@@ -11326,7 +11389,7 @@ function tickNow(){
 // SCROLLED TO THE MARK, NOT TO A GUESS AT WHERE IT MIGHT BE. The playhead is a
 // real element on the page, so its position is measured rather than computed —
 // which is what makes this hold at any size, from 20% to 250%.
-let _lastScroll = -1;
+let _lastScroll = -1, _aheadBar = -1;
 function centreOnPlayhead(){
   const sc = document.getElementById('score');
   if (!sc) return;
@@ -11381,6 +11444,30 @@ function follow(){
     } else h.el.style.display = 'none';
   }
   centreOnPlayhead();
+
+  // READING AHEAD: THE BAR YOU ARE ON GOES QUIET TO THE EYE.
+  //
+  // The skill that makes two staves playable at once is the EYE-HAND SPAN —
+  // eyes working a bar in front of the fingers, preparing what comes next while
+  // the hands play what came before. It is the one thing every source agrees
+  // on, and it is trained by making the current bar useless to look at.
+  // YOU CANNOT LEARN TO LOOK AHEAD WHILE THERE IS SOMETHING TO LOOK AT. So the
+  // bar under the playhead fades as it is reached, and the page ahead of it
+  // stays sharp.
+  if (document.body.classList.contains('ahead')){
+    try {
+      const nowBar = barAt(tick);
+      if (nowBar !== _aheadBar){
+        _aheadBar = nowBar;
+        const sc4 = document.getElementById('score');
+        if (sc4){
+          for (const el4 of sc4.querySelectorAll('.faded')) el4.classList.remove('faded');
+          for (const el4 of sc4.querySelectorAll('.chip[data-bar="' + nowBar + '"]'))
+            el4.classList.add('faded');
+        }
+      }
+    } catch (err) {}
+  }
 
   const live = new Set();
   for (const st of score.profile.staves)
@@ -11923,24 +12010,36 @@ document.getElementById('bSaveAs').onclick = () => {
   libPut(clean);
 };
 document.getElementById('bPrint').onclick = () => {
-  // REVERTED, at Don's word: "now it only prints half of the page. For now,
-  // just revert to previous."
+  // THE WHOLE PIECE, WHATEVER IS ON SCREEN.
   //
-  // Laying the print out to Letter cured the five-sheets-across spill and
-  // introduced a worse one — half a page. So printing is back to what it was:
-  // render, then print, and let the browser's own Fit to Page do the scaling.
+  // Pages exist so a tablet can draw a long score without stalling — 24 bars at
+  // a time, turned as you play. Printing then printed those 24: Don, holding one
+  // sheet of a fifteen-page piece, "print brings up only the bars that are on
+  // screen at the moment."
+  // A LIMIT PUT THERE FOR THE SCREEN HAS NO BUSINESS ON PAPER. Paper has no
+  // stalling to avoid, so the limit stands aside for the duration, and the page
+  // goes back to where it was afterwards.
   //
-  // THE PROBLEM IS NOT SOLVED, ONLY PUT DOWN. The cause of the spill is real —
-  // the layout is measured to the window, the printer gets those pixel widths,
-  // and a wide window overflows onto further sheets. Setting PAGE to Letter or
-  // Letter wide by hand still fixes it, because then the screen IS the paper.
-  // Whatever finally settles this has to make the printed width and the drawn
-  // width the same thing without a second layout pass — which is likely a
-  // written PDF rather than more print-time meddling.
+  // Otherwise unchanged: render, then print, and let the browser's own Fit to
+  // Page do the scaling — laying it out to Letter ourselves was tried and made
+  // things worse.
+  PRINTING = true;
+  const wasPage = PAGE_AT;
   render();
-  say = 'printing as it looks on screen \u00b7 PAGE and Bars/line set the layout';
+  say = 'printing the whole piece \u00b7 PAGE and Bars/line set the layout';
   status();
-  setTimeout(() => window.print(), 80);
+  const after = () => {
+    if (!PRINTING) return;
+    PRINTING = false;
+    PAGE_AT = wasPage;
+    render();
+    removeEventListener('afterprint', after);
+  };
+  addEventListener('afterprint', after);
+  // Safari does not always fire afterprint, so the page is restored on a timer
+  // as well. Restoring twice is harmless; never restoring is not.
+  setTimeout(after, 6000);
+  setTimeout(() => window.print(), 120);
 };
 // A PIECE ARRIVING IS A FRESH START. Opening only replaced the notes and left
 // everything the app had worked out about the LAST piece in place — the octave
