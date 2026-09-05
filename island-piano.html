@@ -2272,7 +2272,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b284 the press is acknowledged first';
+const BUILD_STAMP = '2026-09-04 b286 a marking is not a number';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -11249,11 +11249,26 @@ try { CLICK_WITH = localStorage.getItem('island.clickwith') === '1'; } catch (er
 function clickBpm(){
   // The written tempo, at the reading speed — so slowing the piece down slows
   // the click with it, which is what a person practising expects.
-  const t = (typeof tempoAt === 'function' ? tempoAt(0) : (score.tempo || 90));
-  return Math.max(20, Math.min(300, (t || 90) * (PLAY_SPEED || 1)));
+  // tempoAt RETURNS A MARKING, NOT A NUMBER — the tempo and the bar it starts
+  // at. Multiplying that object by the reading speed gives NaN, and a NaN
+  // interval means every beat is scheduled at "not a time", so nothing sounds
+  // and nothing complains. Don: "clicking with the music at NaN a minute."
+  // A SILENT WRONG ANSWER IS WORSE THAN A LOUD ONE. Hence the guard below as
+  // well: whatever arrives, a usable number comes out.
+  let t = 90;
+  try {
+    const mark = tempoAt(0);
+    t = (mark && typeof mark.bpm === 'number') ? mark.bpm
+      : (typeof mark === 'number' ? mark : 90);
+  } catch (err) { t = 90; }
+  const bpm = t * (PLAY_SPEED || 1);
+  return (isFinite(bpm) && bpm > 0) ? Math.max(20, Math.min(300, bpm)) : 90;
 }
 function clickPerBar(){
-  try { return Math.max(1, tsAt(0).beats || 4); } catch (err) { return 4; }
+  try {
+    const n = tsAt(0).beats;
+    return (isFinite(n) && n > 0) ? Math.max(1, Math.round(n)) : 4;
+  } catch (err) { return 4; }
 }
 
 function clickTick(at, strong){
@@ -11273,6 +11288,9 @@ function clickTick(at, strong){
 function clickFeed(){
   if (!CLICK_ON || !audio) return;
   const step = 60 / clickBpm();
+  // NOTHING IS EVER SCHEDULED AT "NOT A TIME". A single bad number here spins
+  // the loop forever or silently books every beat into nowhere.
+  if (!isFinite(step) || step <= 0){ clickStop(); tell('the click has no tempo to follow', true); return; }
   const perBar = clickPerBar();
   // A SECOND OF BEATS, ALWAYS IN HAND. Scheduling further ahead than the page
   // can ever stall for is the whole of why this does not hesitate.
@@ -13426,6 +13444,33 @@ function leadPattern(perBar, step){
   } catch (err) { console.warn('lead', err); }
 })();
 
+// ---------------------------------------------------------------------------
+//  SAYING SOMETHING WHERE IT CAN BE SEEN.
+//
+//  The status line folds away — Don asked for that, and it is right for reading
+//  music. But every diagnostic I have added this week writes to it, and a
+//  folded footer swallows them all. He has been pressing buttons that were
+//  reporting their failures into a closed drawer, and I have been asking him to
+//  read messages that could not appear.
+//  A MESSAGE THAT MATTERS MUST OPEN THE DRAWER IT IS PUT IN.
+// ---------------------------------------------------------------------------
+function tell(msg, shout){
+  try {
+    say = msg;
+    // Unfold the footer if it is shut, so the message has somewhere to land.
+    if (document.body.classList.contains('footshut')){
+      document.body.classList.remove('footshut');
+      try { localStorage.setItem('island.footshut', '0'); } catch (e) {}
+      const ff2 = document.getElementById('footFold');
+      if (ff2) ff2.innerHTML = '&#9660;';
+    }
+    const f5 = document.getElementById('fSay');
+    if (f5) f5.textContent = msg;
+    if (shout) cry(String(msg).toUpperCase().slice(0, 60), 2600);
+    render();
+  } catch (err) {}
+}
+
 (function clickAnyway(){
   try {
     const cb = document.getElementById('pageClick');
@@ -13453,20 +13498,19 @@ function leadPattern(perBar, step){
       // does nothing visible tells you nothing about WHERE it failed — whether
       // the tap arrived, whether the audio refused, whether a line threw. This
       // one always answers.
-      say = 'click\u2026'; render();
       try {
-        if (CLICK_ON){ clickStop(); say = 'the click is off'; paint(); render(); return; }
+        if (CLICK_ON){ clickStop(); paint(); tell('the click is off'); return; }
+        const before = say;
         const ok = await clickStart();
         paint();
-        say = ok
-          ? ((CLICK_WITH ? 'clicking with the music' : 'clicking on its own')
-             + ' at ' + Math.round(clickBpm()) + ' a minute, '
-             + clickPerBar() + ' to the bar')
-          : (say && say !== 'click\u2026' ? say : 'the click could not start \u2014 no sound available');
-        render();
+        if (ok) tell((CLICK_WITH ? 'clicking with the music' : 'clicking on its own')
+                   + ' at ' + Math.round(clickBpm()) + ' a minute, '
+                   + clickPerBar() + ' to the bar');
+        else tell(say && say !== before ? say
+                  : 'the click could not start \u2014 no sound available', true);
       } catch (err){
-        say = 'the click failed \u2014 ' + (err && err.message ? err.message : err);
-        paint(); render();
+        paint();
+        tell('the click failed \u2014 ' + (err && err.message ? err.message : err), true);
       }
     });
 
