@@ -2003,6 +2003,7 @@
       <button id="bPad" title="write without a keyboard">Write pad</button>
       <button id="bMenu" title="the controls">Menu</button>
       <button id="bQuit" title="stop everything and put the piece away">Finish</button>
+      <label class="lcheck"><input type="checkbox" id="bClickWith"> Click starts with the music</label>
       <button id="bPrint">Print</button>
       <button id="bHist">History</button>
       <button id="bClear">Clear</button>
@@ -2272,7 +2273,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b286 a marking is not a number';
+const BUILD_STAMP = '2026-09-04 b287 stop everything, and three volumes';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -11243,6 +11244,14 @@ let CLICK_ON = false, clickAt = 0, clickBeat = 0, clickTimer = 0, clickLive = []
 // The second is not the first with a connection bolted on: it is the first,
 // started at a different moment. THE ONLY DIFFERENCE BETWEEN A CLICK THAT
 // FIGHTS THE MUSIC AND ONE THAT AGREES WITH IT IS WHEN IT BEGAN.
+// HOW LOUD. A click has to be heard over a piano playing two hands, and one
+// fixed level cannot serve both a quiet study and a full texture. Don: "I can't
+// hear it well above the music."
+let CLICK_VOL = 1;                       // 0 quiet, 1 medium, 2 loud
+const CLICK_VOLS = [0.55, 1, 1.9];
+const CLICK_VOL_NAMES = ['quiet', 'medium', 'loud'];
+try { CLICK_VOL = Math.max(0, Math.min(2, +localStorage.getItem('island.clickvol') || 1)); } catch (err) {}
+
 let CLICK_WITH = false;
 try { CLICK_WITH = localStorage.getItem('island.clickwith') === '1'; } catch (err) {}
 
@@ -11273,11 +11282,12 @@ function clickPerBar(){
 
 function clickTick(at, strong){
   if (!audio) return;
+  const vol = CLICK_VOLS[CLICK_VOL] || 1;
   const o = audio.createOscillator(), g = audio.createGain();
   o.type = 'square';
   o.frequency.setValueAtTime(strong ? 1600 : 1100, at);
   g.gain.setValueAtTime(0.0001, at);
-  g.gain.exponentialRampToValueAtTime(strong ? 0.30 : 0.18, at + 0.001);
+  g.gain.exponentialRampToValueAtTime((strong ? 0.30 : 0.18) * vol, at + 0.001);
   g.gain.exponentialRampToValueAtTime(0.0001, at + 0.045);
   o.connect(g); g.connect(audio.destination);
   o.start(at); o.stop(at + 0.06);
@@ -11334,6 +11344,16 @@ async function clickStart(from){
 }
 function clickStop(){
   CLICK_ON = false;
+  // AND THE OTHER ONE. There are two metronomes in this app — this one, and the
+  // older one that starts with playback from the loop panel. Turning this off
+  // left that one ticking, and there is no button on the bar for it, so the
+  // click could not be stopped at all. Don: "now I can't shut it off."
+  // A STOP BUTTON MUST STOP EVERYTHING THAT IS MAKING THAT SOUND.
+  try { metroStop(); } catch (err) {}
+  try {
+    const mb2 = document.getElementById('bMetro');
+    if (mb2 && mb2.checked){ mb2.checked = false; }
+  } catch (err) {}
   if (clickTimer){ clearInterval(clickTimer); clickTimer = 0; }
   for (const o of clickLive){ try { o.stop(); } catch (err) {} }
   clickLive = [];
@@ -13488,9 +13508,8 @@ function tell(msg, shout){
       cb.style.borderColor = CLICK_ON ? '#00a3ab' : '';
       cb.style.color       = CLICK_ON ? '#04222a' : '';
       cb.innerHTML = CLICK_WITH ? '&#9834;&#8202;&#8226;' : '&#9834;';
-      cb.title = CLICK_WITH
-        ? 'clicks with the music, from the downbeat \u00b7 hold to make it independent'
-        : 'clicks on its own, for playing along \u00b7 hold to make it follow the music';
+      cb.title = 'the click \u00b7 hold to change how loud ('
+               + CLICK_VOL_NAMES[CLICK_VOL] + ')';
     };
 
     cb.addEventListener('click', async () => {
@@ -13514,16 +13533,17 @@ function tell(msg, shout){
       }
     });
 
+    // HOLD SETS THE VOLUME, because that is the thing adjusted often — every
+    // time the texture changes. The with-the-music choice is made once and then
+    // left alone, so it has moved to a tick box in the menu where it belongs.
     let hold = 0;
     const down = () => { hold = setTimeout(() => {
       hold = 0;
-      CLICK_WITH = !CLICK_WITH;
-      try { localStorage.setItem('island.clickwith', CLICK_WITH ? '1' : '0'); } catch (e) {}
-      if (CLICK_ON){ clickStop(); clickStart(); }
-      say = CLICK_WITH ? 'the click now starts with the music, on its downbeat'
-                       : 'the click now runs on its own, for playing along to';
-      cry(CLICK_WITH ? 'CLICK WITH THE MUSIC' : 'CLICK ON ITS OWN', 2000);
-      paint(); render();
+      CLICK_VOL = (CLICK_VOL + 1) % CLICK_VOLS.length;
+      try { localStorage.setItem('island.clickvol', String(CLICK_VOL)); } catch (e) {}
+      tell('the click is ' + CLICK_VOL_NAMES[CLICK_VOL]);
+      cry(CLICK_VOL_NAMES[CLICK_VOL].toUpperCase(), 1400);
+      paint();
     }, 600); };
     const up = () => { if (hold){ clearTimeout(hold); hold = 0; } };
     cb.addEventListener('touchstart', down, { passive:true });
@@ -13533,6 +13553,21 @@ function tell(msg, shout){
     cb.addEventListener('mouseleave', up);
     paint();
   } catch (err) { console.warn('click', err); }
+})();
+
+(function clickWithAnyway(){
+  try {
+    const w = document.getElementById('bClickWith');
+    if (!w) return;
+    w.checked = CLICK_WITH;
+    w.addEventListener('change', () => {
+      CLICK_WITH = w.checked;
+      try { localStorage.setItem('island.clickwith', CLICK_WITH ? '1' : '0'); } catch (e) {}
+      if (CLICK_ON){ clickStop(); clickStart(); }
+      tell(CLICK_WITH ? 'the click will start with the music, on its downbeat'
+                      : 'the click runs on its own, for playing along to');
+    });
+  } catch (err) {}
 })();
 
 (function voicesAnyway(){
