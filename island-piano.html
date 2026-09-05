@@ -2272,7 +2272,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b282 the music plays after the count';
+const BUILD_STAMP = '2026-09-04 b283 a flag set when it is done';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8974,7 +8974,6 @@ document.getElementById('bWords').addEventListener('click', ev => {
     paintAhead();
 
     const cb2 = document.getElementById('pageClick');
-    if (cb2) cb2.dataset.wired = '1';
     const paintClick = () => {
       if (!cb2) return;
       cb2.setAttribute('aria-pressed', CLICK_ON ? 'true' : 'false');
@@ -9019,6 +9018,12 @@ document.getElementById('bWords').addEventListener('click', ev => {
       cb2.addEventListener('mouseup', hcEnd);
       cb2.addEventListener('mouseleave', hcEnd);
       paintClick();
+      // CLAIMED ONLY ONCE THE WORK IS DONE. The mark used to be set before the
+      // listener was attached — so a throw in between left the button marked and
+      // unwired, and the fallback at the end of the file politely stood aside
+      // from a button nobody was handling. Don: "our metronome is not working."
+      // A FLAG THAT SAYS 'DONE' MUST BE SET WHEN IT IS DONE.
+      cb2.dataset.wired = '1';
     }
 
     // SHOWN BY HAND, LIKE THE MENU.
@@ -9032,7 +9037,6 @@ document.getElementById('bWords').addEventListener('click', ev => {
     // nothing to list — a panel that opens empty looks exactly like one that
     // did not open.
     const vb = document.getElementById('pageVoices');
-    if (vb) vb.dataset.wired = '1';
     if (vb) vb.addEventListener('click', ev => {
       ev.preventDefault(); ev.stopPropagation();
       // IT SAYS WHAT HAPPENED. This has now failed twice with the code visibly
@@ -9073,6 +9077,8 @@ document.getElementById('bWords').addEventListener('click', ev => {
       render();
     }
     paintVoices();
+    // CLAIMED ONLY ONCE THE WORK IS DONE — see the note on the click button.
+    if (vb) vb.dataset.wired = '1';
 
     // The build number, short, on the bar. Tap it for the whole stamp.
     const bs = document.getElementById('pagerBuild');
