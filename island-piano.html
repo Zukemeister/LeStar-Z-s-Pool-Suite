@@ -1926,6 +1926,12 @@
      every single time. Don, three times: "the V does nothing."
      It was doing something. It was doing it out of sight. -->
 <div id="voiceRow"></div>
+<!-- THE CLICK'S OWN PANEL. Hold-to-change has failed repeatedly: a deliberate
+     press on a touch screen runs past 600ms, so the hold fires AND the tap
+     fires, and the two undo each other. Don: "there is no choice now. And it
+     won't stop."
+     EVERY CHOICE VISIBLE, EVERY CHOICE ONE TAP. Nothing hidden in a gesture. -->
+<div id="clickRow"></div>
 
 <div id="pager" hidden>
   <span class="pgrab" id="pagerGrab" aria-hidden="true">⠿</span>
@@ -2003,7 +2009,7 @@
       <button id="bPad" title="write without a keyboard">Write pad</button>
       <button id="bMenu" title="the controls">Menu</button>
       <button id="bQuit" title="stop everything and put the piece away">Finish</button>
-      <label class="lcheck"><input type="checkbox" id="bClickWith"> Click starts with the music</label>
+
       <button id="bPrint">Print</button>
       <button id="bHist">History</button>
       <button id="bClear">Clear</button>
@@ -2273,7 +2279,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b287 stop everything, and three volumes';
+const BUILD_STAMP = '2026-09-04 b288 every choice visible';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -13494,8 +13500,8 @@ function tell(msg, shout){
 (function clickAnyway(){
   try {
     const cb = document.getElementById('pageClick');
-    if (!cb || cb.dataset.wired) return;
-    cb.dataset.wired = '1';
+    const row = document.getElementById('clickRow');
+    if (!cb || !row || cb.dataset.wired) return;
 
     // COLOURED BY HAND, NOT BY RULE. aria-pressed only turns a button teal if a
     // stylesheet rule is found and wins — and this button has now failed twice
@@ -13512,63 +13518,73 @@ function tell(msg, shout){
                + CLICK_VOL_NAMES[CLICK_VOL] + ')';
     };
 
-    cb.addEventListener('click', async () => {
-      // THE PRESS IS ACKNOWLEDGED FIRST, WHATEVER HAPPENS NEXT. A button that
-      // does nothing visible tells you nothing about WHERE it failed — whether
-      // the tap arrived, whether the audio refused, whether a line threw. This
-      // one always answers.
-      try {
-        if (CLICK_ON){ clickStop(); paint(); tell('the click is off'); return; }
-        const before = say;
+    // The panel: on/off, how loud, and whether it follows the music. Built
+    // fresh each time it opens so it always shows the truth.
+    const drawRow = () => {
+      row.innerHTML = '';
+      const mk = (label, on, fn) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        b.setAttribute('style',
+          'padding:11px 12px;cursor:pointer;border-radius:9px;white-space:nowrap;'
+          + 'border:1.5px solid ' + (on ? '#00a3ab' : 'rgba(255,255,255,.35)') + ';'
+          + 'background:' + (on ? '#00a3ab' : 'rgba(255,255,255,.08)') + ';'
+          + 'color:' + (on ? '#04222a' : '#fff') + ';'
+          + 'font:800 12px/1 ui-monospace,Menlo,monospace;');
+        b.addEventListener('click', ev => { ev.stopPropagation(); fn(); });
+        row.appendChild(b);
+      };
+
+      mk(CLICK_ON ? 'STOP' : 'START', CLICK_ON, async () => {
+        if (CLICK_ON){ clickStop(); paint(); drawRow(); tell('the click is off'); return; }
         const ok = await clickStart();
-        paint();
-        if (ok) tell((CLICK_WITH ? 'clicking with the music' : 'clicking on its own')
-                   + ' at ' + Math.round(clickBpm()) + ' a minute, '
-                   + clickPerBar() + ' to the bar');
-        else tell(say && say !== before ? say
-                  : 'the click could not start \u2014 no sound available', true);
-      } catch (err){
-        paint();
-        tell('the click failed \u2014 ' + (err && err.message ? err.message : err), true);
-      }
+        paint(); drawRow();
+        tell(ok ? ('clicking at ' + Math.round(clickBpm()) + ' a minute, '
+                   + clickPerBar() + ' to the bar')
+                : 'the click could not start', !ok);
+      });
+
+      for (let i = 0; i < CLICK_VOLS.length; i++)
+        mk(CLICK_VOL_NAMES[i], CLICK_VOL === i, () => {
+          CLICK_VOL = i;
+          try { localStorage.setItem('island.clickvol', String(i)); } catch (e) {}
+          drawRow(); tell('the click is ' + CLICK_VOL_NAMES[i]);
+        });
+
+      mk('with the music', CLICK_WITH, () => {
+        CLICK_WITH = !CLICK_WITH;
+        try { localStorage.setItem('island.clickwith', CLICK_WITH ? '1' : '0'); } catch (e) {}
+        if (CLICK_ON){ clickStop(); clickStart(); }
+        drawRow();
+        tell(CLICK_WITH ? 'the click starts with the music, on its downbeat'
+                        : 'the click runs on its own, for playing along to');
+      });
+    };
+
+    let up = false;
+    cb.addEventListener('click', ev => {
+      ev.preventDefault(); ev.stopPropagation();
+      up = !up;
+      if (!up){ row.setAttribute('style', 'display:none'); return; }
+      drawRow();
+      const r = cb.getBoundingClientRect();
+      const w = Math.min(innerWidth - 20, 470);
+      row.setAttribute('style',
+        'position:fixed;z-index:9600;display:flex;gap:6px;flex-wrap:wrap;'
+        + 'justify-content:center;'
+        + 'background:#0d1013;border:2px solid #fff;border-radius:12px;padding:8px;'
+        + 'box-shadow:0 10px 34px rgba(0,0,0,.45);'
+        + 'left:' + Math.max(10, Math.min(innerWidth - w - 10, r.left + r.width / 2 - w / 2)) + 'px;'
+        + 'top:'  + Math.max(10, r.top - 76) + 'px;'
+        + 'width:' + w + 'px;');
     });
 
-    // HOLD SETS THE VOLUME, because that is the thing adjusted often — every
-    // time the texture changes. The with-the-music choice is made once and then
-    // left alone, so it has moved to a tick box in the menu where it belongs.
-    let hold = 0;
-    const down = () => { hold = setTimeout(() => {
-      hold = 0;
-      CLICK_VOL = (CLICK_VOL + 1) % CLICK_VOLS.length;
-      try { localStorage.setItem('island.clickvol', String(CLICK_VOL)); } catch (e) {}
-      tell('the click is ' + CLICK_VOL_NAMES[CLICK_VOL]);
-      cry(CLICK_VOL_NAMES[CLICK_VOL].toUpperCase(), 1400);
-      paint();
-    }, 600); };
-    const up = () => { if (hold){ clearTimeout(hold); hold = 0; } };
-    cb.addEventListener('touchstart', down, { passive:true });
-    cb.addEventListener('touchend', up);
-    cb.addEventListener('mousedown', down);
-    cb.addEventListener('mouseup', up);
-    cb.addEventListener('mouseleave', up);
     paint();
+    cb.dataset.wired = '1';
   } catch (err) { console.warn('click', err); }
 })();
 
-(function clickWithAnyway(){
-  try {
-    const w = document.getElementById('bClickWith');
-    if (!w) return;
-    w.checked = CLICK_WITH;
-    w.addEventListener('change', () => {
-      CLICK_WITH = w.checked;
-      try { localStorage.setItem('island.clickwith', CLICK_WITH ? '1' : '0'); } catch (e) {}
-      if (CLICK_ON){ clickStop(); clickStart(); }
-      tell(CLICK_WITH ? 'the click will start with the music, on its downbeat'
-                      : 'the click runs on its own, for playing along to');
-    });
-  } catch (err) {}
-})();
 
 (function voicesAnyway(){
   try {
