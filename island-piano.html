@@ -2272,7 +2272,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b281 a stream, not a count';
+const BUILD_STAMP = '2026-09-04 b282 the music plays after the count';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10718,13 +10718,21 @@ function play(fromStart){
       if (dots) dots.querySelectorAll('i').forEach(n => n.classList.remove('on'));
     }, Math.max(0, (t0 - audio.currentTime) * 1000));
 
-    if (LAP === 0) cry(LOOP_VOICES
+    if (LAP === 0 && loop) cry(LOOP_VOICES
       ? (LOOP_VOICES.length === 1
           ? 'VOICE ' + voiceNumber(LOOP_VOICES[0]) + ' ALONE'
           : LOOP_VOICES.map(id => 'V' + voiceNumber(id)).join(' AND '))
       : 'EVERY VOICE', 1200);
-    say = leadPlan.beats + ' clicks, then bars ' + (barAt(loop.from) + 1)
-        + '\u2013' + (barAt(loop.to - 1) + 1);
+    // A COUNT-IN NO LONGER MEANS A LOOP. This line named the passage being
+    // circled — and since the count-in started happening on every play, `loop`
+    // is null half the time and reading loop.from threw, taking the rest of
+    // play() with it. Don: "the music doesn't play after the count-in."
+    // WHEN A THING STOPS BEING CONDITIONAL, EVERYTHING THAT ASSUMED THE
+    // CONDITION HAS TO BE FOUND.
+    say = loop
+      ? ('counting in, then bars ' + (barAt(loop.from) + 1)
+         + '\u2013' + (barAt(loop.to - 1) + 1))
+      : 'counting in';
   }
 
   // THE METRONOME COUNTS THE MUSIC'S BEATS, NOT ITS OWN. It was started on its
@@ -13342,6 +13350,7 @@ render();
 // WHOLE POINT OF BEING COUNTED IN.
 const LEAD_WAYS = [
   { id:'off',  name:'no count-in',              bars:0 },
+  { id:'half', name:'half a bar of sixteenths', bars:0.5, div:4 },
   { id:'one',  name:'a bar of sixteenths',      bars:1, div:4 },
   { id:'two',  name:'two bars of sixteenths',   bars:2, div:4 },
   { id:'8th',  name:'two bars of eighths',      bars:2, div:2 }
@@ -13356,7 +13365,9 @@ function leadPattern(perBar, step){
   const way = LEAD_WAYS[LEAD_WAY];
   if (!way || !way.bars) return [];
   const div = way.div || 4;              // strokes per beat
-  const beats = way.bars * perBar;
+  // Halves are allowed, so a 4/4 bar can be counted in two beats rather than
+  // four — Don: "an option for half that time as the count-in."
+  const beats = Math.max(1, Math.round(way.bars * perBar));
   const out = [];
   // Counted in strokes, from the first down to the one just before the entry.
   // A stroke is LOUD when it falls on a beat, and the first beat of each bar is
@@ -13379,10 +13390,8 @@ function leadPattern(perBar, step){
     const paint = () => {
       const way = LEAD_WAYS[LEAD_WAY];
       lb.setAttribute('aria-pressed', LEAD_WAY ? 'true' : 'false');
-      lb.textContent = LEAD_WAY === 0 ? 'no count'
-                     : LEAD_WAY === 1 ? 'count 1'
-                     : LEAD_WAY === 2 ? 'count 2'
-                     : 'count 8ths';
+      lb.textContent = ['no count', 'count \u00bd', 'count 1', 'count 2', 'count 8ths'][LEAD_WAY]
+                     || 'count';
       lb.title = way.name + ' \u00b7 hold to choose another';
     };
     // Tap turns it on and off; hold walks through the ways.
