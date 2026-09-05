@@ -2272,7 +2272,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b280 fill the space, mark the meter';
+const BUILD_STAMP = '2026-09-04 b281 a stream, not a count';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10665,12 +10665,12 @@ function play(fromStart){
     const word = document.getElementById('countWord');
     if (dots){
       dots.innerHTML = '';
+      // Only the beats get a dot. Sixteen dots for a two-bar count would be a
+      // row of specks nobody could read at a glance.
       for (const p3 of leadPlan.pattern){
+        if (!p3.beat) continue;
         const d2 = document.createElement('i');
         if (p3.strong) d2.className = 'one';
-        // The pull-in stroke is drawn smaller: it is half a beat, and the dots
-        // should look like the rhythm sounds.
-        if (p3.before < 1) d2.className = 'half';
         dots.appendChild(d2);
       }
     }
@@ -10701,11 +10701,17 @@ function play(fromStart){
     // in the list rather than a special case bolted on the end.
     leadPlan.pattern.forEach((p2, i) => {
       const at = t0 - p2.before * leadPlan.step;
-      if (!metroWillCount) tick(at, p2.strong);
-      setTimeout(() => {
-        if (!dots) return;
-        dots.querySelectorAll('i').forEach((n, k) => n.classList.toggle('on', k === i));
-      }, Math.max(0, (at - audio.currentTime) * 1000));
+      // THREE WEIGHTS: the downbeat, the other beats, and the subdivisions
+      // between them. Two would leave the sixteenths as loud as the pulse and
+      // the meter would disappear into a buzz.
+      if (!metroWillCount) tick(at, p2.strong, p2.beat ? 1 : 0.35);
+      if (p2.beat){
+        const which = leadPlan.pattern.filter(x => x.beat).indexOf(p2);
+        setTimeout(() => {
+          if (!dots) return;
+          dots.querySelectorAll('i').forEach((n, k) => n.classList.toggle('on', k === which));
+        }, Math.max(0, (at - audio.currentTime) * 1000));
+      }
     });
     setTimeout(() => {
       if (box) box.hidden = true;
@@ -11051,8 +11057,12 @@ const PEAK = 0.115;                 // so the six together sit where b9's one di
 // A WOOD BLOCK: a very short noise burst through a tight band. The downbeat
 // sits higher and louder, which is the whole of what a lead-in has to say —
 // here is the pulse, and here is where the bar begins.
-function tick(at, strong){
+function tick(at, strong, level){
   if (!audio) return null;
+  // A THIRD WEIGHT, for counting in with subdivisions. The beats keep their own
+  // loudness; the sixteenths between them come in at a fraction of it, so the
+  // pulse stays audible through the stream rather than being buried in it.
+  const lvl = (typeof level === 'number') ? Math.max(0.05, Math.min(1, level)) : 1;
   // A CLICK YOU CAN ACTUALLY HEAR.
   //
   // The first recipe was a noise burst through a bandpass at Q=3. It ran, it
@@ -11073,7 +11083,7 @@ function tick(at, strong){
   // A touch of downward bend is what makes a tick sound struck rather than beeped.
   o.frequency.exponentialRampToValueAtTime(strong ? 900 : 700, at + 0.03);
   g.gain.setValueAtTime(0.0001, at);
-  g.gain.exponentialRampToValueAtTime(strong ? 0.9 : 0.55, at + 0.002);
+  g.gain.exponentialRampToValueAtTime((strong ? 0.9 : 0.55) * lvl, at + 0.002);
   g.gain.exponentialRampToValueAtTime(0.0001, at + 0.055);
   o.connect(g); g.connect(audio.destination);
   o.start(at); o.stop(at + 0.07);
@@ -13318,11 +13328,23 @@ render();
 // rounded up to whole bars so the accents always land on downbeats. Three
 // requirements, and they hold in any signature: FILL THE SPACE, MARK THE METER,
 // POINT AT THE ENTRY.
+// A STREAM, NOT A COUNT.
+//
+// Four beats and a pull is still mostly silence — at 60 to the minute it is one
+// stroke a second, and the gaps are where the guessing happens. Don: "I would
+// like a count-in of 16th notes at the speed of the signature, with a loud one
+// on the beat, 2 bars."
+//
+// That is the right answer and it is different in kind. A continuous stream has
+// NO GAP TO GUESS THROUGH — the pulse is audible the whole way in, the accents
+// say where the beats are, and the entry arrives out of a texture that has been
+// running since the beginning. NOTHING IS FILLED IN BY THE PLAYER, WHICH IS THE
+// WHOLE POINT OF BEING COUNTED IN.
 const LEAD_WAYS = [
-  { id:'off',   name:'no count-in',   secs:0 },
-  { id:'short', name:'a short count', secs:2.5, pull:true },
-  { id:'full',  name:'a full count',  secs:4.0, pull:true },
-  { id:'long',  name:'a long count',  secs:6.0, pull:true }
+  { id:'off',  name:'no count-in',              bars:0 },
+  { id:'one',  name:'a bar of sixteenths',      bars:1, div:4 },
+  { id:'two',  name:'two bars of sixteenths',   bars:2, div:4 },
+  { id:'8th',  name:'two bars of eighths',      bars:2, div:2 }
 ];
 let LEAD_WAY = 1;
 try { LEAD_WAY = Math.max(0, Math.min(LEAD_WAYS.length - 1,
@@ -13332,21 +13354,20 @@ try { LEAD_WAY = Math.max(0, Math.min(LEAD_WAYS.length - 1,
 // Positive numbers are beats BEFORE the first note.
 function leadPattern(perBar, step){
   const way = LEAD_WAYS[LEAD_WAY];
-  if (!way || !way.secs) return [];
-  // How many beats fill the time asked for — then rounded UP to a whole number
-  // of bars, so the count always begins on a downbeat and the accents mean
-  // something. In 2/4 that is two bars where 4/4 gets one; the player's ear
-  // hears the same preparation either way.
-  let beats = Math.max(perBar, Math.round(way.secs / Math.max(0.08, step)));
-  beats = Math.ceil(beats / perBar) * perBar;
-  // Long enough to settle, short enough not to lose the will: at a crawl this
-  // stops it counting sixteen beats at 30 to the minute.
-  beats = Math.min(beats, perBar * 4);
+  if (!way || !way.bars) return [];
+  const div = way.div || 4;              // strokes per beat
+  const beats = way.bars * perBar;
   const out = [];
-  for (let i = beats; i > 0; i--) out.push({ before: i, strong: (i % perBar) === 0 });
-  // AND THE POINTER. The half beat before the entry is what tells the hands the
-  // downbeat is NEXT — the one thing evenly spaced beats can never say.
-  if (way.pull) out.push({ before: 0.5, strong: false });
+  // Counted in strokes, from the first down to the one just before the entry.
+  // A stroke is LOUD when it falls on a beat, and the first beat of each bar is
+  // louder still — so the meter is audible without anybody counting aloud.
+  for (let n = beats * div; n > 0; n--){
+    const before = n / div;                        // in beats
+    const onBeat = Math.abs(before - Math.round(before)) < 1e-9;
+    out.push({ before,
+               strong: onBeat && (Math.round(before) % perBar) === 0,
+               beat:   onBeat });
+  }
   return out;
 }
 
@@ -13359,9 +13380,9 @@ function leadPattern(perBar, step){
       const way = LEAD_WAYS[LEAD_WAY];
       lb.setAttribute('aria-pressed', LEAD_WAY ? 'true' : 'false');
       lb.textContent = LEAD_WAY === 0 ? 'no count'
-                     : LEAD_WAY === 1 ? 'count \u00b7'
-                     : LEAD_WAY === 2 ? 'count \u00b7\u00b7'
-                     : 'count \u00b7\u00b7\u00b7';
+                     : LEAD_WAY === 1 ? 'count 1'
+                     : LEAD_WAY === 2 ? 'count 2'
+                     : 'count 8ths';
       lb.title = way.name + ' \u00b7 hold to choose another';
     };
     // Tap turns it on and off; hold walks through the ways.
