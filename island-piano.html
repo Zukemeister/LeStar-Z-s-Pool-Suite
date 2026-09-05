@@ -2319,7 +2319,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b292 one shape for one action';
+const BUILD_STAMP = '2026-09-04 b294 one click, no choices';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10535,12 +10535,30 @@ function play(fromStart){
   // swept to rather than at that bar's barline.
   const lead = stops.length ? (from - barStart(stops[0].bar)) * stops[0].secPerTick : 0;
 
+  // EVERY BEAT OF THE PIECE, AT ITS ACTUAL MOMENT.
+  //
+  // The click ran on its own clock at the tempo of bar one — so any tempo
+  // change, and any accumulation of rounding, put it behind the music. Don:
+  // "the click is behind the beat."
+  // A CLICK THAT FOLLOWS THE MUSIC MUST READ THE MUSIC'S OWN TIMES, not run a
+  // parallel clock and hope. These are computed from the same stops the notes
+  // are queued from, so the two cannot drift by construction.
+  const beatTimes = [];
+
   const evsBy = {};
   for (const st of score.profile.staves) evsBy[st.id] = sorted(st.id);
 
   for (let k = 0; k < stops.length; k++){
     const step = stops[k];
     const bStart = barStart(step.bar), bEnd = bStart + capacityOf(step.bar);
+    // The beats of this bar, in seconds, at this bar's own tempo.
+    try {
+      const ts2 = tsAt(step.bar);
+      const perBeat = TPQ * 4 / ts2.unit;
+      for (let t2 = bStart; t2 < bEnd - 1; t2 += perBeat)
+        beatTimes.push({ at: t0 + (step.at + (t2 - bStart) * step.secPerTick) - lead,
+                         strong: Math.round((t2 - bStart) / perBeat) === 0 });
+    } catch (err) {}
 
     for (const st of score.profile.staves){
       // ONE VOICE AT A TIME, when the program asks for it. Muting is a property
@@ -10811,9 +10829,14 @@ function play(fromStart){
     // THE MUSIC PLACES THE BEAT. Whether the click was already running or merely
     // armed, it is (re)started from the downbeat — or from the head of the
     // count-in, so the count and the click are one continuous pulse.
-    if ((CLICK_ON || CLICK_ARMED) && CLICK_WITH){
-      CLICK_ARMED = false;
-      clickStop();
+    // IF IT IS CLICKING, THE MUSIC TAKES IT OVER. No setting, no arming: press
+    // play and the click falls in with the piece from the downbeat.
+    if (CLICK_ON){
+      clickStop(); CLICK_ON = true;
+      // Hand the click the music's own beat list. It plays those moments
+      // exactly, so a tempo change carries it along instead of leaving it
+      // behind.
+      CLICK_BEATS = beatTimes.filter(b2 => b2.at > audio.currentTime - 0.05);
       clickStart(leadPlan ? t0 - leadPlan.secs : t0);
     }
     else metroStop();
@@ -11291,6 +11314,9 @@ let CLICK_ON = false, clickAt = 0, clickBeat = 0, clickTimer = 0, clickLive = []
 // A CLICK THAT FOLLOWS THE MUSIC MUST WAIT FOR IT. Armed, it makes no sound at
 // all until playback begins, and then it starts on the downbeat.
 let CLICK_ARMED = false;
+// When the click is following the music, these are the moments it plays —
+// supplied by play(), read by clickFeed, and emptied when the music stops.
+let CLICK_BEATS = null;
 
 // TWO TOOLS THAT HAPPEN TO MAKE THE SAME SOUND.
 //
@@ -11355,6 +11381,16 @@ function clickTick(at, strong){
 
 function clickFeed(){
   if (!CLICK_ON || !audio) return;
+  // FOLLOWING THE MUSIC: play its beats, not a clock of our own.
+  if (CLICK_BEATS && CLICK_BEATS.length){
+    const due = audio.currentTime + 1.0;
+    while (CLICK_BEATS.length && CLICK_BEATS[0].at <= due){
+      const b3 = CLICK_BEATS.shift();
+      if (b3.at > audio.currentTime + 0.005) clickTick(b3.at, b3.strong);
+    }
+    if (!CLICK_BEATS.length && !playing){ CLICK_BEATS = null; }
+    return;
+  }
   const step = 60 / clickBpm();
   // NOTHING IS EVER SCHEDULED AT "NOT A TIME". A single bad number here spins
   // the loop forever or silently books every beat into nowhere.
@@ -11402,6 +11438,7 @@ async function clickStart(from){
 }
 function clickStop(){
   CLICK_ON = false;
+  CLICK_BEATS = null;
   // AND THE OTHER ONE. There are two metronomes in this app — this one, and the
   // older one that starts with playback from the loop panel. Turning this off
   // left that one ticking, and there is no button on the bar for it, so the
@@ -13561,11 +13598,11 @@ function tell(msg, shout){
     // turn teal." So it is set directly, and it is set BEFORE the audio is
     // asked for anything, so a press always shows.
     const paint = () => {
-      const lit = CLICK_ON || CLICK_ARMED;
+      const lit = CLICK_ON;
       cb.setAttribute('aria-pressed', lit ? 'true' : 'false');
-      cb.style.background  = lit ? (CLICK_ON ? '#00a3ab' : 'rgba(0,163,171,.45)') : '';
+      cb.style.background  = lit ? '#00a3ab' : '';
       cb.style.borderColor = lit ? '#00a3ab' : '';
-      cb.style.color       = CLICK_ON ? '#04222a' : (lit ? '#fff' : '');
+      cb.style.color       = lit ? '#04222a' : '';
       cb.innerHTML = CLICK_WITH ? '&#9834;&#8202;&#8226;' : '&#9834;';
       cb.title = 'the click \u00b7 hold to change how loud ('
                + CLICK_VOL_NAMES[CLICK_VOL] + ')';
@@ -13593,21 +13630,23 @@ function tell(msg, shout){
         row.appendChild(b);
       };
 
+      // A HANDLE, so it can be put where it is not in the way. Every other pane
+      // on this page can be moved; this one was pinned wherever it opened.
+      // Don: "the click bar can't be moved. It is locked wherever it shows up."
+      const grip = document.createElement('span');
+      grip.textContent = '\u283f';
+      grip.setAttribute('style',
+        'cursor:move;opacity:.55;font-size:18px;padding:0 6px;align-self:center;'
+        + 'touch-action:none;user-select:none;-webkit-user-select:none');
+      row.appendChild(grip);
+      // The shared helper releases every anchor before it moves anything, which
+      // is what this panel needs — it is placed with left AND top each time.
+      try { floatable(row, grip, 'island.clickrow.pos'); } catch (err) {}
+
       // A WAY OUT OF THE PANEL ITSELF, matching every other pane on the page.
       mk('\u25bc', false, () => { up = false; row.setAttribute('style', 'display:none'); });
-      const live = CLICK_ON || CLICK_ARMED;
-      mk(live ? 'STOP' : (CLICK_WITH && !playing ? 'ARM' : 'START'), live, async () => {
-        if (live){
-          CLICK_ARMED = false; clickStop(); paint(); drawRow();
-          tell('the click is off'); return;
-        }
-        if (CLICK_WITH && !playing){
-          // It waits. Nothing sounds until the music does, and then the first
-          // beat IS the downbeat.
-          CLICK_ARMED = true; paint(); drawRow();
-          tell('the click is armed \u2014 it will start on the downbeat when you press play');
-          return;
-        }
+      mk(CLICK_ON ? 'STOP' : 'START', CLICK_ON, async () => {
+        if (CLICK_ON){ clickStop(); paint(); drawRow(); tell('the click is off'); return; }
         const ok = await clickStart();
         paint(); drawRow();
         tell(ok ? ('clicking at ' + Math.round(clickBpm()) + ' a minute, '
@@ -13622,24 +13661,15 @@ function tell(msg, shout){
           drawRow(); tell('the click is ' + CLICK_VOL_NAMES[i]);
         });
 
-      mk('with the music', CLICK_WITH, () => {
-        CLICK_WITH = !CLICK_WITH;
-        try { localStorage.setItem('island.clickwith', CLICK_WITH ? '1' : '0'); } catch (e) {}
-        // CHOOSING IT IS THE ARMING. Asking for a click that follows the music
-        // and then having to press ARM as well is one step for one decision —
-        // there is nothing else that choice could mean. Don: "it should do that
-        // on its own, when 'with the music' is selected."
-        if (CLICK_WITH){
-          if (CLICK_ON && !playing) clickStop();     // stop the free-running one
-          CLICK_ARMED = true;
-        } else {
-          CLICK_ARMED = false;
-          if (CLICK_ON){ clickStop(); clickStart(); }
-        }
-        paint(); drawRow();
-        tell(CLICK_WITH ? 'armed \u00b7 the click will start on the downbeat when you press play'
-                        : 'the click runs on its own, for playing along to');
-      });
+      // NO CHOICE HERE ANY MORE.
+      //
+      // There was a switch for whether the click followed the music, and Don
+      // asked the right question: "when would I want that? Seems it should only
+      // be coordinated with the music." Quite so — with nothing else sounding
+      // there is nothing to be out of step WITH, so the free-running click and
+      // the coordinated one are the same thing heard alone.
+      // A CHOICE WITH ONE SENSIBLE ANSWER IS NOT A CHOICE, IT IS A CHORE. It
+      // clicks at the piece's tempo; if the music starts, it falls in with it.
     };
 
     cb.addEventListener('click', ev => {
@@ -13647,6 +13677,12 @@ function tell(msg, shout){
       up = !up;
       if (!up){ row.setAttribute('style', 'display:none'); return; }
       drawRow();
+      // If it has been dragged somewhere, respect that and only make it
+      // visible. A panel that jumps home every time it opens is not movable.
+      if (row.classList.contains('floating')){
+        row.style.display = 'flex';
+        return;
+      }
       const r = cb.getBoundingClientRect();
       const w = Math.min(innerWidth - 20, 470);
       row.setAttribute('style',
