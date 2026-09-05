@@ -2232,7 +2232,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b270 reading ahead';
+const BUILD_STAMP = '2026-09-04 b272 a silent handler is undebuggable';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8873,20 +8873,54 @@ document.getElementById('bWords').addEventListener('click', ev => {
     };
     window._paintVoices = paintVoices;
     const ah = document.getElementById('pageAhead');
+    const aheadName = () => AHEAD_VOICE ? ('V' + voiceNumber(AHEAD_VOICE)) : 'both hands';
+    const paintAhead = () => {
+      if (!ah) return;
+      const on = document.body.classList.contains('ahead');
+      ah.setAttribute('aria-pressed', on ? 'true' : 'false');
+      ah.title = on
+        ? 'hiding ' + aheadName() + ' \u00b7 hold to choose which'
+        : 'hide the bar you are playing \u00b7 hold to choose which voice';
+    };
+    // HOLD TO CHOOSE WHICH LINE GOES. It cycles: one voice, the next, then both
+    // — one control, because it is one exercise at different difficulties.
+    if (ah){
+      let hv = 0;
+      const hvStart = () => { hv = setTimeout(() => {
+        hv = 0;
+        const list = shownAll().map(v => v.id);
+        const i5 = AHEAD_VOICE ? list.indexOf(AHEAD_VOICE) : -1;
+        AHEAD_VOICE = (i5 + 1 < list.length) ? list[i5 + 1] : null;
+        _aheadBar = -1;                    // repaint against the new choice
+        const sc6 = document.getElementById('score');
+        if (sc6) for (const e6 of sc6.querySelectorAll('.faded')) e6.classList.remove('faded');
+        say = 'reading ahead will hide ' + aheadName();
+        cry('HIDING ' + aheadName().toUpperCase(), 1800);
+        paintAhead(); render();
+      }, 600); };
+      const hvEnd = () => { if (hv){ clearTimeout(hv); hv = 0; } };
+      ah.addEventListener('touchstart', hvStart, { passive:true });
+      ah.addEventListener('touchend', hvEnd);
+      ah.addEventListener('mousedown', hvStart);
+      ah.addEventListener('mouseup', hvEnd);
+      ah.addEventListener('mouseleave', hvEnd);
+    }
     if (ah) ah.addEventListener('click', () => {
       const on = !document.body.classList.contains('ahead');
       document.body.classList.toggle('ahead', on);
-      ah.setAttribute('aria-pressed', on ? 'true' : 'false');
+      paintAhead();
       if (!on){
         const sc5 = document.getElementById('score');
         if (sc5) for (const e5 of sc5.querySelectorAll('.faded')) e5.classList.remove('faded');
         _aheadBar = -1;
       }
       say = on
-        ? 'reading ahead \u00b7 the bar you are playing fades, so your eyes go forward'
+        ? 'reading ahead \u00b7 ' + aheadName() + ' fades in the bar you are playing'
         : 'the whole page is visible again';
       render();
     });
+    // A single-voice piece has nothing to choose between, so it starts on both.
+    paintAhead();
 
     const cb2 = document.getElementById('pageClick');
     const paintClick = () => {
@@ -8948,8 +8982,21 @@ document.getElementById('bWords').addEventListener('click', ev => {
     const vb = document.getElementById('pageVoices');
     if (vb) vb.addEventListener('click', ev => {
       ev.preventDefault(); ev.stopPropagation();
+      // IT SAYS WHAT HAPPENED. This has now failed twice with the code visibly
+      // correct in the file, which means it is throwing somewhere inside — and
+      // a handler that throws leaves no trace at all, so the button looks dead.
+      // A SILENT HANDLER IS AN UNDEBUGGABLE ONE.
+      try { voicePanel(); }
+      catch (err){
+        say = 'the voices panel failed \u2014 ' + (err && err.message ? err.message : err);
+        cry('VOICES FAILED', 2500);
+        render();
+      }
+    });
+
+    function voicePanel(){
       const row = document.getElementById('voiceRow');
-      if (!row) return;
+      if (!row){ say = 'the voices panel is missing from the page'; render(); return; }
       const open = !row.classList.contains('up');
       row.classList.toggle('up', open);
       if (!open){ row.style.display = 'none'; return; }
@@ -8969,7 +9016,9 @@ document.getElementById('bWords').addEventListener('click', ev => {
         + 'left:' + Math.max(10, Math.min(innerWidth - w - 10, r.left + r.width / 2 - w / 2)) + 'px;'
         + 'top:'  + Math.max(10, r.top - 66) + 'px;'
         + 'width:' + w + 'px;';
-    });
+      say = 'lit means you hear it \u00b7 tap a voice to silence it';
+      render();
+    }
     paintVoices();
 
     // The build number, short, on the bar. Tap it for the whole stamp.
@@ -11390,6 +11439,14 @@ function tickNow(){
 // real element on the page, so its position is measured rather than computed —
 // which is what makes this hold at any size, from 20% to 250%.
 let _lastScroll = -1, _aheadBar = -1;
+// WHICH VOICE DISAPPEARS. null means all of them, which is what the eye did at
+// first — and Don, trying it: "that's cool! But I don't think I can keep up
+// with it." Quite right: losing both hands at once is the hardest form of the
+// exercise, not the first one.
+// ONE HAND VANISHES AND THE OTHER HOLDS YOUR PLACE. You read ahead in the line
+// that goes, and stay oriented by the line that stays — which is how the skill
+// is built rather than tested.
+let AHEAD_VOICE = null;
 function centreOnPlayhead(){
   const sc = document.getElementById('score');
   if (!sc) return;
@@ -11462,8 +11519,9 @@ function follow(){
         const sc4 = document.getElementById('score');
         if (sc4){
           for (const el4 of sc4.querySelectorAll('.faded')) el4.classList.remove('faded');
-          for (const el4 of sc4.querySelectorAll('.chip[data-bar="' + nowBar + '"]'))
-            el4.classList.add('faded');
+          const want = '.chip[data-bar="' + nowBar + '"]'
+                     + (AHEAD_VOICE ? '[data-st="' + AHEAD_VOICE + '"]' : '');
+          for (const el4 of sc4.querySelectorAll(want)) el4.classList.add('faded');
         }
       }
     } catch (err) {}
