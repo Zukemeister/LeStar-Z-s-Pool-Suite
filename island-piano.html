@@ -2267,7 +2267,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b277 the eye silences what it hides';
+const BUILD_STAMP = '2026-09-04 b278 controls out of harms reach';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -8969,6 +8969,7 @@ document.getElementById('bWords').addEventListener('click', ev => {
     paintAhead();
 
     const cb2 = document.getElementById('pageClick');
+    if (cb2) cb2.dataset.wired = '1';
     const paintClick = () => {
       if (!cb2) return;
       cb2.setAttribute('aria-pressed', CLICK_ON ? 'true' : 'false');
@@ -13250,6 +13251,65 @@ render();
 //  THE MENU HAD THE SAME DISEASE AND THE SAME CURE. This runs at the very end,
 //  in its own function, and owes nothing to the block that keeps failing.
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+//  THE CLICK, WIRED FROM OUTSIDE, FOR THE SAME REASON.
+//
+//  The metronome worked when it was built and has stopped since — and it lives
+//  in the same long block of wiring that swallowed the voices button. Anything
+//  in that block that throws takes every control declared after it, silently.
+//  I have now lost three controls to this. RATHER THAN FIND THE THROW, MOVE THE
+//  CONTROLS OUT OF ITS REACH: each one wired at the end, in its own function,
+//  where one failure cannot cost the others.
+// ---------------------------------------------------------------------------
+(function clickAnyway(){
+  try {
+    const cb = document.getElementById('pageClick');
+    if (!cb || cb.dataset.wired) return;
+    cb.dataset.wired = '1';
+
+    const paint = () => {
+      cb.setAttribute('aria-pressed', CLICK_ON ? 'true' : 'false');
+      cb.innerHTML = CLICK_WITH ? '&#9834;&#8202;&#8226;' : '&#9834;';
+      cb.title = CLICK_WITH
+        ? 'clicks with the music, from the downbeat \u00b7 hold to make it independent'
+        : 'clicks on its own, for playing along \u00b7 hold to make it follow the music';
+    };
+
+    cb.addEventListener('click', async () => {
+      try {
+        if (CLICK_ON){ clickStop(); say = 'the click is off'; paint(); render(); return; }
+        const ok = await clickStart();
+        if (ok) say = (CLICK_WITH ? 'clicking with the music' : 'clicking on its own')
+                    + ' at ' + Math.round(clickBpm()) + ' a minute, '
+                    + clickPerBar() + ' to the bar';
+        paint(); render();
+      } catch (err){
+        say = 'the click failed \u2014 ' + (err && err.message ? err.message : err);
+        render();
+      }
+    });
+
+    let hold = 0;
+    const down = () => { hold = setTimeout(() => {
+      hold = 0;
+      CLICK_WITH = !CLICK_WITH;
+      try { localStorage.setItem('island.clickwith', CLICK_WITH ? '1' : '0'); } catch (e) {}
+      if (CLICK_ON){ clickStop(); clickStart(); }
+      say = CLICK_WITH ? 'the click now starts with the music, on its downbeat'
+                       : 'the click now runs on its own, for playing along to';
+      cry(CLICK_WITH ? 'CLICK WITH THE MUSIC' : 'CLICK ON ITS OWN', 2000);
+      paint(); render();
+    }, 600); };
+    const up = () => { if (hold){ clearTimeout(hold); hold = 0; } };
+    cb.addEventListener('touchstart', down, { passive:true });
+    cb.addEventListener('touchend', up);
+    cb.addEventListener('mousedown', down);
+    cb.addEventListener('mouseup', up);
+    cb.addEventListener('mouseleave', up);
+    paint();
+  } catch (err) { console.warn('click', err); }
+})();
+
 (function voicesAnyway(){
   try {
     const vb2 = document.getElementById('pageVoices');
