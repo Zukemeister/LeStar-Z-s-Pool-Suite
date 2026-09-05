@@ -685,8 +685,19 @@
     font:700 13px/1 -apple-system,sans-serif; letter-spacing:.08em }
   @media print { #tuner{ display:none !important } }
 
+  /* IT WRAPS, RATHER THAN RUNNING OFF THE EDGE.
+     The bar has gained a control most days this week and nobody re-measured it:
+     at 926px it is a hundred wider than an iPad, so its right-hand end — and
+     whatever was newest — simply was not on the screen. Don: "the working bar is
+     too wide for the tablet and cannot be moved," which is exactly what a bar
+     wider than its window feels like, and it is why V appeared dead: the button
+     was off the glass.
+     A ROW THAT CANNOT FIT SHOULD BECOME TWO ROWS, not a row with an invisible
+     end. Wrapping also means the next control added cannot push an old one off. */
   #pager{
     position:fixed; left:50%; transform:translateX(-50%);
+    flex-wrap:wrap; justify-content:center; row-gap:6px;
+    max-width:calc(100vw - 20px);
     bottom:calc(74px + env(safe-area-inset-bottom)); z-index:70;
     display:flex; align-items:center; gap:10px;
     background:#0d1013; color:#fff; border:2px solid #fff; border-radius:10px;
@@ -710,7 +721,23 @@
      rest but the bar in front of it. The notes are still there — faint enough
      to be no use, present enough that the page does not jump. */
   #pageAhead[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
-  body.ahead .chip.faded{ opacity:.06 !important; transition:opacity .1s linear }
+  /* TWO DIFFERENT KINDS OF QUIET, AND THEY MUST NOT COMPOUND.
+     V says a voice is not SOUNDING: its notes go pale, still written and still
+     readable, everywhere in the piece. The eye says a bar is not to be LOOKED
+     AT: it goes properly invisible, in one bar only, and returns as the music
+     passes. Don: "when one voice disappears, it should only disappear in the
+     active bar. And all the notes in the piece are visible until the present
+     time shuts down one voice, and only that voice."
+     So the fade wins outright in the bar it applies to — it does not add itself
+     to whatever paleness was already there. A MARK THAT MEANS TWO THINGS AT
+     ONCE MEANS NEITHER. */
+  body.ahead .chip.faded,
+  body.ahead .chip.ghost.faded{ opacity:0 !important; transition:opacity .12s linear }
+  /* And a hidden note takes its stem, beam and flag with it, or the bar shows
+     a ghost skeleton of what was there. */
+  body.ahead .stem.faded, body.ahead .beam.faded, body.ahead .flag.faded,
+  body.ahead .arc.faded, body.ahead .ledger.faded,
+  body.ahead .rest.faded{ opacity:0 !important; transition:opacity .12s linear }
   #pageClick[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
   #pageVoices{ width:auto !important; min-width:44px; padding:0 10px !important;
     font:800 12px/1 ui-monospace,Menlo,monospace !important; letter-spacing:.06em }
@@ -831,7 +858,7 @@
        A BAR THAT SCROLLS HIDES ITS OWN CONTENTS. So on a phone it does not
        scroll: the menu sits first, where it cannot be pushed anywhere, and
        everything else is trimmed until the row fits. */
-    body.phone #pager{ gap:3px; overflow-x:visible; flex-wrap:nowrap;
+    body.phone #pager{ gap:3px; overflow-x:visible; flex-wrap:wrap;
       justify-content:flex-start }
     body.phone #pagerMenu{ order:-1; flex:0 0 auto; margin-right:2px }
     body.phone #pageSays{ order:0; flex:1 1 auto; overflow:hidden;
@@ -1887,6 +1914,15 @@
   <button type="button" id="tunerShut">Done</button>
 </div>
 
+<!-- OUTSIDE THE BAR, DELIBERATELY.
+     This lived inside #pager — and #pager carries transform:translateX(-50%) to
+     centre itself. A TRANSFORM MAKES ITS ELEMENT THE REFERENCE FRAME FOR ANY
+     position:fixed DESCENDANT, so the row's coordinates were measured from the
+     bar rather than from the window, and it opened somewhere off the screen
+     every single time. Don, three times: "the V does nothing."
+     It was doing something. It was doing it out of sight. -->
+<div id="voiceRow"></div>
+
 <div id="pager" hidden>
   <span class="pgrab" id="pagerGrab" aria-hidden="true">⠿</span>
   <button type="button" id="pagePrev" title="the page before">&#8249;</button>
@@ -1910,7 +1946,6 @@
        is editing a document, they are writing music. Edit is a software word;
        write is what the person is doing — and the pair is the two things anyone
        does with notation. -->
-  <div id="voiceRow"></div>
   <span id="pagerMode">
     <button type="button" id="pagerRead" aria-pressed="true" title="follow the music">READ</button>
     <button type="button" id="pagerEdit" aria-pressed="false" title="change the notes">WRITE</button>
@@ -2232,7 +2267,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b272 a silent handler is undebuggable';
+const BUILD_STAMP = '2026-09-04 b277 the eye silences what it hides';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -7231,6 +7266,10 @@ function drawEverything(){
           const LEN = GAP() * 2.4 + Math.max(0, FLAGS_HERE - 1) * FLAG_STEP;
           const stem = document.createElement('div');
           stem.className = 'stem';
+          // TAGGED LIKE THE NOTEHEADS, so the read-ahead can take a whole note
+          // out of the bar rather than leaving its stem behind.
+          stem.dataset.bar = e._bar != null ? e._bar : barAt(e.start);
+          stem.dataset.st = vc.id;
           stem.dataset.ev = e.id; stem.dataset.st = vc.id;   // the handle for the whole chord
           stem.style.left = (x + stemDX(up)) + 'px';
           // A DOWN STEM STARTS AT THE TOP OF THE CHORD, not the bottom. It ran
@@ -8892,9 +8931,14 @@ document.getElementById('bWords').addEventListener('click', ev => {
         const i5 = AHEAD_VOICE ? list.indexOf(AHEAD_VOICE) : -1;
         AHEAD_VOICE = (i5 + 1 < list.length) ? list[i5 + 1] : null;
         _aheadBar = -1;                    // repaint against the new choice
+        // The silence is decided while queueing, so a running piece has to be
+        // re-queued for the change to be heard rather than only seen.
+        if (playing){ stop(); play(false); }
         const sc6 = document.getElementById('score');
         if (sc6) for (const e6 of sc6.querySelectorAll('.faded')) e6.classList.remove('faded');
-        say = 'reading ahead will hide ' + aheadName();
+        say = AHEAD_VOICE
+          ? 'reading ahead will hide ' + aheadName() + ' and leave it for you to play'
+          : 'reading ahead will hide both hands \u2014 the app plays them';
         cry('HIDING ' + aheadName().toUpperCase(), 1800);
         paintAhead(); render();
       }, 600); };
@@ -8915,8 +8959,10 @@ document.getElementById('bWords').addEventListener('click', ev => {
         _aheadBar = -1;
       }
       say = on
-        ? 'reading ahead \u00b7 ' + aheadName() + ' fades in the bar you are playing'
-        : 'the whole page is visible again';
+        ? (AHEAD_VOICE
+            ? 'reading ahead \u00b7 ' + aheadName() + ' fades in the bar you are on, and is silent \u2014 you play it'
+            : 'reading ahead \u00b7 both hands fade in the bar you are on')
+        : 'the whole page is visible again, and everything sounds';
       render();
     });
     // A single-voice piece has nothing to choose between, so it starts on both.
@@ -8980,6 +9026,7 @@ document.getElementById('bWords').addEventListener('click', ev => {
     // nothing to list — a panel that opens empty looks exactly like one that
     // did not open.
     const vb = document.getElementById('pageVoices');
+    if (vb) vb.dataset.wired = '1';
     if (vb) vb.addEventListener('click', ev => {
       ev.preventDefault(); ev.stopPropagation();
       // IT SAYS WHAT HAPPENED. This has now failed twice with the code visibly
@@ -10446,6 +10493,17 @@ function play(fromStart){
       // is running — silencing a hand to learn the other one is not a thing you
       // should have to set up a loop to do.
       if (HEARD && HEARD.indexOf(st.id) === -1) continue;
+      // AND THE VOICE YOU ARE READING AHEAD IN IS THE VOICE YOU ARE PLAYING.
+      //
+      // Hiding a line makes you supply it from memory a bar early — and the app
+      // went on playing it, which does the remembering for you. Don: "choosing
+      // one voice to be invisible should also silence it. Presumably, you are
+      // playing that voice."
+      // HIDING A PART AND SOUNDING IT ARE CONTRADICTORY INSTRUCTIONS. So the eye
+      // silences what it hides, for as long as it is hiding it. Set to both
+      // hands it silences nothing — there is no part left for you to play.
+      if (AHEAD_VOICE && AHEAD_VOICE === st.id
+          && document.body.classList.contains('ahead')) continue;
       const evs = evsBy[st.id];
       for (let i = 0; i < evs.length; i++){
         const e = evs[i];
@@ -11519,8 +11577,15 @@ function follow(){
         const sc4 = document.getElementById('score');
         if (sc4){
           for (const el4 of sc4.querySelectorAll('.faded')) el4.classList.remove('faded');
-          const want = '.chip[data-bar="' + nowBar + '"]'
-                     + (AHEAD_VOICE ? '[data-st="' + AHEAD_VOICE + '"]' : '');
+          // EVERYTHING THAT BELONGS TO THAT NOTE, not just its head. A notehead
+          // alone leaves stems and beams hanging in the air, which is more
+          // distracting than leaving the note there.
+          const suffix = (AHEAD_VOICE ? '[data-st="' + AHEAD_VOICE + '"]' : '');
+          const want = '.chip[data-bar="' + nowBar + '"]' + suffix
+                     + ', .stem[data-bar="' + nowBar + '"]' + suffix
+                     + ', .beam[data-bar="' + nowBar + '"]' + suffix
+                     + ', .flag[data-bar="' + nowBar + '"]' + suffix
+                     + ', .rest[data-bar="' + nowBar + '"]' + suffix;
           for (const el4 of sc4.querySelectorAll(want)) el4.classList.add('faded');
         }
       }
@@ -13174,6 +13239,85 @@ render();
 //  setting them visible itself rather than asking a rule to do it.
 //  WHEN SIX FIXES HAVE FAILED, STOP FIXING AND BUILD SOMETHING THAT CANNOT.
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+//  THE VOICES BUTTON, WIRED FROM OUTSIDE.
+//
+//  Four builds have now failed to make this button do anything on the desktop,
+//  with the code correct in the file and no error ever reported — which means
+//  the handler is never attached at all. It sits inside a long block of wiring,
+//  and anything in that block that throws before reaching it takes it down
+//  silently along with whatever follows.
+//  THE MENU HAD THE SAME DISEASE AND THE SAME CURE. This runs at the very end,
+//  in its own function, and owes nothing to the block that keeps failing.
+// ---------------------------------------------------------------------------
+(function voicesAnyway(){
+  try {
+    const vb2 = document.getElementById('pageVoices');
+    const row = document.getElementById('voiceRow');
+    if (!vb2 || !row) return;
+    // If the ordinary wiring did attach, this second listener would open and
+    // close the row in the same breath — so it only steps in when nothing else
+    // has claimed the button.
+    if (vb2.dataset.wired) return;
+    vb2.dataset.wired = '1';
+
+    const draw = () => {
+      row.innerHTML = '';
+      const list = (typeof shownAll === 'function') ? shownAll() : [];
+      for (const v of list){
+        const on = !HEARD || HEARD.indexOf(v.id) !== -1;
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = 'V' + voiceNumber(v.id);
+        b.setAttribute('style',
+          'flex:1;min-width:64px;padding:12px 10px;cursor:pointer;border-radius:9px;'
+          + 'border:1.5px solid ' + (on ? '#00a3ab' : 'rgba(255,255,255,.35)') + ';'
+          + 'background:' + (on ? '#00a3ab' : 'rgba(255,255,255,.08)') + ';'
+          + 'color:' + (on ? '#04222a' : '#fff') + ';'
+          + 'font:800 14px/1 ui-monospace,Menlo,monospace;');
+        b.addEventListener('click', () => {
+          const all = list.map(x => x.id);
+          let now = HEARD ? HEARD.slice() : all.slice();
+          const i = now.indexOf(v.id);
+          if (i === -1) now.push(v.id); else now.splice(i, 1);
+          if (!now.length) now = all.slice();          // never silence everything
+          HEARD = now.length === all.length ? null : now;
+          say = HEARD ? 'hearing ' + HEARD.map(id => 'V' + voiceNumber(id)).join(' and ')
+                      : 'hearing every voice';
+          draw(); render();
+        });
+        row.appendChild(b);
+      }
+      if (!list.length){
+        const note = document.createElement('span');
+        note.setAttribute('style', 'color:#fff;padding:10px;font:700 12px/1 ui-monospace,Menlo,monospace');
+        note.textContent = 'this piece has one voice';
+        row.appendChild(note);
+      }
+      vb2.setAttribute('aria-pressed', HEARD ? 'true' : 'false');
+    };
+
+    let up = false;
+    vb2.addEventListener('click', ev => {
+      ev.preventDefault(); ev.stopPropagation();
+      up = !up;
+      if (!up){ row.setAttribute('style', 'display:none'); return; }
+      draw();
+      const r = vb2.getBoundingClientRect();
+      const w = Math.min(innerWidth - 20, Math.max(180, row.children.length * 80 + 24));
+      row.setAttribute('style',
+        'position:fixed;z-index:9600;display:flex;gap:6px;'
+        + 'background:#0d1013;border:2px solid #fff;border-radius:12px;padding:8px;'
+        + 'box-shadow:0 10px 34px rgba(0,0,0,.45);'
+        + 'left:' + Math.max(10, Math.min(innerWidth - w - 10, r.left + r.width / 2 - w / 2)) + 'px;'
+        + 'top:'  + Math.max(10, r.top - 68) + 'px;'
+        + 'width:' + w + 'px;');
+      say = 'lit means you hear it \u00b7 tap a voice to silence it';
+      render();
+    });
+  } catch (err) { console.warn('voices', err); }
+})();
+
 (function alwaysAWayIn(){
   try {
     if (innerWidth >= 600 && innerHeight >= 460) return;   // phones only
