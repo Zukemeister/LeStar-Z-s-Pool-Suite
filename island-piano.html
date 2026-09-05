@@ -598,7 +598,13 @@
     font:700 10px/1 -apple-system,sans-serif;
   }
   body.footshut .foot .now > *:not(#footFold):not(.drag){ display:none }
-  body.footshut .foot{ padding-top:4px; padding-bottom:4px }
+  /* FOLDED MEANS SMALL, NOT SHORT. It kept the full width of the window with
+     nothing in it — a black band across the foot of the page doing no work. */
+  body.footshut .foot{
+    padding:4px 6px; left:auto; right:8px; width:auto; max-width:none;
+    border-radius:10px;
+  }
+  body.footshut .foot .now{ gap:4px }
 
   /* PINNED TO THE WINDOW, NOT TO THE RAIL. It sat inside the rail, so folding
      the rail — or scrolling it sideways on a narrow screen — took the size
@@ -711,18 +717,30 @@
   #pager.floating{ left:auto; right:auto; bottom:auto; transform:none }
   /* One control made of two halves, so it reads as a single choice rather than
      two independent switches. */
+  /* ONE SHAPE FOR ONE ACTION. A pane that folds away shows a DOWN arrow; the
+     thing that brings it back shows an UP arrow. Crosses were used in some
+     places and arrows in others, which made two gestures out of one idea. Don:
+     "let's make MINIMIZE consistent. They should all be up or down arrows, not
+     Xs." A CONTROL'S SHAPE IS PART OF WHAT IT MEANS. */
   #pagerHide{ width:34px !important; height:30px !important;
     font:700 17px/1 -apple-system,sans-serif !important; opacity:.65 }
   /* Folded away, the bar is a single small tab in the corner — enough to find,
      little enough to ignore. */
   body.barshut #pager > *{ display:none !important }
   body.barshut #pager > #pagerShow{ display:flex !important }
+  /* !important because the phone layout pins the bar to both edges, and a
+     folded bar that is still full width is not folded. Don: "minimizing now
+     makes a full width bar, when it only needs to be a nub." */
   body.barshut #pager{
-    left:auto; right:10px; transform:none; width:auto; min-width:0;
-    padding:4px; border-radius:12px;
+    left:auto !important; right:10px !important;
+    width:auto !important; max-width:none !important;
+    transform:none !important; min-width:0;
+    padding:4px !important; border-radius:12px !important;
+    border-left:2px solid #fff !important; border-right:2px solid #fff !important;
+    justify-content:center !important;
   }
   #pagerShow{ display:none; align-items:center; justify-content:center;
-    width:54px; height:38px; cursor:pointer; border-radius:9px;
+    width:48px; height:38px; cursor:pointer; border-radius:9px;
     border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.1);
     color:#fff; font:800 12px/1 ui-monospace,Menlo,monospace }
   #pagerBuild{ font:700 11px/1 ui-monospace,Menlo,monospace; opacity:.5;
@@ -1895,7 +1913,7 @@
   <div id="padBar">
     <b>WRITE</b>
     <span id="padSays"></span>
-    <span><button type="button" id="padShut">&times;</button></span>
+    <span><button type="button" id="padShut" title="minimize the write pad">&#9660;</button></span>
   </div>
   <div id="padNums"></div>
   <div id="padRow">
@@ -1929,7 +1947,7 @@
   <span id="tunerOct"></span>
   <div id="tunerBar"><i id="tunerNeedle"></i></div>
   <span id="tunerSays">listening…</span>
-  <button type="button" id="tunerShut">Done</button>
+  <button type="button" id="tunerShut">&#9660;&nbsp; done</button>
 </div>
 
 <!-- OUTSIDE THE BAR, DELIBERATELY.
@@ -1955,7 +1973,7 @@
        running."
        It leaves a small handle rather than vanishing, because a control that
        disappears completely is a control you cannot get back. -->
-  <button type="button" id="pagerHide" title="hide these controls">&times;</button>
+  <button type="button" id="pagerHide" title="minimize these controls">&#9660;</button>
   <button type="button" id="pagePrev" title="the page before">&#8249;</button>
   <span id="pageSays"></span>
   <button type="button" id="pageNext" title="the next page">&#8250;</button>
@@ -1987,7 +2005,7 @@
        YOU CANNOT TEST A VERSION YOU CANNOT IDENTIFY. -->
   <span id="pagerBuild" title="tap for the full build stamp"></span>
   <button type="button" id="pagerMenu" title="the controls">&#9776;</button>
-  <button type="button" id="pagerShow" title="bring the controls back">BAR</button>
+  <button type="button" id="pagerShow" title="bring the controls back">&#9650;</button>
   <button type="button" id="pageLead" title="count-in \u00b7 hold to choose how">1&#8239;2&#8239;3</button>
   <button type="button" id="pageAhead" title="hide the bar you are playing, so your eyes go forward">&#128065;</button>
   <button type="button" id="pageClick" title="a click on every beat">&#9834;</button>
@@ -2301,7 +2319,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b290 the bar gets out of the way';
+const BUILD_STAMP = '2026-09-04 b292 one shape for one action';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -13553,6 +13571,10 @@ function tell(msg, shout){
                + CLICK_VOL_NAMES[CLICK_VOL] + ')';
     };
 
+    // Declared before drawRow, which now closes the panel itself — a `let`
+    // does not hoist, and reading it from inside the builder would have thrown
+    // the moment the panel was drawn.
+    let up = false;
     // The panel: on/off, how loud, and whether it follows the music. Built
     // fresh each time it opens so it always shows the truth.
     const drawRow = () => {
@@ -13571,6 +13593,8 @@ function tell(msg, shout){
         row.appendChild(b);
       };
 
+      // A WAY OUT OF THE PANEL ITSELF, matching every other pane on the page.
+      mk('\u25bc', false, () => { up = false; row.setAttribute('style', 'display:none'); });
       const live = CLICK_ON || CLICK_ARMED;
       mk(live ? 'STOP' : (CLICK_WITH && !playing ? 'ARM' : 'START'), live, async () => {
         if (live){
@@ -13601,14 +13625,23 @@ function tell(msg, shout){
       mk('with the music', CLICK_WITH, () => {
         CLICK_WITH = !CLICK_WITH;
         try { localStorage.setItem('island.clickwith', CLICK_WITH ? '1' : '0'); } catch (e) {}
-        if (CLICK_ON){ clickStop(); clickStart(); }
-        drawRow();
-        tell(CLICK_WITH ? 'the click starts with the music, on its downbeat'
+        // CHOOSING IT IS THE ARMING. Asking for a click that follows the music
+        // and then having to press ARM as well is one step for one decision —
+        // there is nothing else that choice could mean. Don: "it should do that
+        // on its own, when 'with the music' is selected."
+        if (CLICK_WITH){
+          if (CLICK_ON && !playing) clickStop();     // stop the free-running one
+          CLICK_ARMED = true;
+        } else {
+          CLICK_ARMED = false;
+          if (CLICK_ON){ clickStop(); clickStart(); }
+        }
+        paint(); drawRow();
+        tell(CLICK_WITH ? 'armed \u00b7 the click will start on the downbeat when you press play'
                         : 'the click runs on its own, for playing along to');
       });
     };
 
-    let up = false;
     cb.addEventListener('click', ev => {
       ev.preventDefault(); ev.stopPropagation();
       up = !up;
