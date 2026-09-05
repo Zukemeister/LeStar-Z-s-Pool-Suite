@@ -488,6 +488,7 @@
   #crier.up b{ opacity:1; transform:scale(1) }
   @media print { #crier{ display:none !important } }
 
+  #countDots i.half{ width:7px; height:7px; opacity:.8 }
   #countIn{
     position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
     z-index:80; pointer-events:none;
@@ -720,6 +721,9 @@
   /* READING AHEAD. The bar under the playhead fades, so the eye has nowhere to
      rest but the bar in front of it. The notes are still there — faint enough
      to be no use, present enough that the page does not jump. */
+  #pageLead{ width:auto !important; padding:0 10px !important;
+    font:800 12px/1 ui-monospace,Menlo,monospace !important; letter-spacing:.04em }
+  #pageLead[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
   #pageAhead[aria-pressed="true"]{ background:#00a3ab; border-color:#00a3ab; color:#04222a }
   /* TWO DIFFERENT KINDS OF QUIET, AND THEY MUST NOT COMPOUND.
      V says a voice is not SOUNDING: its notes go pale, still written and still
@@ -1956,6 +1960,7 @@
        YOU CANNOT TEST A VERSION YOU CANNOT IDENTIFY. -->
   <span id="pagerBuild" title="tap for the full build stamp"></span>
   <button type="button" id="pagerMenu" title="the controls">&#9776;</button>
+  <button type="button" id="pageLead" title="count-in \u00b7 hold to choose how">1&#8239;2&#8239;3</button>
   <button type="button" id="pageAhead" title="hide the bar you are playing, so your eyes go forward">&#128065;</button>
   <button type="button" id="pageClick" title="a click on every beat">&#9834;</button>
   <button type="button" id="pageVoices" title="which voices you hear">V</button>
@@ -2267,7 +2272,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b278 controls out of harms reach';
+const BUILD_STAMP = '2026-09-04 b279 da-da-DA';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10558,19 +10563,33 @@ function play(fromStart){
   const leadBox = document.getElementById('bLead');
   const wantLead = leadBox ? leadBox.checked : LEAD_IN;
   let leadPlan = null;
-  if (wantLead && round && loop && stops.length){
+  // THE COUNT-IN, FOR EVERY PLAY — NOT ONLY FOR LOOPS.
+  //
+  // It was conditioned on a loop running, so playing a piece straight through
+  // dropped you in with no warning at all. And it counted plain evenly spaced
+  // beats, which at a slow tempo is a second of silence and then an entry you
+  // have to guess. Don: "it doesn't give you good warning... maybe da-da-DA."
+  //
+  // So the shape comes from leadPattern(): a bar of beats, and — in the ways
+  // that ask for it — an extra stroke half a beat before the downbeat. That
+  // half beat is the whole cue. It tells your hands the entry is NEXT, which no
+  // amount of evenly spaced clicking can.
+  if (LEAD_WAY && stops.length){
     const b0 = stops[0].bar;
     const ts = tsAt(b0), spt = stops[0].secPerTick;
     const perBeat = TPQ * 4 / ts.unit;
-    const beats = Math.max(1, LEAD_BEATS);
-    const secs = beats * perBeat * spt;
-    // The music moves back to make room; t0 moves with it, so the playhead and
-    // the sound stay in agreement.
-    for (const n of pending) n.at += secs;
-    t0 += secs; last += secs;
-    // With a short count the accent is on the first beat only — there is no bar
-    // to mark the start of.
-    leadPlan = { beats, step: perBeat * spt, secs, perBar: beats };
+    const step = perBeat * spt;
+    const perBar = Math.max(1, ts.beats || 4);
+    const pattern = leadPattern(perBar);
+    if (pattern.length){
+      const secs = pattern[0].before * step;
+      // The music moves back to make room; t0 moves with it, so the playhead and
+      // the sound stay in agreement.
+      for (const n of pending) n.at += secs;
+      t0 += secs; last += secs;
+      leadPlan = { pattern, step, secs, perBar,
+                   beats: Math.round(pattern[0].before) };
+    }
   }
 
   // Writing leaves the cursor AFTER the last note, so "from the cursor" would
@@ -10646,14 +10665,20 @@ function play(fromStart){
     const word = document.getElementById('countWord');
     if (dots){
       dots.innerHTML = '';
-      for (let i = 0; i < leadPlan.beats; i++){
+      for (const p3 of leadPlan.pattern){
         const d2 = document.createElement('i');
-        if (i % leadPlan.perBar === 0) d2.className = 'one';   // each bar's downbeat
+        if (p3.strong) d2.className = 'one';
+        // The pull-in stroke is drawn smaller: it is half a beat, and the dots
+        // should look like the rhythm sounds.
+        if (p3.before < 1) d2.className = 'half';
         dots.appendChild(d2);
       }
     }
-    if (word) word.textContent = 'bars ' + (barAt(loop.from) + 1)
-      + '\u2013' + (barAt(loop.to - 1) + 1);
+    // A count-in now happens without a loop, so the word has to cope with there
+    // being no passage to name.
+    if (word) word.textContent = loop
+      ? ('bars ' + (barAt(loop.from) + 1) + '\u2013' + (barAt(loop.to - 1) + 1))
+      : 'ready';
     if (box) box.hidden = false;
 
     // ONE THING MAKES CLICKS.
@@ -10670,14 +10695,18 @@ function play(fromStart){
     // nothing left to collide with.
     const metroBox = document.getElementById('bMetro');
     const metroWillCount = !!(metroBox && metroBox.checked);
-    for (let i = 0; i < leadPlan.beats; i++){
-      const at = base + i * leadPlan.step;
-      if (!metroWillCount) tick(at, i % leadPlan.perBar === 0);
+    // THE PATTERN, NOT A COUNT. Each stroke knows how far before the downbeat
+    // it falls and whether it is accented — so the same code plays four plain
+    // beats or Don's da-da-DA, and the half-beat pull is simply another entry
+    // in the list rather than a special case bolted on the end.
+    leadPlan.pattern.forEach((p2, i) => {
+      const at = t0 - p2.before * leadPlan.step;
+      if (!metroWillCount) tick(at, p2.strong);
       setTimeout(() => {
         if (!dots) return;
         dots.querySelectorAll('i').forEach((n, k) => n.classList.toggle('on', k === i));
       }, Math.max(0, (at - audio.currentTime) * 1000));
-    }
+    });
     setTimeout(() => {
       if (box) box.hidden = true;
       if (dots) dots.querySelectorAll('i').forEach(n => n.classList.remove('on'));
@@ -13261,6 +13290,92 @@ render();
 //  CONTROLS OUT OF ITS REACH: each one wired at the end, in its own function,
 //  where one failure cannot cost the others.
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+//  THE COUNT-IN: A RHYTHM, NOT A NUMBER.
+//
+//  Counting a player in with two evenly spaced clicks tells him almost nothing.
+//  At 60 to the minute they are a second apart, and a second of silence before
+//  an entry is a guess, not a cue. Don: "it doesn't give you good warning,
+//  especially at slow speeds — there are big gaps between the two notes.
+//  Maybe: da-da-DA-da."
+//
+//  What a human conductor does instead is give you a PATTERN — the beat, and
+//  then something that tightens into the downbeat, so the entry arrives out of
+//  a shape rather than out of silence. That is the difference between counting
+//  and being counted in.
+//  A CUE MUST BE FELT, NOT COMPUTED.
+// ---------------------------------------------------------------------------
+const LEAD_WAYS = [
+  { id:'off',   name:'no count-in',        bars:0 },
+  // One bar of plain beats: the familiar four clicks.
+  { id:'plain', name:'a bar of beats',     bars:1, fill:'plain' },
+  // Don's: da-da-DA-da — the beat, then a double on the last beat that pulls
+  // you over the barline. The tightening IS the cue.
+  { id:'pull',  name:'a bar, then da-da-DA', bars:1, fill:'pull' },
+  // Two bars for slow tempi, where one is not enough to settle into.
+  { id:'two',   name:'two bars, then da-da-DA', bars:2, fill:'pull' }
+];
+let LEAD_WAY = 1;
+try { LEAD_WAY = Math.max(0, Math.min(LEAD_WAYS.length - 1,
+      +localStorage.getItem('island.leadway') || 1)); } catch (err) {}
+
+// The moments a count-in sounds, as offsets in beats before the downbeat.
+// Positive numbers are beats BEFORE the first note.
+function leadPattern(perBar){
+  const way = LEAD_WAYS[LEAD_WAY];
+  if (!way || !way.bars) return [];
+  const beats = way.bars * perBar;
+  const out = [];
+  for (let i = beats; i > 0; i--) out.push({ before: i, strong: (i % perBar) === 0 });
+  if (way.fill === 'pull'){
+    // The last beat becomes a pair — the second half-beat is what tells your
+    // hands the downbeat is next. Without it the count simply stops and you
+    // are guessing again.
+    out.push({ before: 0.5, strong: false });
+  }
+  return out;
+}
+
+(function leadAnyway(){
+  try {
+    const lb = document.getElementById('pageLead');
+    if (!lb || lb.dataset.wired) return;
+    lb.dataset.wired = '1';
+    const paint = () => {
+      const way = LEAD_WAYS[LEAD_WAY];
+      lb.setAttribute('aria-pressed', LEAD_WAY ? 'true' : 'false');
+      lb.textContent = LEAD_WAY === 0 ? 'no count'
+                     : LEAD_WAY === 1 ? '1 2 3'
+                     : LEAD_WAY === 2 ? '1 2 3\u2011'
+                     : '2 bars';
+      lb.title = way.name + ' \u00b7 hold to choose another';
+    };
+    // Tap turns it on and off; hold walks through the ways.
+    lb.addEventListener('click', () => {
+      LEAD_WAY = LEAD_WAY ? 0 : 1;
+      try { localStorage.setItem('island.leadway', String(LEAD_WAY)); } catch (e) {}
+      say = LEAD_WAYS[LEAD_WAY].name;
+      paint(); render();
+    });
+    let hold = 0;
+    const down = () => { hold = setTimeout(() => {
+      hold = 0;
+      LEAD_WAY = (LEAD_WAY + 1) % LEAD_WAYS.length;
+      try { localStorage.setItem('island.leadway', String(LEAD_WAY)); } catch (e) {}
+      say = 'count-in: ' + LEAD_WAYS[LEAD_WAY].name;
+      cry(LEAD_WAYS[LEAD_WAY].name.toUpperCase(), 1800);
+      paint(); render();
+    }, 600); };
+    const up = () => { if (hold){ clearTimeout(hold); hold = 0; } };
+    lb.addEventListener('touchstart', down, { passive:true });
+    lb.addEventListener('touchend', up);
+    lb.addEventListener('mousedown', down);
+    lb.addEventListener('mouseup', up);
+    lb.addEventListener('mouseleave', up);
+    paint();
+  } catch (err) { console.warn('lead', err); }
+})();
+
 (function clickAnyway(){
   try {
     const cb = document.getElementById('pageClick');
