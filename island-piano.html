@@ -2272,7 +2272,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b279 da-da-DA';
+const BUILD_STAMP = '2026-09-04 b280 fill the space, mark the meter';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10580,7 +10580,7 @@ function play(fromStart){
     const perBeat = TPQ * 4 / ts.unit;
     const step = perBeat * spt;
     const perBar = Math.max(1, ts.beats || 4);
-    const pattern = leadPattern(perBar);
+    const pattern = leadPattern(perBar, step);
     if (pattern.length){
       const secs = pattern[0].before * step;
       // The music moves back to make room; t0 moves with it, so the playhead and
@@ -13305,15 +13305,24 @@ render();
 //  and being counted in.
 //  A CUE MUST BE FELT, NOT COMPUTED.
 // ---------------------------------------------------------------------------
+// MEASURED IN TIME, NOT IN BARS.
+//
+// A bar is a musical unit; a cue is a physical one. One bar of 4/4 at 60 gives
+// four seconds of warning and one bar of 2/4 gives two — the same setting, half
+// the preparation, and the studies are all in 2/4. Don: "in 2/4 time, that
+// doesn't amount to much... what I would want is das that fill the space, with
+// emphasis on the meter. Something that gives me the beat and points me at the
+// start, no matter the signature."
+//
+// So a count-in is a DURATION, and the app works out how many beats fill it,
+// rounded up to whole bars so the accents always land on downbeats. Three
+// requirements, and they hold in any signature: FILL THE SPACE, MARK THE METER,
+// POINT AT THE ENTRY.
 const LEAD_WAYS = [
-  { id:'off',   name:'no count-in',        bars:0 },
-  // One bar of plain beats: the familiar four clicks.
-  { id:'plain', name:'a bar of beats',     bars:1, fill:'plain' },
-  // Don's: da-da-DA-da — the beat, then a double on the last beat that pulls
-  // you over the barline. The tightening IS the cue.
-  { id:'pull',  name:'a bar, then da-da-DA', bars:1, fill:'pull' },
-  // Two bars for slow tempi, where one is not enough to settle into.
-  { id:'two',   name:'two bars, then da-da-DA', bars:2, fill:'pull' }
+  { id:'off',   name:'no count-in',   secs:0 },
+  { id:'short', name:'a short count', secs:2.5, pull:true },
+  { id:'full',  name:'a full count',  secs:4.0, pull:true },
+  { id:'long',  name:'a long count',  secs:6.0, pull:true }
 ];
 let LEAD_WAY = 1;
 try { LEAD_WAY = Math.max(0, Math.min(LEAD_WAYS.length - 1,
@@ -13321,18 +13330,23 @@ try { LEAD_WAY = Math.max(0, Math.min(LEAD_WAYS.length - 1,
 
 // The moments a count-in sounds, as offsets in beats before the downbeat.
 // Positive numbers are beats BEFORE the first note.
-function leadPattern(perBar){
+function leadPattern(perBar, step){
   const way = LEAD_WAYS[LEAD_WAY];
-  if (!way || !way.bars) return [];
-  const beats = way.bars * perBar;
+  if (!way || !way.secs) return [];
+  // How many beats fill the time asked for — then rounded UP to a whole number
+  // of bars, so the count always begins on a downbeat and the accents mean
+  // something. In 2/4 that is two bars where 4/4 gets one; the player's ear
+  // hears the same preparation either way.
+  let beats = Math.max(perBar, Math.round(way.secs / Math.max(0.08, step)));
+  beats = Math.ceil(beats / perBar) * perBar;
+  // Long enough to settle, short enough not to lose the will: at a crawl this
+  // stops it counting sixteen beats at 30 to the minute.
+  beats = Math.min(beats, perBar * 4);
   const out = [];
   for (let i = beats; i > 0; i--) out.push({ before: i, strong: (i % perBar) === 0 });
-  if (way.fill === 'pull'){
-    // The last beat becomes a pair — the second half-beat is what tells your
-    // hands the downbeat is next. Without it the count simply stops and you
-    // are guessing again.
-    out.push({ before: 0.5, strong: false });
-  }
+  // AND THE POINTER. The half beat before the entry is what tells the hands the
+  // downbeat is NEXT — the one thing evenly spaced beats can never say.
+  if (way.pull) out.push({ before: 0.5, strong: false });
   return out;
 }
 
@@ -13345,9 +13359,9 @@ function leadPattern(perBar){
       const way = LEAD_WAYS[LEAD_WAY];
       lb.setAttribute('aria-pressed', LEAD_WAY ? 'true' : 'false');
       lb.textContent = LEAD_WAY === 0 ? 'no count'
-                     : LEAD_WAY === 1 ? '1 2 3'
-                     : LEAD_WAY === 2 ? '1 2 3\u2011'
-                     : '2 bars';
+                     : LEAD_WAY === 1 ? 'count \u00b7'
+                     : LEAD_WAY === 2 ? 'count \u00b7\u00b7'
+                     : 'count \u00b7\u00b7\u00b7';
       lb.title = way.name + ' \u00b7 hold to choose another';
     };
     // Tap turns it on and off; hold walks through the ways.
