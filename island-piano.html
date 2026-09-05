@@ -2272,7 +2272,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b283 a flag set when it is done';
+const BUILD_STAMP = '2026-09-04 b284 the press is acknowledged first';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -13432,8 +13432,16 @@ function leadPattern(perBar, step){
     if (!cb || cb.dataset.wired) return;
     cb.dataset.wired = '1';
 
+    // COLOURED BY HAND, NOT BY RULE. aria-pressed only turns a button teal if a
+    // stylesheet rule is found and wins — and this button has now failed twice
+    // with nothing visibly wrong. Don: "if the click is on, the button should
+    // turn teal." So it is set directly, and it is set BEFORE the audio is
+    // asked for anything, so a press always shows.
     const paint = () => {
       cb.setAttribute('aria-pressed', CLICK_ON ? 'true' : 'false');
+      cb.style.background  = CLICK_ON ? '#00a3ab' : '';
+      cb.style.borderColor = CLICK_ON ? '#00a3ab' : '';
+      cb.style.color       = CLICK_ON ? '#04222a' : '';
       cb.innerHTML = CLICK_WITH ? '&#9834;&#8202;&#8226;' : '&#9834;';
       cb.title = CLICK_WITH
         ? 'clicks with the music, from the downbeat \u00b7 hold to make it independent'
@@ -13441,16 +13449,24 @@ function leadPattern(perBar, step){
     };
 
     cb.addEventListener('click', async () => {
+      // THE PRESS IS ACKNOWLEDGED FIRST, WHATEVER HAPPENS NEXT. A button that
+      // does nothing visible tells you nothing about WHERE it failed — whether
+      // the tap arrived, whether the audio refused, whether a line threw. This
+      // one always answers.
+      say = 'click\u2026'; render();
       try {
         if (CLICK_ON){ clickStop(); say = 'the click is off'; paint(); render(); return; }
         const ok = await clickStart();
-        if (ok) say = (CLICK_WITH ? 'clicking with the music' : 'clicking on its own')
-                    + ' at ' + Math.round(clickBpm()) + ' a minute, '
-                    + clickPerBar() + ' to the bar';
-        paint(); render();
+        paint();
+        say = ok
+          ? ((CLICK_WITH ? 'clicking with the music' : 'clicking on its own')
+             + ' at ' + Math.round(clickBpm()) + ' a minute, '
+             + clickPerBar() + ' to the bar')
+          : (say && say !== 'click\u2026' ? say : 'the click could not start \u2014 no sound available');
+        render();
       } catch (err){
         say = 'the click failed \u2014 ' + (err && err.message ? err.message : err);
-        render();
+        paint(); render();
       }
     });
 
