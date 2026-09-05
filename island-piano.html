@@ -711,6 +711,20 @@
   #pager.floating{ left:auto; right:auto; bottom:auto; transform:none }
   /* One control made of two halves, so it reads as a single choice rather than
      two independent switches. */
+  #pagerHide{ width:34px !important; height:30px !important;
+    font:700 17px/1 -apple-system,sans-serif !important; opacity:.65 }
+  /* Folded away, the bar is a single small tab in the corner — enough to find,
+     little enough to ignore. */
+  body.barshut #pager > *{ display:none !important }
+  body.barshut #pager > #pagerShow{ display:flex !important }
+  body.barshut #pager{
+    left:auto; right:10px; transform:none; width:auto; min-width:0;
+    padding:4px; border-radius:12px;
+  }
+  #pagerShow{ display:none; align-items:center; justify-content:center;
+    width:54px; height:38px; cursor:pointer; border-radius:9px;
+    border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.1);
+    color:#fff; font:800 12px/1 ui-monospace,Menlo,monospace }
   #pagerBuild{ font:700 11px/1 ui-monospace,Menlo,monospace; opacity:.5;
     padding:0 4px; cursor:pointer; white-space:nowrap }
   /* WHILE PICKING, THE BAR NUMBERS ARE THE CONTROL. They light up so it is
@@ -1935,6 +1949,13 @@
 
 <div id="pager" hidden>
   <span class="pgrab" id="pagerGrab" aria-hidden="true">⠿</span>
+  <!-- OUT OF THE WAY WHILE THE MUSIC RUNS. The bar is a workbench, and a
+       workbench belongs beside the work, not on top of it. Don: "a way to shut
+       off the control window, to get it out of the way while the piece is
+       running."
+       It leaves a small handle rather than vanishing, because a control that
+       disappears completely is a control you cannot get back. -->
+  <button type="button" id="pagerHide" title="hide these controls">&times;</button>
   <button type="button" id="pagePrev" title="the page before">&#8249;</button>
   <span id="pageSays"></span>
   <button type="button" id="pageNext" title="the next page">&#8250;</button>
@@ -1966,6 +1987,7 @@
        YOU CANNOT TEST A VERSION YOU CANNOT IDENTIFY. -->
   <span id="pagerBuild" title="tap for the full build stamp"></span>
   <button type="button" id="pagerMenu" title="the controls">&#9776;</button>
+  <button type="button" id="pagerShow" title="bring the controls back">BAR</button>
   <button type="button" id="pageLead" title="count-in \u00b7 hold to choose how">1&#8239;2&#8239;3</button>
   <button type="button" id="pageAhead" title="hide the bar you are playing, so your eyes go forward">&#128065;</button>
   <button type="button" id="pageClick" title="a click on every beat">&#9834;</button>
@@ -2279,7 +2301,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b288 every choice visible';
+const BUILD_STAMP = '2026-09-04 b290 the bar gets out of the way';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10768,10 +10790,13 @@ function play(fromStart){
     }
     // AND THE BAR'S CLICK, IF IT IS SET TO KEEP COMPANY. Restarted from the
     // downbeat so its accent is the barline, not wherever it happened to be.
-    if (CLICK_ON && CLICK_WITH){
+    // THE MUSIC PLACES THE BEAT. Whether the click was already running or merely
+    // armed, it is (re)started from the downbeat — or from the head of the
+    // count-in, so the count and the click are one continuous pulse.
+    if ((CLICK_ON || CLICK_ARMED) && CLICK_WITH){
+      CLICK_ARMED = false;
       clickStop();
       clickStart(leadPlan ? t0 - leadPlan.secs : t0);
-      CLICK_ON = true;
     }
     else metroStop();
   }
@@ -11239,6 +11264,15 @@ async function tunerStart(){
 //  next second is already scheduled before the redraw begins.
 // ---------------------------------------------------------------------------
 let CLICK_ON = false, clickAt = 0, clickBeat = 0, clickTimer = 0, clickLive = [];
+// ARMED, BUT NOT YET COUNTING.
+//
+// With "with the music" chosen, pressing START used to begin a free-running
+// click there and then — so the phase was set by the moment of the press, and
+// the music arrived wherever it happened to arrive. Don: "if I hit START, that
+// is what determines where the beat falls, not the music itself."
+// A CLICK THAT FOLLOWS THE MUSIC MUST WAIT FOR IT. Armed, it makes no sound at
+// all until playback begins, and then it starts on the downbeat.
+let CLICK_ARMED = false;
 
 // TWO TOOLS THAT HAPPEN TO MAKE THE SAME SOUND.
 //
@@ -13509,10 +13543,11 @@ function tell(msg, shout){
     // turn teal." So it is set directly, and it is set BEFORE the audio is
     // asked for anything, so a press always shows.
     const paint = () => {
-      cb.setAttribute('aria-pressed', CLICK_ON ? 'true' : 'false');
-      cb.style.background  = CLICK_ON ? '#00a3ab' : '';
-      cb.style.borderColor = CLICK_ON ? '#00a3ab' : '';
-      cb.style.color       = CLICK_ON ? '#04222a' : '';
+      const lit = CLICK_ON || CLICK_ARMED;
+      cb.setAttribute('aria-pressed', lit ? 'true' : 'false');
+      cb.style.background  = lit ? (CLICK_ON ? '#00a3ab' : 'rgba(0,163,171,.45)') : '';
+      cb.style.borderColor = lit ? '#00a3ab' : '';
+      cb.style.color       = CLICK_ON ? '#04222a' : (lit ? '#fff' : '');
       cb.innerHTML = CLICK_WITH ? '&#9834;&#8202;&#8226;' : '&#9834;';
       cb.title = 'the click \u00b7 hold to change how loud ('
                + CLICK_VOL_NAMES[CLICK_VOL] + ')';
@@ -13536,8 +13571,19 @@ function tell(msg, shout){
         row.appendChild(b);
       };
 
-      mk(CLICK_ON ? 'STOP' : 'START', CLICK_ON, async () => {
-        if (CLICK_ON){ clickStop(); paint(); drawRow(); tell('the click is off'); return; }
+      const live = CLICK_ON || CLICK_ARMED;
+      mk(live ? 'STOP' : (CLICK_WITH && !playing ? 'ARM' : 'START'), live, async () => {
+        if (live){
+          CLICK_ARMED = false; clickStop(); paint(); drawRow();
+          tell('the click is off'); return;
+        }
+        if (CLICK_WITH && !playing){
+          // It waits. Nothing sounds until the music does, and then the first
+          // beat IS the downbeat.
+          CLICK_ARMED = true; paint(); drawRow();
+          tell('the click is armed \u2014 it will start on the downbeat when you press play');
+          return;
+        }
         const ok = await clickStart();
         paint(); drawRow();
         tell(ok ? ('clicking at ' + Math.round(clickBpm()) + ' a minute, '
@@ -13585,6 +13631,29 @@ function tell(msg, shout){
   } catch (err) { console.warn('click', err); }
 })();
 
+
+(function hideBarAnyway(){
+  try {
+    const hide = document.getElementById('pagerHide');
+    const show = document.getElementById('pagerShow');
+    if (!hide || !show) return;
+    const set = on => {
+      document.body.classList.toggle('barshut', on);
+      try { localStorage.setItem('island.barshut', on ? '1' : '0'); } catch (e) {}
+      // Any panel hanging off the bar goes with it — they are positioned
+      // against buttons that are no longer where they were.
+      for (const id of ['voiceRow', 'clickRow']){
+        const r = document.getElementById(id);
+        if (r && on) r.setAttribute('style', 'display:none');
+      }
+    };
+    hide.addEventListener('click', ev => { ev.stopPropagation(); set(true); });
+    show.addEventListener('click', ev => { ev.stopPropagation(); set(false); });
+    let was = false;
+    try { was = localStorage.getItem('island.barshut') === '1'; } catch (e) {}
+    if (was) set(true);
+  } catch (err) {}
+})();
 
 (function voicesAnyway(){
   try {
