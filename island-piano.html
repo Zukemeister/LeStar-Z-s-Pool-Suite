@@ -2319,7 +2319,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b294 one click, no choices';
+const BUILD_STAMP = '2026-09-04 b295 where every path goes through';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10826,20 +10826,18 @@ function play(fromStart){
     }
     // AND THE BAR'S CLICK, IF IT IS SET TO KEEP COMPANY. Restarted from the
     // downbeat so its accent is the barline, not wherever it happened to be.
-    // THE MUSIC PLACES THE BEAT. Whether the click was already running or merely
-    // armed, it is (re)started from the downbeat — or from the head of the
-    // count-in, so the count and the click are one continuous pulse.
-    // IF IT IS CLICKING, THE MUSIC TAKES IT OVER. No setting, no arming: press
-    // play and the click falls in with the piece from the downbeat.
-    if (CLICK_ON){
-      clickStop(); CLICK_ON = true;
-      // Hand the click the music's own beat list. It plays those moments
-      // exactly, so a tempo change carries it along instead of leaving it
-      // behind.
-      CLICK_BEATS = beatTimes.filter(b2 => b2.at > audio.currentTime - 0.05);
-      clickStart(leadPlan ? t0 - leadPlan.secs : t0);
-    }
     else metroStop();
+  }
+
+  // IF IT IS CLICKING, THE MUSIC TAKES IT OVER — on every play, count-in or
+  // not. This sat inside the count-in block, so with the count switched off it
+  // never ran and the click carried on at whatever phase it had started with.
+  // Don: "it's not auto coordinated, it starts when I push start."
+  // A RULE THAT APPLIES ALWAYS MUST LIVE WHERE EVERY PATH GOES THROUGH IT.
+  if (CLICK_ON){
+    clickStop(); CLICK_ON = true;
+    CLICK_BEATS = beatTimes.filter(b2 => b2.at > audio.currentTime - 0.05);
+    clickStart(leadPlan ? t0 - leadPlan.secs : t0);
   }
 
   playing = true; stopAt = last;
