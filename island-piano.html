@@ -2028,7 +2028,12 @@
   <button type="button" id="pageClick" title="a click on every beat">&#9834;</button>
   <button type="button" id="pageVoices" title="which voices you hear">V</button>
   <button type="button" id="pageLoop" title="loop the bars on this page">LOOP PAGE</button>
-  <button type="button" id="pagePlay" title="play from here">&#9654;</button>
+  <!-- TWO THINGS A READER REACHES FOR CONSTANTLY AND HAD NO BUTTON FOR.
+       HERE brings the page back to the note being played, after you have
+       turned away from it by hand. AGAIN goes to the beginning. -->
+  <button type="button" id="pageHere" title="go to the note that is playing">&#9678;</button>
+  <button type="button" id="pageAgain" title="start again \u2014 go to the beginning">&#9198;</button>
+<button type="button" id="pagePlay" title="play from here">&#9654;</button>
   <button type="button" id="pageSlow" title="slower">&minus;</button>
   <span id="pageRate">100%</span>
   <button type="button" id="pageFast" title="faster">+</button>
@@ -2336,7 +2341,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-06 b307 the click follows the notation';
+const BUILD_STAMP = '2026-09-06 b308 here and again';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -2370,6 +2375,8 @@ try { CLICK_VOL = Math.max(0, Math.min(2, +localStorage.getItem('island.clickvol
 var AHEAD_VOICE = null;          // the voice the eye is reading ahead in
 var _aheadBar = -1;
 var playing = false;             // read by the rail's paint helpers
+var _playFrom = 0;               // the tick this pass started from
+var _playRoute = true;           // and whether it was following the repeats
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10571,6 +10578,11 @@ function play(fromStart){
   const round = !fromStart && loop;
   const from = fromStart ? 0 : round ? loop.from : (held ? sel.from : cur.tick);
   const until = fromStart ? Infinity : round ? loop.to : (held ? sel.to : Infinity);
+  // WHERE THIS ATTEMPT BEGAN, remembered so it can be begun again. Start Again
+  // means the top of the passage you are working on, not the top of the piece:
+  // in a loop that is the loop, in a swept stretch the sweep, and only when you
+  // are playing the whole thing is it bar one.
+  _playFrom = from; _playRoute = !!fromStart;
 
   if (!wake()){ say = 'no sound available in this browser'; render(); return; }
   // DO NOT SCHEDULE INTO A SLEEPING CONTEXT. It used to notice the context was
@@ -12105,9 +12117,14 @@ function centreOnPlayhead(){
   sc.scrollTo({ top, behavior:'smooth' });
 }
 
+// WHERE THE MUSIC HAD GOT TO. Kept while it plays so that "go to current"
+// still has somewhere to go the moment after it stops — which is exactly when
+// you reach for it, having stopped to look at what you just fumbled.
+let _wasAt = 0;
 function follow(){
   if (!playing || !audio) return;
   const tick = tickNow();
+  _wasAt = tick;
 
   // TURN THE PAGE WHEN THE MUSIC LEAVES IT.
   //
@@ -13998,6 +14015,70 @@ function tell(msg, shout){
     render();
   } catch (err) {}
 }
+
+// ---------------------------------------------------------------------------
+//  HERE and AGAIN.
+//
+//  Both are things that were only reachable from a keyboard, on a machine that
+//  has none. HERE is what you press when the page has been turned away from the
+//  music by hand and you want to be back with it; AGAIN is what you press when
+//  you have fumbled a passage and want it from the top.
+//
+//  A THING YOU DO EVERY FEW MINUTES DESERVES A BUTTON.
+// ---------------------------------------------------------------------------
+(function hereAndAgain(){
+  try {
+    const hb = document.getElementById('pageHere');
+    const ab = document.getElementById('pageAgain');
+
+    // WHERE THE MUSIC IS. While it plays that is the playhead; when it has
+    // stopped it is wherever the cursor was left, which is where you were.
+    if (hb) hb.addEventListener('click', () => {
+      // WHILE IT PLAYS, THE PLAYHEAD; AFTER IT STOPS, WHERE IT STOPPED. This
+      // read the cursor when nothing was running, and the cursor is wherever
+      // you last clicked — which after a stop is very often not where the music
+      // got to. `_wasAt` is kept by follow() for exactly this moment, which is
+      // the moment you actually press the button: you stop BECAUSE you fumbled
+      // something, then reach for this to go back and look at it.
+      const at = playing ? tickNow() : (_wasAt || cur.tick);
+      const b = barAt(at);
+      PAGE_AT = Math.max(0, b);
+      // AND THE CURSOR GOES TOO, PLAYING OR NOT. It used to move only when the
+      // music had stopped, on the reasoning that playback never disturbs where
+      // you are writing — which is right for playback, and wrong for a button
+      // whose whole job is "take me to the music". Press it, stop, press space,
+      // and you carry on from what you were just listening to.
+      cur.tick = barStart(b);
+      render();
+      // The playhead is a real element, so put the page under it by measuring
+      // rather than by predicting — the same rule centreOnPlayhead follows.
+      try { centreOnPlayhead(); } catch (err) {}
+      tell(playing ? 'showing ' + barName(b) + ', where the music is'
+                   : 'showing ' + barName(b) + ', where the music stopped');
+    });
+
+    // FROM THE BEGINNING. It used to mean "the top of what you are working on"
+    // — the loop's start, or the swept passage's, or bar one — which is a
+    // defensible reading of the word and not the one Don wants. His: "Start
+    // again means Go to the Beginning." So it is bar one, always, and the
+    // button no longer has to be read differently depending on what is set.
+    // A CONTROL THAT MEANS FOUR THINGS DEPENDING ON STATE IS FOUR CONTROLS.
+    if (ab) ab.addEventListener('click', () => {
+      const wasPlaying = playing;
+      if (wasPlaying) stop();
+      cur.tick = 0;
+      PAGE_AT = 0;
+      render();
+      if (wasPlaying){
+        play(true);
+        // AND THE BUTTON GETS THE LAST WORD. play() reports what it is doing,
+        // which is right when you pressed Play — but here you pressed START
+        // AGAIN, and the answer to that is that it started again.
+        tell('starting again from the beginning');
+      } else tell('at the beginning');
+    });
+  } catch (err) { console.warn('here/again', err); }
+})();
 
 (function clickAnyway(){
   try {
