@@ -2319,7 +2319,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-05 b296 work for a feature that is off is pure cost';
+const BUILD_STAMP = '2026-09-05 b297 sorted data is never searched from the beginning';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10551,6 +10551,26 @@ function play(fromStart){
   const evsBy = {};
   for (const st of score.profile.staves) evsBy[st.id] = sorted(st.id);
 
+  // WHERE EACH BAR'S NOTES BEGIN, FOUND ONCE.
+  //
+  // The queue walked EVERY event of the piece for EVERY bar of the route and
+  // skipped the ones that did not belong. On a study that is a few hundred
+  // comparisons and invisible; on the K.265 with repeats it is 656 bars times
+  // 3,144 events — two million of them, before a note sounds. Don: "everything
+  // loads and plays quickly except the Mozart variations."
+  //
+  // The events are already in time order, so the first one in a bar can be
+  // found by halving the list instead of walking it. SORTED DATA SHOULD NEVER
+  // BE SEARCHED FROM THE BEGINNING.
+  const firstAt = (evs, tick) => {
+    let lo = 0, hi = evs.length;
+    while (lo < hi){
+      const mid = (lo + hi) >> 1;
+      if (evs[mid].start < tick) lo = mid + 1; else hi = mid;
+    }
+    return lo;
+  };
+
   for (let k = 0; k < stops.length; k++){
     const step = stops[k];
     const bStart = barStart(step.bar), bEnd = bStart + capacityOf(step.bar);
@@ -10593,11 +10613,13 @@ function play(fromStart){
       if (AHEAD_VOICE && AHEAD_VOICE === st.id
           && document.body.classList.contains('ahead')) continue;
       const evs = evsBy[st.id];
-      for (let i = 0; i < evs.length; i++){
+      // Start at this bar's first note and stop at the next bar's, rather than
+      // scanning the whole piece and discarding almost all of it.
+      for (let i = firstAt(evs, bStart); i < evs.length; i++){
         const e = evs[i];
+        if (e.start >= bEnd) break;
         if (!e.pitches.length) continue;
         if (hushed(e, st.id)) continue;            // silenced: written, not heard
-        if (e.start < bStart || e.start >= bEnd) continue;
         if (tiedInto(evs, i, k, stops)) continue;  // already sounding, held over
         if (windowed && (e.start + e.dur <= from || e.start >= until)) continue;
         const skip = windowed ? Math.max(0, from - e.start) : 0;
