@@ -2341,7 +2341,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-06 b311 the stamp is checked, not assumed';
+const BUILD_STAMP = '2026-09-06 b313 read ahead by the beat';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -2373,7 +2373,16 @@ var CLICK_VOLS = [0.55, 1, 1.9];
 var CLICK_VOL_NAMES = ['quiet', 'medium', 'loud'];
 try { CLICK_VOL = Math.max(0, Math.min(2, +localStorage.getItem('island.clickvol') || 1)); } catch (err) {}
 var AHEAD_VOICE = null;          // the voice the eye is reading ahead in
+// HOW MUCH VANISHES. 0 means the whole bar, which is what it always did and is
+// the hardest form of the exercise. Don, trying it: "the disappearing bar is
+// too much to absorb at first... I would like to see just one beat as a
+// choice, and two and three beats as other choices."
+// A DRILL YOU CANNOT DO IS NOT A DRILL. One beat is a step you can take on the
+// first try; the bar is where it ends up.
+var AHEAD_SPAN = 0;              // beats hidden ahead; 0 = the whole bar
+try { AHEAD_SPAN = Math.max(0, Math.min(3, +localStorage.getItem('island.aheadspan') || 0)); } catch (err) {}
 var _aheadBar = -1;
+var _aheadAt = -1, _aheadTo = -1;   // the window of music the eye is hiding
 var playing = false;             // read by the rail's paint helpers
 var _playFrom = 0;               // the tick this pass started from
 var _playRoute = true;           // and whether it was following the repeats
@@ -9106,6 +9115,11 @@ document.getElementById('bWords').addEventListener('click', ev => {
     window._paintVoices = paintVoices;
     const ah = document.getElementById('pageAhead');
     const aheadName = () => AHEAD_VOICE ? ('V' + voiceNumber(AHEAD_VOICE)) : 'both hands';
+    // Declared with aheadName because paintAhead reads it, and paintAhead is
+    // written above the flyout that sets it. SEVEN of these have bitten now.
+    const spanName = n => n === 0 ? 'the whole bar'
+                        : n === 1 ? 'one beat'
+                        : n + ' beats';
     // TEAL WHEN THE EYE IS ON, BLACK WHEN IT IS NOT — the same rule as the
     // count button, because it is the same question: is this doing anything?
     const paintAhead = () => {
@@ -9115,8 +9129,9 @@ document.getElementById('bWords').addEventListener('click', ev => {
       ah.style.background  = on ? '#00a3ab' : '';
       ah.style.borderColor = on ? '#00a3ab' : '';
       ah.style.color       = on ? '#04222a' : '';
-      ah.title = (on ? 'hiding ' + aheadName() : 'hide the bar you are playing \u2014 ' + aheadName())
-               + ' \u00b7 press and hold to choose which';
+      ah.title = (on ? 'hiding ' : 'hide ')
+               + spanName(AHEAD_SPAN) + ' of ' + aheadName()
+               + ' \u00b7 press and hold to choose how much';
     };
     // WHICH LINE GOES. Set from a list rather than cycled blind: with three or
     // four voices, cycling meant pressing and reading, pressing and reading.
@@ -9133,7 +9148,24 @@ document.getElementById('bWords').addEventListener('click', ev => {
         : 'reading ahead will hide both hands \u2014 the app plays them';
       paintAhead();
     };
-    holdOpens(ah, () => flyout(ah, 'read ahead \u2014 hide', [
+    const setSpan = n => {
+      AHEAD_SPAN = n;
+      try { localStorage.setItem('island.aheadspan', String(n)); } catch (err) {}
+      _aheadAt = -1; _aheadTo = -1;        // redraw against the new window
+      const sc7 = document.getElementById('score');
+      if (sc7) for (const e7 of sc7.querySelectorAll('.faded')) e7.classList.remove('faded');
+      say = 'reading ahead will hide ' + spanName(n) + ' of ' + aheadName();
+      paintAhead();
+    };
+    // TWO QUESTIONS, ONE LIST: how much goes, and whose. They belong together
+    // because the answer to one changes how hard the other is — one beat of
+    // both hands is easier than a whole bar of either.
+    holdOpens(ah, () => flyout(ah, 'read ahead', [
+      { label:'one beat',      on: AHEAD_SPAN === 1, pick: () => setSpan(1) },
+      { label:'two beats',     on: AHEAD_SPAN === 2, pick: () => setSpan(2) },
+      { label:'three beats',   on: AHEAD_SPAN === 3, pick: () => setSpan(3) },
+      { label:'the whole bar', on: AHEAD_SPAN === 0, pick: () => setSpan(0) },
+      { label:'\u2014 hide \u2014', note:'', on:false, pick: () => {} },
       { label:'both hands', note:'the app plays them', on: !AHEAD_VOICE,
         pick: () => setAhead(null) }
     ].concat(shownAll().map(v => ({
@@ -9637,6 +9669,30 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
     // THE BARS ARE ON THE SCREEN. Asking a reader to name them in a box, when
     // his finger is already resting on the one he means, is the detour.
     let pickFrom = null;
+    // A MODE YOU CAN ENTER MUST BE A MODE YOU CAN LEAVE.
+    //
+    // Picking dims every note to half and turns every bar number teal, and the
+    // ONLY way out was to complete the pick — tap two bar numbers. Press it by
+    // accident, or start and change your mind, and the page stays greyed with
+    // nothing on it saying what happened or how to stop. Don, stuck in it:
+    // "all the notes are gray, but playing" and "all the bar numbers are
+    // highlighted in teal." That is this, and it looked like a rendering fault
+    // because nothing identified it as a mode.
+    // A MODE MUST NAME ITSELF AND OFFER THE DOOR.
+    const stopPicking = why => {
+      if (!document.body.classList.contains('picking')) return false;
+      document.body.classList.remove('picking');
+      pickFrom = null;
+      if (why) tell(why);
+      render();
+      return true;
+    };
+    window._stopPicking = stopPicking;
+    document.addEventListener('keydown', ev => {
+      if (ev.key === 'Escape' && stopPicking('never mind \u2014 no loop set')){
+        ev.preventDefault(); ev.stopPropagation();
+      }
+    }, true);
     const setLoop = (fromBar, toBar) => {
       loop = { from: barStart(fromBar),
                to: barStart(toBar) + capacityOf(toBar) };
@@ -9675,13 +9731,20 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
 
     // Hold the loop button to pick bars instead of taking the page.
     const lpBtn = document.getElementById('pageLoop');
+    if (lpBtn) lpBtn.addEventListener('click', ev => {
+      if (stopPicking('never mind \u2014 no loop set')){
+        ev.preventDefault(); ev.stopPropagation();
+      }
+    }, true);
     if (lpBtn){
       let hold = 0;
       const startHold = () => { hold = setTimeout(() => {
         hold = 0;
+        if (stopPicking('never mind \u2014 no loop set')) return;
         document.body.classList.add('picking');
         pickFrom = null;
-        say = 'tap the first bar of the passage, then the last';
+        tell('tap the first bar of the passage, then the last \u2014 '
+           + 'or press LOOP PAGE again, or Escape, to stop');
         cry('TAP THE FIRST BAR', 2000);
         render();
       }, 600); };
@@ -12174,21 +12237,50 @@ function follow(){
   if (document.body.classList.contains('ahead')){
     try {
       const nowBar = barAt(tick);
-      if (nowBar !== _aheadBar){
-        _aheadBar = nowBar;
+      // THE WINDOW THAT VANISHES. A whole bar is the hardest version of this;
+      // one beat is where anyone should start. The window begins at the beat
+      // the playhead is in and runs forward AHEAD_SPAN beats, so what goes is
+      // always what you are playing plus a little of what is next — never
+      // anything you have already left behind.
+      const ts5 = tsAt(nowBar);
+      const beat5 = TPQ * 4 / ts5.unit;
+      const b5 = barStart(nowBar);
+      const from5 = AHEAD_SPAN
+        ? b5 + Math.floor((tick - b5) / beat5) * beat5
+        : b5;
+      const to5 = AHEAD_SPAN ? from5 + AHEAD_SPAN * beat5 : b5 + capacityOf(nowBar);
+      // KEYED ON THE WINDOW, NOT THE BAR. It used to recompute only when the
+      // bar changed, which is right for a bar and useless for a beat.
+      if (from5 !== _aheadAt || to5 !== _aheadTo){
+        _aheadAt = from5; _aheadTo = to5; _aheadBar = nowBar;
         const sc4 = document.getElementById('score');
         if (sc4){
           for (const el4 of sc4.querySelectorAll('.faded')) el4.classList.remove('faded');
+          // WHICH EVENTS FALL IN THE WINDOW, asked of the music rather than of
+          // the page — a drawn element knows its bar, not its beat.
+          const gone = new Set();
+          for (const st5 of score.profile.staves){
+            if (AHEAD_VOICE && st5.id !== AHEAD_VOICE) continue;
+            for (const e5 of eventsOf(st5.id))
+              if (e5.start >= from5 && e5.start < to5) gone.add(String(e5.id));
+          }
           // EVERYTHING THAT BELONGS TO THAT NOTE, not just its head. A notehead
           // alone leaves stems and beams hanging in the air, which is more
           // distracting than leaving the note there.
           const suffix = (AHEAD_VOICE ? '[data-st="' + AHEAD_VOICE + '"]' : '');
-          const want = '.chip[data-bar="' + nowBar + '"]' + suffix
-                     + ', .stem[data-bar="' + nowBar + '"]' + suffix
-                     + ', .beam[data-bar="' + nowBar + '"]' + suffix
-                     + ', .flag[data-bar="' + nowBar + '"]' + suffix
-                     + ', .rest[data-bar="' + nowBar + '"]' + suffix;
-          for (const el4 of sc4.querySelectorAll(want)) el4.classList.add('faded');
+          for (const el4 of sc4.querySelectorAll('.chip[data-ev]' + suffix
+                                               + ', .stem[data-ev]' + suffix))
+            if (gone.has(el4.dataset.ev)) el4.classList.add('faded');
+          // Beams, flags and rests are drawn per bar rather than per event, so
+          // they go only when the window covers the whole bar. A flag hanging
+          // where its notehead was is the thing the note above warns about, but
+          // half a beam vanishing mid-group would be worse.
+          if (!AHEAD_SPAN){
+            const want = '.beam[data-bar="' + nowBar + '"]' + suffix
+                       + ', .flag[data-bar="' + nowBar + '"]' + suffix
+                       + ', .rest[data-bar="' + nowBar + '"]' + suffix;
+            for (const el4 of sc4.querySelectorAll(want)) el4.classList.add('faded');
+          }
         }
       }
     } catch (err) {}
