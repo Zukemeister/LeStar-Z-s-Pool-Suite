@@ -2319,7 +2319,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-05 b297 sorted data is never searched from the beginning';
+const BUILD_STAMP = '2026-09-05 b298 the opening now, the rest as it goes';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10466,6 +10466,15 @@ function play(fromStart){
   playBase = tickToTime(from);
   let last = t0, heard = 0;
 
+  // THE COUNT-IN IS DECIDED FIRST, AND t0 MOVES BEFORE ANYTHING IS QUEUED.
+  //
+  // It used to be worked out after the whole piece was queued, and then every
+  // queued note was shifted to make room. That only works if everything is
+  // queued at once — and the moment the queue is filled in pieces, the notes
+  // that arrive later miss the shift. Don: "there is no count-in."
+  // A DECISION THAT MOVES EVERYTHING MUST BE MADE BEFORE ANYTHING EXISTS.
+  let leadPlan = null;
+
   // THE ROUTE, not the timeline. With repeats a bar can sound twice, at two
   // different moments, so playback walks the route bar by bar and lays each
   // one down where it falls. `stops` remembers where each bar landed, so the
@@ -10571,7 +10580,40 @@ function play(fromStart){
     return lo;
   };
 
-  for (let k = 0; k < stops.length; k++){
+  // THE COUNT-IN, DECIDED BEFORE THE FIRST NOTE IS QUEUED.
+  //
+  // It used to be worked out after everything was queued and then shift every
+  // queued note back to make room. That only works while the queue is filled in
+  // one go — and now it is filled in slices, so notes arriving later would miss
+  // the shift entirely. Moving t0 instead means the room is there from the
+  // start and every slice lands correctly, whenever it is added.
+  if (LEAD_WAY && stops.length){
+    const b0 = stops[0].bar;
+    const ts = tsAt(b0), spt = stops[0].secPerTick;
+    const perBeat = TPQ * 4 / ts.unit;
+    const lstep = perBeat * spt;
+    const perBar = Math.max(1, ts.beats || 4);
+    const pattern = leadPattern(perBar, lstep);
+    if (pattern.length){
+      const secs = pattern[0].before * lstep;
+      t0 += secs; last += secs;
+      leadPlan = { pattern, step: lstep, secs, perBar,
+                   beats: Math.round(pattern[0].before) };
+    }
+  }
+
+  // THE FIRST BARS NOW, THE REST WHILE IT PLAYS.
+  //
+  // Queueing the whole of the K.265 before a note sounds means the listener
+  // waits for music he will not hear for four minutes. Don: "can we make a rule
+  // that a long file loads the first 30 bars immediately, while the rest load
+  // as it goes?" Yes — and it is the right shape for any long piece.
+  // NOBODY SHOULD WAIT FOR MUSIC THAT IS NOT DUE YET.
+  const FIRST_RUN = 30;                 // bars queued before playback begins
+  let queuedTo = 0;                     // how far through the route we have got
+
+  const queueRange = (k0, k1) => {
+  for (let k = k0; k < k1; k++){
     const step = stops[k];
     const bStart = barStart(step.bar), bEnd = bStart + capacityOf(step.bar);
     // THE BEATS OF THIS BAR — BUT ONLY IF ANYONE IS LISTENING FOR THEM.
@@ -10664,37 +10706,10 @@ function play(fromStart){
   // played them all at once, immediately, and then the rebase moved the MUSIC
   // forward without them. Don, three builds running: "no clicks."
   // NOTHING IS SCHEDULED UNTIL THE CLOCK IS CORRECTED.
+  // leadPlan is declared and filled further up now, before anything is queued —
+  // see the note there. This pair is left because other code still reads them.
   const leadBox = document.getElementById('bLead');
   const wantLead = leadBox ? leadBox.checked : LEAD_IN;
-  let leadPlan = null;
-  // THE COUNT-IN, FOR EVERY PLAY — NOT ONLY FOR LOOPS.
-  //
-  // It was conditioned on a loop running, so playing a piece straight through
-  // dropped you in with no warning at all. And it counted plain evenly spaced
-  // beats, which at a slow tempo is a second of silence and then an entry you
-  // have to guess. Don: "it doesn't give you good warning... maybe da-da-DA."
-  //
-  // So the shape comes from leadPattern(): a bar of beats, and — in the ways
-  // that ask for it — an extra stroke half a beat before the downbeat. That
-  // half beat is the whole cue. It tells your hands the entry is NEXT, which no
-  // amount of evenly spaced clicking can.
-  if (LEAD_WAY && stops.length){
-    const b0 = stops[0].bar;
-    const ts = tsAt(b0), spt = stops[0].secPerTick;
-    const perBeat = TPQ * 4 / ts.unit;
-    const step = perBeat * spt;
-    const perBar = Math.max(1, ts.beats || 4);
-    const pattern = leadPattern(perBar, step);
-    if (pattern.length){
-      const secs = pattern[0].before * step;
-      // The music moves back to make room; t0 moves with it, so the playhead and
-      // the sound stay in agreement.
-      for (const n of pending) n.at += secs;
-      t0 += secs; last += secs;
-      leadPlan = { pattern, step, secs, perBar,
-                   beats: Math.round(pattern[0].before) };
-    }
-  }
 
   // Writing leaves the cursor AFTER the last note, so "from the cursor" would
   // be silence every time you finished a phrase and pressed space. If there is
@@ -10872,6 +10887,24 @@ function play(fromStart){
     CLICK_BEATS = beatTimes.filter(b2 => b2.at > audio.currentTime - 0.05);
     clickStart(leadPlan ? t0 - leadPlan.secs : t0);
   }
+
+  };
+
+  // The opening, now.
+  queuedTo = Math.min(stops.length, FIRST_RUN);
+  queueRange(0, queuedTo);
+
+  // And the rest in slices, between frames, so the page stays answerable while
+  // it fills. Each slice is small enough not to be felt.
+  const fillOn = () => {
+    if (!playing || queuedTo >= stops.length) return;
+    const to = Math.min(stops.length, queuedTo + 20);
+    queueRange(queuedTo, to);
+    queuedTo = to;
+    stopAt = last;
+    if (queuedTo < stops.length) setTimeout(fillOn, 40);
+  };
+  if (queuedTo < stops.length) setTimeout(fillOn, 60);
 
   playing = true; stopAt = last;
   holdAwake();                    // keep the screen on while the music runs
