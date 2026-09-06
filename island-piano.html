@@ -1599,6 +1599,25 @@
   .chip.shp.picked{ box-shadow:none; filter:none }
   .playhead{ position:absolute; width:2px; background:var(--warn); border-radius:2px; opacity:.8;
     pointer-events:none; transition:none }
+  /* WHERE YOUR EYES SHOULD BE. Dashed and teal so it cannot be mistaken for the
+     playhead, which is solid and warm — one is where you are, the other is
+     where you should be looking. */
+  .eyeline{ position:absolute; width:0; border-left:3px dashed #00a3ab; opacity:.85;
+    pointer-events:none; transition:none }
+  .eyetag{ position:absolute; transform:translateX(-50%); pointer-events:none;
+    padding:1px 6px 2px; border-radius:5px; background:#00a3ab; color:#04222a;
+    font:800 11px/1.2 -apple-system,sans-serif; letter-spacing:.08em }
+  /* WHAT A VANISHED NOTE LEAVES BEHIND.
+     The note used to go to opacity 0, which takes the pitch — which is the
+     point — but also the rhythm, the spacing and your place, which are not.
+     Don: "It's hard to know where I am." So a neutral mark stays at the same
+     horizontal position, on the middle line, carrying the beat and none of the
+     pitch. It must NOT be a faint notehead: a faint notehead is still readable
+     and the drill stops working. */
+  .gonemark{ position:absolute; width:calc(10px * var(--z)); height:calc(10px * var(--z));
+    margin-left:calc(-5px * var(--z)); margin-top:calc(-5px * var(--z));
+    border-radius:50%; background:var(--ink); opacity:.30; pointer-events:none }
+  @media print { .eyeline, .eyetag, .gonemark{ display:none !important } }
   .lyric{ position:absolute; transform:translateX(-50%); white-space:nowrap; cursor:text;
     font:800 calc(21px * var(--z))/1 ui-rounded,"Trebuchet MS",ui-sans-serif,system-ui,sans-serif;
     color:var(--ink); background:var(--paper); padding:1px 4px; border-radius:4px }
@@ -1874,7 +1893,7 @@
     .held{ background:none !important; border-color:#000 !important }
     .chip.ghost{ display:none !important }
 
-    #caret, .caretag, .playhead, .sel, .over, .lamp, .arm{ display:none !important }
+    #caret, .caretag, .playhead, .eyeline, .eyetag, .gonemark, .sel, .over, .lamp, .arm{ display:none !important }
     /* The voice labels print, because they say which line you are reading —
        but plainly. The teal box marks the voice you are WRITING in, which is
        not a fact about the music. */
@@ -2341,7 +2360,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-06 b314 gone before you get there';
+const BUILD_STAMP = '2026-09-06 b315 somewhere to put your eyes';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -5674,6 +5693,8 @@ const REST_GLYPH = {
 };
 
 let heads = [];
+
+let eyes = [];     // the EYES marker, one per drawn staff box
 // WHEN DRAWING FAILS, SAY SO. A fault inside the drawing leaves the page blank
 // — the score is cleared and then the redraw dies partway — and from outside
 // that is indistinguishable from "the piece did not load". Don has now hit this
@@ -5767,6 +5788,7 @@ function drawEverything(){
   _routeCache = null;              // the route can change between renders
   _reachCache = null;              // and so can how far the music reaches
   heads = [];
+  eyes = [];
   _scaleUsed = {};
   const scale = {};
   const scaleOf = b => (scale[b] !== undefined ? scale[b] : (scale[b] = barScale(b)));
@@ -7652,6 +7674,28 @@ function drawEverything(){
       box.appendChild(ph);
       heads.push({ el:ph, from:x0, to:barStart(last), map:lineX });
 
+      // A SECOND MARKER, FOR WHERE YOUR EYES SHOULD BE.
+      //
+      // The playhead tracks your HANDS. The whole skill being drilled is that
+      // your eyes are somewhere else — ahead of them by the span you chose — and
+      // until now nothing on the page said where. Don: "It's hard to know where
+      // I am and what I should be thinking." A drill that removes something has
+      // to give the attention somewhere to go.
+      // THE GAP BETWEEN THE TWO MARKERS IS THE SETTING, made visible. It shows
+      // whenever reading ahead is on, whether or not anything is hidden yet, so
+      // it can be used on its own as the gentle first stage.
+      const eye = document.createElement('div');
+      eye.className = 'eyeline';
+      eye.style.top = '-8px'; eye.style.height = (STAFFH() + 16) + 'px';
+      eye.style.display = 'none';
+      box.appendChild(eye);
+      const eyeTag = document.createElement('div');
+      eyeTag.className = 'eyetag';
+      eyeTag.textContent = 'EYES';
+      eyeTag.style.display = 'none';
+      box.appendChild(eyeTag);
+      eyes.push({ el:eye, tag:eyeTag, from:x0, to:barStart(last), map:lineX });
+
       if (mine.indexOf(cur.staff) !== -1 && cur.tick >= x0 && cur.tick <= barStart(last)){
         const car = document.createElement('div');
         car.className = 'blink'; car.id = 'caret';
@@ -7831,7 +7875,12 @@ function status(){
   const holdText = nHeld
     ? (sel && sel.only ? '1 note held' : nHeld + (nHeld === 1 ? ' note held' : ' notes held'))
     : '';
-  document.getElementById('fSay').textContent = [holdText, say].filter(Boolean).join(' \u00b7 ');
+  // WHILE READING AHEAD, THE INSTRUCTION STANDS. Everything else the line has
+  // to say is a report on what just happened; this is what you are supposed to
+  // be DOING, and it has to survive the next report or it is gone in a second.
+  const standing = (window._aheadSays && window._aheadSays()) || '';
+  document.getElementById('fSay').textContent =
+    [holdText, say, standing].filter(Boolean).join(' \u00b7 ');
 
   // SILENCE MUST NOT BE INVISIBLE. Three separate switches can stop a note
   // being heard — a hushed voice, a muted note, and now the faint-note switch —
@@ -9151,7 +9200,10 @@ document.getElementById('bWords').addEventListener('click', ev => {
       // re-queued for the change to be heard rather than only seen.
       if (playing){ stop(); play(false); }
       const sc6 = document.getElementById('score');
-      if (sc6) for (const e6 of sc6.querySelectorAll('.faded')) e6.classList.remove('faded');
+      if (sc6){
+        for (const e6 of sc6.querySelectorAll('.faded')) e6.classList.remove('faded');
+        for (const e6 of sc6.querySelectorAll('.gonemark')) e6.remove();
+      }
       say = AHEAD_VOICE
         ? 'reading ahead will hide ' + aheadName() + ' and leave it for you to play'
         : 'reading ahead will hide both hands \u2014 the app plays them';
@@ -9162,7 +9214,10 @@ document.getElementById('bWords').addEventListener('click', ev => {
       try { localStorage.setItem('island.aheadspan', String(n)); } catch (err) {}
       _aheadAt = -1; _aheadTo = -1;        // redraw against the new window
       const sc7 = document.getElementById('score');
-      if (sc7) for (const e7 of sc7.querySelectorAll('.faded')) e7.classList.remove('faded');
+      if (sc7){
+        for (const e7 of sc7.querySelectorAll('.faded')) e7.classList.remove('faded');
+        for (const e7 of sc7.querySelectorAll('.gonemark')) e7.remove();
+      }
       say = 'reading ahead will hide ' + spanName(n) + ' of ' + aheadName()
           + ', a beat before you play it';
       paintAhead();
@@ -9184,20 +9239,40 @@ document.getElementById('bWords').addEventListener('click', ev => {
       on: AHEAD_VOICE === v.id,
       pick: () => setAhead(v.id)
     })))));
+    // THE STANDING INSTRUCTION, held for as long as the mode is on.
+    //
+    // The status line used to report what you had just SET, then move on to
+    // whatever else it had to say. But a drill you have to remember the point of
+    // is one you will practise wrong. Don: "It's hard to know... what I should
+    // be thinking." So while the eye is lit, this is what the line says.
+    const aheadSays = () =>
+      'your eyes ' + (AHEAD_SPAN ? spanName(AHEAD_SPAN) : 'a bar')
+      + ' ahead, your hands on this one \u00b7 the dashed teal line is where to look';
+    window._aheadSays = () => document.body.classList.contains('ahead') ? aheadSays() : null;
+
     if (ah) ah.addEventListener('click', () => {
       const on = !document.body.classList.contains('ahead');
       document.body.classList.toggle('ahead', on);
-      paintAhead();
-      if (!on){
-        const sc5 = document.getElementById('score');
-        if (sc5) for (const e5 of sc5.querySelectorAll('.faded')) e5.classList.remove('faded');
-        _aheadBar = -1;
+      _aheadAt = -1; _aheadTo = -1;
+      const sc8 = document.getElementById('score');
+      if (sc8){
+        for (const e8 of sc8.querySelectorAll('.faded')) e8.classList.remove('faded');
+        for (const e8 of sc8.querySelectorAll('.gonemark')) e8.remove();
       }
-      say = on
-        ? (AHEAD_VOICE
-            ? 'reading ahead \u00b7 ' + aheadName() + ' fades in the bar you are on, and is silent \u2014 you play it'
-            : 'reading ahead \u00b7 both hands fade in the bar you are on')
-        : 'the whole page is visible again, and everything sounds';
+      if (on){
+        // MAKE IT POSSIBLE TO SUCCEED AT FIRST. The rhythm lines run past the
+        // staff and give a beat grid that never disappears, which is most of
+        // what "where am I" needs — so switching the eye on switches them on
+        // rather than leaving you to find them. Nothing is switched back off:
+        // undoing a helpful change silently is worse than leaving it.
+        if (!SHOW_GRID){
+          SHOW_GRID = true;
+          const gb = document.getElementById('bGrid');
+          if (gb) gb.setAttribute('aria-pressed', 'true');
+        }
+        say = aheadSays();
+      } else say = 'reading ahead is off';
+      paintAhead();
       render();
     });
     // A single-voice piece has nothing to choose between, so it starts on both.
@@ -12235,6 +12310,26 @@ function follow(){
   }
   centreOnPlayhead();
 
+  // AND THE EYES MARKER, one span in front of the hands.
+  //
+  // It rides the same mapping as the playhead, so it stays true through
+  // stretched bars and justified lines without any geometry of its own. The
+  // distance between them IS the setting: change the span and the gap changes.
+  if (document.body.classList.contains('ahead')){
+    const ts6 = tsAt(barAt(tick));
+    const beat6 = TPQ * 4 / ts6.unit;
+    const span6 = (AHEAD_SPAN ? AHEAD_SPAN : (capacityOf(barAt(tick)) / beat6)) + AHEAD_LEAD;
+    const look = tick + span6 * beat6;
+    for (const e of eyes){
+      if (look >= e.from && look <= e.to){
+        const x = e.map(look);
+        e.el.style.display = ''; e.el.style.left = x + 'px';
+        e.tag.style.display = ''; e.tag.style.left = x + 'px';
+        e.tag.style.top = '-26px';
+      } else { e.el.style.display = 'none'; e.tag.style.display = 'none'; }
+    }
+  } else for (const e of eyes){ e.el.style.display = 'none'; e.tag.style.display = 'none'; }
+
   // READING AHEAD: THE BAR YOU ARE ON GOES QUIET TO THE EYE.
   //
   // The skill that makes two staves playable at once is the EYE-HAND SPAN —
@@ -12281,9 +12376,26 @@ function follow(){
           // alone leaves stems and beams hanging in the air, which is more
           // distracting than leaving the note there.
           const suffix = (AHEAD_VOICE ? '[data-st="' + AHEAD_VOICE + '"]' : '');
+          for (const el4 of sc4.querySelectorAll('.gonemark')) el4.remove();
           for (const el4 of sc4.querySelectorAll('.chip[data-ev]' + suffix
                                                + ', .stem[data-ev]' + suffix))
             if (gone.has(el4.dataset.ev)) el4.classList.add('faded');
+          // A NEUTRAL MARK WHERE THE NOTEHEAD WAS. Same horizontal position, so
+          // the rhythm and the spacing survive; on the middle line, so the pitch
+          // does not. One per chord rather than one per notehead — the point is
+          // "a note happens here", not how many.
+          const marked = new Set();
+          for (const el4 of sc4.querySelectorAll('.chip[data-ev]' + suffix)){
+            if (!gone.has(el4.dataset.ev) || marked.has(el4.dataset.ev)) continue;
+            marked.add(el4.dataset.ev);
+            const host = el4.parentElement;
+            if (!host) continue;
+            const dot = document.createElement('div');
+            dot.className = 'gonemark';
+            dot.style.left = (parseFloat(el4.style.left || 0) + CHIP_W / 2) + 'px';
+            dot.style.top = (STAFFH() / 2) + 'px';
+            host.appendChild(dot);
+          }
           // Beams, flags and rests are drawn per bar rather than per event, so
           // they go only when the window covers the whole bar. A flag hanging
           // where its notehead was is the thing the note above warns about, but
