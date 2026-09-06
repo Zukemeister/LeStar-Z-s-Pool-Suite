@@ -2341,7 +2341,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-06 b313 read ahead by the beat';
+const BUILD_STAMP = '2026-09-06 b314 gone before you get there';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -2381,6 +2381,15 @@ var AHEAD_VOICE = null;          // the voice the eye is reading ahead in
 // first try; the bar is where it ends up.
 var AHEAD_SPAN = 0;              // beats hidden ahead; 0 = the whole bar
 try { AHEAD_SPAN = Math.max(0, Math.min(3, +localStorage.getItem('island.aheadspan') || 0)); } catch (err) {}
+// AND IT GOES BEFORE YOU GET THERE. A note that vanishes at the instant you
+// play it can be read right up to that instant, so nothing forces the eye
+// forward — the drill teaches nothing. It has to be gone BEFORE the finger
+// arrives, which is the whole idea. Don: "the notes that disappear should do so
+// a little ahead of the timing. Say 1 beat ahead."
+// With two or three beats chosen this was already true by accident, because the
+// window reached past the beat being played. With one beat it was not, which is
+// exactly the setting he was trying.
+var AHEAD_LEAD = 1;              // beats of head start, always
 var _aheadBar = -1;
 var _aheadAt = -1, _aheadTo = -1;   // the window of music the eye is hiding
 var playing = false;             // read by the rail's paint helpers
@@ -9154,7 +9163,8 @@ document.getElementById('bWords').addEventListener('click', ev => {
       _aheadAt = -1; _aheadTo = -1;        // redraw against the new window
       const sc7 = document.getElementById('score');
       if (sc7) for (const e7 of sc7.querySelectorAll('.faded')) e7.classList.remove('faded');
-      say = 'reading ahead will hide ' + spanName(n) + ' of ' + aheadName();
+      say = 'reading ahead will hide ' + spanName(n) + ' of ' + aheadName()
+          + ', a beat before you play it';
       paintAhead();
     };
     // TWO QUESTIONS, ONE LIST: how much goes, and whose. They belong together
@@ -12248,7 +12258,10 @@ function follow(){
       const from5 = AHEAD_SPAN
         ? b5 + Math.floor((tick - b5) / beat5) * beat5
         : b5;
-      const to5 = AHEAD_SPAN ? from5 + AHEAD_SPAN * beat5 : b5 + capacityOf(nowBar);
+      // The leading edge runs AHEAD_LEAD beats past what was chosen, so the
+      // note you are about to play is already gone.
+      const to5 = (AHEAD_SPAN ? from5 + AHEAD_SPAN * beat5 : b5 + capacityOf(nowBar))
+                + AHEAD_LEAD * beat5;
       // KEYED ON THE WINDOW, NOT THE BAR. It used to recompute only when the
       // bar changed, which is right for a bar and useless for a beat.
       if (from5 !== _aheadAt || to5 !== _aheadTo){
