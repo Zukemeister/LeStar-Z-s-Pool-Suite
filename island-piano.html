@@ -2319,7 +2319,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-05 b298 the opening now, the rest as it goes';
+const BUILD_STAMP = '2026-09-05 b299 better a gap than a note in the wrong place';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -11034,7 +11034,19 @@ function feed(){
       }
       // A note whose moment has already gone is dropped rather than crammed in
       // late: better a gap than a note in the wrong place.
-      if (n.at + n.dur > audio.currentTime) voice(n.f, Math.max(n.at, audio.currentTime), n.dur, n.midi);
+      // A NOTE MORE THAN A HAIR LATE IS DROPPED, NOT CRAMMED IN.
+      //
+      // Playing it at the current instant instead of its own moment is what put
+      // a single stray note in front of the count-in: the first note of the
+      // piece was already queued, its moment briefly in the past, and the pump
+      // dutifully sounded it before the count had begun. Don: "a false,
+      // one-note start."
+      // BETTER A GAP THAN A NOTE IN THE WRONG PLACE — which the comment above
+      // has said all along, while the code did the opposite.
+      const behind = audio.currentTime - n.at;
+      if (behind > 0.05) continue;                       // its moment has gone
+      if (n.at + n.dur > audio.currentTime)
+        voice(n.f, Math.max(n.at, audio.currentTime), n.dur, n.midi);
     }
     if (!pending.length){ clearInterval(pump); pump = 0; }
   })();
