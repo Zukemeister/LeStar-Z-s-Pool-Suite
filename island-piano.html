@@ -2319,7 +2319,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-06 b300 one downbeat, one rail';
+const BUILD_STAMP = '2026-09-06 b301 every bar knows where it starts';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -2842,8 +2842,51 @@ const capacityOf = bar => {
   if (bar === 0 && score.pickup > 0) return score.pickup;
   const t = tsAt(bar); return t.beats * (TPQ * 4 / t.unit);
 };
-function barStart(bar){ let t = 0; for (let i = 0; i < bar; i++) t += capacityOf(i); return t; }
-function barAt(tick){ let b = 0, t = 0; while (t + capacityOf(b) <= tick){ t += capacityOf(b); b++; if (b > 9999) break; } return b; }
+// ---------------------------------------------------------------------------
+//  WHERE EVERY BAR BEGINS, WORKED OUT ONCE.
+//
+//  These two were the most expensive functions in the app and neither looked
+//  it. barStart(600) added up six hundred bars, and each addition asked
+//  capacityOf, which walks the meter map. barAt did the same walking forward.
+//  Both are called PER EVENT while playback queues — tiedInto alone calls barAt
+//  three times a note — so on the K.265 that is something like two million meter
+//  lookups spread across the first few seconds of the piece. The music was fine,
+//  because the music is scheduled against the audio clock; what suffered was
+//  everything that runs on frames and timers. Don: "for the first four bars the
+//  blue halos are behind, as is the metronome, then they both catch up." That
+//  IS the catching up: the main thread is busy until the queue is full.
+//
+//  A PREFIX TABLE MAKES BOTH FREE. `_barTab[b]` is the tick bar b starts on. It
+//  grows as far as it is asked and no further, and it is thrown away whenever
+//  the thing it is derived from changes — the pickup or the meter map — which
+//  is what `barSig()` watches. A CACHE MUST REMEMBER WHAT IT WAS BUILT FROM;
+//  the signature is a few property reads, against hundreds of additions saved.
+// ---------------------------------------------------------------------------
+let _barTab = null, _barSig = -1;
+function barSig(){
+  let s = (score.pickup || 0) * 1048576 + (score.ts ? score.ts.length : 0) * 1024;
+  if (score.ts) for (const t of score.ts) s = (s * 31 + t.bar * 97 + t.beats * 7 + t.unit) % 9007199254740991;
+  return s;
+}
+function barTable(){
+  const sig = barSig();
+  if (!_barTab || _barSig !== sig){ _barTab = [0]; _barSig = sig; }
+  return _barTab;
+}
+function growBars(to){
+  const T = barTable();
+  while (T.length <= to && T.length < 10002) T.push(T[T.length - 1] + capacityOf(T.length - 1));
+  return T;
+}
+function barStart(bar){ return bar <= 0 ? 0 : growBars(bar)[Math.min(bar, 10001)]; }
+function barAt(tick){
+  const T = growBars(1);
+  // Reach far enough to hold the tick, then halve the list rather than walk it.
+  while (T[T.length - 1] <= tick && T.length < 10001) T.push(T[T.length - 1] + capacityOf(T.length - 1));
+  let lo = 0, hi = T.length - 1;
+  while (lo < hi){ const mid = (lo + hi + 1) >> 1; if (T[mid] <= tick) lo = mid; else hi = mid - 1; }
+  return lo;
+}
 
 // ---------------------------------------------------------------------------
 //  THE CURSOR — where the next thing goes. Kept apart from the SELECTION,
@@ -11713,7 +11756,11 @@ function metroStart(from, notBefore, step, bar){
     // quarters. The unit IS the beat, which is what the bottom number means.
     const secs = given || (60 / bpm) * (4 / ts.unit);
     const beats = Math.max(1, ts.beats);
-    while (metroAt < audio.currentTime + 0.4){
+    // A SECOND AND A HALF IN HAND, not four tenths. The click keeps a full
+    // second; the metronome kept 0.4, so any timer that fired late dropped the
+    // beats whose moment had passed and the count limped until the page went
+    // quiet again. LOOK AHEAD FURTHER THAN THE PAGE CAN EVER STALL.
+    while (metroAt < audio.currentTime + 1.5){
       if (metroAt > audio.currentTime && metroAt >= metroFrom - 0.001){
         const o = tick(metroAt, metroBeat === 0);
         if (o) metroLive.push(o);
@@ -11723,7 +11770,7 @@ function metroStart(from, notBefore, step, bar){
     }
   };
   feedBeats();                       // no waiting for the first interval
-  metroTimer = setInterval(feedBeats, 100);
+  metroTimer = setInterval(feedBeats, 120);
   return true;
 }
 
