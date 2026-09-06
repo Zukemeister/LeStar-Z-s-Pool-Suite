@@ -1027,6 +1027,23 @@
   @media print { .midc.oct1{ color:var(--mid2) !important }
                  .midc.oct2{ color:var(--mid3) !important } }
 
+  /* THE FLYOUT, above whichever control opened it. */
+  .flyout{ position:fixed; z-index:920; min-width:210px; max-width:min(320px, 92vw);
+    max-height:60vh; overflow:auto; padding:6px;
+    background:#0d1013; border:1.5px solid rgba(255,255,255,.5); border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.55) }
+  .flyhead{ padding:6px 10px 8px; font:700 12px/1.2 -apple-system,sans-serif;
+    letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.5) }
+  .flyitem{ display:flex; align-items:baseline; gap:8px; width:100%;
+    padding:12px 10px; cursor:pointer; text-align:left;
+    border:none; border-radius:8px; background:none; color:#fff;
+    font:600 16px/1.25 -apple-system,sans-serif }
+  .flyitem:hover{ background:rgba(255,255,255,.1) }
+  .flyitem.on{ background:#00a3ab; color:#04222a }
+  .flytick{ width:14px; flex:0 0 14px; font-weight:900 }
+  .flylabel{ flex:1 1 auto }
+  .flynote{ flex:0 0 auto; opacity:.6; font-weight:400; font-size:13px }
+  @media print { .flyout{ display:none !important } }
   .barnum{ cursor:pointer; position:absolute; z-index:6; border:none; background:none;
     padding:3px 7px; margin:-3px -7px; line-height:1;
     font:900 calc(44px * var(--z))/1 ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -1965,7 +1982,7 @@
      EVERY CHOICE VISIBLE, EVERY CHOICE ONE TAP. Nothing hidden in a gesture. -->
 <div id="clickRow"></div>
 
-<div id="pager" hidden>
+<div id="pager" data-region="control" hidden>
   <span class="pgrab" id="pagerGrab" aria-hidden="true">⠿</span>
   <!-- OUT OF THE WAY WHILE THE MUSIC RUNS. The bar is a workbench, and a
        workbench belongs beside the work, not on top of it. Don: "a way to shut
@@ -2022,7 +2039,7 @@
   <button type="button" id="zoomIn" title="bigger">+</button>
   <button type="button" id="railFold" title="hide the controls">&#9650;</button>
 </div>
-<div class="rail">
+<div class="rail" data-region="menu">
   <!-- GROUPED BY WHAT A CONTROL IS FOR, with a caption over each group. Twenty
        six controls in one undifferentiated row is a list you have to read from
        the start every time; five short named groups is something you can aim
@@ -2223,9 +2240,9 @@
   <div id="loopGrip" title="drag to resize"></div>
 </div>
 
-<div id="score" tabindex="0"></div>
+<div id="score" data-region="staff" tabindex="0"></div>
 
-<div class="foot" id="foot">
+<div class="foot" id="foot" data-region="status">
   <div class="now">
     <span class="drag" id="footGrab" aria-hidden="true">⠿</span>
     <button type="button" id="footFold" title="hide the status line">&#9660;</button>
@@ -2319,7 +2336,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-06 b301 every bar knows where it starts';
+const BUILD_STAMP = '2026-09-06 b307 the click follows the notation';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -2341,8 +2358,15 @@ const BUILD_STAMP = '2026-09-06 b301 every bar knows where it starts';
 //  and their real values are set here rather than where they used to be.
 // ---------------------------------------------------------------------------
 var CLICK_ON = false, clickAt = 0, clickBeat = 0, clickTimer = 0, clickLive = [];
-var CLICK_WITH = false;
-try { CLICK_WITH = localStorage.getItem('island.clickwith') === '1'; } catch (err) {}
+// CLICK_WITH is gone: the click has one behaviour now, which is the music's.
+// AND HOW LOUD IT IS, hoisted for the same reason as everything else here: the
+// control panel paints itself while the page is still running down the script,
+// so anything the panel reads has to exist before the panel is built. That is
+// SIX temporal dead zones in this file now, and every one of them cost a build.
+var CLICK_VOL = 1;                       // 0 quiet, 1 medium, 2 loud
+var CLICK_VOLS = [0.55, 1, 1.9];
+var CLICK_VOL_NAMES = ['quiet', 'medium', 'loud'];
+try { CLICK_VOL = Math.max(0, Math.min(2, +localStorage.getItem('island.clickvol') || 1)); } catch (err) {}
 var AHEAD_VOICE = null;          // the voice the eye is reading ahead in
 var _aheadBar = -1;
 var playing = false;             // read by the rail's paint helpers
@@ -4522,6 +4546,11 @@ function barsHeld(){
   return out.length ? out : [barAt(cur.tick)];
 }
 const barName = b => score.pickup > 0 ? (b === 0 ? 'the pickup' : 'bar ' + b) : 'bar ' + (b + 1);
+// THE PRINTED NUMBER OF A BAR, and back again. barName knew the pickup rule and
+// nothing else did, so every control that wanted a number wrote b+1 by hand and
+// was wrong by one on any piece with a pickup. ONE RULE, IN ONE PLACE.
+const barShown = b => (score.pickup > 0 ? b : b + 1);
+const barFromShown = n => (score.pickup > 0 ? n : n - 1);
 function barList(bars){
   if (bars.length === 1) return barName(bars[0]);
   return 'bars ' + barName(bars[0]).replace(/^bar /, '')
@@ -6002,6 +6031,28 @@ function drawEverything(){
 
     drawStaves().forEach((st, si) => {
       GEO_ST = GRAND ? st.id : null;
+      // WHERE EVERY BAR OF THIS SYSTEM SITS, WORKED OUT BEFORE ANYTHING IS
+      // DRAWN. This pair used to be declared two hundred lines further down —
+      // after the band block that calls barX() to place the octave marks out in
+      // ledger country. `const` does not hoist, so that call threw
+      // ReferenceError on every single render, was caught by the guard around
+      // it, and the marks were quietly skipped. Nobody ever saw them.
+      // FIFTH TIME THE TEMPORAL DEAD ZONE HAS COST SOMETHING HERE, and the
+      // fourth that a catch turned into silence. WORK OUT THE GEOMETRY BEFORE
+      // THE THINGS THAT STAND ON IT.
+      // Time still maps straight to distance INSIDE a bar; each bar simply
+      // begins a gutter's width after its barline. Without this the first note
+      // of every bar is centred on the barline and sits astride it.
+      const base = barStart(first);
+      const lefts = {};
+      { let run = CLEF_W;
+        for (let b = first; b <= last; b++){ lefts[b] = run; run += (GUTTER + TAILGAP) * lineGut + capacityOf(b) * PX_TICK * scaleOf(b); } }
+      const barX = b => lefts[b];
+      const lineX = t => {
+        const b = Math.max(first, Math.min(last - 1, barAt(t)));
+        return lefts[b] + GUTTER * lineGut + (t - barStart(b)) * PX_TICK * scaleOf(b);
+      };
+
       // The vertical reach of everything drawn for this staff, ruled bands plus
       // whatever ledger country the music opens up. Set by the band block below
       // and used by the barlines, which have to span the lot.
@@ -6371,18 +6422,6 @@ function drawEverything(){
 
 
 
-      // Time still maps straight to distance INSIDE a bar; each bar simply
-      // begins a gutter's width after its barline. Without this the first note
-      // of every bar is centred on the barline and sits astride it.
-      const base = barStart(first);
-      const lefts = {};
-      { let run = CLEF_W;
-        for (let b = first; b <= last; b++){ lefts[b] = run; run += (GUTTER + TAILGAP) * lineGut + capacityOf(b) * PX_TICK * scaleOf(b); } }
-      const barX = b => lefts[b];
-      const lineX = t => {
-        const b = Math.max(first, Math.min(last - 1, barAt(t)));
-        return lefts[b] + GUTTER * lineGut + (t - barStart(b)) * PX_TICK * scaleOf(b);
-      };
       const x0 = base;
       // THE BOX ENDS AT THE CLOSING BARLINE, not a bar's width past it. It was
       // given GUTTER + TAILGAP of extra room — 78px — left over from when the
@@ -6620,7 +6659,31 @@ function drawEverything(){
           // click. Don: "the measure numbers and the measure controls overlap"
           // and "the measure controls don't seem to be operable."
           // THEY WERE OPERABLE. NOTHING COULD REACH THEM.
-          lamp.style.left = (x + 4) + 'px';
+          // THE NUMBER GOES FIRST, AT THE HEAD OF ITS OWN BAR.
+          //
+          // The row was lamp, arm, number — so the number sat 60px into the
+          // measure, and 60px is most of a narrow one. On the K.265 the numbers
+          // came out level with the END of the bar they belong to, which reads
+          // as the number of the NEXT bar: Don asked for bars 1-7 by tapping
+          // what looked like 1 and 7, got 2-8, and compensated by tapping 1 and
+          // 8. A LABEL THAT SITS OVER THE WRONG THING IS A WRONG LABEL.
+          //
+          // Number first, then the lamp and the arm after it. The row is the
+          // same total width as before, so nothing new can collide — the piece
+          // that spills past a narrow barline is now the arm button rather than
+          // the number, and a button overlapping a neighbour is a nuisance
+          // where a number overlapping one is a lie.
+          const numTxt = score.pickup > 0
+            ? (b === 0 ? '\u2022' : String(barShown(b)))
+            : String(barShown(b));
+          // 44px monospace, and a monospace digit is about six tenths of an em.
+          // AND THE GAP GROWS WITH THE TYPE. A flat ten pixels between a 44px
+          // numeral and a button is six pixels of daylight at normal size and
+          // less than nothing to look at when the page is scaled up. Anything
+          // meant to separate two things has to be measured in the same units
+          // they are.
+          const numW = Math.round(numTxt.length * 26.4 * ZOOM) + Math.round(12 * ZOOM);
+          lamp.style.left = (x + 6 + numW) + 'px';
           lamp.style.top = (-PAD() + 4) + 'px';
           box.appendChild(lamp);
 
@@ -6629,7 +6692,7 @@ function drawEverything(){
           const held = sel && sel.to > sel.from
                     && barStart(b) >= sel.from && barStart(b) < sel.to;
           nm.className = 'barnum' + (held ? (barLocked(b) ? ' took stuck' : ' took') : '');
-          nm.textContent = score.pickup > 0 ? (b === 0 ? '\u2022' : b) : (b + 1);
+          nm.textContent = numTxt;
           nm.dataset.bar = b;
           // SPARE MEANS "PAST THE PIECE", and the piece now includes any bars
           // added on the end. Measured from the last NOTE, an added bar looked
@@ -6640,8 +6703,10 @@ function drawEverything(){
           if (spare) nm.classList.add('spare');
           nm.title = spare
             ? 'empty space to write in \u2014 not a measure of the piece, so there is nothing here to delete'
-            : 'click to take this bar \u2014 shift-click another to take the run';
-          nm.style.left = (x + 60) + 'px'; nm.style.top = (-PAD() + 2) + 'px';
+            : (score.pickup > 0 && b === 0
+                ? 'the pickup \u2014 it comes before bar 1 and is not numbered. Click to take it'
+                : 'click to take ' + barName(b) + ' \u2014 shift-click another to take the run');
+          nm.style.left = (x + 3) + 'px'; nm.style.top = (-PAD() + 2) + 'px';
           box.appendChild(nm);
 
           // NO BUTTON ON THE BLANK BAR AT THE END. It is room to write in, not a
@@ -6704,7 +6769,7 @@ function drawEverything(){
           arm.textContent = isArmed(b) ? '\u2715' : '';
           arm.title = isArmed(b) ? 'armed \u2014 press again to spare it'
                                  : 'arm this bar for deletion \u2014 shift-press another to arm the run';
-          arm.style.left = (x + 30) + 'px';
+          arm.style.left = (x + 32 + numW) + 'px';
           arm.style.top = (-PAD() + 3) + 'px';
           box.appendChild(arm);
           }
@@ -9034,42 +9099,42 @@ document.getElementById('bWords').addEventListener('click', ev => {
     window._paintVoices = paintVoices;
     const ah = document.getElementById('pageAhead');
     const aheadName = () => AHEAD_VOICE ? ('V' + voiceNumber(AHEAD_VOICE)) : 'both hands';
+    // TEAL WHEN THE EYE IS ON, BLACK WHEN IT IS NOT — the same rule as the
+    // count button, because it is the same question: is this doing anything?
     const paintAhead = () => {
       if (!ah) return;
       const on = document.body.classList.contains('ahead');
       ah.setAttribute('aria-pressed', on ? 'true' : 'false');
-      ah.title = on
-        ? 'hiding ' + aheadName() + ' \u00b7 hold to choose which'
-        : 'hide the bar you are playing \u00b7 hold to choose which voice';
+      ah.style.background  = on ? '#00a3ab' : '';
+      ah.style.borderColor = on ? '#00a3ab' : '';
+      ah.style.color       = on ? '#04222a' : '';
+      ah.title = (on ? 'hiding ' + aheadName() : 'hide the bar you are playing \u2014 ' + aheadName())
+               + ' \u00b7 press and hold to choose which';
     };
-    // HOLD TO CHOOSE WHICH LINE GOES. It cycles: one voice, the next, then both
-    // — one control, because it is one exercise at different difficulties.
-    if (ah){
-      let hv = 0;
-      const hvStart = () => { hv = setTimeout(() => {
-        hv = 0;
-        const list = shownAll().map(v => v.id);
-        const i5 = AHEAD_VOICE ? list.indexOf(AHEAD_VOICE) : -1;
-        AHEAD_VOICE = (i5 + 1 < list.length) ? list[i5 + 1] : null;
-        _aheadBar = -1;                    // repaint against the new choice
-        // The silence is decided while queueing, so a running piece has to be
-        // re-queued for the change to be heard rather than only seen.
-        if (playing){ stop(); play(false); }
-        const sc6 = document.getElementById('score');
-        if (sc6) for (const e6 of sc6.querySelectorAll('.faded')) e6.classList.remove('faded');
-        say = AHEAD_VOICE
-          ? 'reading ahead will hide ' + aheadName() + ' and leave it for you to play'
-          : 'reading ahead will hide both hands \u2014 the app plays them';
-        cry('HIDING ' + aheadName().toUpperCase(), 1800);
-        paintAhead(); render();
-      }, 600); };
-      const hvEnd = () => { if (hv){ clearTimeout(hv); hv = 0; } };
-      ah.addEventListener('touchstart', hvStart, { passive:true });
-      ah.addEventListener('touchend', hvEnd);
-      ah.addEventListener('mousedown', hvStart);
-      ah.addEventListener('mouseup', hvEnd);
-      ah.addEventListener('mouseleave', hvEnd);
-    }
+    // WHICH LINE GOES. Set from a list rather than cycled blind: with three or
+    // four voices, cycling meant pressing and reading, pressing and reading.
+    const setAhead = id => {
+      AHEAD_VOICE = id;
+      _aheadBar = -1;                      // repaint against the new choice
+      // The silence is decided while queueing, so a running piece has to be
+      // re-queued for the change to be heard rather than only seen.
+      if (playing){ stop(); play(false); }
+      const sc6 = document.getElementById('score');
+      if (sc6) for (const e6 of sc6.querySelectorAll('.faded')) e6.classList.remove('faded');
+      say = AHEAD_VOICE
+        ? 'reading ahead will hide ' + aheadName() + ' and leave it for you to play'
+        : 'reading ahead will hide both hands \u2014 the app plays them';
+      paintAhead();
+    };
+    holdOpens(ah, () => flyout(ah, 'read ahead \u2014 hide', [
+      { label:'both hands', note:'the app plays them', on: !AHEAD_VOICE,
+        pick: () => setAhead(null) }
+    ].concat(shownAll().map(v => ({
+      label: 'V' + voiceNumber(v.id),
+      note: 'you play it',
+      on: AHEAD_VOICE === v.id,
+      pick: () => setAhead(v.id)
+    })))));
     if (ah) ah.addEventListener('click', () => {
       const on = !document.body.classList.contains('ahead');
       document.body.classList.toggle('ahead', on);
@@ -9089,57 +9154,59 @@ document.getElementById('bWords').addEventListener('click', ev => {
     // A single-voice piece has nothing to choose between, so it starts on both.
     paintAhead();
 
+    // ---------------------------------------------------------------------
+    //  THE CLICK. It follows the notation, always.
+    //
+    //  It used to have two personalities on one button: one that ran on its own
+    //  clock for playing along to, and one that took its beats from the music —
+    //  and a press-and-hold swapped between them, so the same button did two
+    //  different things depending on a state nothing on screen showed. Don:
+    //  "there is no need for a Count on its own. It always syncs with the
+    //  notation." Right, and it removes a whole class of confusion: the click
+    //  can no longer be running at a tempo the music is not.
+    //
+    //  Tap turns it on and off. Teal on, black off. Held, it asks how loud.
+    // ---------------------------------------------------------------------
     const cb2 = document.getElementById('pageClick');
     const paintClick = () => {
       if (!cb2) return;
       cb2.setAttribute('aria-pressed', CLICK_ON ? 'true' : 'false');
-      cb2.innerHTML = CLICK_WITH ? '&#9834;&#8202;&#8226;' : '&#9834;';
-      cb2.title = CLICK_WITH
-        ? 'clicks with the music, from the downbeat \u00b7 hold to make it independent'
-        : 'clicks on its own, for playing along \u00b7 hold to make it follow the music';
+      cb2.style.background  = CLICK_ON ? '#00a3ab' : '';
+      cb2.style.borderColor = CLICK_ON ? '#00a3ab' : '';
+      cb2.style.color       = CLICK_ON ? '#04222a' : '';
+      cb2.innerHTML = '&#9834;';
+      cb2.title = (CLICK_ON ? 'clicking with the music' : 'a click on every beat of the music')
+                + ' \u00b7 ' + CLICK_VOL_NAMES[CLICK_VOL]
+                + ' \u00b7 press and hold for how loud';
     };
     window._paintClick = paintClick;
     if (cb2){
       cb2.addEventListener('click', () => {
-        if (CLICK_ON){ clickStop(); say = 'the click is off'; }
-        else {
-          clickStart().then(ok => {
-            if (ok) say = (CLICK_WITH ? 'clicking with the music' : 'clicking on its own')
-                        + ' at ' + Math.round(clickBpm()) + ' a minute, '
-                        + clickPerBar() + ' to the bar';
-            paintClick(); render();
-          });
-          return;
-        }
-        paintClick(); render();
+        if (CLICK_ON){ clickStop(); say = 'the click is off'; paintClick(); render(); return; }
+        clickStart().then(ok => {
+          if (ok) say = playing
+            ? 'clicking with the music'
+            : 'the click is armed \u2014 it starts with the music';
+          paintClick(); render();
+        });
       });
-      // HOLD TO CHANGE WHICH KIND IT IS. One button, because it is one click —
-      // the setting is what it belongs to, not a separate control.
-      let hc = 0;
-      const hcStart = () => { hc = setTimeout(() => {
-        hc = 0;
-        CLICK_WITH = !CLICK_WITH;
-        try { localStorage.setItem('island.clickwith', CLICK_WITH ? '1' : '0'); } catch (err) {}
-        if (CLICK_ON){ clickStop(); clickStart(); }
-        say = CLICK_WITH
-          ? 'the click now starts with the music, on its downbeat'
-          : 'the click now runs on its own, for playing along to';
-        cry(CLICK_WITH ? 'CLICK WITH THE MUSIC' : 'CLICK ON ITS OWN', 2000);
-        paintClick(); render();
-      }, 600); };
-      const hcEnd = () => { if (hc){ clearTimeout(hc); hc = 0; } };
-      cb2.addEventListener('touchstart', hcStart, { passive:true });
-      cb2.addEventListener('touchend', hcEnd);
-      cb2.addEventListener('mousedown', hcStart);
-      cb2.addEventListener('mouseup', hcEnd);
-      cb2.addEventListener('mouseleave', hcEnd);
+      holdOpens(cb2, () => flyout(cb2, 'how loud', CLICK_VOL_NAMES.map((n, i) => ({
+        label: n,
+        on: CLICK_VOL === i,
+        pick: () => {
+          CLICK_VOL = i;
+          try { localStorage.setItem('island.clickvol', String(i)); } catch (err) {}
+          say = 'the click is ' + n;
+          paintClick();
+        }
+      }))));
       paintClick();
       // CLAIMED ONLY ONCE THE WORK IS DONE. The mark used to be set before the
       // listener was attached — so a throw in between left the button marked and
       // unwired, and the fallback at the end of the file politely stood aside
       // from a button nobody was handling. Don: "our metronome is not working."
       // A FLAG THAT SAYS 'DONE' MUST BE SET WHEN IT IS DONE.
-      cb2.dataset.wired = '1';
+      cb2.dataset.wired = '1'
     }
 
     // SHOWN BY HAND, LIKE THE MENU.
@@ -9567,11 +9634,14 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       loop = { from: barStart(fromBar),
                to: barStart(toBar) + capacityOf(toBar) };
       LOOP_SPEED = 1; LAP = 0; LOOP_VOICES = null;
+      // NAMED THE WAY THE PAGE NAMES THEM, pickup included — this said
+      // fromBar+1, which is a different bar from the one under your finger the
+      // moment a piece has a pickup.
       say = fromBar === toBar
-        ? 'looping bar ' + (fromBar + 1)
-        : 'looping bars ' + (fromBar + 1) + '\u2013' + (toBar + 1);
+        ? 'looping ' + barName(fromBar)
+        : 'looping bars ' + barShown(fromBar) + '\u2013' + barShown(toBar);
       const ia2 = document.getElementById('loopA'), ib2 = document.getElementById('loopB');
-      if (ia2 && ib2){ ia2.value = fromBar + 1; ib2.value = toBar + 1; }
+      if (ia2 && ib2){ ia2.value = barShown(fromBar); ib2.value = barShown(toBar); }
       document.body.classList.remove('picking');
       pickFrom = null;
       render();
@@ -10088,8 +10158,13 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       const put = (node, txt) => { if (node && node.textContent !== txt) node.textContent = txt; };
       const paint = () => {
         put(sb, Math.round(LOOP_SPEED * 100) + '%');
-        if (iA && loop && document.activeElement !== iA) iA.value = barAt(loop.from) + 1;
-        if (iB && loop && document.activeElement !== iB) iB.value = barAt(loop.to - 1) + 1;
+        // THE NUMBER IN THE BOX IS THE NUMBER ON THE PAGE. These wrote b+1,
+        // which is the printed number only when there is no pickup. With one,
+        // bar 0 is the pickup and the printed numbering starts at 1 on bar 1 —
+        // so the box said 2 for the bar drawn as 1, and typing 1 looped the
+        // pickup. A CONTROL MUST SPEAK THE SAME NUMBERS THE PAGE DOES.
+        if (iA && loop && document.activeElement !== iA) iA.value = barShown(barAt(loop.from));
+        if (iB && loop && document.activeElement !== iB) iB.value = barShown(barAt(loop.to - 1));
         const lead = ld && ld.checked;
         const on = win.hidden ? 'false' : 'true';
         sayMetro();
@@ -10108,8 +10183,8 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
 
       const setBars = () => {
         const top = lastBar();
-        let a2 = Math.max(0, Math.min(top, (+iA.value || 1) - 1));
-        let b2 = Math.max(0, Math.min(top, (+iB.value || 1) - 1));
+        let a2 = Math.max(0, Math.min(top, barFromShown(+iA.value || 1)));
+        let b2 = Math.max(0, Math.min(top, barFromShown(+iB.value || 1)));
         if (b2 < a2){ const t = a2; a2 = b2; b2 = t; }
         const moved = !loop || loop.from !== barStart(a2);
         loop = { from: barStart(a2), to: barStart(b2) + capacityOf(b2) };
@@ -10445,7 +10520,7 @@ const hz = p => 261.63 * Math.pow(2, (p - MIDDLE_C + keyShift()) / 12);
 
 
 function loopSays(){
-  const a = barAt(loop.from) + 1, b = barAt(loop.to - 1) + 1;
+  const a = barShown(barAt(loop.from)), b = barShown(barAt(loop.to - 1));
   return (a === b ? 'bar ' + a : 'bars ' + a + '\u2013' + b)
        + ' on a loop \u00b7 space plays it round, O again to let it go';
 }
@@ -11363,6 +11438,100 @@ const PEAK = 0.115;                 // so the six together sit where b9's one di
 // A WOOD BLOCK: a very short noise burst through a tight band. The downbeat
 // sits higher and louder, which is the whole of what a lead-in has to say —
 // here is the pulse, and here is where the bar begins.
+// ---------------------------------------------------------------------------
+//  THE FLYOUT.  One mechanism for every control in the CONTROL PANEL that has
+//  more than one setting behind it.
+//
+//  What it replaces: five buttons, each with its own 600ms hold timer, its own
+//  five listeners, and its own way of cycling blind to the next value while a
+//  toast said what you had just landed on. Don: "I would like to move away from
+//  the magical appearances of choices." The objection is not the gesture, it is
+//  being made to GUESS. A list you can read, with the current choice marked, is
+//  not a guess.
+//
+//  It flies out ABOVE its button, because every one of these buttons sits on
+//  the bottom bar and a menu below it would be off the glass. Picking closes
+//  it. So does tapping anywhere else, or Escape.
+//
+//  ONE MECHANISM, ONE PLACE TO FIX IT. The five hold handlers were written at
+//  five different times and no two behaved the same when a finger drifted.
+// ---------------------------------------------------------------------------
+let _flyOpen = null;
+function flyClose(){
+  if (!_flyOpen) return;
+  try { _flyOpen.remove(); } catch (err) {}
+  _flyOpen = null;
+  document.removeEventListener('pointerdown', flyAway, true);
+  document.removeEventListener('keydown', flyKey, true);
+}
+function flyAway(ev){ if (_flyOpen && !_flyOpen.contains(ev.target)) flyClose(); }
+function flyKey(ev){ if (ev.key === 'Escape'){ ev.preventDefault(); flyClose(); } }
+
+// items: [{ label, note, on, pick }]  —  `on` marks the current choice.
+function flyout(btn, title, items){
+  if (_flyOpen && _flyOpen.dataset.of === btn.id){ flyClose(); return; }
+  flyClose();
+  const box = document.createElement('div');
+  box.className = 'flyout';
+  box.dataset.of = btn.id || '';
+  if (title){
+    const h = document.createElement('div');
+    h.className = 'flyhead';
+    h.textContent = title;
+    box.appendChild(h);
+  }
+  for (const it of items){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'flyitem' + (it.on ? ' on' : '');
+    b.innerHTML = '<span class="flytick">' + (it.on ? '\u2713' : '') + '</span>'
+                + '<span class="flylabel">' + it.label + '</span>'
+                + (it.note ? '<span class="flynote">' + it.note + '</span>' : '');
+    b.addEventListener('click', ev => {
+      ev.preventDefault(); ev.stopPropagation();
+      flyClose();
+      try { it.pick(); } catch (err) {}
+      render();
+    });
+    box.appendChild(b);
+  }
+  document.body.appendChild(box);
+  // ABOVE THE BUTTON, AND ON THE GLASS. Anchored to the button's left edge,
+  // then pulled back if that would run it off the right-hand side.
+  const r = btn.getBoundingClientRect();
+  const w = box.offsetWidth || 220;
+  let left = r.left;
+  if (left + w > window.innerWidth - 8) left = window.innerWidth - w - 8;
+  box.style.left = Math.max(8, left) + 'px';
+  box.style.bottom = Math.max(8, window.innerHeight - r.top + 8) + 'px';
+  _flyOpen = box;
+  requestAnimationFrame(() => {
+    document.addEventListener('pointerdown', flyAway, true);
+    document.addEventListener('keydown', flyKey, true);
+  });
+}
+
+// A LONG PRESS OPENS IT, a tap does the button's own job. Written once here
+// rather than five times, so a finger that drifts behaves the same everywhere.
+function holdOpens(btn, build){
+  if (!btn || btn.dataset.holds) return;
+  btn.dataset.holds = '1';
+  let t = 0, moved = false;
+  const start = ev => {
+    moved = false;
+    t = setTimeout(() => { t = 0; moved = true; try { build(); } catch (err) {} }, 500);
+  };
+  const stop = () => { if (t){ clearTimeout(t); t = 0; } };
+  btn.addEventListener('touchstart', start, { passive:true });
+  btn.addEventListener('touchmove', stop, { passive:true });
+  btn.addEventListener('touchend', stop);
+  btn.addEventListener('mousedown', start);
+  btn.addEventListener('mouseup', stop);
+  btn.addEventListener('mouseleave', stop);
+  // A hold must not also fire the tap.
+  btn.addEventListener('click', ev => { if (moved){ ev.preventDefault(); ev.stopPropagation(); moved = false; } }, true);
+}
+
 function tick(at, strong, level){
   if (!audio) return null;
   // A THIRD WEIGHT, for counting in with subdivisions. The beats keep their own
@@ -11550,12 +11719,9 @@ let CLICK_BEATS = null;
 // HOW LOUD. A click has to be heard over a piano playing two hands, and one
 // fixed level cannot serve both a quiet study and a full texture. Don: "I can't
 // hear it well above the music."
-let CLICK_VOL = 1;                       // 0 quiet, 1 medium, 2 loud
-const CLICK_VOLS = [0.55, 1, 1.9];
-const CLICK_VOL_NAMES = ['quiet', 'medium', 'loud'];
-try { CLICK_VOL = Math.max(0, Math.min(2, +localStorage.getItem('island.clickvol') || 1)); } catch (err) {}
+// CLICK_VOL, CLICK_VOLS and CLICK_VOL_NAMES are hoisted — see the top.
 
-// CLICK_WITH is hoisted, and read from storage, at the top of the file.
+// CLICK_WITH no longer exists — see the note at the top of the file.
 
 function clickBpm(){
   // The written tempo, at the reading speed — so slowing the piece down slows
@@ -11599,7 +11765,6 @@ function clickTick(at, strong){
 
 function clickFeed(){
   if (!CLICK_ON || !audio) return;
-  // FOLLOWING THE MUSIC: play its beats, not a clock of our own.
   // AN EMPTY LIST IS NOT THE SAME AS NO LIST. This asked for `.length`, so the
   // moment the queue ran dry — which it does between slices while a long piece
   // is still filling — the test failed and the click dropped through to its own
@@ -11615,19 +11780,15 @@ function clickFeed(){
     if (!CLICK_BEATS.length && !playing){ CLICK_BEATS = null; }
     return;
   }
-  const step = 60 / clickBpm();
-  // NOTHING IS EVER SCHEDULED AT "NOT A TIME". A single bad number here spins
-  // the loop forever or silently books every beat into nowhere.
-  if (!isFinite(step) || step <= 0){ clickStop(); tell('the click has no tempo to follow', true); return; }
-  const perBar = clickPerBar();
-  // A SECOND OF BEATS, ALWAYS IN HAND. Scheduling further ahead than the page
-  // can ever stall for is the whole of why this does not hesitate.
-  while (clickAt < audio.currentTime + 1.0){
-    if (clickAt > audio.currentTime + 0.005)
-      clickTick(clickAt, clickBeat % perBar === 0);
-    clickAt += step;
-    clickBeat++;
-  }
+  // AND WITH NOTHING PLAYING, IT IS ARMED AND SILENT.
+  //
+  // There used to be a free-running clock here for playing along to, chosen by
+  // pressing and holding the button — so the same control could be counting the
+  // music or counting something else entirely, and nothing on screen said
+  // which. Don: "there is no need for a Count on its own. It always syncs with
+  // the notation." A click that can be at a different tempo from the music is a
+  // click you have to check, and the checking is the whole cost of it.
+  // ONE SOURCE OF BEATS: the piece. play() hands them over; until then, quiet.
 }
 
 async function clickStart(from){
@@ -11649,11 +11810,11 @@ async function clickStart(from){
   }
   CLICK_ON = true;
   clickBeat = 0;
+  // ARMED. If the music is already running, play() has left its beats in
+  // CLICK_BEATS and the next feed picks them up on the beat; if it is not, the
+  // click waits, because there is nothing yet to be in time with.
   // Given a moment, the click counts from THAT — which is how it lands on the
   // music's barlines rather than beside them.
-  // A BEAT SCHEDULED AT THE CURRENT INSTANT IS ALREADY PAST. A fifth of a
-  // second is enough for the first one to be heard and short enough to feel
-  // immediate.
   clickAt = (typeof from === 'number') ? from : audio.currentTime + 0.2;
   clickFeed();
   if (clickTimer) clearInterval(clickTimer);
@@ -13734,6 +13895,24 @@ const LEAD_WAYS = [
 let LEAD_WAY = 1;
 try { LEAD_WAY = Math.max(0, Math.min(LEAD_WAYS.length - 1,
       +localStorage.getItem('island.leadway') || 1)); } catch (err) {}
+// WHAT THE TAP TURNS BACK ON. Off is a state of the button, not a choice in
+// the list — so switching the count off has to remember what it was, or the
+// next tap gives you back whatever the default happened to be rather than the
+// setting you chose. A TOGGLE MUST REMEMBER WHAT IT IS TOGGLING.
+let LEAD_LAST = 1;
+try { LEAD_LAST = Math.max(1, Math.min(LEAD_WAYS.length - 1,
+      +localStorage.getItem('island.leadlast') || LEAD_WAY || 1)); } catch (err) {}
+if (LEAD_WAY) LEAD_LAST = LEAD_WAY;
+function setLead(n, why){
+  LEAD_WAY = Math.max(0, Math.min(LEAD_WAYS.length - 1, n | 0));
+  if (LEAD_WAY) LEAD_LAST = LEAD_WAY;
+  try {
+    localStorage.setItem('island.leadway', String(LEAD_WAY));
+    localStorage.setItem('island.leadlast', String(LEAD_LAST));
+  } catch (err) {}
+  say = why || (LEAD_WAY ? 'counting in \u2014 ' + LEAD_WAYS[LEAD_WAY].name : 'no count-in');
+  if (window._paintLead) window._paintLead();
+}
 
 // The moments a count-in sounds, as offsets in beats before the downbeat.
 // Positive numbers are beats BEFORE the first note.
@@ -13763,35 +13942,32 @@ function leadPattern(perBar, step){
     const lb = document.getElementById('pageLead');
     if (!lb || lb.dataset.wired) return;
     lb.dataset.wired = '1';
+    // TEAL WHEN IT COUNTS, BLACK WHEN IT DOES NOT. Don's rule, and it is the
+    // right one: the button's colour is the answer to "is a count coming?",
+    // which is the only question you ask it while you are about to play.
     const paint = () => {
-      const way = LEAD_WAYS[LEAD_WAY];
-      lb.setAttribute('aria-pressed', LEAD_WAY ? 'true' : 'false');
-      lb.textContent = ['no count', 'count \u00bd', 'count 1', 'count 2', 'count 8ths'][LEAD_WAY]
+      const on = !!LEAD_WAY;
+      const way = LEAD_WAYS[on ? LEAD_WAY : LEAD_LAST];
+      lb.setAttribute('aria-pressed', on ? 'true' : 'false');
+      lb.style.background  = on ? '#00a3ab' : '';
+      lb.style.borderColor = on ? '#00a3ab' : '';
+      lb.style.color       = on ? '#04222a' : '';
+      lb.textContent = ['no count', 'count \u00bd', 'count 1', 'count 2', 'count 8ths'][on ? LEAD_WAY : LEAD_LAST]
                      || 'count';
-      lb.title = way.name + ' \u00b7 hold to choose another';
+      lb.title = (on ? way.name : 'no count-in \u2014 tap for ' + way.name)
+               + ' \u00b7 press and hold to choose';
     };
-    // Tap turns it on and off; hold walks through the ways.
-    lb.addEventListener('click', () => {
-      LEAD_WAY = LEAD_WAY ? 0 : 1;
-      try { localStorage.setItem('island.leadway', String(LEAD_WAY)); } catch (e) {}
-      say = LEAD_WAYS[LEAD_WAY].name;
-      paint(); render();
-    });
-    let hold = 0;
-    const down = () => { hold = setTimeout(() => {
-      hold = 0;
-      LEAD_WAY = (LEAD_WAY + 1) % LEAD_WAYS.length;
-      try { localStorage.setItem('island.leadway', String(LEAD_WAY)); } catch (e) {}
-      say = 'count-in: ' + LEAD_WAYS[LEAD_WAY].name;
-      cry(LEAD_WAYS[LEAD_WAY].name.toUpperCase(), 1800);
-      paint(); render();
-    }, 600); };
-    const up = () => { if (hold){ clearTimeout(hold); hold = 0; } };
-    lb.addEventListener('touchstart', down, { passive:true });
-    lb.addEventListener('touchend', up);
-    lb.addEventListener('mousedown', down);
-    lb.addEventListener('mouseup', up);
-    lb.addEventListener('mouseleave', up);
+    window._paintLead = paint;
+    // A TAP IS ON AND OFF, and it turns on whatever you last chose.
+    lb.addEventListener('click', () => { setLead(LEAD_WAY ? 0 : LEAD_LAST); render(); });
+    // A HOLD SHOWS THE CHOICES. Off is not among them — that is what the tap is
+    // for, and a list whose first item undoes the button it hangs from reads as
+    // a mistake.
+    holdOpens(lb, () => flyout(lb, 'count-in', LEAD_WAYS.slice(1).map((w, i) => ({
+      label: w.name,
+      on: LEAD_WAY === i + 1,
+      pick: () => setLead(i + 1, 'counting in \u2014 ' + w.name)
+    }))));
     paint();
   } catch (err) { console.warn('lead', err); }
 })();
@@ -13840,7 +14016,7 @@ function tell(msg, shout){
       cb.style.background  = lit ? '#00a3ab' : '';
       cb.style.borderColor = lit ? '#00a3ab' : '';
       cb.style.color       = lit ? '#04222a' : '';
-      cb.innerHTML = CLICK_WITH ? '&#9834;&#8202;&#8226;' : '&#9834;';
+      cb.innerHTML = '&#9834;';
       cb.title = 'the click \u00b7 hold to change how loud ('
                + CLICK_VOL_NAMES[CLICK_VOL] + ')';
     };
