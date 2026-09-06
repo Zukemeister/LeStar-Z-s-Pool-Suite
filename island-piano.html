@@ -2319,7 +2319,33 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-05 b299 better a gap than a note in the wrong place';
+const BUILD_STAMP = '2026-09-06 b300 one downbeat, one rail';
+
+// ---------------------------------------------------------------------------
+//  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
+//
+//  FOURTH TIME THE TEMPORAL DEAD ZONE HAS COST A BUILD, and this one had been
+//  costing every build since it appeared. The rail is wired by one long block
+//  at the top level; inside it, paintClick() reads CLICK_ON — and CLICK_ON was
+//  declared with `let` four thousand lines FURTHER DOWN. `let` does not hoist,
+//  so reading it before its line runs throws ReferenceError, and the throw was
+//  swallowed by an enclosing catch. Everything wired AFTER that point therefore
+//  never happened: the voices button, the build stamp, THE MENU, Plain, Staff
+//  lines, Size, Page and Bars/line. Which is exactly why those controls only
+//  work when the fallback blocks at the end of the file wire them a second
+//  time. Don: "several controls only work because they're wired twice."
+//
+//  A SILENTLY CAUGHT ReferenceError IS THE WORST OF BOTH WORLDS — nothing on
+//  screen, nothing in the console, and half a rail that does nothing. These are
+//  `var` so the name exists from the first line of the script whatever happens,
+//  and their real values are set here rather than where they used to be.
+// ---------------------------------------------------------------------------
+var CLICK_ON = false, clickAt = 0, clickBeat = 0, clickTimer = 0, clickLive = [];
+var CLICK_WITH = false;
+try { CLICK_WITH = localStorage.getItem('island.clickwith') === '1'; } catch (err) {}
+var AHEAD_VOICE = null;          // the voice the eye is reading ahead in
+var _aheadBar = -1;
+var playing = false;             // read by the rail's paint helpers
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10320,7 +10346,7 @@ document.getElementById('bClear').addEventListener('click', () => {
 // ===========================================================================
 //  SOUND.  You said the real blocker is hearing what you write, not writing it.
 // ===========================================================================
-let audio = null, playing = false, stopAt = 0, t0 = 0, frame = 0;
+let audio = null, stopAt = 0, t0 = 0, frame = 0;   // `playing` is hoisted, see the top
 let playBase = 0;                 // the second on the clock where the playhead starts
 
 function tickToTime(tick){
@@ -10681,6 +10707,26 @@ function play(fromStart){
       }
     }
   }
+  };
+
+  // ^^ queueRange ENDS HERE, AND THAT IS THE WHOLE OF IT.
+  //
+  // EVERYTHING BELOW THE FIRST CALL RUNS ONCE. It used to sit INSIDE this
+  // arrow function, so every slice of the fill re-ran it: the lateness rebase
+  // pushed t0 forward again, the count-in was laid down again at the new t0,
+  // and the metronome and click were stopped and restarted. On a short piece
+  // there is one slice and nothing shows. On the K.265 there are thirty-odd,
+  // so t0 crept forward by the whole wall-clock time of the fill — about ten
+  // seconds — while the two notes already handed to the graph had gone out at
+  // the old time. Don: "a two-note false start, a useless count-in, then ten
+  // seconds before note three."
+  //
+  // A DECISION THAT MOVES THE WHOLE TIMELINE CANNOT BE INSIDE THE THING THAT
+  // FILLS IT. Queueing is repeatable; setting the downbeat is not.
+
+  // The opening, now.
+  queuedTo = Math.min(stops.length, FIRST_RUN);
+  queueRange(0, queuedTo);
   // THE LEAD-IN. A bar of clicks in front of the passage, at the passage's own
   // metre and pace, so you arrive on the downbeat already moving. It is counted
   // in the FIRST looped bar's time signature and tempo — a lead-in in a
@@ -10714,6 +10760,17 @@ function play(fromStart){
   // Writing leaves the cursor AFTER the last note, so "from the cursor" would
   // be silence every time you finished a phrase and pressed space. If there is
   // nothing to hear from where you are, play the whole thing instead.
+  // NOTHING HEARD YET IS NOT THE SAME AS NOTHING TO HEAR. Only the first slice
+  // has been queued at this point, so a piece whose opening thirty bars are
+  // empty — a piano part that comes in at bar 40, a swept passage in one hand —
+  // would be judged silent and the whole rescue below would fire. Ask the rest
+  // of the piece before answering. It costs nothing in the ordinary case,
+  // because the ordinary case has already heard something.
+  if (!heard && queuedTo < stops.length){
+    queueRange(queuedTo, stops.length);
+    queuedTo = stops.length;
+  }
+
   if (heard) pending.sort((a, b) => a.at - b.at);
 
   if (!heard){
@@ -10768,13 +10825,28 @@ function play(fromStart){
   // the whole timeline is shifted by however long the preparation took. Nothing
   // about the music changes — every note keeps its place relative to every
   // other — it simply begins now rather than in the past.
+  //
+  // AND IT HAPPENS EXACTLY ONCE, HERE, BEFORE THE FILL BEGINS. Every later
+  // slice reads the corrected t0 and lands in the right place by construction.
+  // Correcting again per slice is what walked the downbeat out of the room.
   const late = audio.currentTime + 0.08 - t0;
   if (late > 0){
     for (const n of pending) n.at += late;
+    // EVERYTHING MEASURED FROM t0 MOVES WITH IT, and the click's beats are
+    // measured from t0. They were left behind, so on any piece slow enough to
+    // need the correction the click sat `late` seconds in front of the music it
+    // is supposed to be following. Don: "the metronome is behind the count."
+    for (const b4 of beatTimes) b4.at += late;
     // The playhead measures from t0 too, so moving t0 keeps the red line and
     // the lighting notes in step with the sound without touching either.
     t0 += late; last += late;
   }
+  // HOW LONG GETTING READY TOOK, ON THE PAGE. There is no console on a tablet,
+  // so the only place a number can be read is the status line. If the opening
+  // is ever late again, this says by how much before anything else is guessed.
+  const prep = Math.round(late * 1000);
+  window._timing = { prep: late, t0, count: leadPlan ? leadPlan.secs : 0,
+                     bars: stops.length, first: FIRST_RUN, notes: heard };
 
   // NOW the clock is right, so the count can be laid down against it.
   if (leadPlan){
@@ -10868,9 +10940,24 @@ function play(fromStart){
     // WHERE THE COUNTING BEGINS. With a count-in it begins at the count, so the
     // clicks run unbroken into the music; without one it begins on the
     // downbeat. Either way it is the only thing clicking.
+    // AND IT COUNTS AT THE MUSIC'S STEP, NOT ONE IT WORKS OUT FOR ITSELF.
+    //
+    // metroStart sized its beat from the bar THE CURSOR IS IN, at PLAY_SPEED —
+    // while the count-in sizes its beat from the bar the music STARTS IN, at
+    // whatever speed this pass is running. On a piece in one tempo throughout,
+    // with the cursor at the start, those happen to agree. On the K.265 they do
+    // not: the variations change tempo, so the metronome counted the cursor's
+    // variation while the count counted the opening, and the dots and the
+    // clicks walked apart. Don: "the metronome is behind the count."
+    // WHEN TWO THINGS MUST MARK THE SAME BEAT, ONE OF THEM HANDS THE OTHER THE
+    // NUMBER. Passing the step is the whole fix; nothing has to stay in step by
+    // agreement.
     if (mbox && mbox.checked){
       const from = leadPlan ? t0 - leadPlan.secs : t0;
-      metroStart(from, from);
+      const step = leadPlan ? leadPlan.step
+                 : (stops.length ? (TPQ * 4 / tsAt(stops[0].bar).unit) * stops[0].secPerTick
+                                 : 0);
+      metroStart(from, from, step, stops.length ? stops[0].bar : 0);
     }
     // AND THE BAR'S CLICK, IF IT IS SET TO KEEP COMPANY. Restarted from the
     // downbeat so its accent is the barline, not wherever it happened to be.
@@ -10882,17 +10969,30 @@ function play(fromStart){
   // never ran and the click carried on at whatever phase it had started with.
   // Don: "it's not auto coordinated, it starts when I push start."
   // A RULE THAT APPLIES ALWAYS MUST LIVE WHERE EVERY PATH GOES THROUGH IT.
+  // AND IT IS HANDED THE LIST ITSELF, NOT A COPY OF WHAT IS IN IT SO FAR.
+  //
+  // Only the first thirty bars are queued at this moment; the rest arrive in
+  // slices over the next few seconds and push their beats onto `beatTimes`. A
+  // filtered copy would hold thirty bars of clicks, run out, and then — because
+  // clickFeed falls through to its own free-running clock when the list is
+  // empty — the click would quietly stop following the music and start counting
+  // at the tempo of bar one for the remaining four minutes.
+  // THE CLICK READS THE QUEUE THE MUSIC IS FILLING. Stale beats come off the
+  // front here; new ones go on the back as they are queued.
   if (CLICK_ON){
     clickStop(); CLICK_ON = true;
-    CLICK_BEATS = beatTimes.filter(b2 => b2.at > audio.currentTime - 0.05);
+    const cut = audio.currentTime - 0.05;
+    while (beatTimes.length && beatTimes[0].at <= cut) beatTimes.shift();
+    CLICK_BEATS = beatTimes;
     clickStart(leadPlan ? t0 - leadPlan.secs : t0);
   }
 
-  };
 
-  // The opening, now.
-  queuedTo = Math.min(stops.length, FIRST_RUN);
-  queueRange(0, queuedTo);
+  // WHAT THE OPENING COST, WHERE IT CAN BE READ. Below a quarter of a second
+  // nobody needs to know; above it, this is the number that says whether a late
+  // start was the preparation or something else, and there is no console on a
+  // tablet to say it anywhere quieter.
+  if (prep > 250) say += '  \u00b7  ready in ' + (prep / 1000).toFixed(1) + 's';
 
   // And the rest in slices, between frames, so the page stays answerable while
   // it fills. Each slice is small enough not to be felt.
@@ -11380,7 +11480,7 @@ async function tunerStart(){
 //  page is doing. A slow redraw cannot make it late, because every beat for the
 //  next second is already scheduled before the redraw begins.
 // ---------------------------------------------------------------------------
-let CLICK_ON = false, clickAt = 0, clickBeat = 0, clickTimer = 0, clickLive = [];
+// CLICK_ON, clickAt, clickBeat, clickTimer and clickLive are hoisted — see the top.
 // ARMED, BUT NOT YET COUNTING.
 //
 // With "with the music" chosen, pressing START used to begin a free-running
@@ -11412,8 +11512,7 @@ const CLICK_VOLS = [0.55, 1, 1.9];
 const CLICK_VOL_NAMES = ['quiet', 'medium', 'loud'];
 try { CLICK_VOL = Math.max(0, Math.min(2, +localStorage.getItem('island.clickvol') || 1)); } catch (err) {}
 
-let CLICK_WITH = false;
-try { CLICK_WITH = localStorage.getItem('island.clickwith') === '1'; } catch (err) {}
+// CLICK_WITH is hoisted, and read from storage, at the top of the file.
 
 function clickBpm(){
   // The written tempo, at the reading speed — so slowing the piece down slows
@@ -11458,7 +11557,13 @@ function clickTick(at, strong){
 function clickFeed(){
   if (!CLICK_ON || !audio) return;
   // FOLLOWING THE MUSIC: play its beats, not a clock of our own.
-  if (CLICK_BEATS && CLICK_BEATS.length){
+  // AN EMPTY LIST IS NOT THE SAME AS NO LIST. This asked for `.length`, so the
+  // moment the queue ran dry — which it does between slices while a long piece
+  // is still filling — the test failed and the click dropped through to its own
+  // free clock below, at the tempo of bar one. Following the music and then
+  // silently ceasing to is worse than never following it.
+  // A LIST THAT EXISTS IS A PROMISE THAT MORE IS COMING.
+  if (CLICK_BEATS){
     const due = audio.currentTime + 1.0;
     while (CLICK_BEATS.length && CLICK_BEATS[0].at <= due){
       const b3 = CLICK_BEATS.shift();
@@ -11579,7 +11684,12 @@ function metroStop(){
 }
 // `from` is the audio-clock second of beat one. Playback passes the music's own
 // downbeat so the two agree; with nothing playing it starts a moment from now.
-function metroStart(from, notBefore){
+// `step` and `bar`, when playback supplies them, are the music's own beat
+// length and the bar it starts in. WITHOUT THEM THIS WORKED OUT ITS OWN STEP
+// FROM THE CURSOR'S BAR AT PLAY_SPEED, which is a different question from the
+// one the count-in answers — see the note at the call in play(). On its own,
+// with nothing playing, the cursor's bar is exactly right and nothing is passed.
+function metroStart(from, notBefore, step, bar){
   if (!wake()) return false;
   if (metroTimer) clearInterval(metroTimer);
   metroSilence();
@@ -11587,17 +11697,21 @@ function metroStart(from, notBefore){
   metroAt = (typeof from === 'number') ? from : audio.currentTime + 0.12;
   metroBeat = 0;
   metroFrom = (typeof notBefore === 'number') ? notBefore : 0;
+  const given = (typeof step === 'number' && isFinite(step) && step > 0) ? step : 0;
+  const givenBar = (typeof bar === 'number') ? bar : null;
   const feedBeats = () => {
     if (!METRO || !audio){ metroStop(); return; }
     // The bar it counts is the one you are looking at, so moving the cursor to a
-    // bar in 6/8 counts six, and a slowed loop is counted slowly.
-    const b   = loop ? barAt(loop.from) : barAt(cur.tick);
+    // bar in 6/8 counts six, and a slowed loop is counted slowly. Unless
+    // playback has told us which bar and how long a beat is, in which case that
+    // is the answer and no arithmetic of our own can disagree with it.
+    const b   = givenBar !== null ? givenBar : loop ? barAt(loop.from) : barAt(cur.tick);
     const ts  = tsAt(b);
     const slow = (loop && playing) ? LOOP_SPEED : PLAY_SPEED;
     const bpm = Math.max(20, tempoAt(b).bpm * slow);
     // A beat is the time signature's own unit: 6/8 clicks eighths, 3/4 clicks
     // quarters. The unit IS the beat, which is what the bottom number means.
-    const secs = (60 / bpm) * (4 / ts.unit);
+    const secs = given || (60 / bpm) * (4 / ts.unit);
     const beats = Math.max(1, ts.beats);
     while (metroAt < audio.currentTime + 0.4){
       if (metroAt > audio.currentTime && metroAt >= metroFrom - 0.001){
@@ -11759,7 +11873,7 @@ function tickNow(){
 // SCROLLED TO THE MARK, NOT TO A GUESS AT WHERE IT MIGHT BE. The playhead is a
 // real element on the page, so its position is measured rather than computed —
 // which is what makes this hold at any size, from 20% to 250%.
-let _lastScroll = -1, _aheadBar = -1;
+let _lastScroll = -1;              // _aheadBar is hoisted, see the top
 // WHICH VOICE DISAPPEARS. null means all of them, which is what the eye did at
 // first — and Don, trying it: "that's cool! But I don't think I can keep up
 // with it." Quite right: losing both hands at once is the hardest form of the
@@ -11767,7 +11881,7 @@ let _lastScroll = -1, _aheadBar = -1;
 // ONE HAND VANISHES AND THE OTHER HOLDS YOUR PLACE. You read ahead in the line
 // that goes, and stay oriented by the line that stays — which is how the skill
 // is built rather than tested.
-let AHEAD_VOICE = null;
+// AHEAD_VOICE is hoisted, see the top.
 function centreOnPlayhead(){
   const sc = document.getElementById('score');
   if (!sc) return;
