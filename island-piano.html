@@ -2319,7 +2319,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-04 b295 where every path goes through';
+const BUILD_STAMP = '2026-09-05 b296 work for a feature that is off is pure cost';
 const MIDDLE_C = 48;
 // Kept up here with MIDDLE_C because the rail is built long before the sound
 // engine is defined — the same temporal-dead-zone trap that took the whole app
@@ -10543,7 +10543,10 @@ function play(fromStart){
   // A CLICK THAT FOLLOWS THE MUSIC MUST READ THE MUSIC'S OWN TIMES, not run a
   // parallel clock and hope. These are computed from the same stops the notes
   // are queued from, so the two cannot drift by construction.
+  // Only built when the click is actually running — see the note in the loop.
+  const wantBeats = CLICK_ON;
   const beatTimes = [];
+  const beatTS = {};        // one meter lookup per bar, not one per visit
 
   const evsBy = {};
   for (const st of score.profile.staves) evsBy[st.id] = sorted(st.id);
@@ -10551,14 +10554,22 @@ function play(fromStart){
   for (let k = 0; k < stops.length; k++){
     const step = stops[k];
     const bStart = barStart(step.bar), bEnd = bStart + capacityOf(step.bar);
-    // The beats of this bar, in seconds, at this bar's own tempo.
-    try {
-      const ts2 = tsAt(step.bar);
+    // THE BEATS OF THIS BAR — BUT ONLY IF ANYONE IS LISTENING FOR THEM.
+    //
+    // This was computed on every play, for every bar of the route, whether the
+    // click was running or not. On the K.265 with repeats that is 656 bars,
+    // each calling tsAt and each calling barStart — and barStart sums every bar
+    // before it, so the pair costs a couple of hundred thousand lookups before
+    // a note sounds. Don: "it took 20-30 seconds to begin... feels like an
+    // amateur effort." It was.
+    // WORK DONE FOR A FEATURE THAT IS SWITCHED OFF IS PURE COST.
+    if (wantBeats){
+      const ts2 = beatTS[step.bar] || (beatTS[step.bar] = tsAt(step.bar));
       const perBeat = TPQ * 4 / ts2.unit;
-      for (let t2 = bStart; t2 < bEnd - 1; t2 += perBeat)
-        beatTimes.push({ at: t0 + (step.at + (t2 - bStart) * step.secPerTick) - lead,
-                         strong: Math.round((t2 - bStart) / perBeat) === 0 });
-    } catch (err) {}
+      for (let t2 = 0; t2 < bEnd - bStart - 1; t2 += perBeat)
+        beatTimes.push({ at: t0 + (step.at + t2 * step.secPerTick) - lead,
+                         strong: t2 === 0 });
+    }
 
     for (const st of score.profile.staves){
       // ONE VOICE AT A TIME, when the program asks for it. Muting is a property
