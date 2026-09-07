@@ -2376,7 +2376,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b329 the halo nudges by twenty';
+const BUILD_STAMP = '2026-09-07 b330 the page is the button';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -9941,9 +9941,22 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       if (pg && pg.at >= 0){
         // Forward: the last system on screen becomes the first of the next page,
         // so nothing is skipped over the join. Back: a page's worth earlier.
-        const lastSys = pg.sys && pg.sys.length > 1
-          ? pg.sys[pg.sys.length - 1] : pg.from + pg.span;
-        PAGE_AT = d > 0 ? Math.min(Math.max(0, pg.bars - 1), lastSys)
+        // A TURN SHOWS THE NEXT PAGEFUL, WHATEVER IS ON THE GLASS.
+        //
+        // It used to leave the last system on screen as the first of the next
+        // page, so nothing was skipped over the join. That is right when a page
+        // holds four or five systems and costs you a fifth of the page. With
+        // two systems on screen it costs you HALF, and doubles the number of
+        // turns — Don, reading the Mozart three bars wide, two staves to the
+        // page: "I'd want it to keep all that and just show me the next two."
+        // A GENEROUS OVERLAP ON A SMALL PAGE IS NOT GENEROUS.
+        const shown = (pg.sys && pg.sys.length) ? pg.sys.length : 1;
+        const past = (pg.sys && pg.sys.length)
+          ? pg.sys[pg.sys.length - 1] + (pg.sys.length > 1
+              ? pg.sys[pg.sys.length - 1] - pg.sys[pg.sys.length - 2]
+              : pg.span)
+          : pg.from + pg.span;
+        PAGE_AT = d > 0 ? Math.min(Math.max(0, pg.bars - 1), past)
                         : Math.max(0, pg.from - pg.span);
         render();
         const sc0 = document.getElementById('score');
@@ -9955,6 +9968,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       const sc2 = document.getElementById('score');
       if (sc2) sc2.scrollTop = 0;      // a new page starts at its top
     };
+    window._turnPage = turn;      // the staff itself uses it — see the reading tap
     const pp = document.getElementById('pagePrev'), pn = document.getElementById('pageNext');
     if (pp) pp.addEventListener('click', () => turn(-1));
     if (pn) pn.addEventListener('click', () => turn(1));
@@ -14096,7 +14110,33 @@ document.getElementById('fPick').onchange = ev => {
 //   on bare staff, moved    -> sweep a range
 let drag = null;
 
+// ---------------------------------------------------------------------------
+//  READING: THE PAGE IS THE BUTTON.
+//
+//  With both hands on the keys, the page turner has to be something you can hit
+//  without looking and without aiming — the side of a knuckle, the edge of a
+//  hand, between phrases. So in READ mode the staff itself turns the page: the
+//  left quarter goes back, everything else goes on. No target to find.
+//
+//  It does nothing in WRITE mode, where a click on the staff means something
+//  already, and nothing when a panel is open, where the tap is aimed at that.
+//  A CONTROL THIS BIG MUST BE OFF WHERE ANYTHING ELSE WANTS THE SAME TAP.
+//
+//  While the app is playing, a plain click used to jump the playhead. Reading
+//  is the commoner job, so the tap turns and ⌥-click still moves the playhead.
+// ---------------------------------------------------------------------------
 el.addEventListener('mousedown', ev => {
+  if (!document.body.classList.contains('editing')
+      && !_flyOpen
+      && !ev.altKey && !ev.shiftKey && !ev.metaKey && !ev.ctrlKey
+      && !(ev.target.closest && ev.target.closest('button, input, select, .lamp, .arm, .barnum, .lyric, .lyricslot, [data-solo], [data-dir-bar]'))
+      && window._turnPage){
+    const box0 = el.getBoundingClientRect();
+    const back = (ev.clientX - box0.left) < box0.width * 0.25;
+    window._turnPage(back ? -1 : 1);
+    ev.preventDefault();
+    return;
+  }
   const word = ev.target.closest && ev.target.closest('.lyric, .lyricslot');
   if (word){
     lyricMode = true;
