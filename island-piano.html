@@ -2376,7 +2376,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b332 ask which thing scrolls';
+const BUILD_STAMP = '2026-09-07 b333 a scroll that cannot move is not a turn';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -10020,11 +10020,25 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       const sk = scroller();
       if (!sk) return;
       const view = sk.clientHeight || sk.offsetHeight || 0;
-      const want = window._nextTop(sysTops(), sk.scrollTop || 0, view, d);
+      const at = sk.scrollTop || 0;
+      const most = Math.max(0, sk.scrollHeight - view);
+      const want = window._nextTop(sysTops(), at, view, d);
       if (want !== null && want !== undefined){
-        sk.scrollTop = Math.max(0, Math.min(want, sk.scrollHeight - view));
-        say = 'turned';
-        return;
+        const target = Math.max(0, Math.min(want, most));
+        // A SCROLL THAT CANNOT MOVE IS NOT A TURN.
+        //
+        // The last system of a block sits inside the final screenful, so
+        // "scroll to it" clamps to the bottom the view is already at — and the
+        // tap did nothing, over and over, for ever. The block never moved and
+        // the piece ended at bar 24. Don: "why is it that the Mozart 545 on the
+        // desktop has 74 bars, but I can't get past 23 on the tablet?" This,
+        // and the desktop only escaped it because a taller screen left room to
+        // move. IF THE MOVE WOULD CHANGE NOTHING, IT IS NOT THE MOVE TO MAKE —
+        // fall through and turn the block instead.
+        if ((d > 0 && target > at + 2) || (d < 0 && target < at - 2)){
+          sk.scrollTop = target;
+          return;
+        }
       }
       // Off the end of the drawn block, so move the block and start at its edge.
       const pg2 = window._pages;
@@ -10036,6 +10050,11 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       if (sk2) sk2.scrollTop = d < 0
         ? Math.max(0, sk2.scrollHeight - (sk2.clientHeight || 0))
         : 0;
+      // AND IT SAYS WHICH BARS ARE NOW IN FRONT OF YOU. A block move is a big
+      // jump; without a word for it, it reads as the app losing your place.
+      const pg3 = window._pages;
+      if (pg3) say = 'bars ' + barShown(pg3.from) + '\u2013' + barShown(pg3.to - 1)
+                   + ' of ' + barShown(pg3.bars - 1);
     };
     window._turnPage = turnView;   // the staff itself uses it — see the reading tap
     const pp = document.getElementById('pagePrev'), pn = document.getElementById('pageNext');
