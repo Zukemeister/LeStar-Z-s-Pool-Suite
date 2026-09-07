@@ -2376,7 +2376,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b333 a scroll that cannot move is not a turn';
+const BUILD_STAMP = '2026-09-07 b334 say why the sound will not start';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -11080,8 +11080,35 @@ function play(fromStart){
     if (audio.resume){
       say = 'waking the sound\u2026';
       render();
-      audio.resume().then(() => { if (audio.state === 'running') play(fromStart); })
-                    .catch(() => {});
+      // AND IF IT DOES NOT WAKE, SAY SO.
+      //
+      // This chained a single resume and, when the state had not flipped, did
+      // nothing at all — no sound, no playhead, no word about why. From outside
+      // that is indistinguishable from the app being broken. Don, on a tablet:
+      // "there is no sound on the click in, and then no movement in the piece."
+      //
+      // iOS has a third state, 'interrupted', that a single resume often does
+      // not clear — another app took the audio, or the screen locked, or a call
+      // came in. A second attempt usually does. So: try, wait, try once more,
+      // and if it is still not running, NAME THE STATE on the status line so
+      // there is something to report rather than a silence to guess at.
+      // A FAILURE THAT SAYS NOTHING IS THE MOST EXPENSIVE KIND.
+      audio.resume().then(() => {
+        if (audio.state === 'running'){ play(fromStart); return; }
+        return new Promise(r => setTimeout(r, 120))
+          .then(() => audio.resume && audio.resume())
+          .then(() => {
+            if (audio.state === 'running'){ play(fromStart); return; }
+            say = 'the browser will not start the sound (it says "' + audio.state
+                + '") \u2014 press \u266a Test, and if that is silent too, close the'
+                + ' tab and open it again';
+            cry('SOUND ASLEEP: ' + String(audio.state).toUpperCase(), 3500);
+            render();
+          });
+      }).catch(err => {
+        say = 'the browser refused to start the sound: ' + (err && err.message ? err.message : err);
+        render();
+      });
       return;
     }
     say = 'the browser has the sound asleep (' + audio.state
@@ -14223,7 +14250,12 @@ el.addEventListener('mousedown', ev => {
     const box0 = el.getBoundingClientRect();
     const back = (ev.clientX - box0.left) < box0.width * 0.25;
     window._turnPage(back ? -1 : 1);
-    ev.preventDefault();
+    // NOT preventDefault. On iOS, cancelling a mousedown suppresses the click
+    // that follows it and the focus that goes with it — and this handler sits
+    // on the whole staff area, so it would be cancelling the page's own
+    // plumbing on every tap. Stopping here is enough: nothing below this line
+    // runs, and the browser keeps everything it needs.
+    ev.stopPropagation();
     return;
   }
   const word = ev.target.closest && ev.target.closest('.lyric, .lyricslot');
