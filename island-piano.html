@@ -1032,15 +1032,24 @@
     max-height:60vh; overflow:auto; padding:6px;
     background:#0d1013; border:1.5px solid rgba(255,255,255,.5); border-radius:12px;
     box-shadow:0 10px 30px rgba(0,0,0,.55) }
-  .flyhead{ padding:6px 10px 8px; font:700 12px/1.2 -apple-system,sans-serif;
-    letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.5) }
-  .flyitem{ display:flex; align-items:baseline; gap:8px; width:100%;
-    padding:12px 10px; cursor:pointer; text-align:left;
+  .flybar{ display:flex; align-items:center; gap:8px; padding:2px 2px 6px }
+  .flyhead{ flex:1 1 auto; padding:6px 8px; font:700 12px/1.2 -apple-system,sans-serif;
+    letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.72) }
+  .flyx{ flex:0 0 auto; width:32px; height:32px; padding:0; cursor:pointer;
+    border:1.5px solid rgba(255,255,255,.45); border-radius:8px;
+    background:none; color:#fff; font:700 15px/1 -apple-system,sans-serif }
+  .flyx:hover{ background:rgba(255,255,255,.14) }
+  .flysec{ padding:10px 10px 4px; font:700 11px/1.2 -apple-system,sans-serif;
+    letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.45);
+    border-top:1px solid rgba(255,255,255,.14); margin-top:6px }
+  .flysec:first-of-type{ border-top:none; margin-top:0 }
+  .flyitem{ display:flex; align-items:center; gap:9px; width:100%;
+    padding:10px; cursor:pointer; text-align:left;
     border:none; border-radius:8px; background:none; color:#fff;
     font:600 16px/1.25 -apple-system,sans-serif }
   .flyitem:hover{ background:rgba(255,255,255,.1) }
   .flyitem.on{ background:#00a3ab; color:#04222a }
-  .flytick{ width:14px; flex:0 0 14px; font-weight:900 }
+  .flybox{ width:18px; flex:0 0 18px; font-size:17px; line-height:1 }
   .flylabel{ flex:1 1 auto }
   .flynote{ flex:0 0 auto; opacity:.6; font-weight:400; font-size:13px }
   @media print { .flyout{ display:none !important } }
@@ -1597,8 +1606,14 @@
   .chip.shp.sounding{ box-shadow:none; filter:none;
     background:#00a3ab !important; border-color:#00a3ab !important }
   .chip.shp.picked{ box-shadow:none; filter:none }
-  .playhead{ position:absolute; width:2px; background:var(--warn); border-radius:2px; opacity:.8;
+  /* WIDER THAN IT WAS. Two pixels at 80% was fine when the note under it was
+     visible and lit; with the note hidden it is the only thing saying where you
+     are, and it has to hold its own against a page of noteheads. */
+  .playhead{ position:absolute; width:4px; background:var(--warn); border-radius:2px; opacity:1;
     pointer-events:none; transition:none }
+  .headtag{ position:absolute; transform:translateX(-50%); pointer-events:none;
+    padding:1px 6px 2px; border-radius:5px; background:var(--warn); color:#1a0e00;
+    font:800 11px/1.2 -apple-system,sans-serif; letter-spacing:.08em }
   /* WHERE YOUR EYES SHOULD BE. Dashed and teal so it cannot be mistaken for the
      playhead, which is solid and warm — one is where you are, the other is
      where you should be looking. */
@@ -1617,7 +1632,7 @@
   .gonemark{ position:absolute; width:calc(10px * var(--z)); height:calc(10px * var(--z));
     margin-left:calc(-5px * var(--z)); margin-top:calc(-5px * var(--z));
     border-radius:50%; background:var(--ink); opacity:.30; pointer-events:none }
-  @media print { .eyeline, .eyetag, .gonemark{ display:none !important } }
+  @media print { .eyeline, .eyetag, .headtag, .gonemark{ display:none !important } }
   .lyric{ position:absolute; transform:translateX(-50%); white-space:nowrap; cursor:text;
     font:800 calc(21px * var(--z))/1 ui-rounded,"Trebuchet MS",ui-sans-serif,system-ui,sans-serif;
     color:var(--ink); background:var(--paper); padding:1px 4px; border-radius:4px }
@@ -1893,7 +1908,7 @@
     .held{ background:none !important; border-color:#000 !important }
     .chip.ghost{ display:none !important }
 
-    #caret, .caretag, .playhead, .eyeline, .eyetag, .gonemark, .sel, .over, .lamp, .arm{ display:none !important }
+    #caret, .caretag, .playhead, .headtag, .eyeline, .eyetag, .gonemark, .sel, .over, .lamp, .arm{ display:none !important }
     /* The voice labels print, because they say which line you are reading —
        but plainly. The teal box marks the voice you are WRITING in, which is
        not a fact about the music. */
@@ -2360,7 +2375,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-06 b315 somewhere to put your eyes';
+const BUILD_STAMP = '2026-09-06 b327 the loop can teach a course';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -2408,9 +2423,35 @@ try { AHEAD_SPAN = Math.max(0, Math.min(3, +localStorage.getItem('island.aheadsp
 // With two or three beats chosen this was already true by accident, because the
 // window reached past the beat being played. With one beat it was not, which is
 // exactly the setting he was trying.
-var AHEAD_LEAD = 1;              // beats of head start, always
+// THE HEAD START, AND IT IS NOW A CHOICE RATHER THAN A LAW.
+//
+// It was fixed at one beat so that a note was always gone before the finger
+// arrived. That is the right END of the drill and the wrong beginning: with a
+// one-beat span it doubles what is hidden, and the teal marker — which sits on
+// the first note you can still read — lands two beats out instead of one. Don:
+// "I have to remember that this is a step-by-step learning process and I am in
+// the first step. So, the teal flag ought to be on the note just before it
+// disappears." With no head start it does exactly that.
+// THE FIRST STEP AND THE LAST ARE NOT THE SAME EXERCISE. Start at none, where
+// the note vanishes as you reach it; add the head start when that is easy, and
+// the note is gone before you get there.
+var AHEAD_LEAD = 0;              // beats of head start
+try { AHEAD_LEAD = Math.max(0, Math.min(2, +localStorage.getItem('island.aheadlead') || 0)); } catch (err) {}
+// How far behind the clock the sound actually reaches you, in milliseconds.
+// Set by ear from the eye's flyout; nothing else can measure it.
+// IT RUNS BOTH WAYS. A positive value holds the halo back for sound that
+// arrives late; a NEGATIVE one pushes it forward, which is what is needed when
+// the browser over-reports its own output latency — Chrome's figure includes
+// buffering and can be a fifth of a second, and every millisecond of it is
+// subtracted here, dragging the halo behind the note you are hearing. Don, on
+// the desktop: "the blue halo is behind the sound by about 1/2 a note."
+// A CORRECTION THAT ONLY GOES ONE WAY CANNOT FIX AN ERROR THAT GOES BOTH.
+var EAR_MS = 0;
+try { EAR_MS = Math.max(-300, Math.min(400, +localStorage.getItem('island.earms') || 0)); } catch (err) {}
 var _aheadBar = -1;
 var _aheadAt = -1, _aheadTo = -1;   // the window of music the eye is hiding
+var _graceTo = -1;                  // hide nothing until here — see the loop wrap
+var _wasTick = -1;
 var playing = false;             // read by the rail's paint helpers
 var _playFrom = 0;               // the tick this pass started from
 var _playRoute = true;           // and whether it was following the repeats
@@ -4981,6 +5022,24 @@ const SPEEDS = [1, 0.75, 0.6, 0.5, 0.35, 0.25];
 //  So the program adds no machinery: it decides what the loop's own settings
 //  are before each lap is queued.
 // ---------------------------------------------------------------------------
+// WHAT THE EYE DOES ROUND A LOOP. The third column of the same plan machine
+// that already steps the voices and the speed — same lap counter, same
+// LAPS_EACH, same panel. Don: "the tool can be configured to run in various
+// ways, especially within a loop."
+//
+//   off    — whatever is set by hand, every time round
+//   each   — the hands take turns: one hand loses its notes, then the other,
+//            then both. The point of the drill: with one hand unsupported you
+//            cannot lean on the other, and both get their turn at it
+//   build  — more each time: one beat, two, three, the whole bar. The piece
+//            fades out under you until you are playing it from memory
+//
+// A PLAN CHANGES WHAT IS EFFECTIVE, NOT WHAT IS SET. It never writes over the
+// settings in the panel — those stay where you put them, and the plan supplies
+// a different answer while the loop runs. Turn the plan off and your own
+// settings are exactly as you left them.
+let HIDE_PLAN = 'off';     // off | each | build
+try { HIDE_PLAN = localStorage.getItem('island.hideplan') || 'off'; } catch (err) {}
 let VOICE_PLAN = 'off';    // off | each | build
 let SPEED_PLAN = 'off';    // off | ramp
 let LAPS_EACH  = 2;        // times round before it moves on
@@ -5027,6 +5086,41 @@ function applyPlan(){
   if (window._paintKit) try { window._paintKit(); } catch (err) {}
 }
 
+// WHAT IS ACTUALLY HIDDEN THIS LAP. Everything that draws the fade asks these
+// two rather than reading the settings directly, so the plan has one place to
+// speak from and the panel keeps saying what you chose.
+function planningHide(){
+  // A LOOP AND THE EYE ARE THE CONDITIONS — not "and the music is running".
+  // Stopped between laps is exactly when you want to see what the next one will
+  // ask of you, and the resting markers should already show it.
+  return HIDE_PLAN !== 'off' && !!loop
+      && document.body.classList.contains('ahead');
+}
+function hideVoice(){
+  if (HIDE_PLAN !== 'each' || !planningHide()) return AHEAD_VOICE;
+  const vs = singing();
+  if (vs.length < 2) return AHEAD_VOICE;
+  const i = planStep() % (vs.length + 1);
+  return i === vs.length ? null : vs[i].id;      // ...and then both together
+}
+function hideSpan(){
+  if (HIDE_PLAN !== 'build' || !planningHide()) return AHEAD_SPAN;
+  // one beat, two, three, then the whole bar — and it stays there
+  const steps = [1, 2, 3, 0];
+  return steps[Math.min(planStep(), steps.length - 1)];
+}
+function hideSays(){
+  if (!planningHide()) return '';
+  if (HIDE_PLAN === 'each'){
+    const v = hideVoice();
+    return v ? 'this time round, ' + ('V' + voiceNumber(v)) + ' vanishes \u2014 you play it'
+             : 'this time round, both hands vanish';
+  }
+  const n = hideSpan();
+  return 'this time round, ' + (n === 0 ? 'the whole bar' : n === 1 ? 'one beat' : n + ' beats')
+       + ' vanishes';
+}
+
 // What this lap will sound like, in words, for the panel to show.
 // SAY IT OUT LOUD. Shown big, held, then faded — and a new call replaces
 // whatever was on screen rather than queueing behind it, because the latest
@@ -5052,11 +5146,17 @@ function cry(words, hold){
 }
 
 function planSays(){
-  if (VOICE_PLAN === 'off' && SPEED_PLAN === 'off') return '';
+  if (VOICE_PLAN === 'off' && SPEED_PLAN === 'off' && HIDE_PLAN === 'off') return '';
   const bits = [];
   if (LOOP_VOICES) bits.push('playing ' + LOOP_VOICES.map(id => 'V' + voiceNumber(id)).join(' and '));
   else if (VOICE_PLAN !== 'off') bits.push('playing every voice');
   if (SPEED_PLAN === 'ramp') bits.push('at ' + Math.round(LOOP_SPEED * 100) + '%');
+  if (HIDE_PLAN !== 'off'){
+    const v = hideVoice(), n = hideSpan();
+    bits.push(HIDE_PLAN === 'each'
+      ? (v ? 'hiding V' + voiceNumber(v) : 'hiding both hands')
+      : 'hiding ' + (n === 0 ? 'the whole bar' : n === 1 ? 'one beat' : n + ' beats'));
+  }
   // How many more times round before anything changes — the thing you actually
   // want to know while it is circling.
   const left = Math.max(1, LAPS_EACH) - (LAP % Math.max(1, LAPS_EACH));
@@ -7672,7 +7772,20 @@ function drawEverything(){
       ph.style.top = '-8px'; ph.style.height = (STAFFH() + 16) + 'px';
       ph.style.display = 'none';
       box.appendChild(ph);
-      heads.push({ el:ph, from:x0, to:barStart(last), map:lineX });
+      // AND A LABEL FOR IT, matching the EYES one.
+      //
+      // While reading ahead, the note you are playing is the one thing on the
+      // page that is NOT there — that is the whole exercise — so a two-pixel
+      // line was all that said where you were, against a page full of notes.
+      // Don: "the current note is too hard to find. Maybe if there were a line
+      // on the current note that was like the EYES marker?" Yes: a pair reads
+      // as a pair, and the distance between them is the thing being practised.
+      const phTag = document.createElement('div');
+      phTag.className = 'headtag';
+      phTag.textContent = 'HANDS';
+      phTag.style.display = 'none';
+      box.appendChild(phTag);
+      heads.push({ el:ph, tag:phTag, from:x0, to:barStart(last), map:lineX });
 
       // A SECOND MARKER, FOR WHERE YOUR EYES SHOULD BE.
       //
@@ -7695,6 +7808,45 @@ function drawEverything(){
       eyeTag.style.display = 'none';
       box.appendChild(eyeTag);
       eyes.push({ el:eye, tag:eyeTag, from:x0, to:barStart(last), map:lineX });
+
+      // A RESTING POSITION. With nothing playing both markers were simply
+      // hidden, so the pair only existed while the music ran and you could not
+      // see where they would start from. Don: "it starts that way... the
+      // resting position ought to be on note 1." So while reading ahead and
+      // stopped, they sit where the music will begin — HANDS on the note the
+      // cursor is at, EYES its span in front — and the drill can be understood
+      // before it starts rather than during it.
+      if (!playing && document.body.classList.contains('ahead')
+          && cur.tick >= x0 && cur.tick <= barStart(last)){
+        const restBeat = TPQ * 4 / tsAt(barAt(cur.tick)).unit;
+        const restEye = (AHEAD_SPAN
+                          ? barStart(barAt(cur.tick))
+                            + Math.floor((cur.tick - barStart(barAt(cur.tick))) / restBeat) * restBeat
+                            + AHEAD_SPAN * restBeat
+                          : barStart(barAt(cur.tick)) + capacityOf(barAt(cur.tick)))
+                       + AHEAD_LEAD * restBeat;
+        // The note the music will start on, asked of the page rather than
+        // worked out — the same rule as the moving marker above.
+        let restEv = null;
+        for (const st9 of score.profile.staves)
+          for (const e9 of eventsOf(st9.id))
+            if (e9.pitches.length && e9.start <= cur.tick && cur.tick < e9.start + e9.dur
+                && (!restEv || e9.start > restEv.start)) restEv = e9;
+        const restChip = restEv
+          ? box.querySelector('.chip[data-ev="' + restEv.id + '"]') : null;
+        const restX = restChip
+          ? (restChip.offsetLeft || parseFloat(restChip.style.left) || 0) + (restChip.offsetWidth || 0) / 2
+          : lineX(cur.tick);
+        ph.style.display = ''; ph.style.left = restX + 'px';
+        phTag.style.display = ''; phTag.style.left = restX + 'px';
+        phTag.style.top = '-26px';
+        if (restEye >= x0 && restEye <= barStart(last)){
+          eye.style.display = ''; eye.style.left = lineX(restEye) + 'px';
+          eyeTag.style.display = ''; eyeTag.style.left = lineX(restEye) + 'px';
+          eyeTag.style.top = '-26px';
+        }
+      }
+
 
       if (mine.indexOf(cur.staff) !== -1 && cur.tick >= x0 && cur.tick <= barStart(last)){
         const car = document.createElement('div');
@@ -9189,6 +9341,7 @@ document.getElementById('bWords').addEventListener('click', ev => {
       ah.style.color       = on ? '#04222a' : '';
       ah.title = (on ? 'hiding ' : 'hide ')
                + spanName(AHEAD_SPAN) + ' of ' + aheadName()
+               + (EAR_MS ? ' \u00b7 halo ' + (EAR_MS > 0 ? '+' : '') + EAR_MS + 'ms' : '')
                + ' \u00b7 press and hold to choose how much';
     };
     // WHICH LINE GOES. Set from a list rather than cycled blind: with three or
@@ -9209,6 +9362,40 @@ document.getElementById('bWords').addEventListener('click', ev => {
         : 'reading ahead will hide both hands \u2014 the app plays them';
       paintAhead();
     };
+    // HOW FAR BEHIND THE SOUND IS. Judged by ear against the marker, because the
+    // browser will not say and a guess in the code would be wrong on every
+    // machine but one.
+    const setEar = ms => {
+      EAR_MS = ms;
+      try { localStorage.setItem('island.earms', String(ms)); } catch (err) {}
+      say = ms === 0 ? 'the halo follows the clock exactly'
+          : ms > 0 ? 'the halo now waits ' + ms + 'ms for the sound to reach you'
+                   : 'the halo now runs ' + (-ms) + 'ms earlier';
+      paintAhead();
+    };
+    const setHidePlan = v => {
+      HIDE_PLAN = v;
+      try { localStorage.setItem('island.hideplan', v); } catch (err) {}
+      _aheadAt = -1; _aheadTo = -1;
+      say = v === 'off'   ? 'the same notes vanish every time round'
+          : v === 'each'  ? 'each time round the loop, the other hand vanishes'
+                          : 'each time round the loop, more of the bar vanishes';
+      paintAhead();
+    };
+    const setStart = n => {
+      AHEAD_LEAD = n;
+      try { localStorage.setItem('island.aheadlead', String(n)); } catch (err) {}
+      _aheadAt = -1; _aheadTo = -1;
+      const scA = document.getElementById('score');
+      if (scA){
+        for (const eA of scA.querySelectorAll('.faded')) eA.classList.remove('faded');
+        for (const eA of scA.querySelectorAll('.gonemark')) eA.remove();
+      }
+      say = n === 0 ? 'notes will vanish as you reach them'
+          : 'notes will vanish ' + (n === 1 ? 'a beat' : 'half a beat') + ' before you play them';
+      paintAhead();
+      render();
+    };
     const setSpan = n => {
       AHEAD_SPAN = n;
       try { localStorage.setItem('island.aheadspan', String(n)); } catch (err) {}
@@ -9219,37 +9406,56 @@ document.getElementById('bWords').addEventListener('click', ev => {
         for (const e7 of sc7.querySelectorAll('.gonemark')) e7.remove();
       }
       say = 'reading ahead will hide ' + spanName(n) + ' of ' + aheadName()
-          + ', a beat before you play it';
+          + (AHEAD_LEAD ? ', ' + (AHEAD_LEAD === 1 ? 'a beat' : 'half a beat')
+                          + ' before you play it'
+                        : ', as you reach it');
       paintAhead();
     };
     // TWO QUESTIONS, ONE LIST: how much goes, and whose. They belong together
     // because the answer to one changes how hard the other is — one beat of
     // both hands is easier than a whole bar of either.
-    holdOpens(ah, () => flyout(ah, 'read ahead', [
-      { label:'one beat',      on: AHEAD_SPAN === 1, pick: () => setSpan(1) },
-      { label:'two beats',     on: AHEAD_SPAN === 2, pick: () => setSpan(2) },
-      { label:'three beats',   on: AHEAD_SPAN === 3, pick: () => setSpan(3) },
-      { label:'the whole bar', on: AHEAD_SPAN === 0, pick: () => setSpan(0) },
-      { label:'\u2014 hide \u2014', note:'', on:false, pick: () => {} },
-      { label:'both hands', note:'the app plays them', on: !AHEAD_VOICE,
-        pick: () => setAhead(null) }
-    ].concat(shownAll().map(v => ({
-      label: 'V' + voiceNumber(v.id),
-      note: 'you play it',
-      on: AHEAD_VOICE === v.id,
-      pick: () => setAhead(v.id)
-    })))));
-    // THE STANDING INSTRUCTION, held for as long as the mode is on.
-    //
-    // The status line used to report what you had just SET, then move on to
-    // whatever else it had to say. But a drill you have to remember the point of
-    // is one you will practise wrong. Don: "It's hard to know... what I should
-    // be thinking." So while the eye is lit, this is what the line says.
+    // THE STANDING INSTRUCTION, held for as long as the mode is on. A drill you
+    // have to remember the point of is one you will practise wrong.
     const aheadSays = () =>
-      'your eyes ' + (AHEAD_SPAN ? spanName(AHEAD_SPAN) : 'a bar')
-      + ' ahead, your hands on this one \u00b7 the dashed teal line is where to look';
+      'your eyes on the teal line, your hands on the red one \u00b7 '
+      + 'the teal one is the next note to vanish \u2014 read it before it goes';
     window._aheadSays = () => document.body.classList.contains('ahead') ? aheadSays() : null;
 
+    holdOpens(ah, () => flyout(ah, 'read ahead', () => [
+      { title:'how much vanishes', items:[
+        { label:'one beat',      on: AHEAD_SPAN === 1, pick: () => setSpan(1) },
+        { label:'two beats',     on: AHEAD_SPAN === 2, pick: () => setSpan(2) },
+        { label:'three beats',   on: AHEAD_SPAN === 3, pick: () => setSpan(3) },
+        { label:'the whole bar', on: AHEAD_SPAN === 0, pick: () => setSpan(0) }
+      ]},
+      { title:'how early it goes', items:[
+        { label:'as you reach it',  on: AHEAD_LEAD === 0,   pick: () => setStart(0) },
+        { label:'half a beat before', on: AHEAD_LEAD === 0.5, pick: () => setStart(0.5) },
+        { label:'a beat before',    on: AHEAD_LEAD === 1,   pick: () => setStart(1) }
+      ]},
+      { title:'whose notes go', items:[
+        { label:'both hands', note:'the app plays them', on: !AHEAD_VOICE,
+          pick: () => setAhead(null) }
+      ].concat(shownAll().map(v => ({
+        label: 'V' + voiceNumber(v.id), note:'you play it',
+        on: AHEAD_VOICE === v.id, pick: () => setAhead(v.id)
+      })))},
+      { title:'round a loop', items:[
+        { label:'the same every time', on: HIDE_PLAN === 'off',
+          pick: () => setHidePlan('off') },
+        { label:'hands take turns', note:'one, then the other, then both',
+          on: HIDE_PLAN === 'each', pick: () => setHidePlan('each') },
+        { label:'more each time', note:'a beat, then two, then the bar',
+          on: HIDE_PLAN === 'build', pick: () => setHidePlan('build') }
+      ]},
+      { title:'the halo, against your ears', items:[
+        { label:'much earlier', note:'\u2212200ms', on: EAR_MS === -200, pick: () => setEar(-200) },
+        { label:'earlier',      note:'\u2212100ms', on: EAR_MS === -100, pick: () => setEar(-100) },
+        { label:'on time',      note:'',            on: EAR_MS === 0,    pick: () => setEar(0) },
+        { label:'later',        note:'+100ms',      on: EAR_MS === 100,  pick: () => setEar(100) },
+        { label:'much later',   note:'+200ms',      on: EAR_MS === 200,  pick: () => setEar(200) }
+      ]}
+    ]));
     if (ah) ah.addEventListener('click', () => {
       const on = !document.body.classList.contains('ahead');
       document.body.classList.toggle('ahead', on);
@@ -9314,16 +9520,18 @@ document.getElementById('bWords').addEventListener('click', ev => {
           paintClick(); render();
         });
       });
-      holdOpens(cb2, () => flyout(cb2, 'how loud', CLICK_VOL_NAMES.map((n, i) => ({
-        label: n,
-        on: CLICK_VOL === i,
-        pick: () => {
-          CLICK_VOL = i;
-          try { localStorage.setItem('island.clickvol', String(i)); } catch (err) {}
-          say = 'the click is ' + n;
-          paintClick();
-        }
-      }))));
+      holdOpens(cb2, () => flyout(cb2, 'how loud', () => [
+        { items: CLICK_VOL_NAMES.map((n, i) => ({
+            label: n,
+            on: CLICK_VOL === i,
+            pick: () => {
+              CLICK_VOL = i;
+              try { localStorage.setItem('island.clickvol', String(i)); } catch (err) {}
+              say = 'the click is ' + n;
+              paintClick();
+            }
+          })) }
+      ]));
       paintClick();
       // CLAIMED ONLY ONCE THE WORK IS DONE. The mark used to be set before the
       // listener was attached — so a throw in between left the button marked and
@@ -10847,6 +11055,13 @@ function play(fromStart){
   // How far into its own bar the stretch begins, so it starts on the note you
   // swept to rather than at that bar's barline.
   const lead = stops.length ? (from - barStart(stops[0].bar)) * stops[0].secPerTick : 0;
+  // AND THE PLAYHEAD HAS TO KNOW ABOUT IT. Every note is scheduled `lead`
+  // seconds earlier than its position in the path, so that starting halfway
+  // through a bar begins at t0 rather than partway into it. tickNow() measured
+  // from t0 and never added `lead` back, so a play or a loop that began
+  // anywhere but a barline put the marker behind the sound by however far into
+  // the bar it started. WHATEVER THE SCHEDULE SUBTRACTS, THE READER MUST ADD.
+  window._lead = lead;
 
   // EVERY BEAT OF THE PIECE, AT ITS ACTUAL MOMENT.
   //
@@ -11284,6 +11499,17 @@ function play(fromStart){
   };
   if (queuedTo < stops.length) setTimeout(fillOn, 60);
 
+  // THE SAME GRACE WHEN YOU PRESS PLAY. Starting is the other moment you are
+  // looking at the bar you are about to play; there is no reason it should
+  // vanish under you there and not on the way round a loop.
+  {
+    let firstG = null;
+    for (const stG of score.profile.staves)
+      for (const eG of eventsOf(stG.id))
+        if (eG.pitches.length && eG.start >= from && (!firstG || eG.start < firstG.start)){ firstG = eG; break; }
+    _graceTo = firstG ? firstG.start + firstG.dur : -1;
+    _wasTick = -1; _aheadAt = -1; _aheadTo = -1;
+  }
   playing = true; stopAt = last;
   holdAwake();                    // keep the screen on while the music runs
   // THE PUMP STARTS AFTER `playing` IS TRUE, not before. Its first act is to
@@ -11621,54 +11847,97 @@ function flyClose(){
   if (!_flyOpen) return;
   try { _flyOpen.remove(); } catch (err) {}
   _flyOpen = null;
-  document.removeEventListener('pointerdown', flyAway, true);
   document.removeEventListener('keydown', flyKey, true);
 }
 function flyAway(ev){ if (_flyOpen && !_flyOpen.contains(ev.target)) flyClose(); }
 function flyKey(ev){ if (ev.key === 'Escape'){ ev.preventDefault(); flyClose(); } }
 
 // items: [{ label, note, on, pick }]  —  `on` marks the current choice.
-function flyout(btn, title, items){
+// A PANEL, NOT A PUFF OF SMOKE.
+//
+// The first version closed itself the moment you chose anything, which is fine
+// for a single pick and useless for a set of settings that belong together —
+// you had to reopen it for every change and could never see the whole state at
+// once. Don: "The menus are too vaporous for me. I want concrete... a list,
+// each with a check box, and selecting something does not shut the window. An
+// X is the only way to shut the panel."
+//
+// So `build` is a function returning SECTIONS, and it is called again after
+// every choice: the panel redraws itself in place, keeps its position, and
+// stays until it is dismissed. The checkbox is the state — you look at the
+// panel to know what is set, rather than remembering what you last pressed.
+//
+// A PANEL THAT SHOWS ITS OWN STATE DOES NOT NEED TO BE REMEMBERED.
+//
+// build() -> [{ title, items:[{ label, note, on, pick }] }]
+function flyout(btn, title, build){
   if (_flyOpen && _flyOpen.dataset.of === btn.id){ flyClose(); return; }
   flyClose();
   const box = document.createElement('div');
   box.className = 'flyout';
   box.dataset.of = btn.id || '';
-  if (title){
+
+  const draw = () => {
+    box.innerHTML = '';
+    const bar = document.createElement('div');
+    bar.className = 'flybar';
     const h = document.createElement('div');
     h.className = 'flyhead';
-    h.textContent = title;
-    box.appendChild(h);
-  }
-  for (const it of items){
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'flyitem' + (it.on ? ' on' : '');
-    b.innerHTML = '<span class="flytick">' + (it.on ? '\u2713' : '') + '</span>'
-                + '<span class="flylabel">' + it.label + '</span>'
-                + (it.note ? '<span class="flynote">' + it.note + '</span>' : '');
-    b.addEventListener('click', ev => {
-      ev.preventDefault(); ev.stopPropagation();
-      flyClose();
-      try { it.pick(); } catch (err) {}
-      render();
-    });
-    box.appendChild(b);
-  }
+    h.textContent = title || '';
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'flyx';
+    x.textContent = '\u2715';
+    x.title = 'close';
+    x.addEventListener('click', ev => { ev.preventDefault(); ev.stopPropagation(); flyClose(); });
+    bar.appendChild(h); bar.appendChild(x);
+    box.appendChild(bar);
+
+    const sections = (typeof build === 'function' ? build() : build) || [];
+    for (const sec of sections){
+      if (sec.title){
+        const st = document.createElement('div');
+        st.className = 'flysec';
+        st.textContent = sec.title;
+        box.appendChild(st);
+      }
+      for (const it of (sec.items || [])){
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'flyitem' + (it.on ? ' on' : '');
+        // A BOX YOU CAN SEE WHETHER IT IS TICKED, ticked or not — an empty
+        // square says "this could be on and is not", where a blank says
+        // nothing at all.
+        b.innerHTML = '<span class="flybox">' + (it.on ? '\u2611' : '\u2610') + '</span>'
+                    + '<span class="flylabel">' + it.label + '</span>'
+                    + (it.note ? '<span class="flynote">' + it.note + '</span>' : '');
+        b.addEventListener('click', ev => {
+          ev.preventDefault(); ev.stopPropagation();
+          try { it.pick(); } catch (err) {}
+          draw();                      // the panel restates itself; it does not leave
+          render();
+        });
+        box.appendChild(b);
+      }
+    }
+  };
+  draw();
+
   document.body.appendChild(box);
   // ABOVE THE BUTTON, AND ON THE GLASS. Anchored to the button's left edge,
   // then pulled back if that would run it off the right-hand side.
   const r = btn.getBoundingClientRect();
-  const w = box.offsetWidth || 220;
+  const w = box.offsetWidth || 240;
   let left = r.left;
   if (left + w > window.innerWidth - 8) left = window.innerWidth - w - 8;
   box.style.left = Math.max(8, left) + 'px';
   box.style.bottom = Math.max(8, window.innerHeight - r.top + 8) + 'px';
   _flyOpen = box;
-  requestAnimationFrame(() => {
-    document.addEventListener('pointerdown', flyAway, true);
-    document.addEventListener('keydown', flyKey, true);
-  });
+  // NO CLOSING BY ACCIDENT. A tap elsewhere on the page no longer dismisses it,
+  // because you will be tapping elsewhere on purpose — pressing play to hear
+  // what the setting did. Escape still closes it, which costs nothing on a
+  // keyboard and does not exist on glass.
+  requestAnimationFrame(() => { document.addEventListener('keydown', flyKey, true); });
 }
 
 // A LONG PRESS OPENS IT, a tap does the button's own job. Written once here
@@ -12211,16 +12480,27 @@ function soundTest(){
 // because it is right on every machine rather than on mine.
 function earTime(){
   if (!audio) return 0;
-  const late = (typeof audio.outputLatency === 'number' ? audio.outputLatency : 0)
+  // WHAT THE BROWSER ADMITS TO, PLUS WHAT YOU CAN HEAR.
+  //
+  // outputLatency is the honest answer and Safari does not implement it, so on
+  // an iPad this reads zero while the speakers are a tenth or two behind — and
+  // through anything wireless, more. The marker is then genuinely ahead of the
+  // sound and no arithmetic here can know by how much. Don: "the Hands marker
+  // should be exactly where the playing note is, but it is ahead by a few
+  // notes." WHEN THE MACHINE CANNOT BE ASKED, LET THE EAR ANSWER.
+  const told = (typeof audio.outputLatency === 'number' ? audio.outputLatency : 0)
              || (typeof audio.baseLatency   === 'number' ? audio.baseLatency   : 0)
              || 0;
-  // A sane ceiling: a quarter second of reported latency is already unusual,
-  // and a wild figure from a browser should not drag the playhead off the page.
-  return audio.currentTime - Math.min(late, 0.25);
+  // A sane ceiling on what the BROWSER claims: a quarter second of reported
+  // latency is already unusual, and a wild figure should not drag the playhead
+  // off the page. The allowance you set by ear is not capped by it — you are
+  // looking at the result, so you cannot set it to something absurd without
+  // seeing that you have.
+  return audio.currentTime - Math.min(told, 0.25) - (EAR_MS / 1000);
 }
 
 function tickNow(){
-  const gone = Math.max(0, earTime() - t0);
+  const gone = Math.max(0, earTime() - t0) + (window._lead || 0);
   const st = window._stops;
   if (!st || !st.length) return timeToTick(playBase + gone);
   for (let k = 0; k < st.length; k++){
@@ -12273,6 +12553,23 @@ function follow(){
   if (!playing || !audio) return;
   const tick = tickNow();
   _wasAt = tick;
+  // A LOOP HAS COME ROUND when the playhead jumps backwards. Give the bar it
+  // lands in until the end of its first note before anything in it disappears.
+  if (_wasTick >= 0 && tick < _wasTick - 1){
+    let first = null;
+    for (const stG of score.profile.staves)
+      for (const eG of eventsOf(stG.id))
+        if (eG.pitches.length && eG.start >= tick && (!first || eG.start < first.start)) { first = eG; break; }
+    _graceTo = first ? first.start + first.dur : -1;
+    _aheadAt = -1; _aheadTo = -1;          // recompute against the grace
+    // AND IT SAYS WHAT THIS LAP IS FOR, in the one moment you can take it in:
+    // the bar is still readable, you have not started playing it, and the rules
+    // have just changed. A PROGRAM THAT DOES NOT ANNOUNCE ITSELF IS A GLITCH.
+    const hw = hideSays();
+    if (hw){ say = hw; cry(hw.toUpperCase(), 1800); }
+  }
+  if (_graceTo >= 0 && tick >= _graceTo){ _graceTo = -1; _aheadAt = -1; _aheadTo = -1; }
+  _wasTick = tick;
 
   // TURN THE PAGE WHEN THE MUSIC LEAVES IT.
   //
@@ -12302,11 +12599,77 @@ function follow(){
       return;
     }
   }
+  // WHICH NOTES ARE SOUNDING — and, from the same pass, WHERE THEY ARE.
+  //
+  // Don: "the teal halo around the sounding note works fine. Why can't you just
+  // coordinate the appearance of the HANDS line with the teal halo?" Quite
+  // right, and the reason they disagreed is worth keeping. Both read the same
+  // clock, but the HALO lights the note whose span CONTAINS the moment, while
+  // the LINE was drawn at the moment itself — so through a note's duration the
+  // line slid on across the gap towards the next notehead while the halo stayed
+  // put. The line was reporting time; the halo was reporting the note. For a
+  // drill about where your hands are, the note is the answer.
+  // ANCHOR THE MARKER TO THE THING IT IS MARKING, not to the clock that found
+  // it. Now HANDS cannot disagree with the halo, whatever the latency does,
+  // because it is placed from the same list in the same pass.
+  const live = new Set();
+  let onNote = -1, onId = null;
+  for (const st of score.profile.staves)
+    for (const e of eventsOf(st.id))
+      if (e.pitches.length && e.start <= tick && tick < e.start + e.dur){
+        live.add(String(e.id));
+        if (e.start > onNote){ onNote = e.start; onId = String(e.id); }
+      }
+  document.querySelectorAll('.chip[data-ev]').forEach(c =>
+    c.classList.toggle('sounding', live.has(c.dataset.ev)));
+
+  const showHands = document.body.classList.contains('ahead');
+  // Snapped to the notehead while reading ahead, where the marker has to name a
+  // note; free to slide the rest of the time, where a smooth line is the better
+  // reading aid and a marker frozen on a long note would look stopped.
+  const handsAt = (showHands && onNote >= 0) ? onNote : tick;
+  // Measured once from the page, then used by every staff's marker — the boxes
+  // share one horizontal layout, and a chip only lives in the box of the staff
+  // that plays it.
+  const scH = document.getElementById('score');
+  const litEl = (scH && showHands && onId)
+    ? scH.querySelector('.chip[data-ev="' + onId + '"]') : null;
+  const litX = litEl
+    ? (litEl.offsetLeft || parseFloat(litEl.style.left) || 0) + (litEl.offsetWidth || 0) / 2
+    : null;
+  window._handsAt = handsAt; window._onNote = onNote;   // so it can be checked
   for (const h of heads){
     if (tick >= h.from && tick <= h.to){
-      h.el.style.display = '';
-      h.el.style.left = h.map(tick) + 'px';
-    } else h.el.style.display = 'none';
+      // MEASURED FROM THE LIT NOTEHEAD, NOT COMPUTED TOWARDS IT.
+      //
+      // Don: "Why not just make a command that keys on the blue halo, even if
+      // the blue halo is hidden? Blue halo is called, it also calls and places
+      // the red marker?" Yes. Every attempt to compute this position has been
+      // wrong by a different amount, because a notehead's own left is arrived at
+      // through lineX plus a column offset plus a stem-side shift, and the
+      // marker was only ever reproducing part of that chain. First it was half a
+      // head short, then half a head long.
+      //
+      // THE NOTEHEAD IS ON THE PAGE. ASK IT WHERE IT IS. The same lesson the
+      // page-scrolling code learned: measure the mark, do not guess at it. A
+      // hidden notehead still has a position, so this works with the note faded
+      // to nothing — which is the whole of the drill.
+      const x = litX !== null
+        ? litX
+        : h.map(Math.max(h.from, Math.min(h.to, handsAt)));
+      h.el.style.display = ''; h.el.style.left = x + 'px';
+      // The label only appears while reading ahead. The rest of the time the
+      // notes light up as they sound and the line is plenty; a permanent tag
+      // would be furniture on a page that is already busy.
+      if (h.tag){
+        h.tag.style.display = showHands ? '' : 'none';
+        h.tag.style.left = x + 'px';
+        h.tag.style.top = '-26px';
+      }
+    } else {
+      h.el.style.display = 'none';
+      if (h.tag) h.tag.style.display = 'none';
+    }
   }
   centreOnPlayhead();
 
@@ -12316,16 +12679,57 @@ function follow(){
   // stretched bars and justified lines without any geometry of its own. The
   // distance between them IS the setting: change the span and the gap changes.
   if (document.body.classList.contains('ahead')){
-    const ts6 = tsAt(barAt(tick));
-    const beat6 = TPQ * 4 / ts6.unit;
-    const span6 = (AHEAD_SPAN ? AHEAD_SPAN : (capacityOf(barAt(tick)) / beat6)) + AHEAD_LEAD;
-    const look = tick + span6 * beat6;
+    // IT SITS ON THE FIRST NOTE YOU CAN STILL READ — the actual note, found on
+    // the page, not a tick that ought to land near one.
+    //
+    // It was placed at the edge of the hidden window, which is a moment in time
+    // rather than a note. With a whole bar hidden that edge is the barline, and
+    // a barline is not something you can read — it is a gap, and lineX clamps
+    // it to the previous bar's scale, so the marker drifted to the far end of
+    // the wrong bar. Don: "the teal marker is not helpful. It currently sits at
+    // the end of the following bar. It should sit at the beginning."
+    //
+    // THE SAME FIX THE RED ONE NEEDED: ask the notehead where it is. The first
+    // note at or after the edge IS the next thing to read and the next thing to
+    // vanish, so the marker names it exactly.
+    const nb6 = barAt(tick);
+    const beat6 = TPQ * 4 / tsAt(nb6).unit;
+    const bs6 = barStart(nb6);
+    const look = (hideSpan()
+                   ? bs6 + Math.floor((tick - bs6) / beat6) * beat6 + hideSpan() * beat6
+                   : bs6 + capacityOf(nb6))
+               + AHEAD_LEAD * beat6;
+    // The first event at or after that edge, in the voice the eye is hiding.
+    let nextEv = null;
+    for (const st6 of score.profile.staves){
+      if (hideVoice() && st6.id !== hideVoice()) continue;
+      for (const e6 of eventsOf(st6.id)){
+        if (!e6.pitches.length || e6.start < look) continue;
+        if (!nextEv || e6.start < nextEv.start) nextEv = e6;
+        break;                      // events are in time order within a staff
+      }
+    }
+    // FOUND ONCE, USED IN EVERY STAFF. The chip lives in the box of the staff
+    // that plays it, but the boxes share one horizontal layout — so looking for
+    // it inside each box in turn fails for every other staff and drops those
+    // markers back onto the computed position, which is the thing being
+    // replaced. A LINE ACROSS THE SYSTEM IS ONE LINE; MEASURE IT ONCE.
+    const scE = document.getElementById('score');
+    const chip6 = (scE && nextEv)
+      ? scE.querySelector('.chip[data-ev="' + nextEv.id + '"]') : null;
+    const chipX = chip6
+      ? (chip6.offsetLeft || parseFloat(chip6.style.left) || 0) + (chip6.offsetWidth || 0) / 2
+      : null;
     for (const e of eyes){
-      if (look >= e.from && look <= e.to){
-        const x = e.map(look);
+      const at6 = nextEv ? nextEv.start : look;
+      if (chipX !== null && at6 >= e.from && at6 <= e.to){
+        const x = chipX;
         e.el.style.display = ''; e.el.style.left = x + 'px';
-        e.tag.style.display = ''; e.tag.style.left = x + 'px';
-        e.tag.style.top = '-26px';
+        e.tag.style.display = ''; e.tag.style.left = x + 'px'; e.tag.style.top = '-26px';
+      } else if (at6 >= e.from && at6 <= e.to){
+        const x = e.map(at6);
+        e.el.style.display = ''; e.el.style.left = x + 'px';
+        e.tag.style.display = ''; e.tag.style.left = x + 'px'; e.tag.style.top = '-26px';
       } else { e.el.style.display = 'none'; e.tag.style.display = 'none'; }
     }
   } else for (const e of eyes){ e.el.style.display = 'none'; e.tag.style.display = 'none'; }
@@ -12347,15 +12751,16 @@ function follow(){
       // the playhead is in and runs forward AHEAD_SPAN beats, so what goes is
       // always what you are playing plus a little of what is next — never
       // anything you have already left behind.
+      const hv = hideVoice(), hs = hideSpan();
       const ts5 = tsAt(nowBar);
       const beat5 = TPQ * 4 / ts5.unit;
       const b5 = barStart(nowBar);
-      const from5 = AHEAD_SPAN
+      const from5 = hs
         ? b5 + Math.floor((tick - b5) / beat5) * beat5
         : b5;
       // The leading edge runs AHEAD_LEAD beats past what was chosen, so the
       // note you are about to play is already gone.
-      const to5 = (AHEAD_SPAN ? from5 + AHEAD_SPAN * beat5 : b5 + capacityOf(nowBar))
+      const to5 = (hs ? from5 + hs * beat5 : b5 + capacityOf(nowBar))
                 + AHEAD_LEAD * beat5;
       // KEYED ON THE WINDOW, NOT THE BAR. It used to recompute only when the
       // bar changed, which is right for a bar and useless for a beat.
@@ -12367,15 +12772,39 @@ function follow(){
           // WHICH EVENTS FALL IN THE WINDOW, asked of the music rather than of
           // the page — a drawn element knows its bar, not its beat.
           const gone = new Set();
+          // AND WHETHER ITS FIRST NOTE HAS ACTUALLY SOUNDED YET.
+          //
+          // The window opens at a barline or a beat line, which is a moment,
+          // not a note — and the halo can be running a little ahead of the
+          // sound, so the bar was going dark slightly before you heard its
+          // first note. Round a loop that is brutal: the bar you are about to
+          // play again vanishes just as you turn back to it. Don: "at the end
+          // of the loop, the first bar of the loop has disappeared before I can
+          // look back. It would be a relief if that first bar waited until the
+          // first note before it disappeared."
+          // A BAR GOES WHEN YOU HEAR IT, NOT WHEN THE CLOCK CROSSES ITS LINE.
           for (const st5 of score.profile.staves){
-            if (AHEAD_VOICE && st5.id !== AHEAD_VOICE) continue;
+            if (hv && st5.id !== hv) continue;
             for (const e5 of eventsOf(st5.id))
               if (e5.start >= from5 && e5.start < to5) gone.add(String(e5.id));
           }
+          // COMING ROUND A LOOP, THE FIRST NOTE STAYS UNTIL IT HAS BEEN PLAYED.
+          //
+          // The previous attempt at this asked whether the window's first note
+          // had sounded yet — which is always true the instant the window
+          // opens, because the window is derived from the playhead and the note
+          // begins on the same line. It changed nothing, and Don said so: "I
+          // don't see any change in the first bar."
+          // What is actually wanted is a moment's grace: coming back round, the
+          // bar you are about to play again should still be readable until you
+          // have played its first note. So the grace runs to the END of that
+          // note, and nothing in the bar hides before then.
+          // ASKING "HAS IT STARTED" AT THE MOMENT IT STARTS IS NOT A QUESTION.
+          if (_graceTo > tick) gone.clear();
           // EVERYTHING THAT BELONGS TO THAT NOTE, not just its head. A notehead
           // alone leaves stems and beams hanging in the air, which is more
           // distracting than leaving the note there.
-          const suffix = (AHEAD_VOICE ? '[data-st="' + AHEAD_VOICE + '"]' : '');
+          const suffix = (hv ? '[data-st="' + hv + '"]' : '');
           for (const el4 of sc4.querySelectorAll('.gonemark')) el4.remove();
           for (const el4 of sc4.querySelectorAll('.chip[data-ev]' + suffix
                                                + ', .stem[data-ev]' + suffix))
@@ -12400,7 +12829,7 @@ function follow(){
           // they go only when the window covers the whole bar. A flag hanging
           // where its notehead was is the thing the note above warns about, but
           // half a beam vanishing mid-group would be worse.
-          if (!AHEAD_SPAN){
+          if (!hs){
             const want = '.beam[data-bar="' + nowBar + '"]' + suffix
                        + ', .flag[data-bar="' + nowBar + '"]' + suffix
                        + ', .rest[data-bar="' + nowBar + '"]' + suffix;
@@ -12411,12 +12840,6 @@ function follow(){
     } catch (err) {}
   }
 
-  const live = new Set();
-  for (const st of score.profile.staves)
-    for (const e of eventsOf(st.id))
-      if (e.pitches.length && e.start <= tick && tick < e.start + e.dur) live.add(String(e.id));
-  document.querySelectorAll('.chip[data-ev]').forEach(c =>
-    c.classList.toggle('sounding', live.has(c.dataset.ev)));
   frame = requestAnimationFrame(follow);
 }
 
@@ -14197,11 +14620,13 @@ function leadPattern(perBar, step){
     // A HOLD SHOWS THE CHOICES. Off is not among them — that is what the tap is
     // for, and a list whose first item undoes the button it hangs from reads as
     // a mistake.
-    holdOpens(lb, () => flyout(lb, 'count-in', LEAD_WAYS.slice(1).map((w, i) => ({
-      label: w.name,
-      on: LEAD_WAY === i + 1,
-      pick: () => setLead(i + 1, 'counting in \u2014 ' + w.name)
-    }))));
+    holdOpens(lb, () => flyout(lb, 'count-in', () => [
+      { items: LEAD_WAYS.slice(1).map((w, i) => ({
+          label: w.name,
+          on: LEAD_WAY === i + 1,
+          pick: () => setLead(i + 1, 'counting in \u2014 ' + w.name)
+        })) }
+    ]));
     paint();
   } catch (err) { console.warn('lead', err); }
 })();
