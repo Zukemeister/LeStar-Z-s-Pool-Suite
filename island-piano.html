@@ -1050,6 +1050,7 @@
   .flyitem:hover{ background:rgba(255,255,255,.1) }
   .flyitem.on{ background:#00a3ab; color:#04222a }
   .flybox{ width:18px; flex:0 0 18px; font-size:17px; line-height:1 }
+  .flynudge{ font-weight:900; color:#00a3ab; text-align:center }
   .flylabel{ flex:1 1 auto }
   .flynote{ flex:0 0 auto; opacity:.6; font-weight:400; font-size:13px }
   @media print { .flyout{ display:none !important } }
@@ -2375,7 +2376,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b328 two-handed build 1 joins the shelf';
+const BUILD_STAMP = '2026-09-07 b329 the halo nudges by twenty';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -2447,7 +2448,7 @@ try { AHEAD_LEAD = Math.max(0, Math.min(2, +localStorage.getItem('island.aheadle
 // the desktop: "the blue halo is behind the sound by about 1/2 a note."
 // A CORRECTION THAT ONLY GOES ONE WAY CANNOT FIX AN ERROR THAT GOES BOTH.
 var EAR_MS = 0;
-try { EAR_MS = Math.max(-300, Math.min(400, +localStorage.getItem('island.earms') || 0)); } catch (err) {}
+try { EAR_MS = Math.max(-400, Math.min(400, +localStorage.getItem('island.earms') || 0)); } catch (err) {}
 var _aheadBar = -1;
 var _aheadAt = -1, _aheadTo = -1;   // the window of music the eye is hiding
 var _graceTo = -1;                  // hide nothing until here — see the loop wrap
@@ -9448,12 +9449,23 @@ document.getElementById('bWords').addEventListener('click', ev => {
         { label:'more each time', note:'a beat, then two, then the bar',
           on: HIDE_PLAN === 'build', pick: () => setHidePlan('build') }
       ]},
-      { title:'the halo, against your ears', items:[
-        { label:'much earlier', note:'\u2212200ms', on: EAR_MS === -200, pick: () => setEar(-200) },
-        { label:'earlier',      note:'\u2212100ms', on: EAR_MS === -100, pick: () => setEar(-100) },
-        { label:'on time',      note:'',            on: EAR_MS === 0,    pick: () => setEar(0) },
-        { label:'later',        note:'+100ms',      on: EAR_MS === 100,  pick: () => setEar(100) },
-        { label:'much later',   note:'+200ms',      on: EAR_MS === 200,  pick: () => setEar(200) }
+      // TWENTY MILLISECONDS AT A TIME, AND IT SAYS WHERE IT STANDS.
+      //
+      // The five fixed steps were a hundred apart, and a hundred is a coarse
+      // grid for something judged by eye against your ears. Don got it close at
+      // a hundred earlier and then: "the sound comes in a couple of
+      // milliseconds ahead of the blue halo" — with no way to say "a bit more".
+      // Twenty is about the point at which a person can tell sound and picture
+      // apart at all, so it is as fine as this needs to be. The panel stays
+      // open while you tap, so you can converge on it with the music running.
+      { title: 'the halo \u2014 ' + (EAR_MS === 0 ? 'on time'
+                 : EAR_MS > 0 ? EAR_MS + 'ms later' : (-EAR_MS) + 'ms earlier'), items:[
+        { label:'a little earlier', note:'\u221220ms', nudge:'\u2212',
+          pick: () => setEar(Math.max(-400, EAR_MS - 20)) },
+        { label:'a little later',   note:'+20ms', nudge:'+',
+          pick: () => setEar(Math.min(400, EAR_MS + 20)) },
+        { label:'on time', note:'no allowance', on: EAR_MS === 0,
+          pick: () => setEar(0) }
       ]}
     ]));
     if (ah) ah.addEventListener('click', () => {
@@ -11908,7 +11920,15 @@ function flyout(btn, title, build){
         // A BOX YOU CAN SEE WHETHER IT IS TICKED, ticked or not — an empty
         // square says "this could be on and is not", where a blank says
         // nothing at all.
-        b.innerHTML = '<span class="flybox">' + (it.on ? '\u2611' : '\u2610') + '</span>'
+        // A CHECKBOX IS FOR A CHOICE; A NUDGE IS NOT A CHOICE.
+        //
+        // A box on every line says every line is one of a set you pick between,
+        // and "make it 20ms earlier" is not — it has no state to be ticked, it
+        // moves a number. A box there would claim it could be on, which is a
+        // lie about what it does. THE AFFORDANCE HAS TO MATCH THE ACT.
+        b.innerHTML = (it.nudge
+                        ? '<span class="flybox flynudge">' + it.nudge + '</span>'
+                        : '<span class="flybox">' + (it.on ? '\u2611' : '\u2610') + '</span>')
                     + '<span class="flylabel">' + it.label + '</span>'
                     + (it.note ? '<span class="flynote">' + it.note + '</span>' : '');
         b.addEventListener('click', ev => {
