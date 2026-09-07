@@ -2376,7 +2376,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b331 a turn is a screenful';
+const BUILD_STAMP = '2026-09-07 b332 ask which thing scrolls';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -9971,12 +9971,30 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
     // Measured from the systems themselves rather than reckoned from a height:
     // systems differ in height once one of them carries a ledger or a word.
     // ASK THE PAGE WHERE ITS LINES ARE.
+    // WHICH THING IS ACTUALLY SCROLLING.
+    //
+    // The staff area scrolls in some layouts and the whole window in others, and
+    // asking the wrong one gives a view height equal to the entire piece — so
+    // "the first system below the screen" is nothing at all, the scroll is
+    // skipped, and the DRAWN BLOCK moves instead. Twenty-three bars in one tap.
+    // Don: "jumps to bar 23."
+    // ASK WHICH ELEMENT SCROLLS BEFORE ASKING HOW FAR IT HAS SCROLLED.
+    const scroller = () => {
+      const sc3 = document.getElementById('score');
+      if (sc3 && sc3.scrollHeight > sc3.clientHeight + 4) return sc3;
+      return document.scrollingElement || document.documentElement || sc3;
+    };
+    // The tops of the systems, in the scroller's own coordinates — measured, so
+    // it does not matter which element is doing the scrolling or what it is
+    // nested inside.
     const sysTops = () => {
       const sc3 = document.getElementById('score');
-      if (!sc3) return [];
+      const sk = scroller();
+      if (!sc3 || !sk) return [];
+      const base = (sk.getBoundingClientRect ? sk.getBoundingClientRect().top : 0) - (sk.scrollTop || 0);
       const seen = new Set(), out = [];
       for (const b3 of sc3.querySelectorAll('[data-first]')){
-        const t = b3.offsetTop;
+        const t = Math.round((b3.getBoundingClientRect ? b3.getBoundingClientRect().top : b3.offsetTop) - base);
         if (!seen.has(t)){ seen.add(t); out.push(t); }
       }
       return out.sort((x, y) => x - y);
@@ -9999,17 +10017,25 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       return j >= 0 ? tops[j] : null;      // nothing left above in this block
     };
     const turnView = d => {
-      const sc3 = document.getElementById('score');
-      if (!sc3) return;
-      const want = window._nextTop(sysTops(), sc3.scrollTop, sc3.clientHeight || sc3.offsetHeight || 0, d);
-      if (want !== null && want !== undefined){ sc3.scrollTop = want; return; }
+      const sk = scroller();
+      if (!sk) return;
+      const view = sk.clientHeight || sk.offsetHeight || 0;
+      const want = window._nextTop(sysTops(), sk.scrollTop || 0, view, d);
+      if (want !== null && want !== undefined){
+        sk.scrollTop = Math.max(0, Math.min(want, sk.scrollHeight - view));
+        say = 'turned';
+        return;
+      }
       // Off the end of the drawn block, so move the block and start at its edge.
       const pg2 = window._pages;
       if (!pg2 || pg2.at < 0) return;
-      if (d > 0 && pg2.to >= pg2.bars) return;      // the end of the piece
-      if (d < 0 && pg2.from <= 0){ sc3.scrollTop = 0; return; }
+      if (d > 0 && pg2.to >= pg2.bars){ say = 'the end of the piece'; return; }
+      if (d < 0 && pg2.from <= 0){ sk.scrollTop = 0; return; }
       turn(d);
-      if (d < 0) sc3.scrollTop = Math.max(0, sc3.scrollHeight - (sc3.clientHeight || 0));
+      const sk2 = scroller();
+      if (sk2) sk2.scrollTop = d < 0
+        ? Math.max(0, sk2.scrollHeight - (sk2.clientHeight || 0))
+        : 0;
     };
     window._turnPage = turnView;   // the staff itself uses it — see the reading tap
     const pp = document.getElementById('pagePrev'), pn = document.getElementById('pageNext');
