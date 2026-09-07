@@ -2376,7 +2376,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b330 the page is the button';
+const BUILD_STAMP = '2026-09-07 b331 a turn is a screenful';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -9941,22 +9941,11 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       if (pg && pg.at >= 0){
         // Forward: the last system on screen becomes the first of the next page,
         // so nothing is skipped over the join. Back: a page's worth earlier.
-        // A TURN SHOWS THE NEXT PAGEFUL, WHATEVER IS ON THE GLASS.
-        //
-        // It used to leave the last system on screen as the first of the next
-        // page, so nothing was skipped over the join. That is right when a page
-        // holds four or five systems and costs you a fifth of the page. With
-        // two systems on screen it costs you HALF, and doubles the number of
-        // turns — Don, reading the Mozart three bars wide, two staves to the
-        // page: "I'd want it to keep all that and just show me the next two."
-        // A GENEROUS OVERLAP ON A SMALL PAGE IS NOT GENEROUS.
-        const shown = (pg.sys && pg.sys.length) ? pg.sys.length : 1;
-        const past = (pg.sys && pg.sys.length)
-          ? pg.sys[pg.sys.length - 1] + (pg.sys.length > 1
-              ? pg.sys[pg.sys.length - 1] - pg.sys[pg.sys.length - 2]
-              : pg.span)
-          : pg.from + pg.span;
-        PAGE_AT = d > 0 ? Math.min(Math.max(0, pg.bars - 1), past)
+        // Forward: the last system DRAWN becomes the first of the next block, so
+        // nothing is skipped over the join. Back: a block's worth earlier.
+        const lastSys = pg.sys && pg.sys.length > 1
+          ? pg.sys[pg.sys.length - 1] : pg.from + pg.span;
+        PAGE_AT = d > 0 ? Math.min(Math.max(0, pg.bars - 1), lastSys)
                         : Math.max(0, pg.from - pg.span);
         render();
         const sc0 = document.getElementById('score');
@@ -9968,10 +9957,65 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       const sc2 = document.getElementById('score');
       if (sc2) sc2.scrollTop = 0;      // a new page starts at its top
     };
-    window._turnPage = turn;      // the staff itself uses it — see the reading tap
+    // WHAT A TURN MOVES IS A SCREENFUL, NOT A BLOCK OF DRAWN MUSIC.
+    //
+    // `turn` above moves the DRAWN WINDOW — twenty-four bars of music the app
+    // has laid out — and that is not what is in front of you. Reading three
+    // bars wide with two staves on the glass, one tap threw twenty bars away.
+    // Don: "a tap on the right staff turns 20 bars."
+    //
+    // A PAGE IS WHAT YOU CAN SEE, NOT WHAT HAS BEEN DRAWN. So a tap scrolls by
+    // exactly the systems on screen, landing the next unseen system at the top,
+    // and only when the drawn block runs out does it move the block.
+    //
+    // Measured from the systems themselves rather than reckoned from a height:
+    // systems differ in height once one of them carries a ledger or a word.
+    // ASK THE PAGE WHERE ITS LINES ARE.
+    const sysTops = () => {
+      const sc3 = document.getElementById('score');
+      if (!sc3) return [];
+      const seen = new Set(), out = [];
+      for (const b3 of sc3.querySelectorAll('[data-first]')){
+        const t = b3.offsetTop;
+        if (!seen.has(t)){ seen.add(t); out.push(t); }
+      }
+      return out.sort((x, y) => x - y);
+    };
+    // Where the top of the view should go, given the tops of the systems, where
+    // the view is now, and how tall it is. Pure, so it can be checked.
+    window._nextTop = (tops, at, h, d) => {
+      if (!tops.length) return null;
+      const bottom = at + h - 4;
+      if (d > 0){
+        // the first system that does not START on this screen
+        for (const t of tops) if (t >= bottom) return t;
+        return null;                       // nothing left in this block
+      }
+      // back: as many systems as are showing, from the first one showing
+      const first = tops.filter(t => t >= at - 4)[0];
+      const i = tops.indexOf(first);
+      const showing = Math.max(1, tops.filter(t => t >= at - 4 && t < bottom).length);
+      const j = i - showing;
+      return j >= 0 ? tops[j] : null;      // nothing left above in this block
+    };
+    const turnView = d => {
+      const sc3 = document.getElementById('score');
+      if (!sc3) return;
+      const want = window._nextTop(sysTops(), sc3.scrollTop, sc3.clientHeight || sc3.offsetHeight || 0, d);
+      if (want !== null && want !== undefined){ sc3.scrollTop = want; return; }
+      // Off the end of the drawn block, so move the block and start at its edge.
+      const pg2 = window._pages;
+      if (!pg2 || pg2.at < 0) return;
+      if (d > 0 && pg2.to >= pg2.bars) return;      // the end of the piece
+      if (d < 0 && pg2.from <= 0){ sc3.scrollTop = 0; return; }
+      turn(d);
+      if (d < 0) sc3.scrollTop = Math.max(0, sc3.scrollHeight - (sc3.clientHeight || 0));
+    };
+    window._turnPage = turnView;   // the staff itself uses it — see the reading tap
     const pp = document.getElementById('pagePrev'), pn = document.getElementById('pageNext');
-    if (pp) pp.addEventListener('click', () => turn(-1));
-    if (pn) pn.addEventListener('click', () => turn(1));
+    // The buttons move by a screenful too, so they and the staff agree.
+    if (pp) pp.addEventListener('click', () => turnView(-1));
+    if (pn) pn.addEventListener('click', () => turnView(1));
 
     // LOOPING, FROM THE PAGE ITSELF.
     //
