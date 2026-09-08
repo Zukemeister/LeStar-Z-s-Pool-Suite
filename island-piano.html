@@ -2395,7 +2395,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b335 the roll';
+const BUILD_STAMP = '2026-09-07 b336 slower, a wait, and it takes the repeat';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -14970,6 +14970,11 @@ function tell(msg, shout){
 //  a passage, or because the phone rang.
 // ---------------------------------------------------------------------------
 var ROLL_ON = false, ROLL_HELD = false, ROLL_RATE = 4, _rollFrame = 0, _rollAt = 0, _rollOdd = 0;
+// TIME TO GET YOUR HANDS ON THE KEYS. Pressing the button is done with a hand
+// that then has to be somewhere else, and a page that starts moving the instant
+// you press it is a page you are already behind. Fifteen seconds, counted down
+// where the speed usually shows.
+var ROLL_WAIT = 15, _rollFrom = 0, _rollTook = null, _rollSys = -1, _rollTick = -1;
 try { ROLL_RATE = Math.max(1, Math.min(10, +localStorage.getItem('island.rollrate') || 4)); } catch (err) {}
 
 function rollPaint(){
@@ -14977,7 +14982,8 @@ function rollPaint(){
   const row = document.getElementById('rollRow');
   const out = document.getElementById('rollSays');
   if (row) row.hidden = !ROLL_ON;
-  if (out) out.textContent = ROLL_HELD ? 'held' : String(ROLL_RATE);
+  const waiting = (typeof rollLeft === 'function') ? rollLeft() : 0;
+  if (out) out.textContent = ROLL_HELD ? 'held' : (waiting ? waiting + 's' : String(ROLL_RATE));
   if (!b) return;
   const lit = ROLL_ON && !ROLL_HELD;
   b.setAttribute('aria-pressed', ROLL_ON ? 'true' : 'false');
@@ -14993,6 +14999,16 @@ function rollStep(now){
   if (!ROLL_ON){ _rollFrame = 0; return; }
   _rollFrame = requestAnimationFrame(rollStep);
   if (ROLL_HELD){ _rollAt = now; return; }
+  // THE WAIT. Nothing moves until it is up, and the readout counts it down so
+  // the pause is a promise rather than a fault.
+  if (rollLeft() > 0){
+    _rollAt = now;
+    // ONE VARIABLE, ONE JOB. The countdown briefly borrowed the sub-pixel
+    // accumulator and would have started the roll with a fraction of a second's
+    // worth of scroll already banked.
+    if (_rollTick !== rollLeft()){ _rollTick = rollLeft(); rollPaint(); }
+    return;
+  }
   if (!_rollAt){ _rollAt = now; return; }
   const dt = Math.min(0.25, (now - _rollAt) / 1000);   // a long stall is not a leap
   _rollAt = now;
@@ -15001,14 +15017,17 @@ function rollStep(now){
   // SUB-PIXEL, ACCUMULATED. scrollTop takes whole pixels, so at slow speeds a
   // per-frame rounding would floor to nothing and the page would never move.
   // Keep the remainder and spend it when it adds up to a pixel.
-  _rollOdd += ROLL_RATE * 8 * dt;
+  // SIX PIXELS A SECOND PER STEP, NOT EIGHT. Don: "would you make it about 25%
+  // slower? That would be good for clumsy pianists." The fast end can come back
+  // as its own thing later; the useful end of a reading control is the slow end.
+  _rollOdd += ROLL_RATE * 6 * dt;
   const step = Math.floor(_rollOdd);
   if (step < 1) return;
   _rollOdd -= step;
   const view = sk.clientHeight || sk.offsetHeight || 0;
   const most = Math.max(0, sk.scrollHeight - view);
   const at = sk.scrollTop || 0;
-  if (at + step < most){ sk.scrollTop = at + step; return; }
+  if (at + step < most){ sk.scrollTop = at + step; rollRepeat(sk); return; }
   // THE BOTTOM OF A DRAWN BLOCK IS NOT THE END OF THE PIECE — the same trap the
   // tap fell into. Hand over to the block turn and carry on from its top.
   sk.scrollTop = most;
@@ -15024,11 +15043,84 @@ function rollStep(now){
   }
 }
 
+// THE SYSTEMS OF THE DRAWN PAGE, each with the bar it starts on.
+function rollSystems(){
+  const sc = document.getElementById('score');
+  const sk = (window._scroller && window._scroller()) || sc;
+  if (!sc || !sk) return [];
+  const base = (sk.getBoundingClientRect ? sk.getBoundingClientRect().top : 0) - (sk.scrollTop || 0);
+  const seen = new Set(), out = [];
+  for (const b of sc.querySelectorAll('[data-first]')){
+    const top = Math.round((b.getBoundingClientRect ? b.getBoundingClientRect().top : b.offsetTop) - base);
+    if (seen.has(top)) continue;
+    seen.add(top);
+    out.push({ top: top, bar: +(b.dataset.first || 0) });
+  }
+  return out.sort((x, y) => x.top - y.top);
+}
+
+// WHERE A REPEAT GOES BACK TO.
+function repHomeOf(b){
+  for (let x = b; x >= 0; x--) if (isRepStart(x)) return x;
+  return 0;
+}
+
+// THE PIECE GOES BACK; THE ROLL DOES NOT.
+//
+// Don: "scrolling doesn't have to jump back; it can just continue rolling. The
+// piece itself has to jump back to display the start of the repeat." Exactly —
+// the movement is the metronome here and must not stutter. So when a system
+// carrying the end of a repeat has been read past, the DRAWN MUSIC is
+// re-anchored at the head of that repeat and the view is put at its top; the
+// roll carries on at the same rate, into the same music a second time.
+//
+// Each repeat is taken once per run, which is what a repeat means. Ending
+// brackets are not read — a piece with first and second endings will need more
+// than this, and guessing at it would be worse than not doing it.
+function rollRepeat(sk){
+  if (!ROLL_ON || !_rollTook) return;
+  const sys = rollSystems();
+  if (sys.length < 2) return;
+  const at = sk.scrollTop || 0;
+  let i = 0;
+  for (let k = 0; k < sys.length; k++) if (sys[k].top <= at + 2) i = k;
+  if (_rollSys < 0){ _rollSys = i; return; }
+  if (i <= _rollSys) return;                 // still reading the same system
+  // We have just read past system _rollSys. Did it end a repeat?
+  const from = sys[_rollSys].bar, to = sys[_rollSys + 1].bar - 1;
+  let endBar = -1;
+  for (let b = from; b <= to; b++) if (isRepEnd(b)) endBar = b;
+  _rollSys = i;
+  if (endBar < 0) return;
+  if (_rollTook.has(endBar)) return;         // taken already: read on through
+  _rollTook.add(endBar);
+  const home = repHomeOf(endBar);
+  PAGE_AT = Math.max(0, home);
+  render();
+  const back = rollSystems();
+  const land = back.filter(x => x.bar <= home).pop() || back[0];
+  const sk2 = (window._scroller && window._scroller()) || sk;
+  if (sk2 && land) sk2.scrollTop = Math.max(0, land.top);
+  _rollSys = land ? back.indexOf(land) : 0;
+  say = 'back to ' + barName(home) + ' \u2014 the repeat';
+  cry('REPEAT', 1400);
+}
+
+// For a harness, and for a "start now" if one is ever wanted: end the wait.
+function rollSkipWait(){ _rollFrom = Date.now() - ROLL_WAIT * 1000; _rollTick = -1; rollPaint(); }
+
 function rollStart(){
   ROLL_ON = true; ROLL_HELD = false; _rollAt = 0; _rollOdd = 0;
+  _rollFrom = Date.now(); _rollTook = new Set(); _rollSys = -1;
   if (!_rollFrame) _rollFrame = requestAnimationFrame(rollStep);
-  say = 'rolling at ' + ROLL_RATE + ' \u2014 tap the staff to hold it';
+  say = 'rolling in ' + ROLL_WAIT + ' seconds, then at ' + ROLL_RATE
+      + ' \u2014 tap the staff to hold it';
   rollPaint();
+}
+// How long is left of the wait, in whole seconds; 0 once it is moving.
+function rollLeft(){
+  if (!ROLL_ON || !_rollFrom) return 0;
+  return Math.max(0, Math.ceil(ROLL_WAIT - (Date.now() - _rollFrom) / 1000));
 }
 function rollStop(){
   ROLL_ON = false; ROLL_HELD = false;
