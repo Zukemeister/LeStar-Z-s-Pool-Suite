@@ -2395,7 +2395,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b336 slower, a wait, and it takes the repeat';
+const BUILD_STAMP = '2026-09-07 b339 the markers on their own';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -2434,7 +2434,8 @@ var AHEAD_VOICE = null;          // the voice the eye is reading ahead in
 // A DRILL YOU CANNOT DO IS NOT A DRILL. One beat is a step you can take on the
 // first try; the bar is where it ends up.
 var AHEAD_SPAN = 0;              // beats hidden ahead; 0 = the whole bar
-try { AHEAD_SPAN = Math.max(0, Math.min(3, +localStorage.getItem('island.aheadspan') || 0)); } catch (err) {}
+try { AHEAD_SPAN = Math.max(-1, Math.min(3, +localStorage.getItem('island.aheadspan'))) || 0; } catch (err) {}
+if (AHEAD_SPAN !== -1) AHEAD_SPAN = Math.max(0, Math.min(3, AHEAD_SPAN));
 // AND IT GOES BEFORE YOU GET THERE. A note that vanishes at the instant you
 // play it can be read right up to that instant, so nothing forces the eye
 // forward — the drill teaches nothing. It has to be gone BEFORE the finger
@@ -9347,7 +9348,8 @@ document.getElementById('bWords').addEventListener('click', ev => {
     const aheadName = () => AHEAD_VOICE ? ('V' + voiceNumber(AHEAD_VOICE)) : 'both hands';
     // Declared with aheadName because paintAhead reads it, and paintAhead is
     // written above the flyout that sets it. SEVEN of these have bitten now.
-    const spanName = n => n === 0 ? 'the whole bar'
+    const spanName = n => n === -1 ? 'nothing'
+                        : n === 0 ? 'the whole bar'
                         : n === 1 ? 'one beat'
                         : n + ' beats';
     // TEAL WHEN THE EYE IS ON, BLACK WHEN IT IS NOT — the same rule as the
@@ -9425,7 +9427,9 @@ document.getElementById('bWords').addEventListener('click', ev => {
         for (const e7 of sc7.querySelectorAll('.faded')) e7.classList.remove('faded');
         for (const e7 of sc7.querySelectorAll('.gonemark')) e7.remove();
       }
-      say = 'reading ahead will hide ' + spanName(n) + ' of ' + aheadName()
+      say = n === -1
+        ? 'nothing will vanish \u2014 the two markers only, a bar apart'
+        : 'reading ahead will hide ' + spanName(n) + ' of ' + aheadName()
           + (AHEAD_LEAD ? ', ' + (AHEAD_LEAD === 1 ? 'a beat' : 'half a beat')
                           + ' before you play it'
                         : ', as you reach it');
@@ -9436,13 +9440,25 @@ document.getElementById('bWords').addEventListener('click', ev => {
     // both hands is easier than a whole bar of either.
     // THE STANDING INSTRUCTION, held for as long as the mode is on. A drill you
     // have to remember the point of is one you will practise wrong.
-    const aheadSays = () =>
-      'your eyes on the teal line, your hands on the red one \u00b7 '
-      + 'the teal one is the next note to vanish \u2014 read it before it goes';
+    const aheadSays = () => AHEAD_SPAN === -1
+      ? 'your eyes on the teal line, your hands on the red one \u00b7 '
+        + 'keep the gap and you are reading a bar ahead'
+      : 'your eyes on the teal line, your hands on the red one \u00b7 '
+        + 'the teal one is the next note to vanish \u2014 read it before it goes';
     window._aheadSays = () => document.body.classList.contains('ahead') ? aheadSays() : null;
 
     holdOpens(ah, () => flyout(ah, 'read ahead', () => [
       { title:'how much vanishes', items:[
+        // NOTHING IS A REAL SETTING, not the absence of one.
+        //
+        // The markers and the vanishing arrived together and were never
+        // separable, but they teach different things: the vanishing stops you
+        // reading what your hands are doing, while the markers simply say where
+        // to look and how far ahead. Don found the teal marker earning its keep
+        // and is unconvinced by the disappearing. So let the markers run alone —
+        // same drill, nothing fighting you, every note still on the page.
+        { label:'nothing \u2014 just the markers', note:'the page stays whole',
+          on: AHEAD_SPAN === -1, pick: () => setSpan(-1) },
         { label:'one beat',      on: AHEAD_SPAN === 1, pick: () => setSpan(1) },
         { label:'two beats',     on: AHEAD_SPAN === 2, pick: () => setSpan(2) },
         { label:'three beats',   on: AHEAD_SPAN === 3, pick: () => setSpan(3) },
@@ -12865,9 +12881,12 @@ function follow(){
     const nb6 = barAt(tick);
     const beat6 = TPQ * 4 / tsAt(nb6).unit;
     const bs6 = barStart(nb6);
-    const look = (hideSpan()
-                   ? bs6 + Math.floor((tick - bs6) / beat6) * beat6 + hideSpan() * beat6
-                   : bs6 + capacityOf(nb6))
+    // WITH NOTHING VANISHING THE MARKER STILL NEEDS A DISTANCE. A bar ahead is
+    // the reading distance the exercise is aiming at, so that is where it goes.
+    const hs6 = hideSpan();
+    const look = (hs6 === -1 || hs6 === 0
+                   ? bs6 + capacityOf(nb6)
+                   : bs6 + Math.floor((tick - bs6) / beat6) * beat6 + hs6 * beat6)
                + AHEAD_LEAD * beat6;
     // The first event at or after that edge, in the voice the eye is hiding.
     let nextEv = null;
@@ -12913,7 +12932,19 @@ function follow(){
   // YOU CANNOT LEARN TO LOOK AHEAD WHILE THERE IS SOMETHING TO LOOK AT. So the
   // bar under the playhead fades as it is reached, and the page ahead of it
   // stays sharp.
-  if (document.body.classList.contains('ahead')){
+  // WITH NOTHING CHOSEN, NOTHING GOES — and the markers below still draw, so
+  // the eye still teaches where to look. Cleared once rather than tested inside
+  // the hiding, because leaving by an exception would be caught by the guard
+  // meant for real faults and hide the next one.
+  if (hideSpan() === -1 && _aheadAt !== -1){
+    _aheadAt = -1; _aheadTo = -1;
+    const scN = document.getElementById('score');
+    if (scN){
+      for (const eN of scN.querySelectorAll('.faded')) eN.classList.remove('faded');
+      for (const eN of scN.querySelectorAll('.gonemark')) eN.remove();
+    }
+  }
+  if (document.body.classList.contains('ahead') && hideSpan() !== -1){
     try {
       const nowBar = barAt(tick);
       // THE WINDOW THAT VANISHES. A whole bar is the hardest version of this;
@@ -15020,7 +15051,10 @@ function rollStep(now){
   // SIX PIXELS A SECOND PER STEP, NOT EIGHT. Don: "would you make it about 25%
   // slower? That would be good for clumsy pianists." The fast end can come back
   // as its own thing later; the useful end of a reading control is the slow end.
-  _rollOdd += ROLL_RATE * 6 * dt;
+  // AND ANOTHER FIFTH OFF: 4.8 pixels a second per step, so the scale runs from
+  // just under five to just under fifty. Don, twice now, and both times right —
+  // the whole value of this control lives at its slow end.
+  _rollOdd += ROLL_RATE * 4.8 * dt;
   const step = Math.floor(_rollOdd);
   if (step < 1) return;
   _rollOdd -= step;
@@ -15049,13 +15083,25 @@ function rollSystems(){
   const sk = (window._scroller && window._scroller()) || sc;
   if (!sc || !sk) return [];
   const base = (sk.getBoundingClientRect ? sk.getBoundingClientRect().top : 0) - (sk.scrollTop || 0);
-  const seen = new Set(), out = [];
+  // ONE ENTRY PER SYSTEM, NOT ONE PER STAFF.
+  //
+  // Every staff of a system carries data-first, and the right hand and the left
+  // hand of the same system sit at different heights — so grouping by height
+  // gave two entries for every system, both naming the same bar. The span of a
+  // "system" then came out as bar N to bar N-1, an empty range, and the bars
+  // inside it were never examined for a repeat. What flipped, flipped by luck,
+  // several systems late. Don: "it is following the repeats late, by maybe 6-7
+  // bars."
+  // GROUP BY WHAT MAKES A SYSTEM A SYSTEM — the bar it starts on — and take the
+  // topmost staff as its position.
+  const byBar = new Map();
   for (const b of sc.querySelectorAll('[data-first]')){
+    const bar = +(b.dataset.first || 0);
     const top = Math.round((b.getBoundingClientRect ? b.getBoundingClientRect().top : b.offsetTop) - base);
-    if (seen.has(top)) continue;
-    seen.add(top);
-    out.push({ top: top, bar: +(b.dataset.first || 0) });
+    if (!byBar.has(bar) || top < byBar.get(bar)) byBar.set(bar, top);
   }
+  const out = [];
+  for (const [bar, top] of byBar) out.push({ bar: bar, top: top });
   return out.sort((x, y) => x.top - y.top);
 }
 
@@ -15086,15 +15132,43 @@ function rollRepeat(sk){
   for (let k = 0; k < sys.length; k++) if (sys[k].top <= at + 2) i = k;
   if (_rollSys < 0){ _rollSys = i; return; }
   if (i <= _rollSys) return;                 // still reading the same system
-  // We have just read past system _rollSys. Did it end a repeat?
-  const from = sys[_rollSys].bar, to = sys[_rollSys + 1].bar - 1;
+  const from = sys[_rollSys].bar;
+  const to = (_rollSys + 1 < sys.length) ? sys[_rollSys + 1].bar - 1 : lastBar();
+  _rollSys = i;
+
+  // A LOOP OUTRANKS THE PIECE'S OWN REPEATS, AND IT NEVER RUNS OUT.
+  //
+  // A loop is you saying "this passage, again and again"; a repeat sign is the
+  // composer saying "once more". While a loop is set, the roll follows the loop
+  // and nothing else — a repeat mark inside it dragging you somewhere would be
+  // the piece overruling the thing you just asked for. And unlike a repeat, it
+  // is never spent: round it goes until you stop it.
+  if (loop){
+    const lastBar = barAt(loop.to - 1);
+    const homeBar = barAt(loop.from);
+    if (lastBar >= from && lastBar <= to){
+      rollLandOn(homeBar, sk, 'round again \u2014 ' + loopSays(), 'LOOP');
+      return;
+    }
+    return;
+  }
+
+  // Otherwise: did the system we just read past end a repeat?
   let endBar = -1;
   for (let b = from; b <= to; b++) if (isRepEnd(b)) endBar = b;
-  _rollSys = i;
   if (endBar < 0) return;
   if (_rollTook.has(endBar)) return;         // taken already: read on through
   _rollTook.add(endBar);
   const home = repHomeOf(endBar);
+  rollLandOn(home, sk, 'back to ' + barName(home) + ' \u2014 the repeat', 'REPEAT');
+}
+
+// PUT THE PIECE AT A BAR AND LEAVE THE ROLL ALONE. The one thing both the
+// repeat and the loop need, and the one thing that must not disturb the
+// movement: re-lay the drawn music from `home`, then place the view on the
+// system that holds it. The scroll rate, the accumulator and the frame loop are
+// all untouched, so the page keeps moving at exactly the speed it was.
+function rollLandOn(home, sk, words, shout){
   PAGE_AT = Math.max(0, home);
   render();
   const back = rollSystems();
@@ -15102,8 +15176,8 @@ function rollRepeat(sk){
   const sk2 = (window._scroller && window._scroller()) || sk;
   if (sk2 && land) sk2.scrollTop = Math.max(0, land.top);
   _rollSys = land ? back.indexOf(land) : 0;
-  say = 'back to ' + barName(home) + ' \u2014 the repeat';
-  cry('REPEAT', 1400);
+  say = words;
+  if (shout) cry(shout, 1400);
 }
 
 // For a harness, and for a "start now" if one is ever wanted: end the wait.
