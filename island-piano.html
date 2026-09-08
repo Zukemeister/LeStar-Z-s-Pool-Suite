@@ -1051,6 +1051,12 @@
   .flyitem.on{ background:#00a3ab; color:#04222a }
   .flybox{ width:18px; flex:0 0 18px; font-size:17px; line-height:1 }
   .flynudge{ font-weight:900; color:#00a3ab; text-align:center }
+  #rollRow{ display:inline-flex; align-items:center; gap:8px; padding:0 6px }
+  #rollRate{ width:130px; accent-color:#00a3ab }
+  body.phone #rollRate{ width:96px }
+  #rollSays{ min-width:1.4em; text-align:center;
+    font:800 15px/1 ui-monospace,SFMono-Regular,Menlo,monospace; color:#00a3ab }
+  @media print { #rollRow, #pageRoll{ display:none !important } }
   .flylabel{ flex:1 1 auto }
   .flynote{ flex:0 0 auto; opacity:.6; font-weight:400; font-size:13px }
   @media print { .flyout{ display:none !important } }
@@ -2029,6 +2035,19 @@
   <button type="button" id="pagePrev" title="the page before">&#8249;</button>
   <span id="pageSays"></span>
   <button type="button" id="pageNext" title="the next page">&#8250;</button>
+  <!-- THE ROLL. A page that moves on its own at a speed you set by hand.
+       It answers to nothing in the piece — not the tempo, not the meter, not
+       the playhead. Don: "I don't care what the piece says is the time, let's
+       just make one with a slider, 1-10 that adjusts the scroll."
+       And the slider STAYS OUT while it runs, because the whole point is that
+       you adjust it as you play, with the music moving under you. A SPEED YOU
+       CANNOT CHANGE WHILE IT IS WRONG IS NOT A SPEED CONTROL. -->
+  <button type="button" id="pageRoll" title="roll the page \u2014 a steady scroll you set by hand">&#8615;</button>
+  <span id="rollRow" hidden>
+    <input type="range" id="rollRate" min="1" max="10" step="1" value="4"
+           title="how fast the page rolls">
+    <span id="rollSays">4</span>
+  </span>
   <span class="pgap"></span>
   <!-- THE WAY IN. Don, having built this app himself, still had to ask how to
        change a note — which means nothing on screen said it was possible. A
@@ -2376,7 +2395,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b334 say why the sound will not start';
+const BUILD_STAMP = '2026-09-07 b335 the roll';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -10056,6 +10075,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       if (pg3) say = 'bars ' + barShown(pg3.from) + '\u2013' + barShown(pg3.to - 1)
                    + ' of ' + barShown(pg3.bars - 1);
     };
+    window._scroller = scroller;   // the roll uses it too
     window._turnPage = turnView;   // the staff itself uses it — see the reading tap
     const pp = document.getElementById('pagePrev'), pn = document.getElementById('pageNext');
     // The buttons move by a screenful too, so they and the staff agree.
@@ -14249,6 +14269,9 @@ el.addEventListener('mousedown', ev => {
       && window._turnPage){
     const box0 = el.getBoundingClientRect();
     const back = (ev.clientX - box0.left) < box0.width * 0.25;
+    // While the roll is running the page is already turning, so what a tap
+    // means changes: hold it, and tap again to go on.
+    if (typeof ROLL_ON !== 'undefined' && ROLL_ON){ rollHold(); ev.stopPropagation(); return; }
     window._turnPage(back ? -1 : 1);
     // NOT preventDefault. On iOS, cancelling a mousedown suppresses the click
     // that follows it and the focus that goes with it — and this handler sits
@@ -14928,6 +14951,128 @@ function tell(msg, shout){
       } else tell('at the beginning');
     });
   } catch (err) { console.warn('here/again', err); }
+})();
+
+// ---------------------------------------------------------------------------
+//  THE ROLL. A page that moves on its own, at a speed you set with a slider.
+//
+//  It knows nothing about the music. Not the tempo, not the meter, not the
+//  playhead, not whether anything is playing at all. That is the point: it is a
+//  page turner for a player whose own hands are keeping the time, and every
+//  attempt to be clever about it would put the app's idea of the beat between
+//  Don and his own. He asked for exactly this and was right to.
+//
+//  Ten steps, eight pixels a second each, so 1 is a slow drift and 10 moves a
+//  system every few seconds. The number is remembered.
+//
+//  A TAP PAUSES IT rather than turning the page, because while the roll is on
+//  the page is already turning and what you want from a tap is "wait" — to work
+//  a passage, or because the phone rang.
+// ---------------------------------------------------------------------------
+var ROLL_ON = false, ROLL_HELD = false, ROLL_RATE = 4, _rollFrame = 0, _rollAt = 0, _rollOdd = 0;
+try { ROLL_RATE = Math.max(1, Math.min(10, +localStorage.getItem('island.rollrate') || 4)); } catch (err) {}
+
+function rollPaint(){
+  const b = document.getElementById('pageRoll');
+  const row = document.getElementById('rollRow');
+  const out = document.getElementById('rollSays');
+  if (row) row.hidden = !ROLL_ON;
+  if (out) out.textContent = ROLL_HELD ? 'held' : String(ROLL_RATE);
+  if (!b) return;
+  const lit = ROLL_ON && !ROLL_HELD;
+  b.setAttribute('aria-pressed', ROLL_ON ? 'true' : 'false');
+  b.style.background  = lit ? '#00a3ab' : (ROLL_ON ? '#8a6d1f' : '');
+  b.style.borderColor = lit ? '#00a3ab' : (ROLL_ON ? '#8a6d1f' : '');
+  b.style.color       = ROLL_ON ? '#04222a' : '';
+  b.title = !ROLL_ON ? 'roll the page \u2014 a steady scroll you set by hand'
+          : ROLL_HELD ? 'held \u2014 tap the staff or press this to go on'
+                      : 'rolling at ' + ROLL_RATE + ' \u00b7 tap the staff to hold';
+}
+
+function rollStep(now){
+  if (!ROLL_ON){ _rollFrame = 0; return; }
+  _rollFrame = requestAnimationFrame(rollStep);
+  if (ROLL_HELD){ _rollAt = now; return; }
+  if (!_rollAt){ _rollAt = now; return; }
+  const dt = Math.min(0.25, (now - _rollAt) / 1000);   // a long stall is not a leap
+  _rollAt = now;
+  const sk = (window._scroller && window._scroller()) || document.getElementById('score');
+  if (!sk) return;
+  // SUB-PIXEL, ACCUMULATED. scrollTop takes whole pixels, so at slow speeds a
+  // per-frame rounding would floor to nothing and the page would never move.
+  // Keep the remainder and spend it when it adds up to a pixel.
+  _rollOdd += ROLL_RATE * 8 * dt;
+  const step = Math.floor(_rollOdd);
+  if (step < 1) return;
+  _rollOdd -= step;
+  const view = sk.clientHeight || sk.offsetHeight || 0;
+  const most = Math.max(0, sk.scrollHeight - view);
+  const at = sk.scrollTop || 0;
+  if (at + step < most){ sk.scrollTop = at + step; return; }
+  // THE BOTTOM OF A DRAWN BLOCK IS NOT THE END OF THE PIECE — the same trap the
+  // tap fell into. Hand over to the block turn and carry on from its top.
+  sk.scrollTop = most;
+  const pg = window._pages;
+  if (pg && pg.at >= 0 && pg.to < pg.bars && window._turnPage){
+    window._turnPage(1);
+    return;
+  }
+  if (!pg || pg.at < 0 || pg.to >= pg.bars){
+    ROLL_ON = false; ROLL_HELD = false;
+    say = 'the end of the piece';
+    rollPaint(); render();
+  }
+}
+
+function rollStart(){
+  ROLL_ON = true; ROLL_HELD = false; _rollAt = 0; _rollOdd = 0;
+  if (!_rollFrame) _rollFrame = requestAnimationFrame(rollStep);
+  say = 'rolling at ' + ROLL_RATE + ' \u2014 tap the staff to hold it';
+  rollPaint();
+}
+function rollStop(){
+  ROLL_ON = false; ROLL_HELD = false;
+  if (_rollFrame){ cancelAnimationFrame(_rollFrame); _rollFrame = 0; }
+  say = 'the roll is off';
+  rollPaint();
+}
+function rollHold(){
+  if (!ROLL_ON) return false;
+  ROLL_HELD = !ROLL_HELD;
+  _rollAt = 0;
+  say = ROLL_HELD ? 'held \u2014 tap again to go on' : 'rolling at ' + ROLL_RATE;
+  rollPaint(); render();
+  return true;
+}
+
+(function rollWiring(){
+  try {
+    const b = document.getElementById('pageRoll');
+    const sl = document.getElementById('rollRate');
+    if (sl){
+      sl.value = String(ROLL_RATE);
+      const take = () => {
+        ROLL_RATE = Math.max(1, Math.min(10, +sl.value || 4));
+        try { localStorage.setItem('island.rollrate', String(ROLL_RATE)); } catch (err) {}
+        if (ROLL_HELD) ROLL_HELD = false;
+        rollPaint();
+      };
+      // `input`, not `change`: the number has to follow the thumb, because you
+      // are setting it by watching the page move under your hands.
+      sl.addEventListener('input', take);
+      sl.addEventListener('change', take);
+    }
+    if (b && !b.dataset.wired){
+      b.dataset.wired = '1';
+      b.addEventListener('click', () => {
+        if (!ROLL_ON) rollStart();
+        else if (ROLL_HELD){ ROLL_HELD = false; _rollAt = 0; say = 'rolling at ' + ROLL_RATE; rollPaint(); }
+        else rollStop();
+        render();
+      });
+    }
+    rollPaint();
+  } catch (err) { console.warn('roll', err); }
 })();
 
 (function clickAnyway(){
