@@ -2395,7 +2395,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b339 the markers on their own';
+const BUILD_STAMP = '2026-09-07 b342 the barline can be grabbed again';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -7806,7 +7806,7 @@ function drawEverything(){
       phTag.textContent = 'HANDS';
       phTag.style.display = 'none';
       box.appendChild(phTag);
-      heads.push({ el:ph, tag:phTag, from:x0, to:barStart(last), map:lineX });
+      heads.push({ el:ph, tag:phTag, first:first, from:x0, to:barStart(last), map:lineX });
 
       // A SECOND MARKER, FOR WHERE YOUR EYES SHOULD BE.
       //
@@ -7828,7 +7828,7 @@ function drawEverything(){
       eyeTag.textContent = 'EYES';
       eyeTag.style.display = 'none';
       box.appendChild(eyeTag);
-      eyes.push({ el:eye, tag:eyeTag, from:x0, to:barStart(last), map:lineX });
+      eyes.push({ el:eye, tag:eyeTag, first:first, from:x0, to:barStart(last), map:lineX });
 
       // A RESTING POSITION. With nothing playing both markers were simply
       // hidden, so the pair only existed while the music ran and you could not
@@ -12147,6 +12147,32 @@ function holdOpens(btn, build){
   btn.addEventListener('click', ev => { if (moved){ ev.preventDefault(); ev.stopPropagation(); moved = false; } }, true);
 }
 
+// WHICH TICK A PIXEL IS, given the staff box it was measured in.
+//
+// This lived inside the staff's mousedown handler, declared with `const` partway
+// down it — so anything EARLIER in the same handler that wanted it got a
+// ReferenceError instead. That is the seventh temporal dead zone in this file
+// and the first one I put here myself, an hour after writing about the other
+// six. MOVE THE THING EVERYTHING READS ABOVE EVERYTHING THAT READS IT.
+function tickAtPx(px, left0, first0){
+  // undo the gutter and the bar's own stretch, so a click lands where it looks
+  let want = px - left0 - CLEF_W, b = first0;
+  for (let g = 0; g < 400; g++){
+    const w = (GUTTER + TAILGAP) * _gutUsed + capacityOf(b) * PX_TICK * drawnScale(b);
+    if (want <= w || b > 9998) break;
+    want -= w; b++;
+  }
+  const raw = Math.max(0, Math.round(barStart(b) + Math.max(0, want - GUTTER * _gutUsed) / (PX_TICK * drawnScale(b))));
+  // Snap to a rhythm line. Without this a click lands on whatever tick the
+  // pixel happens to be — 137, or 5 — and a note placed there sits a hair from
+  // its neighbour, which makes the bar-widening rule stretch the measure across
+  // the whole page trying to pull them apart.
+  const stops = gridStops();
+  let best = raw, off = Infinity;
+  for (const t of stops){ const d = Math.abs(t - raw); if (d < off){ off = d; best = t; } }
+  return best;
+}
+
 function tick(at, strong, level){
   if (!audio) return null;
   // A THIRD WEIGHT, for counting in with subdivisions. The beats keep their own
@@ -12823,6 +12849,16 @@ function follow(){
   const litX = litEl
     ? (litEl.offsetLeft || parseFloat(litEl.style.left) || 0) + (litEl.offsetWidth || 0) / 2
     : null;
+  // AND WHICH SYSTEM IT IS IN.
+  //
+  // A position measured in one system means different music in another: every
+  // system draws from its own left edge, so the same x in the line below is a
+  // different bar. Using one measurement everywhere put a marker in EVERY
+  // system at once — Don: "the teal makes two appearances." A marker belongs to
+  // the system holding the note it marks, and nowhere else.
+  // A MEASUREMENT IS ONLY MEANINGFUL INSIDE THE THING IT WAS MEASURED IN.
+  const litIn = litEl && litEl.closest ? litEl.closest('[data-first]') : null;
+  const litSys = litIn ? +(litIn.dataset.first || 0) : null;
   window._handsAt = handsAt; window._onNote = onNote;   // so it can be checked
   for (const h of heads){
     if (tick >= h.from && tick <= h.to){
@@ -12840,6 +12876,11 @@ function follow(){
       // page-scrolling code learned: measure the mark, do not guess at it. A
       // hidden notehead still has a position, so this works with the note faded
       // to nothing — which is the whole of the drill.
+      if (litX !== null && litSys !== null && h.first !== litSys){
+        h.el.style.display = 'none';
+        if (h.tag) h.tag.style.display = 'none';
+        continue;                       // the note is not in this system
+      }
       const x = litX !== null
         ? litX
         : h.map(Math.max(h.from, Math.min(h.to, handsAt)));
@@ -12881,13 +12922,23 @@ function follow(){
     const nb6 = barAt(tick);
     const beat6 = TPQ * 4 / tsAt(nb6).unit;
     const bs6 = barStart(nb6);
-    // WITH NOTHING VANISHING THE MARKER STILL NEEDS A DISTANCE. A bar ahead is
-    // the reading distance the exercise is aiming at, so that is where it goes.
+    // BOTH MARKERS MEASURE FROM THE SAME PLACE: THE NOTE BEING PLAYED.
+    //
+    // This measured from the BARLINE — the start of the current bar plus a
+    // span — while the red one measures from the sounding note. So one of them
+    // stepped bar by bar and the other note by note, and the gap between them
+    // breathed in and out across every measure instead of holding still. Don:
+    // "the two marks don't run at the same pace... I think it would be better
+    // if they ran somewhat in parallel, both moving note to note."
+    //
+    // Now the distance is measured forward from the note under your hands, so
+    // the pair moves together and the gap is the thing you set. It is still
+    // landed on a real note below, so it never points at empty space.
+    // A DISTANCE IS ONLY CONSTANT IF BOTH ENDS ARE MEASURED FROM THE SAME THING.
     const hs6 = hideSpan();
-    const look = (hs6 === -1 || hs6 === 0
-                   ? bs6 + capacityOf(nb6)
-                   : bs6 + Math.floor((tick - bs6) / beat6) * beat6 + hs6 * beat6)
-               + AHEAD_LEAD * beat6;
+    const base6 = (onNote >= 0) ? onNote : tick;
+    const gap6 = (hs6 === -1 || hs6 === 0) ? capacityOf(nb6) : hs6 * beat6;
+    const look = base6 + gap6 + AHEAD_LEAD * beat6;
     // The first event at or after that edge, in the voice the eye is hiding.
     let nextEv = null;
     for (const st6 of score.profile.staves){
@@ -12909,8 +12960,14 @@ function follow(){
     const chipX = chip6
       ? (chip6.offsetLeft || parseFloat(chip6.style.left) || 0) + (chip6.offsetWidth || 0) / 2
       : null;
+    const chipIn = chip6 && chip6.closest ? chip6.closest('[data-first]') : null;
+    const chipSys = chipIn ? +(chipIn.dataset.first || 0) : null;
     for (const e of eyes){
       const at6 = nextEv ? nextEv.start : look;
+      if (chipX !== null && chipSys !== null && e.first !== chipSys){
+        e.el.style.display = 'none'; e.tag.style.display = 'none';
+        continue;                       // the note it marks is in another system
+      }
       if (chipX !== null && at6 >= e.from && at6 <= e.to){
         const x = chipX;
         e.el.style.display = ''; e.el.style.left = x + 'px';
@@ -14296,14 +14353,52 @@ el.addEventListener('mousedown', ev => {
   if (!document.body.classList.contains('editing')
       && !_flyOpen
       && !ev.altKey && !ev.shiftKey && !ev.metaKey && !ev.ctrlKey
-      && !(ev.target.closest && ev.target.closest('button, input, select, .lamp, .arm, .barnum, .lyric, .lyricslot, [data-solo], [data-dir-bar]'))
+      // AND ANYTHING ON THE STAFF THAT IS ITSELF A CONTROL.
+      //
+      // A barline can be grabbed and dragged to widen its measure, and this
+      // handler sits across the whole staff area — so in READ mode it swallowed
+      // the press before the drag ever started and the gesture simply stopped
+      // existing. Don: "it was at one time our convention that we could grab a
+      // barline and drag to expand the measure. That no longer seems to work."
+      // A BLANKET HANDLER MUST NAME EVERYTHING IT IS NOT.
+      && !(ev.target.closest && ev.target.closest('button, input, select, .lamp, .arm, .barnum, .lyric, .lyricslot, [data-solo], [data-dir-bar], .bar[data-grab], [data-ev], .chip, .stem, [data-drag]'))
       && window._turnPage){
     const box0 = el.getBoundingClientRect();
     const back = (ev.clientX - box0.left) < box0.width * 0.25;
     // While the roll is running the page is already turning, so what a tap
     // means changes: hold it, and tap again to go on.
     if (typeof ROLL_ON !== 'undefined' && ROLL_ON){ rollHold(); ev.stopPropagation(); return; }
-    window._turnPage(back ? -1 : 1);
+    // A PRESS AND HOLD SAYS "START HERE".
+    //
+    // Reading, a tap turns the page — which left no way at all to say where the
+    // music should begin, because the click that used to place the cursor is
+    // now the page turner. Don: "how can I make the app play from where I want
+    // it to? It wants to go to bar 1 and nowhere else." That was mine: I took
+    // the gesture away and put nothing in its place.
+    // So the tap still turns, and holding for half a second sets the start
+    // instead. The turn waits for the release, so one gesture cannot be both.
+    const relX = ev.clientX;
+    let held = false;
+    const hold = setTimeout(() => {
+      held = true;
+      const box0 = ev.target.closest && ev.target.closest('[data-first]');
+      if (!box0) return;
+      const t = tickAtPx(relX, box0.getBoundingClientRect().left, +box0.dataset.first);
+      const b = barAt(t);
+      cur.tick = barStart(b);            // the head of the bar you pointed at
+      PAGE_AT = Math.max(0, Math.min(PAGE_AT, b));
+      say = 'will play from ' + barName(b);
+      cry('FROM ' + barName(b).toUpperCase(), 1600);
+      render();
+    }, 550);
+    const go = () => {
+      clearTimeout(hold);
+      el.removeEventListener('mouseup', go);
+      el.removeEventListener('touchend', go);
+      if (!held) window._turnPage(back ? -1 : 1);
+    };
+    el.addEventListener('mouseup', go);
+    el.addEventListener('touchend', go);
     // NOT preventDefault. On iOS, cancelling a mousedown suppresses the click
     // that follows it and the focus that goes with it — and this handler sits
     // on the whole staff area, so it would be cancelling the page's own
@@ -14512,24 +14607,7 @@ el.addEventListener('mousedown', ev => {
   const st = (box.dataset.st === 'all') ? cur.staff : box.dataset.st;
   const r = box.getBoundingClientRect();
   const left0 = r.left, first0 = +box.dataset.first;
-  const tickAt = px => {
-    // undo the gutter and the bar's own stretch, so a click lands where it looks
-    let want = px - left0 - CLEF_W, b = first0;
-    for (let g = 0; g < 400; g++){
-      const w = (GUTTER + TAILGAP) * _gutUsed + capacityOf(b) * PX_TICK * drawnScale(b);
-      if (want <= w || b > 9998) break;
-      want -= w; b++;
-    }
-    const raw = Math.max(0, Math.round(barStart(b) + Math.max(0, want - GUTTER * _gutUsed) / (PX_TICK * drawnScale(b))));
-    // Snap to a rhythm line. Without this a click lands on whatever tick the
-    // pixel happens to be — 137, or 5 — and a note placed there sits a hair
-    // from its neighbour, which makes the bar-widening rule stretch the measure
-    // across the whole page trying to pull them apart.
-    const stops = gridStops();
-    let best = raw, off = Infinity;
-    for (const t of stops){ const d = Math.abs(t - raw); if (d < off){ off = d; best = t; } }
-    return best;
-  };
+  const tickAt = px => tickAtPx(px, left0, first0);
 
   // A NOTEHEAD is one note. A STEM is everything standing on it — which is
   // the handle you want when the whole chord should move together. Two
