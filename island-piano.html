@@ -2395,7 +2395,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b342 the barline can be grabbed again';
+const BUILD_STAMP = '2026-09-07 b343 a queue read in order must be filled in order';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -11310,6 +11310,27 @@ function play(fromStart){
   let queuedTo = 0;                     // how far through the route we have got
 
   const queueRange = (k0, k1) => {
+    // EACH SLICE IS SORTED BEFORE IT JOINS THE QUEUE.
+    //
+    // The pump walks `pending` from the front and stops at the first note not
+    // yet due — so a note sitting BEHIND one with a later time is not reached
+    // until that later one comes due, by which point its own moment has gone
+    // and it is dropped. Within a bar this loop queues every staff in turn, so
+    // the left hand's notes always sat behind the right hand's later ones. Only
+    // the FIRST slice was ever sorted; every slice after it went in as it came.
+    //
+    // At full speed a whole bar fits inside the pump's look-ahead, so the
+    // out-of-order notes all fall due together and nothing is late. Slow the
+    // piece down and the same disorder spans more seconds than the look-ahead
+    // covers — and the second voice starts disappearing, in scattered bars, at
+    // 60% and not at 100%. Don had both halves of it: "quite a few instances of
+    // the 2nd voice not sounding... seems a little random" and "yes, it works
+    // at 100%".
+    //
+    // A QUEUE READ IN ORDER MUST BE FILLED IN ORDER. Sorting each slice as it
+    // is added keeps the whole thing sorted, because the slices themselves
+    // arrive in time order — and it costs a sort of twenty bars, not of a piece.
+    const mine = [];
   for (let k = k0; k < k1; k++){
     const step = stops[k];
     const bStart = barStart(step.bar), bEnd = bStart + capacityOf(step.bar);
@@ -11371,13 +11392,16 @@ function play(fromStart){
         if (at < t0 - 0.001) continue;
         last = Math.max(last, at + dur);
         heard++;
+        if (window.__takeId) try { window.__takeId(e.id); } catch (err) {}
         // QUEUED, NOT STARTED. See the pump below: laying the whole piece into
         // the audio graph at once is what made a long piece fall silent after a
         // few notes.
-        for (const p of e.pitches) pending.push({ f:hz(pitchOf(p)), at, dur, midi:pitchOf(p) + 12 });
+        for (const p of e.pitches) mine.push({ f:hz(pitchOf(p)), at, dur, midi:pitchOf(p) + 12 });
       }
     }
   }
+    mine.sort((x, y) => x.at - y.at);
+    for (const n of mine) pending.push(n);
   };
 
   // ^^ queueRange ENDS HERE, AND THAT IS THE WHOLE OF IT.
@@ -11442,6 +11466,9 @@ function play(fromStart){
     queuedTo = stops.length;
   }
 
+  // (Each slice sorts itself as it is added — see queueRange — so the queue is
+  // already in order. This sort remains only because the first slice may have
+  // been joined by the count-in's clicks.)
   if (heard) pending.sort((a, b) => a.at - b.at);
 
   if (!heard){
