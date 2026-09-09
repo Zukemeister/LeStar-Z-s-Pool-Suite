@@ -2395,7 +2395,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-07 b343 a queue read in order must be filled in order';
+const BUILD_STAMP = '2026-09-09 b345 the gap is counted in notes';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -2456,6 +2456,10 @@ if (AHEAD_SPAN !== -1) AHEAD_SPAN = Math.max(0, Math.min(3, AHEAD_SPAN));
 // THE FIRST STEP AND THE LAST ARE NOT THE SAME EXERCISE. Start at none, where
 // the note vanishes as you reach it; add the head start when that is easy, and
 // the note is gone before you get there.
+// HOW FAR AHEAD THE TEAL MARKER SITS when nothing is vanishing, counted in
+// notes. 0 means a whole bar, the old behaviour.
+var AHEAD_NOTES = 2;
+try { AHEAD_NOTES = Math.max(0, Math.min(8, +localStorage.getItem('island.aheadnotes'))) || 2; } catch (err) {}
 var AHEAD_LEAD = 0;              // beats of head start
 try { AHEAD_LEAD = Math.max(0, Math.min(2, +localStorage.getItem('island.aheadlead') || 0)); } catch (err) {}
 // How far behind the clock the sound actually reaches you, in milliseconds.
@@ -9404,6 +9408,14 @@ document.getElementById('bWords').addEventListener('click', ev => {
                           : 'each time round the loop, more of the bar vanishes';
       paintAhead();
     };
+    const setNotes = n => {
+      AHEAD_NOTES = n;
+      try { localStorage.setItem('island.aheadnotes', String(n)); } catch (err) {}
+      say = n === 0 ? 'your eyes a whole bar ahead of your hands'
+          : n === 1 ? 'your eyes on the very next note'
+                    : 'your eyes ' + n + ' notes ahead of your hands';
+      paintAhead();
+    };
     const setStart = n => {
       AHEAD_LEAD = n;
       try { localStorage.setItem('island.aheadlead', String(n)); } catch (err) {}
@@ -9442,7 +9454,9 @@ document.getElementById('bWords').addEventListener('click', ev => {
     // have to remember the point of is one you will practise wrong.
     const aheadSays = () => AHEAD_SPAN === -1
       ? 'your eyes on the teal line, your hands on the red one \u00b7 '
-        + 'keep the gap and you are reading a bar ahead'
+        + (AHEAD_NOTES === 0 ? 'keep the gap and you are reading a bar ahead'
+           : AHEAD_NOTES === 1 ? 'read the very next note before you need it'
+           : 'keep ' + AHEAD_NOTES + ' notes between them')
       : 'your eyes on the teal line, your hands on the red one \u00b7 '
         + 'the teal one is the next note to vanish \u2014 read it before it goes';
     window._aheadSays = () => document.body.classList.contains('ahead') ? aheadSays() : null;
@@ -9463,6 +9477,13 @@ document.getElementById('bWords').addEventListener('click', ev => {
         { label:'two beats',     on: AHEAD_SPAN === 2, pick: () => setSpan(2) },
         { label:'three beats',   on: AHEAD_SPAN === 3, pick: () => setSpan(3) },
         { label:'the whole bar', on: AHEAD_SPAN === 0, pick: () => setSpan(0) }
+      ]},
+      { title:'how far ahead the teal marker sits', items:[
+        { label:'the next note',   on: AHEAD_NOTES === 1, pick: () => setNotes(1) },
+        { label:'two notes',       on: AHEAD_NOTES === 2, pick: () => setNotes(2) },
+        { label:'three notes',     on: AHEAD_NOTES === 3, pick: () => setNotes(3) },
+        { label:'four notes',      on: AHEAD_NOTES === 4, pick: () => setNotes(4) },
+        { label:'a whole bar',     on: AHEAD_NOTES === 0, pick: () => setNotes(0) }
       ]},
       { title:'how early it goes', items:[
         { label:'as you reach it',  on: AHEAD_LEAD === 0,   pick: () => setStart(0) },
@@ -10026,7 +10047,7 @@ document.getElementById('bLock').addEventListener('click', () => { lockAll(); re
       const sc3 = document.getElementById('score');
       const sk = scroller();
       if (!sc3 || !sk) return [];
-      const base = (sk.getBoundingClientRect ? sk.getBoundingClientRect().top : 0) - (sk.scrollTop || 0);
+      const base = scrollBase(sk);
       const seen = new Set(), out = [];
       for (const b3 of sc3.querySelectorAll('[data-first]')){
         const t = Math.round((b3.getBoundingClientRect ? b3.getBoundingClientRect().top : b3.offsetTop) - base);
@@ -12181,6 +12202,27 @@ function holdOpens(btn, build){
 // ReferenceError instead. That is the seventh temporal dead zone in this file
 // and the first one I put here myself, an hour after writing about the other
 // six. MOVE THE THING EVERYTHING READS ABOVE EVERYTHING THAT READS IT.
+// THE TOP OF THE SCROLLER'S OWN COORDINATE SPACE.
+//
+// Converting a position into "how far down the scroll is it?" needs the
+// scroller's own origin, and the document is not like an element. An element's
+// box stays where it is and you subtract its top; the DOCUMENT's box MOVES with
+// the scroll — its top reads as minus the scroll offset — so subtracting it and
+// then adding the scroll again counts the scroll twice. The error is zero at
+// the top of a piece and grows with every pixel you scroll, which is exactly
+// what a jump landing "about ten or more measures behind" looks like, further
+// out the further in you are. Don, on the repeat: "it goes, but about ten or
+// more measures behind."
+// A DOCUMENT IS NOT AN ELEMENT. Ask which one you have before you measure.
+function scrollBase(sk){
+  if (!sk) return 0;
+  const isDoc = (sk === document.scrollingElement)
+             || (sk === document.documentElement)
+             || (sk === document.body);
+  if (isDoc) return -(sk.scrollTop || 0);
+  return (sk.getBoundingClientRect ? sk.getBoundingClientRect().top : 0) - (sk.scrollTop || 0);
+}
+
 function tickAtPx(px, left0, first0){
   // undo the gutter and the bar's own stretch, so a click lands where it looks
   let want = px - left0 - CLEF_W, b = first0;
@@ -12964,11 +13006,43 @@ function follow(){
     // A DISTANCE IS ONLY CONSTANT IF BOTH ENDS ARE MEASURED FROM THE SAME THING.
     const hs6 = hideSpan();
     const base6 = (onNote >= 0) ? onNote : tick;
+    let nextEv = null;
+
+    // MEASURED IN NOTES, NOT IN TIME, WHEN NOTHING IS VANISHING.
+    //
+    // With no hiding the gap was a whole bar, which is the distance the
+    // exercise is aiming AT rather than the one to start from. Don: "the teal
+    // is a whole bar ahead. That might work later, but for now I just want to
+    // remember the next note or two." Quite right — a bar of Mozart is eight
+    // notes, and remembering eight is a different skill from remembering two.
+    //
+    // And notes are the honest unit here. Two beats is two notes in one bar and
+    // eight in the next; "the next two notes" is the same task wherever you are
+    // in the piece. THE UNIT SHOULD BE THE THING BEING PRACTISED.
+    if (hs6 === -1 && AHEAD_NOTES > 0){
+      const onward = [];
+      for (const st6 of score.profile.staves){
+        if (hideVoice() && st6.id !== hideVoice()) continue;
+        for (const e6 of eventsOf(st6.id))
+          if (e6.pitches.length && e6.start > base6) onward.push(e6.start);
+      }
+      onward.sort((x, y) => x - y);
+      // Notes struck together are one note to read, so count distinct onsets.
+      const onsets = [];
+      for (const t6 of onward) if (!onsets.length || t6 > onsets[onsets.length - 1]) onsets.push(t6);
+      const want6 = onsets[Math.min(AHEAD_NOTES, onsets.length) - 1];
+      if (want6 !== undefined){
+        for (const st6 of score.profile.staves){
+          if (hideVoice() && st6.id !== hideVoice()) continue;
+          for (const e6 of eventsOf(st6.id))
+            if (e6.pitches.length && e6.start === want6 && !nextEv) nextEv = e6;
+        }
+      }
+    }
     const gap6 = (hs6 === -1 || hs6 === 0) ? capacityOf(nb6) : hs6 * beat6;
     const look = base6 + gap6 + AHEAD_LEAD * beat6;
-    // The first event at or after that edge, in the voice the eye is hiding.
-    let nextEv = null;
-    for (const st6 of score.profile.staves){
+    // Otherwise: the first event at or after the edge of what is hidden.
+    if (!nextEv) for (const st6 of score.profile.staves){
       if (hideVoice() && st6.id !== hideVoice()) continue;
       for (const e6 of eventsOf(st6.id)){
         if (!e6.pitches.length || e6.start < look) continue;
@@ -15187,7 +15261,7 @@ function rollSystems(){
   const sc = document.getElementById('score');
   const sk = (window._scroller && window._scroller()) || sc;
   if (!sc || !sk) return [];
-  const base = (sk.getBoundingClientRect ? sk.getBoundingClientRect().top : 0) - (sk.scrollTop || 0);
+  const base = scrollBase(sk);
   // ONE ENTRY PER SYSTEM, NOT ONE PER STAFF.
   //
   // Every staff of a system carries data-first, and the right hand and the left
