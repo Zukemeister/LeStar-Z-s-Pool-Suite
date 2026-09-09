@@ -2395,7 +2395,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-09 b345 the gap is counted in notes';
+const BUILD_STAMP = '2026-09-09 b346 touch drags, and a dead context is replaced';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -11156,10 +11156,36 @@ function play(fromStart){
           .then(() => audio.resume && audio.resume())
           .then(() => {
             if (audio.state === 'running'){ play(fromStart); return; }
-            say = 'the browser will not start the sound (it says "' + audio.state
+            // A CONTEXT THAT WILL NOT WAKE IS DEAD, AND MUST BE REPLACED.
+            //
+            // The standing rule here is one context for the life of the page,
+            // because throwing one away on every stop lost the browser's
+            // permission to make sound. That rule was about not destroying a
+            // WORKING context. A context that has been asked twice and is still
+            // not running is not working, and on iOS that is what happens when
+            // the tab sits idle: the audio is taken away and the same object
+            // never comes back. Don: "if I let it sit for a while and come back
+            // to it, it will not play. I have to make a new copy and start
+            // again." Nobody should have to reload a page to hear a note.
+            //
+            // We are inside the press of the Play button, which is the only
+            // moment a browser will grant a new one, so build it here.
+            // DO NOT DESTROY A WORKING RESOURCE — AND DO NOT NURSE A DEAD ONE.
+            try {
+              const old = audio;
+              audio = null;
+              if (old && old.close) try { old.close(); } catch (err2) {}
+              if (wake()){
+                say = 'the sound had gone to sleep \u2014 woken it and starting again';
+                loadPiano();
+                play(fromStart);
+                return;
+              }
+            } catch (err3) {}
+            say = 'the browser will not start the sound (it says "' + (audio ? audio.state : 'gone')
                 + '") \u2014 press \u266a Test, and if that is silent too, close the'
                 + ' tab and open it again';
-            cry('SOUND ASLEEP: ' + String(audio.state).toUpperCase(), 3500);
+            cry('SOUND ASLEEP', 3500);
             render();
           });
       }).catch(err => {
@@ -14797,7 +14823,38 @@ el.addEventListener('mousedown', ev => {
   ev.preventDefault();
 });
 
-addEventListener('mousemove', ev => {
+// A FINGER IS NOT A MOUSE.
+//
+// Every drag on the staff — re-pitching a note, sweeping a box, widening a
+// measure by its barline — is driven by these two listeners, and they were
+// mousemove and mouseup only. A browser fakes a mousedown and a click for a
+// tap, but it does NOT fake mousemove while a finger is moving, so on glass the
+// press registered and the drag never began. Don, twice: "I don't seem to be
+// able to resize the measures by dragging the barline."
+//
+// The touch events carry their position on `touches[0]` rather than on the
+// event, so they are given the same shape before being handed on. And
+// touchmove must be able to cancel the page's own scrolling while a drag is in
+// progress, or the staff slides away under the finger.
+// EVERY GESTURE NEEDS BOTH SETS OF EARS.
+function asMouse(ev){
+  const t = (ev.touches && ev.touches[0]) || (ev.changedTouches && ev.changedTouches[0]);
+  if (!t) return ev;
+  return { clientX: t.clientX, clientY: t.clientY, target: t.target || ev.target,
+           shiftKey: false, altKey: false, metaKey: false, ctrlKey: false,
+           preventDefault: () => ev.preventDefault(),
+           stopPropagation: () => ev.stopPropagation() };
+}
+addEventListener('touchmove', ev => {
+  if (!drag) return;
+  ev.preventDefault();                 // the page must not scroll mid-drag
+  onDragMove(asMouse(ev));
+}, { passive:false });
+addEventListener('touchend', () => { if (drag) onDragUp(); });
+addEventListener('touchcancel', () => { if (drag) onDragUp(); });
+
+addEventListener('mousemove', ev => onDragMove(ev));
+function onDragMove(ev){
   if (!drag) return;
   if (drag.kind === 'pitch'){
     // The ladder mode measures a semitone; the other two measure a LETTER, and
@@ -14858,9 +14915,10 @@ addEventListener('mousemove', ev => {
     else sel = { staff:hit[0], staves:hit, from:Math.min(a, z), to:Math.max(a, z), ids:null, only:null, span:true };
     render();
   }
-});
+}
 
-addEventListener('mouseup', () => {
+addEventListener('mouseup', () => onDragUp());
+function onDragUp(){
   if (bandLock){ bandLock = null; }           // let the window settle again
   if (drag && drag.el && drag.el.parentNode) drag.el.parentNode.removeChild(drag.el);
   if (drag && drag.kind === 'box' && sel){
@@ -14871,7 +14929,7 @@ addEventListener('mouseup', () => {
     render();
   }
   drag = null;
-});
+}
 
 addEventListener('resize', render);
 el.focus();
