@@ -465,6 +465,13 @@
     pointer-events:none }
   /* A wider invisible grab area than the line itself, so a 5px target does not
      have to be hit exactly. It prints as nothing. */
+  /* NOTHING ON THE STAFF IS TEXT TO BE SELECTED. A long press on a page that
+     has not claimed the gesture gets the browser's own answer — a blue
+     selection and a callout menu — which is what a slow, careful drag on a
+     barline looks like from the outside. */
+  #score, #score *{ -webkit-user-select:none; user-select:none;
+    -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent }
+  .bar[data-grab], .chip, .stem{ touch-action:none }
   .bar[data-grab]{ box-shadow:0 0 0 calc(5px * var(--z)) transparent }
   .bar[data-grab]:hover{ background:var(--cursor) }
   .bar.widening{ background:var(--cursor) }
@@ -2395,7 +2402,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-09 b346 touch drags, and a dead context is replaced';
+const BUILD_STAMP = '2026-09-09 b347 claim the gesture at its beginning';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -14476,7 +14483,26 @@ let drag = null;
 //  While the app is playing, a plain click used to jump the playhead. Reading
 //  is the commoner job, so the tap turns and ⌥-click still moves the playhead.
 // ---------------------------------------------------------------------------
-el.addEventListener('mousedown', ev => {
+// A DRAG CANNOT BEGIN ON AN EVENT THAT ARRIVES AFTER THE FINGER HAS GONE.
+//
+// iOS fakes a mousedown for a tap, but it fakes it on RELEASE — so a handler
+// that starts a drag from mousedown is told about the press only once the
+// gesture is over. The press did nothing, the browser saw an unclaimed long
+// press on the staff and did its own thing with it: selected the region and
+// turned it blue. Don: "I touch it and the whole area turns blue."
+//
+// So the same handler is registered for `touchstart` as well, and if it starts
+// a drag the touch is claimed — which both begins the drag and stops the
+// browser from selecting, scrolling or showing a callout. If it does not start
+// a drag the touch is left alone, so tapping to turn the page still works.
+// CLAIM THE GESTURE AT ITS BEGINNING OR NOT AT ALL.
+el.addEventListener('touchstart', ev => {
+  const before = drag;
+  onStaffDown(asMouse(ev));
+  if (drag && drag !== before) ev.preventDefault();
+}, { passive:false });
+el.addEventListener('mousedown', ev => onStaffDown(ev));
+function onStaffDown(ev){
   if (!document.body.classList.contains('editing')
       && !_flyOpen
       && !ev.altKey && !ev.shiftKey && !ev.metaKey && !ev.ctrlKey
@@ -14821,7 +14847,7 @@ el.addEventListener('mousedown', ev => {
   }
   say = ''; render(); el.focus();
   ev.preventDefault();
-});
+}
 
 // A FINGER IS NOT A MOUSE.
 //
