@@ -1058,6 +1058,21 @@
   .flyitem.on{ background:#00a3ab; color:#04222a }
   .flybox{ width:18px; flex:0 0 18px; font-size:17px; line-height:1 }
   .flynudge{ font-weight:900; color:#00a3ab; text-align:center }
+  /* THE HARMONY CHART. A list to read, not a set of buttons to press. */
+  #chords .keypick{ align-items:center; gap:8px }
+  #chords .keypick select{ font:700 15px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+    padding:3px 6px }
+  #chords .found{ margin:4px 0 10px }
+  #chords .grouphead{ margin:10px 0 3px; font:700 11px/1.2 -apple-system,sans-serif;
+    letter-spacing:.07em; text-transform:uppercase; opacity:.55 }
+  #chords .chordline{ display:flex; align-items:baseline; gap:10px; padding:3px 2px;
+    font:600 15px/1.3 -apple-system,sans-serif }
+  #chords .chordline.away{ opacity:.62 }
+  #chords .chordline .tok{ min-width:2.4em; font-weight:800; color:var(--cursor) }
+  #chords .chordline .on{ min-width:3.6em; opacity:.7 }
+  #chords .chordline .notes{ font:700 15px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.06em }
+  #chords .chordline .stray{ font-size:12px; opacity:.6 }
   #rollRow{ display:inline-flex; align-items:center; gap:8px; padding:0 6px }
   #rollRate{ width:130px; accent-color:#00a3ab }
   body.phone #rollRate{ width:96px }
@@ -1658,9 +1673,10 @@
      staff lines. Full strength now, thicker, and told APART: a tie joins one
      pitch to itself and is drawn solid; a slur spans different notes and is
      drawn dashed, the way a phrase mark is a suggestion and a tie is not. */
-  .arc{ position:absolute; height:15px; border:4px solid var(--ink); border-top:none;
+  .arc{ position:absolute; height:calc(15px * var(--z));
+    border:calc(4px * var(--z)) solid var(--ink); border-top:none;
     border-radius:0 0 60% 60%; opacity:1; z-index:3 }
-  .arc.slur{ border-style:dashed; border-width:3.5px }
+  .arc.slur{ border-style:dashed; border-width:calc(3.5px * var(--z)) }
   /* half a tie: the right-hand end of an arc, meeting the note it holds */
   .arc.half{ border-left:none; border-radius:0 0 90% 0 }
   .dot{ position:absolute; width:calc(7px * var(--z)); height:calc(7px * var(--z));
@@ -1733,25 +1749,49 @@
     border:3px solid var(--ink); border-radius:12px; box-shadow:6px 6px 0 rgba(20,24,29,.25);
     font:13.5px/1.55 ui-sans-serif,system-ui,sans-serif }
 
+  /* A CLASS NAME IS A GLOBAL NAME.
+     This header was `.bar`, which is ALSO the score's barline: position:absolute,
+     five pixels wide, pointer-events:none. So the panel's header was taken out
+     of the flow and laid over the list beneath it — the white title printing on
+     top of the teal heading — and made deaf to the mouse, which is why there was
+     no hover, no cursor change and no drag, through three attempts at fixing a
+     drag that was never being reached.
+     Don: "the white type mixes with the blue type", "no hover change".
+     ONE FAULT CAN WEAR THREE FACES. And a name shared with something else in the
+     same stylesheet is a fault waiting for its first coincidence. */
   /* the header is its own row, full width, and the whole of it drags */
   /* width:100% and align-self say the same thing twice on purpose — the header
      came out as a narrow left-hand column when the row direction was left to
      the default. */
-  #keys .bar{ flex:0 0 auto; align-self:stretch; width:100%; box-sizing:border-box;
+  #keys .keysbar{ flex:0 0 auto; align-self:stretch; width:100%; box-sizing:border-box;
     cursor:move; user-select:none;
     display:flex; align-items:center; justify-content:space-between; gap:16px;
     background:var(--ink); color:#fff; padding:12px 18px; border-radius:8px 8px 0 0;
     box-shadow:0 3px 0 var(--ink), 0 7px 12px rgba(20,24,29,.18) }
-  #keys .bar *{ pointer-events:none }
-  #keys .bar .close{ pointer-events:auto }
-  #keys .bar h3{ margin:0; font:900 17px/1.2 ui-sans-serif,system-ui,sans-serif;
+  #keys .keysbar *{ pointer-events:none }
+  #keys .keysbar .close{ pointer-events:auto }
+  #keys .keysbar h3{ margin:0; font:900 17px/1.2 ui-sans-serif,system-ui,sans-serif;
     color:#fff; white-space:nowrap }
+  /* A HANDLE THAT LOOKS LIKE A HANDLE. The header said "drag me" only through a
+     cursor, which nobody sees until they are already over it. */
+  #keys .keysbar h3::before{ content:'\2630'; margin-right:12px; opacity:.55;
+    font-size:15px; vertical-align:2px }
+  #keys .keysbar:active{ cursor:grabbing }
   #keys .close{ cursor:pointer; border:2px solid #fff; border-radius:6px; background:transparent;
     color:#fff; font:800 12px/1 ui-sans-serif,system-ui,sans-serif; padding:6px 12px; white-space:nowrap }
   #keys .close:hover{ background:#fff; color:var(--ink) }
 
   #keys .body{ flex:1 1 auto; align-self:stretch; width:100%; box-sizing:border-box;
     min-height:0; overflow:auto; padding:20px 18px 24px;
+    /* SCROLL ANCHORING IS WHY IT OPENS PART-WAY DOWN.
+       The panel is built, scrolled to the top, and THEN the fonts arrive and
+       every row gets taller. The browser's anchoring then helpfully keeps the
+       content you were "looking at" in place by scrolling down to compensate —
+       so the first heading slides out of sight, and it looks cropped. Setting
+       scrollTop again cannot win that argument, because the browser does it
+       after. Don: "still a little cropped."
+       TURN OFF THE HELP THAT IS FIGHTING YOU. */
+    overflow-anchor:none;
     overscroll-behavior:contain; scroll-behavior:auto }
 
   /* Flex-wrap, NOT css columns. Multi-column cannot reflow a tall unbreakable
@@ -1781,6 +1821,16 @@
      the type around it — everywhere it appears, not only in the legend. */
   #keys k .sym{ font-size:1.55em; line-height:0; vertical-align:-0.14em; font-weight:700 }
 
+  /* A FADE WITH A NEGATIVE MARGIN PULLS THE TEXT UNDER ITSELF.
+     The last attempt at "say when there is more above" used a sticky strip with a
+     negative bottom margin, which drags the following line up beneath a
+     white-to-clear gradient — so the first heading was half-washed out and read
+     as two colours mixed. Don: "the white type mixes with the blue type."
+     A MARK THAT OVERLAPS WHAT IT IS MARKING IS WORSE THAN NO MARK. The panel
+     says it another way instead: a thin rule under the header that only shows
+     when the list is scrolled, taking no space and covering nothing. */
+  #keys .body{ position:relative }
+  #keys .body.more{ box-shadow:inset 0 7px 6px -6px rgba(20,24,29,.30) }
   #keys .grip{ position:absolute; width:20px; height:20px; z-index:3 }
   #keys .grip.nw{ left:-4px;  top:-4px;    cursor:nwse-resize }
   #keys .grip.ne{ right:-4px; top:-4px;    cursor:nesw-resize }
@@ -2320,7 +2370,7 @@
     <span class="grp" id="fSay"></span>
     <button id="fSilent" style="display:none">Hear everything</button>
     <span class="sp"></span>
-    <button id="bKeys">⇧ &nbsp;all the keys</button>
+    <button id="bKeys">?&nbsp;&nbsp;all the keys</button>
   </div>
 </div>
 
@@ -2344,8 +2394,11 @@ const DUR = { whole:TPQ*4, half:TPQ*2, quarter:TPQ, eighth:TPQ/2, sixteenth:TPQ/
 // Added because K.265 has triplet sixty-fourths in it and the app's shortest
 // value was a thirty-second, so nine of Mozart's notes were being drawn one
 // level coarser than he wrote them.
+// ? IS THE HELP KEY, EVERYWHERE, so the sixty-fourth moves along one to the
+// semicolon — the next key rightward on the same row, keeping the run of
+// durations physically in order: b n m , . / ;  longest to shortest.
 const DUR_KEY = { b:'whole', n:'half', m:'quarter', ',':'eighth', '.':'sixteenth',
-                  '/':'thirtysecond', '?':'sixtyfourth' };
+                  '/':'thirtysecond', ';':'sixtyfourth' };
 // A rest says its length the same way a note does.
 const NUM_KEY = { Digit1:1,Digit2:2,Digit3:3,Digit4:4,Digit5:5,Digit6:6,Digit7:7,Digit8:8,Digit9:9,
                   Digit0:10,Minus:11,Equal:12 };
@@ -2402,7 +2455,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-09 b347 claim the gesture at its beginning';
+const BUILD_STAMP = '2026-09-20 b369 option-space is still the space bar';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -3778,6 +3831,99 @@ function gotoVoice(id){
       + '  \u00b7  octave ' + pend.oct;
 }
 
+// ⇧H TRADES TWO LINES.
+//
+// H moves notes to the other hand — one direction, one line at a time. What it
+// could not do is EXCHANGE: put the upper line in the lower and the lower in
+// the upper. Copy and paste cannot do it either, because a copied note
+// remembers which voice it came from and a paste puts it back there — so
+// pasting the top line into the bottom simply returns it to the top.
+//
+// Which is a gap, because exchanging two lines is a thing you do constantly
+// while writing: the tune turns out to belong underneath, the accompaniment
+// wants to be on top, an inner voice should have been the outer one. Don: "I
+// want to copy voice one and put it in the lower voice and vice versa."
+//
+// It swaps with the NEXT SHOWN VOICE — the one Tab would take you to — so the
+// key needs no target and the two ends of the trade are always visible.
+// A MOVE AND AN EXCHANGE ARE DIFFERENT ACTS. One key each.
+function swapVoices(){
+  const list = shownAll();
+  if (list.length < 2){ say = 'there is only one line to swap'; return; }
+  // THE SELECTION DECIDES THE PARTNER when it names one. Holding a passage
+  // across two lines says which two; otherwise it is the next line along.
+  const i = list.findIndex(st => st.id === cur.staff);
+  let other = list[(i + 1) % list.length];
+  if (sel && sel.staves && sel.staves.length === 2){
+    const pair = sel.staves.filter(id => list.some(st => st.id === id));
+    if (pair.length === 2){
+      const mate = pair.find(id => id !== cur.staff) || pair[0];
+      other = list.find(st => st.id === mate) || other;
+    }
+  }
+  const a = cur.staff, b = other.id;
+  if (a === b){ say = 'there is only one line to swap'; return; }
+  remember();
+  // THE NOTES CHANGE VOICE, NOT PITCH. A swap exchanges which line is which;
+  // it is not a transposition, so the sounding pitches stay exactly where they
+  // were and only the staff they live on is traded.
+  //
+  // AND IT TAKES A PASSAGE WHEN ONE IS HELD. Whole-voice-or-nothing is the
+  // wrong grain: most of the time what wants exchanging is eight bars, not a
+  // piece. Don: "I want to do it with selected passages, not all or nothing."
+  // With something held, only the notes inside it move; with nothing held, the
+  // whole of both lines. AN OPERATION SHOULD ACT ON WHAT IS HELD, like every
+  // other one here.
+  const lo = sel ? sel.from : -Infinity;
+  const hi = sel ? sel.to   :  Infinity;
+  const inRange = x => x.start >= lo && x.start < hi;
+
+  const fromA = eventsOf(a).filter(inRange);
+  const fromB = eventsOf(b).filter(inRange);
+
+  // AND THEY LAND IN THE REGISTER OF THE LINE THEY ARRIVE IN.
+  //
+  // A line moved between staves keeps its absolute pitch, so a passage taken
+  // from the treble lands in the bass still sitting where it was — drawn miles
+  // above its own staff on ledger lines, and needing to be dragged down by
+  // hand. Don: "if I copy a treble 3 and paste into the staff two octaves down,
+  // I want it to have the bass tone correct for the note, 3."
+  //
+  // So each arriving note is shifted by WHOLE OCTAVES until it sits in its new
+  // staff's register. Whole octaves is the point: twelve semitones is exactly
+  // one turn of the numbering, so a 3 stays a 3 and only the octave beside it
+  // changes. The note reads the same and belongs where it landed.
+  // MOVING A LINE IS NOT TRANSPOSING IT — the numeral must survive the journey.
+  const land = (evs, dest) => {
+    const home = score.profile.staves.find(st => st.id === dest);
+    const centre = (home && home.centre) || MIDDLE_C;
+    for (const e of evs){
+      if (!e.pitches.length) continue;
+      const low = Math.min.apply(null, e.pitches.map(pitchOf));
+      const off = octShift(low, centre);
+      if (!off) continue;
+      for (const p of e.pitches) p.oct -= off;      // the numeral is untouched
+    }
+    return evs;
+  };
+  land(fromA, b);
+  land(fromB, a);
+
+  score.events[a] = eventsOf(a).filter(x => !inRange(x)).concat(fromB);
+  score.events[b] = eventsOf(b).filter(x => !inRange(x)).concat(fromA);
+  score.events[a].sort((x, y) => x.start - y.start);
+  score.events[b].sort((x, y) => x.start - y.start);
+
+  // Lyrics belong to the timeline rather than to a voice, so they stay put.
+  const na = voiceNumber(a), nb = voiceNumber(b);
+  const where = sel
+    ? ' from ' + barName(barAt(lo)) + ' to ' + barName(barAt(Math.max(lo, hi - 1)))
+    : ', all of both lines';
+  say = 'V' + na + ' and V' + nb + ' have traded places' + where + ' \u00b7 '
+      + fromB.length + ' notes into V' + na + ', ' + fromA.length + ' into V' + nb;
+  render();
+}
+
 function otherHand(){
   const from = cur.staff;
   // The OTHER HAND is the other primary staff — not "index 1 of the staff
@@ -3987,6 +4133,138 @@ function reshape(what){
 }
 
 // Nudge by a semitone — the fine adjustment, where Shift+arrow is the coarse one.
+// ⌃↑ AND ⌃↓ MOVE BY A STEP OF THE KEY, not by a semitone.
+//
+// ↑↓ shift everything by one semitone, which preserves every interval exactly —
+// the same tune in a different key. That is the right operation and it is not
+// always the one wanted. Don wrote a line in the key of 1 that began on the 5,
+// selected it all and arrowed down four to put the 5 on the 1: "why do I get
+// all those off-key notes?" Because a bodily shift carries the MODE with it,
+// and the mode starting on the fifth degree needs an 11 where the key of 1 has
+// a 12.
+//
+// What he wanted was to move down four STEPS OF THE SCALE, which keeps every
+// note inside the key and alters the intervals slightly. That is a different
+// operation and the app did not have one.
+//
+// A SEMITONE MOVE KEEPS THE TUNE AND CHANGES THE KEY; A STEP MOVE KEEPS THE KEY
+// AND CHANGES THE TUNE. Both are wanted, so both get a key.
+//
+// The key it steps within is the one the harmony chart is set to, so the two
+// tools agree about what "in the key" means.
+// ---------------------------------------------------------------------------
+//  CONTROL IS ITS OWN KEY ON A MAC.
+//
+//  This treated ctrl as an alias for command everywhere — which is right on
+//  Windows and Linux, where ctrl IS the command key, and wrong on a Mac, where
+//  they are two separate keys on the same keyboard. Worse, it was inconsistent:
+//  ctrl-and-a-number jumped to a voice, while ctrl-and-anything-else became a
+//  command, so the same key meant two things depending on its partner. Don:
+//  "my keyboard has a command key, an option key and a control key. If ctrl is
+//  an alias for cmd, it will be confusing."
+//
+//  So the alias now applies only where there is no command key to alias. On a
+//  Mac ctrl is free and means only what this app says it means; everywhere else
+//  nothing changes.
+//  A MODIFIER SHOULD MEAN ONE THING.
+// ---------------------------------------------------------------------------
+const ON_A_MAC = /Mac|iPhone|iPad|iPod/i.test(
+  (navigator.platform || '') + ' ' + (navigator.userAgent || ''));
+const isCmd = e => e.metaKey || (!ON_A_MAC && e.ctrlKey);
+
+// A BREAKS A CHORD INTO ITS NOTES.
+//
+// One command, one plain shape, and the hands do the rest. Don: "what is
+// important is to get it into some basic form and it can be customized by hand,
+// rather than have 5 new keyboard commands to arpeggiate in different ways."
+// Five keys for five patterns is five things to remember and four rarely used;
+// editing a plain result is quicker than choosing correctly in advance.
+//
+// THE SHAPE: bottom to top, in the same voice, each note the largest standard
+// length that lets them all fit — and the last note takes whatever remains, so
+// the broken chord lasts EXACTLY as long as the chord did and nothing after it
+// moves. A half-note chord of three becomes eighth, eighth, quarter: a real
+// rhythm, not three awkward thirds of a beat.
+// OFFER A PLAIN FORM; LET THE WRITER MAKE IT THEIRS.
+function breakChord(){
+  const e = heldEvent();
+  if (!e || e.pitches.length < 2){
+    say = 'hold a chord first \u2014 a note with more than one pitch in it';
+    render(); return;
+  }
+  const st = staffOf(e);
+  const bar = barAt(e.start);
+  if (typeof barLocked === 'function' && barLocked(bar)){
+    say = barName(bar) + ' is locked'; render(); return;
+  }
+  remember();
+  const ps = e.pitches.slice().sort((a, b) => pitchOf(a) - pitchOf(b));
+  const n = ps.length;
+  // The largest standard value that lets every note fit.
+  const values = Object.keys(DUR).map(k => DUR[k]).sort((a, b) => b - a);
+  let step = values.find(v => v * n <= e.dur) || Math.floor(e.dur / n);
+  const out = [];
+  for (let i = 0; i < n; i++){
+    const at = e.start + i * step;
+    const dur = (i === n - 1) ? (e.start + e.dur - at) : step;   // the last takes the rest
+    if (dur <= 0) break;
+    out.push({ id: nextId++, start: at, dur: dur, name: durNameFor(dur),
+               dot: false, trip: false, pitches: [{ num: ps[i].num, oct: ps[i].oct }],
+               tie: false, slur: false });
+  }
+  score.events[st] = eventsOf(st).filter(x => x !== e).concat(out);
+  eventsOf(st).sort((a, b) => a.start - b.start);
+  sel = null;
+  cur.tick = e.start;
+  ping(out.map(x => x.pitches[0]));
+  say = 'broken into ' + out.length + ' notes, bottom to top \u00b7 '
+      + out.map(x => x.pitches[0].num).join(' ') + ' \u00b7 edit them as you like';
+  render();
+}
+
+function stepInKey(by){
+  const scale = SCALE_OF(FIND_KEY || 1);
+  let held = heldPitches();
+  if (heldRefused) return;
+  if (!held.length){
+    const e = evBefore(cur.staff, cur.tick);
+    if (e) held = e.pitches.map((p, i) => ({ e, i }));
+  }
+  if (!held.length){ say = 'nothing to move'; render(); return; }
+  remember();
+  let n = 0, strangers = 0;
+  for (const h of held){
+    const p = h.e.pitches[h.i]; if (!p) continue;
+    delete h.e.ghost;
+    const at = scale.indexOf(p.num);
+    if (at === -1){
+      // A note already outside the key has no step to take. Moving it by the
+      // nearest semitone would quietly change what it is, so it stays put and
+      // is counted, because a silent exception is worse than a refused one.
+      strangers++;
+      continue;
+    }
+    let idx = at + by, oct = p.oct;
+    while (idx < 0){ idx += 7; oct -= 1; }
+    while (idx > 6){ idx -= 7; oct += 1; }
+    const num = scale[idx];
+    // The scale wraps at the tonic, not at 12 — so crossing the tonic going up
+    // is the moment the octave changes, whatever the numerals do.
+    const before = p.oct * 12 + p.num, after = oct * 12 + num;
+    if (by > 0 && after <= before) oct += 1;
+    if (by < 0 && after >= before) oct -= 1;
+    const v = oct * 12 + (num - 1);
+    if (v < 12 || v > 107) continue;
+    p.num = num; p.oct = oct; n++;
+  }
+  for (const e of picked()) e.pitches.sort((a, b) => pitchOf(a) - pitchOf(b));
+  if (n) ping(held.map(h => h.e.pitches[h.i]).filter(Boolean));
+  say = n ? (n + (by > 0 ? ' up' : ' down') + ' a step of the key of ' + (FIND_KEY || 1)
+             + (strangers ? '  \u00b7  ' + strangers + ' left alone, already outside it' : ''))
+          : 'nothing in the key to move';
+  render();
+}
+
 function nudge(by){
   let held = heldPitches();
   if (heldRefused) return;                 // refused is not the same as empty
@@ -4825,9 +5103,42 @@ function copySel(){
   if (!sel){ say = 'nothing selected'; return; }
   const grabbed = picked();
   const base = Math.min.apply(null, grabbed.map(e => e.start));
-  clip = { len: sel.to - sel.from,
-           evs: grabbed.map(e => ({...e, st:staffOf(e), pitches:e.pitches.map(p => ({...p})),
-                                   start:e.start - sel.from})) };
+  // WHAT THE CLIPBOARD HOLDS IS A SHAPE, NOT AN ADDRESS.
+  //
+  // It used to record the voice each note came from and paste it back there —
+  // so a line copied from the top could not be put at the bottom, because the
+  // note remembered where it lived and went home. Don: "when in the copy space
+  // they lose all the rules of what voice they are from and who they are but a
+  // black oval with a number. They have to remember how they relate to the
+  // other notes... and then when pasted they assume the new identity."
+  //
+  // So what is kept is everything RELATIVE and nothing absolute: how far each
+  // note is from the start of the passage, which of the copied lines it was on
+  // counted from the topmost, and its numeral. What is dropped is the voice's
+  // name and the octave it happened to sit in — those are properties of where
+  // it WAS, and a paste is a question about where it is GOING.
+  //
+  // A COPIED NOTE SHOULD REMEMBER ITS RELATIONS, NOT ITS ADDRESS.
+  const shown = shownAll().map(v => v.id);
+  const usedLines = [...new Set(grabbed.map(staffOf))]
+                      .sort((x, y) => shown.indexOf(x) - shown.indexOf(y));
+  // MEASURED FROM THE FIRST NOTE, NOT FROM THE EDGE OF THE SELECTION.
+  //
+  // Offsets were taken from sel.from — where the drag began, which is never
+  // exactly where the first note is. That leading gap was carried along and
+  // every pasted note landed off the beat by it, so nothing sat on a grid
+  // position and the renderer drew each one as tied fragments. Don: "I typed
+  // four notes and then copied and pasted them... they always show up with a
+  // tied 16 +."
+  // A PASSAGE BEGINS AT ITS FIRST NOTE. The silence in front of it is where the
+  // finger happened to land, and belongs to the copying rather than the music.
+  const head = Math.min.apply(null, grabbed.map(e => e.start));
+  clip = { len: Math.max(1, sel.to - head),
+           lines: usedLines.length,
+           evs: grabbed.map(e => ({...e,
+                                   line: usedLines.indexOf(staffOf(e)),   // 0 is the topmost copied line
+                                   pitches:e.pitches.map(p => ({...p})),
+                                   start:e.start - head})) };
   // (lyrics ride along in the spread, like every other property of the note)
   // AND IT SURVIVES THE PAGE. The clipboard was a variable in memory, so it
   // died with the tab — which made "copy here, paste into a new piece" the one
@@ -4844,18 +5155,43 @@ function pasteClip(){
   if (!clip || !clip.evs || !clip.evs.length){ say = 'nothing copied'; return; }
   remember();
 
-  // A VOICE THE NEW PIECE DOES NOT HAVE MUST BE MADE, or its notes land on a
-  // staff that is not on the page: pushed into an array nothing draws, counted
-  // in the "pasted" message, and invisible. Copying a two-voice passage into a
-  // fresh piece is exactly when that happens.
-  for (const e of clip.evs){
-    const want = e.st || cur.staff;
-    if (score.profile.staves.some(v => v.id === want)) continue;
-    const home = homeOf({ id:want, on:want.replace(/\d+$/, '') }) || want.replace(/\d+$/, '');
-    const base = score.profile.staves.find(v => v.id === home);
-    if (!base){ e.st = cur.staff; continue; }        // nowhere sensible: use where we are
-    const made = addVoiceTo(home);
-    if (made) e.st = made; else e.st = home;
+  // THEY TAKE THE IDENTITY OF WHERE THEY LAND.
+  //
+  // The topmost copied line lands in the voice the cursor is in; a second
+  // copied line lands in the one below it, and so on down. Nothing goes back to
+  // where it came from, so a passage can be put anywhere — the top line into
+  // the bottom, one hand into the other, a piece into a piece that has never
+  // heard of it.
+  const here = shownAll().map(v => v.id);
+  const at = Math.max(0, here.indexOf(cur.staff));
+  const target = n => {
+    const want = here[at + n];
+    if (want) return want;
+    // No line below to land in, so make one under the last home we have.
+    const lastHome = homeOf(score.profile.staves.find(v => v.id === here[here.length - 1]))
+                   || here[here.length - 1];
+    return addVoiceTo(lastHome) || here[here.length - 1] || cur.staff;
+  };
+  const lineTo = {};
+  for (let n = 0; n < (clip.lines || 1); n++) lineTo[n] = target(n);
+  for (const e of clip.evs) e.st = lineTo[e.line || 0] || cur.staff;
+
+  // AND THEY LAND IN THE REGISTER OF THE LINE THEY ARRIVE IN, shifted by whole
+  // octaves so the numeral is untouched: a 3 copied from the treble is a 3 in
+  // the bass, with only the octave beside it changed. The passage is moved as
+  // ONE BLOCK — every note by the same number of octaves — so the intervals
+  // between them survive exactly. Shifting note by note would flatten the shape
+  // into the middle of the staff and lose the tune.
+  for (const n in lineTo){
+    const mine = clip.evs.filter(e => (e.line || 0) === +n && e.pitches.length);
+    if (!mine.length) continue;
+    const home = score.profile.staves.find(v => v.id === lineTo[n]);
+    const centre = (home && home.centre) || MIDDLE_C;
+    const lows = mine.map(e => Math.min.apply(null, e.pitches.map(pitchOf)));
+    const mid = lows.reduce((t, v) => t + v, 0) / lows.length;
+    const off = octShift(Math.round(mid), centre);
+    if (!off) continue;
+    for (const e of mine) for (const p of e.pitches) p.oct -= off;
   }
 
   const lands = new Set(clip.evs.map(e => e.st || cur.staff));
@@ -4868,7 +5204,8 @@ function pasteClip(){
   }
   cur.tick += clip.len;
   sel = null;
-  say = clip.evs.length + ' pasted';
+  const where = [...lands].map(id => 'V' + voiceNumber(id));
+  say = clip.evs.length + ' pasted into ' + where.join(' and ');
 }
 
 function shiftOct(by){
@@ -7247,7 +7584,8 @@ function drawEverything(){
       }
       for (const g of groups) g.fl = Math.max.apply(null, g.items.map(p => FLAGS[p.name] || 0));
       const beamed = new Map();
-      const BEAM_STEP = 15;
+      const BEAM_STEP = 15 * ZOOM;      // stacked beams, scaled like everything else
+      const BEAM_H = 9 * ZOOM;          // the height the stylesheet draws them at
       for (const g of groups){
         if (g.items.length < 2) continue;
         const STEM = GAP() * 2.4 + Math.max(0, g.fl - 1) * BEAM_STEP;
@@ -7276,17 +7614,27 @@ function drawEverything(){
             const a = stemX(g.items[i]), z = stemX(g.items[j]);
             const bm = document.createElement('div');
             bm.className = 'beam';
+            // A BEAM ENDS ON THE FAR EDGE OF THE FAR STEM.
+            //
+            // The run was padded by a flat 5 to cover the stem it finishes on —
+            // but a stem is STEM_W wide and STEM_W scales with the zoom, so 5
+            // is right at no size in particular. Below normal size the beam
+            // overhangs the stem; above it, the beam falls short. Don: "those
+            // have a little overage on the right side. They should be drawn
+            // exactly to the line of the stem."
+            // PAD BY THE THING BEING COVERED, not by a number that once fitted.
+            const STUB = 17 * ZOOM;
             if (i === j){
               // a lone short note inside the group gets a stub, pointing at
               // whichever neighbour it belongs with
               const back = i > 0;
-              bm.style.left = (back ? a - 17 : a) + 'px';
-              bm.style.width = '17px';
+              bm.style.left = (back ? a - STUB + STEM_W() : a) + 'px';
+              bm.style.width = STUB + 'px';
             } else {
               bm.style.left = Math.min(a, z) + 'px';
-              bm.style.width = (Math.abs(z - a) + 5) + 'px';
+              bm.style.width = (Math.abs(z - a) + STEM_W()) + 'px';
             }
-            bm.style.top = (info.up ? info.y + k * BEAM_STEP : info.y - 9 - k * BEAM_STEP) + 'px';
+            bm.style.top = (info.up ? info.y + k * BEAM_STEP : info.y - BEAM_H - k * BEAM_STEP) + 'px';
             box.appendChild(bm);
             i = j + 1;
           }
@@ -7627,7 +7975,7 @@ function drawEverything(){
           const join = beamed.get(pc.k);
           const up = stemUp;
           const FLAGS_HERE = join ? 0 : (FLAGS[name] || 0);
-          const FLAG_STEP = 15;
+          const FLAG_STEP = 15 * ZOOM;   // the gap between stacked flags, likewise
           const LEN = GAP() * 2.4 + Math.max(0, FLAGS_HERE - 1) * FLAG_STEP;
           const stem = document.createElement('div');
           stem.className = 'stem';
@@ -7652,7 +8000,17 @@ function drawEverything(){
           // A flag hangs FROM the stem. Rotating it about its far end left a
           // gap and it read as a separate mark floating beside the note.
           // Pivot it on the point where it meets the stem instead.
-          const FLAG_W = 26;
+          // MEASURED IN THE SAME UNITS THE CSS DRAWS IN.
+          //
+          // The flag is drawn at calc(26px * var(--z)) and positioned from a
+          // hard 26 — so the two agree at one zoom and nowhere else. It is
+          // pivoted on its right edge, which is meant to sit on the stem, and
+          // at any other size that edge is not where the arithmetic thinks:
+          // the flag floats clear and reads as a separate mark beside the note.
+          // Don: "the flag on the 1/8 stem is detached."
+          // A NUMBER IN TWO PLACES WILL DRIFT — the fifth time in this file, and
+          // the same fix as the other four: one source, scaled where it is used.
+          const FLAG_W = 26 * ZOOM;
           for (let f = 0; f < FLAGS_HERE; f++){
             const fl = document.createElement('div');
             fl.className = 'flag';
@@ -7682,7 +8040,10 @@ function drawEverything(){
           // is a suggestion about how to play them. Drawn the same, they were
           // impossible to tell apart. A barline split is always a tie.
           a.className = 'arc' + ((!pc.held && pc.e.slur && !pc.e.tie) ? ' slur' : '');
-          a.style.left = x + 'px';
+          // FROM ONE NOTEHEAD TO THE NEXT, THROUGH THEIR MIDDLES. `x` is a
+          // head's LEFT edge, so an arc from x to x ran edge to edge and sat
+          // half a notehead to the left of where it belonged.
+          a.style.left = (x + CHIP_W / 2) + 'px';
           // AN ARC REACHES THE NOTE IT JOINS, not the end of its own piece.
           // It was drawn one note-length wide, which is where the piece ENDS —
           // so at a barline the arc stopped dead at the line and never touched
@@ -7695,9 +8056,14 @@ function drawEverything(){
           // note is on the following line the arc runs to the end of the line
           // and the half-arc stub picks it up on the other side.
           const nxt = eventsOf(vc.id).find(o => o.start >= e.start + e.dur && o.pitches.length);
-          const to  = nxt ? lineX(nxt.start) : x + pc.dur * PX_TICK * scaleOf(barAt(pc.start));
-          a.style.width = Math.max(18, to - x) + 'px';
-          a.style.top = (Math.max(...ys) + 16) + 'px';
+          const to  = (nxt ? lineX(nxt.start) : x + pc.dur * PX_TICK * scaleOf(barAt(pc.start)))
+                    + CHIP_W / 2;
+          // AND MEASURED IN THE UNITS IT IS DRAWN IN. The minimum width and the
+          // drop below the head were fixed numbers while the stylesheet scales
+          // the arc with the zoom — so the curve agreed with the notes at one
+          // size and nowhere else. The fifth fault of this shape in this file.
+          a.style.width = Math.max(18 * ZOOM, to - x - CHIP_W / 2) + 'px';
+          a.style.top = (Math.max(...ys) + 16 * ZOOM) + 'px';
           box.appendChild(a);
         }
 
@@ -7710,9 +8076,9 @@ function drawEverything(){
           if (from >= 0){
             const h = document.createElement('div');
             h.className = 'arc half';
-            h.style.left = (x - 26) + 'px';
-            h.style.width = '26px';
-            h.style.top = (Math.max(...ys) + 16) + 'px';
+            h.style.left = (x + CHIP_W / 2 - 26 * ZOOM) + 'px';
+            h.style.width = (26 * ZOOM) + 'px';
+            h.style.top = (Math.max(...ys) + 16 * ZOOM) + 'px';
             h.title = 'held over from ' + barName(from);
             box.appendChild(h);
           }
@@ -8065,6 +8431,13 @@ function status(){
   const standing = (window._aheadSays && window._aheadSays()) || '';
   document.getElementById('fSay').textContent =
     [holdText, say, standing].filter(Boolean).join(' \u00b7 ');
+  // THE HARMONY CHART KEEPS UP WITH THE CURSOR. Arrow along the tune and the
+  // list of what will fit follows, so a phrase can be harmonised note by note
+  // without reopening the panel at every step. Guarded, because a fault in a
+  // panel must not take the whole redraw down with it.
+  if (window._paintFound && document.getElementById('chords')){
+    try { window._paintFound(); } catch (err) {}
+  }
 
   // SILENCE MUST NOT BE INVISIBLE. Three separate switches can stop a note
   // being heard — a hushed voice, a muted note, and now the faint-note switch —
@@ -8110,26 +8483,21 @@ function hearAll(){
 // ===========================================================================
 //  KEYS.  A number always means "place a note here". Every time.
 // ===========================================================================
-// TAP SHIFT ON ITS OWN FOR THE KEY PANEL. Don, on the backtick: "where is a
-// backtick?" — a fair question, it is the far top-left key next to the 1 and
-// some layouts do not have it at all. And the panel could not stay on ⇧/ once
-// the sixty-fourth took that key.
+// ? OPENS THE KEY PANEL.
 //
-// A MODIFIER PRESSED AND RELEASED WITH NOTHING IN BETWEEN IS A FREE GESTURE.
-// Shift is held constantly while writing — with T, O, X, arrows — so the rule
-// is strict: the panel opens only if NO other key went down while shift was
-// held, and only on the way back up. Any real use of shift cancels it.
-let shiftAlone = false;
-document.addEventListener('keyup', e => {
-  if (e.key !== 'Shift') return;
-  if (shiftAlone) showKeys();
-  shiftAlone = false;
-});
-window.addEventListener('blur', () => { shiftAlone = false; });
+// It used to open on a bare tap of shift — press and release with nothing in
+// between. That is a clever gesture and a poor key: shift is held constantly
+// while writing, and it only takes reaching for it and changing your mind to
+// open the panel over the music. Don: "I am stumbling into that key panel
+// inadvertently quite a bit."
+//
+// ? is what nearly everything uses for help, it is unambiguous, and the hand
+// cannot arrive there by accident. The sixty-fourth, which had it, moved along
+// to the semicolon.
+// A KEY YOU PRESS HUNDREDS OF TIMES AN HOUR CANNOT ALSO BE A COMMAND.
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Shift'){ if (!e.repeat) shiftAlone = true; return; }
-  shiftAlone = false;      // shift is being used, not tapped
+  if (e.key === 'Shift') return;      // shift alone no longer means anything
   // TYPING IN A FIELD IS TYPING, NOT PLAYING. Every keystroke on the page runs
   // through here, so anything with a text box has to be excused by name — and
   // the new composer box was not on the list. Typing in it wrote LYRICS onto the
@@ -8143,7 +8511,20 @@ document.addEventListener('keydown', e => {
   const t = e.target;
   if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT'
             || t.isContentEditable)) return;
-  const k = (e.key || '').toLowerCase();
+  // THE KEY BY WHERE IT IS, WHERE IT MATTERS.
+  //
+  // On a Mac, Option changes the character a key produces: ⌥Space sends a
+  // NON-BREAKING space (U+00A0), which looks identical and is a different
+  // character. Every check here asked for ' ', so ⌥Space and ⇧⌥Space — the keys
+  // for hearing what you have just written — never matched anything, on the
+  // machine they were built for. Don: "the option/shift commands don't work."
+  //
+  // `e.code` names the physical key and ignores both the modifiers and the
+  // keyboard layout, so the space bar is 'Space' whether Option is held, Shift
+  // is held, or the Mac has been switched to Spanish. Read it for the space
+  // bar, and the character for everything else.
+  // A MODIFIER CAN CHANGE WHAT A KEY SAYS WITHOUT CHANGING WHICH KEY IT IS.
+  const k = (e.code === 'Space') ? ' ' : (e.key || '').toLowerCase();
 
   // READING MEANS READING. Hiding the caret and the bar controls made the page
   // LOOK like a score, but every key still wrote — so a tap on a note and a
@@ -8155,7 +8536,7 @@ document.addEventListener('keydown', e => {
   // the size — and everything that would change a note is refused, with a word
   // about how to turn writing on rather than silence.
   if (!document.body.classList.contains('editing')){
-    const cmd0 = e.metaKey || e.ctrlKey;
+    const cmd0 = isCmd(e);
     const reading = new Set([' ', 'spacebar', 'arrowleft', 'arrowright', 'arrowup',
                              'arrowdown', 'home', 'end', 'pageup', 'pagedown',
                              'escape', 'tab', 'enter']);
@@ -8170,7 +8551,7 @@ document.addEventListener('keydown', e => {
       return;
     }
   }
-  const cmdKey = e.metaKey || e.ctrlKey;
+  const cmdKey = isCmd(e);
 
   // In lyric mode the keyboard belongs to the words.
   if (lyricMode && !cmdKey){
@@ -8204,6 +8585,35 @@ document.addEventListener('keydown', e => {
     return;
   }
 
+  // ---- LISTENING WHILE WRITING ----
+  //
+  // Space plays FROM the cursor, which is the right thing when you are reading
+  // and the wrong thing when you are writing: while writing, the cursor sits at
+  // the END of what exists and there is nothing in front of it to hear. What a
+  // writer wants is the opposite — play up TO here, so the last thing heard is
+  // the thing just written, and the ear is left where the hand is.
+  //
+  // Don: "I write a few notes; I want to hear them. I write a few more; I want
+  // to hear the first and these last few. I write a few more; I want to hear
+  // the last couple."
+  //
+  // ⌥Space plays the last bar up to the cursor. Press it again straight away
+  // and it reaches back another bar, and again for another — so "the last
+  // couple" and "a bit more of it" are the same key pressed once or twice,
+  // which is how the question actually arrives. It resets once you stop asking.
+  // ⇧⌥Space plays from the beginning up to the cursor.
+  //
+  // PLAY UP TO WHERE THE HAND IS, not away from it.
+  if (k === ' ' && e.altKey){
+    e.preventDefault();
+    const now = Date.now();
+    if (now - _backAt > 2500) _backBars = 0;     // a fresh question
+    _backAt = now;
+    if (e.shiftKey) _backBars = 9999;            // the whole thing so far
+    else _backBars = Math.min(_backBars + 1, 64);
+    playUpTo(cur.tick, _backBars);
+    return;
+  }
   if (k === ' '){ e.preventDefault(); play(e.shiftKey); return; }
   // Control and a number goes straight to that voice, matching the V1..V4 the
   // page shows. Control rather than Option, which the chord beads already own.
@@ -8215,7 +8625,7 @@ document.addEventListener('keydown', e => {
     return done(e);
   }
 
-  const cmd = e.metaKey || e.ctrlKey;
+  const cmd = isCmd(e);
 
   if (cmd && k === 's'){ e.preventDefault(); document.getElementById('bSave').click(); return; }
   if (cmd && k === 'p'){ e.preventDefault(); document.getElementById('bPrint').click(); return; }
@@ -8223,6 +8633,32 @@ document.addEventListener('keydown', e => {
   // ⌘A takes the whole piece, both hands and every voice — the thing you want
   // before transposing it, and the one selection that was impossible to make
   // by hand once a piece ran past a screenful.
+  // ⇧⌘A TAKES ONE VOICE — the line you are standing in, from the first note to
+  // the last, and nothing else.
+  //
+  // ⌘A takes everything and a box-drag takes what you can reach on screen, so
+  // "this line, all of it" was the one selection with no way to make it: on a
+  // piece past a screenful you dragged, scrolled, and lost the drag. It is also
+  // the selection you want most often, because a voice is the unit a piece is
+  // actually written in — copy the left hand into the next section, move an
+  // inner line down an octave, lift a part out into its own piece.
+  //
+  // THE SPAN IS THE VOICE'S OWN MUSIC, not the piece's. Taking bar 1 to the end
+  // would sweep up empty bars before the line enters and after it stops, and a
+  // paste would then carry that silence with it.
+  if (cmd && e.shiftKey && k === 'a'){
+    e.preventDefault();
+    const mine = eventsOf(cur.staff).filter(x => x.pitches.length || x.dur > 0);
+    if (!mine.length){ say = 'nothing written in V' + voiceNumber(cur.staff); return done(); }
+    const from = Math.min.apply(null, mine.map(x => x.start));
+    const to   = Math.max.apply(null, mine.map(x => x.start + x.dur));
+    sel = { span:true, staff:cur.staff, staves:[cur.staff],
+            from:from, to:to, ids:null, only:null };
+    cur.tick = from;
+    say = 'V' + voiceNumber(cur.staff) + ' held \u00b7 ' + picked().length + ' notes, '
+        + barName(barAt(from)) + ' to ' + barName(barAt(Math.max(from, to - 1)));
+    return done();
+  }
   if (cmd && k === 'a'){
     e.preventDefault();
     const end = lastTick();
@@ -8244,6 +8680,19 @@ document.addEventListener('keydown', e => {
   // ⌥ AND AN ARROW WALKS THE VOICE LIST — and it walks the SHOWN voices, not
   // every voice that exists. Parked ones are off the page, so stepping onto one
   // moved the cursor somewhere invisible.
+  // ⌥⇧↑ and ⌥⇧↓ step within the key.
+  //
+  // NOT ⌃-arrow, however well it would have read beside ⌃1..⌃8. macOS takes
+  // ⌃↑ for Mission Control and ⌃↓ for Application Windows, and the system
+  // claims them before a browser sees the press — so the app would have
+  // published a shortcut that cannot ever fire, and the user would blame the
+  // app. Don: "control plus up arrow takes me out of the app."
+  // A SHORTCUT THE OPERATING SYSTEM HAS ALREADY TAKEN IS NOT A SHORTCUT.
+  if (e.altKey && e.shiftKey && (k === 'arrowup' || k === 'arrowdown')){
+    e.preventDefault();
+    stepInKey(k === 'arrowup' ? 1 : -1);
+    return done(e);
+  }
   if (e.altKey && (k === 'arrowup' || k === 'arrowdown')){
     e.preventDefault();
     const list = shownAll();
@@ -8283,7 +8732,14 @@ document.addEventListener('keydown', e => {
     return done(e);
   }
   // ⇧/ arrives as '?', and it is the one length key that WANTS the shift.
-  if (DUR_KEY[k] && (!e.shiftKey || k === '?')){
+  // ? OPENS THE KEY PANEL, read before the durations — it used to BE a duration
+  // and is now the one key that only ever means help.
+  if (k === '?' || (k === '/' && e.shiftKey)){
+    e.preventDefault();
+    showKeys();
+    return done(e);
+  }
+  if (DUR_KEY[k] && !e.shiftKey){
     e.preventDefault();
     if (!redur(DUR_KEY[k])) { pend.dur = DUR_KEY[k]; say = ''; }
     return done();
@@ -8307,7 +8763,7 @@ document.addEventListener('keydown', e => {
       else deleteBack();
       break;
     case 'm': if (e.shiftKey) insertBar(); else return; break;
-    case 'h': otherHand(); break;
+    case 'h': e.shiftKey ? swapVoices() : otherHand(); break;
     // Writing a second voice means going back to the beginning, and there was
     // no way to do it but click. Home and End are what every hand reaches for.
     // BAR AT A TIME, with the modifier the arrows already use for voices.
@@ -8349,6 +8805,7 @@ document.addEventListener('keydown', e => {
     // to V4 now, and the key that moves between lines should move between the
     // things the page names. ⇧Tab goes back.
     case 'tab': goVoice(e.shiftKey ? -1 : 1); break;
+    case 'a': breakChord(); break;
     case 'e':
       if (e.shiftKey){ cycleEnding(); break; }
       holdBar(); break;
@@ -8410,6 +8867,199 @@ function chordButton(tok, name, offsets){
   return b;
 }
 
+// ---------------------------------------------------------------------------
+//  WHAT WILL HARMONISE THIS NOTE.
+//
+//  Don, back from a hike: "the key is 1, the melody note is 6. What chord forms
+//  exist with a 6 in it, in the key of 1?"
+//
+//  The library holds SHAPES, not chords — Jo is 0-4-7, an interval pattern with
+//  no root. A shape becomes a chord only when a root is named, so the question
+//  is not "which shapes belong to 6" but "which shape ON WHICH ROOT contains a
+//  6". Those are different lists, and the second is the useful one: a 6 in the
+//  tune is most often NOT the root of what goes under it. It is the third of Ca
+//  on 3, or the seventh of Za on 8 — and a list built on 6 would hide exactly
+//  the answers a writer wants.
+//
+//  So the chord is the PAIR, shape and root, and the note's ROLE in it is what
+//  the writer is really choosing between: as the root it settles, as the third
+//  it warms, as the seventh it wants to move on.
+//
+//  THE KEY IS A CHOICE THAT DEFAULTS TO 1, because Don writes in 1 and others
+//  may not. It only decides which chords are shown as belonging and which as
+//  borrowed; nothing is hidden either way.
+// ---------------------------------------------------------------------------
+var FIND_KEY = 1;
+try { FIND_KEY = Math.max(1, Math.min(12, +localStorage.getItem('island.findkey'))) || 1; } catch (err) {}
+const SCALE_OF = root => [0,2,4,5,7,9,11].map(g => ((root - 1 + g) % 12) + 1);
+
+function chordsWith(note, key){
+  const inKey = SCALE_OF(key || 1);
+  const out = [];
+  const shapes = Object.keys(TWELVE).map(k => [TWELVE[k][0], TWELVE[k][1]])
+                 .concat(BEYOND.map(([tok, name, off]) => [tok, off]));
+  for (let root = 1; root <= 12; root++){
+    for (const [tok, gaps] of shapes){
+      const ns = [...new Set(gaps.map(g => ((root - 1 + g) % 12) + 1))].sort((a, b) => a - b);
+      const at = ns.indexOf(note);
+      if (at === -1) continue;
+      // WHAT THE NOTE IS DOING IN THE CHORD, named by its distance above the
+      // root rather than its place in the sorted list — an inversion must not
+      // change a third into a seventh.
+      const step = ((note - root) % 12 + 12) % 12;
+      const role = step === 0  ? 'the root'
+                 : step === 3 || step === 4 ? 'the third'
+                 : step === 7 ? 'the fifth'
+                 : step === 10 || step === 11 ? 'the seventh'
+                 : step === 5 || step === 2 ? 'a suspension'
+                 : step === 9 ? 'the sixth'
+                 : step === 6 || step === 8 ? 'a coloured note'
+                 : 'a added note';
+      out.push({ tok, root, notes: ns,
+                 belongs: ns.every(n => inKey.indexOf(n) !== -1),
+                 stray: ns.filter(n => inKey.indexOf(n) === -1),
+                 role, step });
+    }
+  }
+  // belonging first, then by the note's role from settled to restless, then by
+  // how few notes the chord has — the plain answer before the elaborate one.
+  const order = ['the root','the third','the fifth','the seventh','the sixth',
+                 'a suspension','a coloured note','a added note'];
+  out.sort((a, b) => (b.belongs - a.belongs)
+                  || (order.indexOf(a.role) - order.indexOf(b.role))
+                  || (a.notes.length - b.notes.length)
+                  || (a.root - b.root));
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+//  PLACING A CHOSEN CHORD, AND HEARING IT FIRST.
+//
+//  The chart tells you what will fit; these two make it a way of writing rather
+//  than a reference book. `soundChord` plays the chord against the melody note
+//  so the choice is made by ear with the numerals in front of you — which is
+//  how anyone actually chooses harmony. `placeChord` writes it into the
+//  harmony line at the beat the melody note sits on.
+//
+//  THE HARMONY GOES WHERE THE MELODY IS NOT. The line written into is the one
+//  below the melody — the voice Tab would take you down to — because a chord
+//  written into the tune's own line would sound right and read as nonsense.
+//
+//  AND THE CHORD IS REPLACED, NOT INSERTED. Everywhere else in this app writing
+//  inserts and pushes the rest along, which is right for composing a line. It is
+//  wrong here: harmonising bar 4 must not move bar 5. Anything already sounding
+//  at that beat in the harmony line is taken out first.
+// ---------------------------------------------------------------------------
+// THE HARMONY NEVER LANDS ON THE MELODY'S OWN LINE.
+//
+// This took the voice below the cursor's and, when there was none below, fell
+// back to the cursor's own — so harmonising a note in the last line cleared
+// that note and wrote the chord where it had been. Don: "choosing the chord
+// takes the chosen note from the melody and puts it in the chord, or just
+// erases it." A fallback that lands on the thing being protected is not a
+// fallback.
+//
+// It is measured from the MELODY NOTE'S line rather than from the cursor,
+// because those are not always the same, and the note is the thing that must
+// not be overwritten. With no line below it, one is made.
+// WHEN THERE IS NOWHERE SAFE TO PUT SOMETHING, MAKE SOMEWHERE — NEVER FALL BACK
+// ONTO WHAT YOU WOULD DESTROY.
+function harmonyLine(fromId, where){
+  const list = shownAll();
+  const from = fromId || cur.staff;
+  const i = list.findIndex(v => v.id === from);
+  if (where === 'above'){
+    const up = list[i - 1];
+    if (up && up.id !== from) return up.id;
+    // Nothing above: make a line over the topmost home, rather than landing
+    // back on the melody — the same rule as below, turned over.
+    const first = list[0];
+    const home = (first && (homeOf(first) || first.on || first.id)) || 'rh';
+    const made = addVoiceTo(home);
+    if (made && made !== from) return made;
+    const other = score.profile.staves.find(v => v.id !== from);
+    return other ? other.id : null;
+  }
+  const below = list[i + 1];
+  if (below && below.id !== from) return below.id;
+  // Nothing below: make a line under the lowest home there is.
+  const last = list[list.length - 1];
+  const home = (last && (homeOf(last) || last.on || last.id)) || 'lh';
+  const made = addVoiceTo(home);
+  if (made && made !== from) return made;
+  // Still nowhere: the other hand, whichever that is.
+  const other = score.profile.staves.find(v => v.id !== from);
+  return other ? other.id : null;
+}
+
+// The pitches of a chord, rooted at `root`, landed in a staff's own register.
+function chordPitches(root, gaps, stId){
+  const home = score.profile.staves.find(v => v.id === stId);
+  const centre = (home && home.centre) || MIDDLE_C;
+  // Build it from the root in a middle octave, then move the WHOLE chord by
+  // whole octaves until it sits where that staff lives. Whole octaves because
+  // twelve semitones is one turn of the numbering: the numerals do not change.
+  let base = 4 * 12 + (root - 1);
+  const raw = gaps.map(g => base + g);
+  const off = octShift(Math.round(raw.reduce((t, v) => t + v, 0) / raw.length), centre);
+  return raw.map(v => v - off * 12)
+            .map(v => ({ num: (v % 12) + 1, oct: Math.floor(v / 12) }));
+}
+
+function soundChord(root, gaps, withNote, fromId){
+  const stId = harmonyLine(fromId) || cur.staff;
+  const ps = chordPitches(root, gaps, stId);
+  // the melody note sounds with it, because the question is how they sit
+  // together and not what the chord is like on its own
+  ping(withNote ? ps.concat([withNote]) : ps);
+}
+
+// THE CHORD TAKES THE MELODY NOTE'S OWN PLACE AND LENGTH.
+//
+// It used to fill from the note to the end of the bar, which decided the
+// harmonic rhythm on the writer's behalf — one chord a bar, whatever they had
+// written. Don: "maybe the chord should be written at exactly the point of the
+// chosen melody note, at the same duration. The writer can then write whatever
+// duration he wants."
+//
+// Which is the rule the rest of this app already follows: duration is not a
+// setting, it is a consequence of what you wrote. Harmonise a whole note and
+// the chord lasts a bar; harmonise a pair of halves and you get two chords.
+// Beethoven's thirty-seconds are available to anyone who writes in them.
+// LET THE WRITING DECIDE, NOT THE TOOL.
+function placeChord(root, gaps, atTick, forDur, fromId, where){
+  const stId = harmonyLine(fromId, where);
+  // A LAST GUARD AT THE DOOR. If the only line available is the one the melody
+  // is on, refuse and say so — losing a note the writer typed is worse than
+  // declining to harmonise it.
+  if (!stId || stId === (fromId || cur.staff)){
+    say = 'there is no line to put the harmony in \u2014 add a voice first';
+    return false;
+  }
+  const at = (atTick === undefined || atTick === null) ? cur.tick : atTick;
+  const bar = barAt(at);
+  if (barLocked && barLocked(bar)){ say = barName(bar) + ' is locked'; return false; }
+  remember();
+  // As long as the note it was chosen for, and never past the end of its bar —
+  // a chord spilling over a barline would be a tie the writer did not ask for.
+  const room = Math.max(1, Math.min(forDur || (barStart(bar) + capacityOf(bar) - at),
+                                    barStart(bar) + capacityOf(bar) - at));
+  // Clear whatever is sounding here in the harmony line — a harmony replaces,
+  // it does not pile up.
+  score.events[stId] = eventsOf(stId).filter(e => !(e.start >= at && e.start < at + room));
+  const e = { id: nextId++, start: at, dur: room,
+              name: durNameFor(room), dot: false, trip: false,
+              pitches: chordPitches(root, gaps, stId), tie: false, slur: false };
+  eventsOf(stId).push(e);
+  eventsOf(stId).sort((x, y) => x.start - y.start);
+  ping(e.pitches);
+  say = 'placed in V' + voiceNumber(stId) + ' at ' + barName(bar)
+      + '  \u00b7  ' + e.pitches.map(p => p.num).join(' ')
+      + '  \u00b7  ' + (room / TPQ).toFixed(2) + ' beats, the length of the note';
+  render();
+  return true;
+}
+
 function showChords(){
   const had = document.getElementById('chords');
   if (had){ had.remove(); document.getElementById('bChords').setAttribute('aria-pressed','false'); return; }
@@ -8435,6 +9085,116 @@ function showChords(){
   note.className = 'hint';
   note.textContent = 'Six spaces make every chord there is. Shift+click builds downward.';
   box.appendChild(note);
+
+  // ---- WHAT WILL HARMONISE THE NOTE YOU ARE ON ----
+  //
+  // It shows a chart and nothing else. Don: "it should just be in the chart,
+  // for the user to choose." Nothing is written, nothing is chosen for you —
+  // the writer reads the list and decides, which is the whole job.
+  const fh = document.createElement('h4');
+  fh.className = 'later';
+  fh.textContent = 'What will harmonise this note';
+  box.appendChild(fh);
+
+  const krow = document.createElement('div');
+  krow.className = 'row keypick';
+  krow.innerHTML = '<span class="hint">in the key of</span>';
+  const ksel = document.createElement('select');
+  for (let n = 1; n <= 12; n++){
+    const o = document.createElement('option');
+    o.value = n; o.textContent = n;
+    if (n === (FIND_KEY || 1)) o.selected = true;
+    ksel.appendChild(o);
+  }
+  krow.appendChild(ksel);
+  box.appendChild(krow);
+
+  const found = document.createElement('div');
+  found.className = 'found';
+  box.appendChild(found);
+
+  // The gap pattern behind a token, wherever it lives in the library.
+  const shapeOf = tok => {
+    for (const k of Object.keys(TWELVE)) if (TWELVE[k][0] === tok) return TWELVE[k][1];
+    for (const [t, n, off] of BEYOND) if (t === tok) return off;
+    return [0, 4, 7];
+  };
+  const melodyEvent = () => { const e = heldEvent(); return (e && e.pitches.length) ? e : null; };
+  const melodyPitch = () => { const e = melodyEvent();
+    return e ? e.pitches[e.pitches.length - 1] : null; };
+  const melodyTick  = () => { const e = melodyEvent(); return e ? e.start : cur.tick; };
+
+  const paintFound = () => {
+    found.innerHTML = '';
+    // The note under the cursor: what is held, else the note just written.
+    const e0 = heldEvent();
+    const note = e0 && e0.pitches.length
+      ? e0.pitches[e0.pitches.length - 1].num : null;   // the top note is the tune
+    if (note === null){
+      found.innerHTML = '<div class="hint">Click a melody note, and every chord '
+                      + 'containing it appears here.</div>';
+      return;
+    }
+    const rows = chordsWith(note, FIND_KEY);
+    const head = document.createElement('div');
+    head.className = 'hint';
+    head.textContent = 'melody note ' + note + ' \u00b7 ' + rows.filter(r => r.belongs).length
+                     + ' chords in the key of ' + FIND_KEY
+                     + ', ' + rows.filter(r => !r.belongs).length + ' borrowed';
+    found.appendChild(head);
+
+    let last = null, shownStray = 0;
+    for (const r of rows){
+      if (!r.belongs && ++shownStray > 12) break;   // the borrowed list is long
+      const group = (r.belongs ? '' : 'borrowed \u00b7 ') + note + ' is ' + r.role;
+      if (group !== last){
+        const h = document.createElement('div');
+        h.className = 'grouphead';
+        h.textContent = group;
+        found.appendChild(h);
+        last = group;
+      }
+      const line = document.createElement('div');
+      line.className = 'chordline' + (r.belongs ? '' : ' away');
+      line.innerHTML = '<span class="tok">' + r.tok + '</span>'
+                     + '<span class="on">on ' + r.root + '</span>'
+                     + '<span class="notes">' + r.notes.join(' ') + '</span>'
+                     + (r.stray.length ? '<span class="stray">outside: '
+                         + r.stray.join(' ') + '</span>' : '');
+      line.title = (NAMED[r.tok] || r.tok)
+                 + ' \u2014 click to place it, or touch to hear it first';
+      // HEAR IT, THEN PLACE IT. Hovering sounds the chord under the melody
+      // note; clicking writes it. Choosing harmony by reading numerals is the
+      // hard way round.
+      const gaps = shapeOf(r.tok);
+      // The line the harmony avoids is the one the MELODY NOTE is on, which is
+      // not always the line the cursor is in.
+      const melLine = () => { const me = melodyEvent(); return me ? staffOf(me) : cur.staff; };
+      line.onmouseenter = () => {
+        try { soundChord(r.root, gaps, melodyPitch(), melLine()); } catch (err) {}
+      };
+      // ⇧-CLICK PUTS IT ABOVE. The harmony usually goes underneath, which is the
+      // default; but a chord in the top voice — the tune in the bass, or a
+      // descant over it — is an ordinary thing to want, and it should be a
+      // choice made at the moment of placing rather than a move made after.
+      line.onclick = ev => {
+        const me = melodyEvent();
+        try { placeChord(r.root, gaps, melodyTick(), me && me.dur, melLine(),
+                         ev && ev.shiftKey ? 'above' : 'below'); } catch (err) {}
+        paintFound();
+      };
+      found.appendChild(line);
+    }
+  };
+  ksel.onchange = () => {
+    FIND_KEY = +ksel.value || 1;
+    try { localStorage.setItem('island.findkey', String(FIND_KEY)); } catch (err) {}
+    paintFound();
+  };
+  // AND IT FOLLOWS THE CURSOR. Arrow along the tune and the chart keeps up, so
+  // a phrase can be harmonised note by note without reopening anything.
+  window._paintFound = paintFound;
+  paintFound();
 
   box.insertAdjacentHTML('beforeend', '<h4 class="later">The twelve</h4>');
   const g1 = document.createElement('div'); g1.className = 'row';
@@ -8597,7 +9357,7 @@ const KEY_BOOK = [
   ]],
 
   ['How long it is', [
-    ['b n m , . / \u21e7/', 'whole, half, quarter, eighth, sixteenth, thirty-second, sixty-fourth \u2014 one slide right, halving each time'],
+    ['b n m , . / ;', 'whole, half, quarter, eighth, sixteenth, thirty-second, sixty-fourth \u2014 one slide right, halving each time'],
     ['D', 'dotted \u2014 half again as long'],
     ['\u21e7T', 'open a triplet \u2014 everything you write next goes inside it, in any lengths, until the beat is full'],
     ['T', 'tie to the next note'],
@@ -8630,6 +9390,14 @@ const KEY_BOOK = [
     ['H', 'send it to the other hand'],
     ['\u2318Z  \u21e7\u2318Z', 'undo, redo'],
     ['\u2318A', 'hold the whole piece, every voice \u2014 then \u2191\u2193 transposes all of it'],
+    ['\u21e7\u2318A', 'hold THIS voice, first note to last \u2014 for copying a line out or moving it'],
+    ['\u21e7H', 'trade this voice with the next one \u2014 the upper line becomes the lower and back'],
+    ['\u2325\u21e7\u2191 \u2325\u21e7\u2193', 'move a STEP OF THE KEY (option-shift-arrow) \u2014 stays in the key, unlike \u2191\u2193 which moves a semitone'],
+    ['click a chord in the chart', 'place it under the melody note, as long as that note \u2014 touch it first to hear it'],
+    ['\u21e7click a chord', 'place it ABOVE the melody instead'],
+    ['A', 'break the held chord into its notes, bottom to top \u2014 then edit them by hand'],
+    ['\u2325space', 'hear the last bar up TO where you are \u2014 press again for another bar back'],
+    ['\u21e7\u2325space', 'hear it all from the beginning up to where you are'],
     ['\u2318C  \u2318V', 'copy, paste \u2014 paste inserts, it never overwrites']
   ]],
 
@@ -8668,8 +9436,10 @@ const KEY_BOOK = [
   ['Playing, keeping, printing', [
     ['space', 'play from the cursor \u2014 or just what is held, if anything is'],
     ['\u21e7space', 'play from the beginning'],
-    ['\u21e7', 'tap shift on its own for this panel'],
-    ['\u2318S', 'save a file'],
+    ['?', 'this panel \u2014 again to close it'],
+    ['\u2318S', 'save into the LIBRARY, inside this browser \u2014 not a file'],
+    ['Library \u2192 export', 'save one piece out as a file, into Downloads'],
+    ['Library \u2192 save the whole library', 'every piece in one file \u2014 your backup'],
     ['\u2318P', 'print \u2014 the PDF choice is inside the print dialog'],
     ['Meter', 'beats to a bar, from the bar you are in onward'],
     ['Tempo', 'beats a minute, from the bar you are in onward'],
@@ -8786,7 +9556,7 @@ function showKeys(){
   if (had){ if (had._unfit) had._unfit(); had.remove(); return; }
   const box = document.createElement('div');
   box.id = 'keys';
-  let html = '<div class="bar"><h3>Island Notes: Piano</h3>'
+  let html = '<div class="keysbar"><h3>Island Notes: Piano</h3>'
            + '<button class="close">close</button></div><div class="body"><div class="cols">';
   for (const [title, rows, cls] of KEY_BOOK){
     html += '<section class="' + (cls || '') + '"><h4>' + title + '</h4><dl>';
@@ -8829,21 +9599,69 @@ function showKeys(){
 
   box.querySelector('.close').onclick = () => { keep(); if (box._unfit) box._unfit(); box.remove(); el.focus(); };
 
-  const bar = box.querySelector('.bar');
-  bar.addEventListener('mousedown', dn => {
-    if (dn.target.closest('.close')) return;
-    const x0 = dn.clientX, y0 = dn.clientY;
-    const l0 = parseFloat(box.style.left), t0 = parseFloat(box.style.top);
+  // PIN IT THE MOMENT IT EXISTS.
+  //
+  // A fixed box with no left or top sits wherever the flow put it, and a drag
+  // that only writes `left` while the box is in that state is arguing with the
+  // layout rather than moving the box. Giving it an explicit position up front
+  // takes it out of the flow's hands once and for all, so from then on the drag
+  // is only ever changing a number that already governs where it sits.
+  // DO NOT ASK A THING TO MOVE UNTIL YOU HAVE SAID WHERE IT IS.
+  {
+    const r0 = box.getBoundingClientRect();
+    if (!box.style.left) box.style.left = Math.max(12, r0.left) + 'px';
+    if (!box.style.top)  box.style.top  = Math.max(12, r0.top)  + 'px';
+  }
+
+  const bar = box.querySelector('.keysbar');
+  // WHERE THE BOX ACTUALLY IS, whether or not anyone has set an inline style.
+  //
+  // The drag read box.style.left to find its starting point — which is empty
+  // until something has written to it, so parseFloat gave NaN, every position
+  // computed from it was NaN, and the browser quietly ignored `left: NaNpx`.
+  // The panel had a drag handler, a move cursor and a header that said "drag
+  // me", and could not be moved. Don: "the panel is fixed in place."
+  // ASK THE PAGE WHERE A THING IS; DO NOT ASK THE STYLE YOU HAVE NOT SET.
+  const boxAt = () => {
+    const r = box.getBoundingClientRect();
+    const l = parseFloat(box.style.left), t = parseFloat(box.style.top);
+    return { l: isNaN(l) ? r.left : l, t: isNaN(t) ? r.top : t };
+  };
+
+  // AND A FINGER DRAGS IT TOO. mousedown alone is a mouse; on glass the press
+  // arrives as a touch and the browser only fakes a mousedown after the finger
+  // has lifted — by which time the drag is over.
+  const startDrag = dn => {
+    if (dn.target && dn.target.closest && dn.target.closest('.close')) return;
+    const t = (dn.touches && dn.touches[0]) || dn;
+    const x0 = t.clientX, y0 = t.clientY;
+    const at = boxAt(), l0 = at.l, t0 = at.t;
+    box.style.left = l0 + 'px'; box.style.top = t0 + 'px';   // take over from the stylesheet
     const move = mv => {
-      box.style.left = Math.max(-box.offsetWidth + 120, Math.min(innerWidth - 120, l0 + mv.clientX - x0)) + 'px';
-      box.style.top  = Math.max(0, Math.min(innerHeight - 44, t0 + mv.clientY - y0)) + 'px';
+      const m = (mv.touches && mv.touches[0]) || mv;
+      box.style.left = Math.max(-box.offsetWidth + 120,
+                        Math.min(innerWidth - 120, l0 + m.clientX - x0)) + 'px';
+      box.style.top  = Math.max(0,
+                        Math.min(innerHeight - 44, t0 + m.clientY - y0)) + 'px';
+      if (mv.cancelable) mv.preventDefault();
     };
     const up = () => {
-      removeEventListener('mousemove', move); removeEventListener('mouseup', up); keep();
+      removeEventListener('mousemove', move); removeEventListener('mouseup', up);
+      removeEventListener('touchmove', move); removeEventListener('touchend', up);
+      keep();
     };
     addEventListener('mousemove', move); addEventListener('mouseup', up);
-    dn.preventDefault();
-  });
+    addEventListener('touchmove', move, { passive:false }); addEventListener('touchend', up);
+    if (dn.preventDefault) dn.preventDefault();
+  };
+  // AND IF IT IS NOT THERE, SAY SO RATHER THAN THROWING. Everything below this
+  // point — the resize grips, the fit to the window, the scroll to the top —
+  // runs after it, and a throw here would have taken all of them with it
+  // silently.
+  if (bar){
+    bar.addEventListener('mousedown', startDrag);
+    bar.addEventListener('touchstart', startDrag, { passive:false });
+  } else console.warn('key panel: no header to drag by');
   // Resize from ANY corner. The two that move the left or top edge have to
   // shift the box as well as size it, or the opposite corner walks away.
   box.querySelectorAll('.grip').forEach(g => {
@@ -8851,7 +9669,7 @@ function showKeys(){
     const north = g.classList.contains('nw') || g.classList.contains('ne');
     g.addEventListener('mousedown', dn => {
       const x0 = dn.clientX, y0 = dn.clientY;
-      const l0 = parseFloat(box.style.left), t0 = parseFloat(box.style.top);
+      const g0 = boxAt(), l0 = g0.l, t0 = g0.t;      // same trap as the drag
       const w0 = box.offsetWidth, h0 = box.offsetHeight;
       const MINW = 420, MINH = 220;
       const move = mv => {
@@ -8893,6 +9711,11 @@ function showKeys(){
     requestAnimationFrame(toTop);
     requestAnimationFrame(() => requestAnimationFrame(toTop));
     setTimeout(toTop, 60);
+    setTimeout(toTop, 260);        // after any restored size has settled
+    // And the fade above is switched on only while there is something above to
+    // scroll back to, so its presence is information rather than decoration.
+    const mark = () => { if (body) body.classList.toggle('more', body.scrollTop > 4); };
+    if (body){ body.addEventListener('scroll', mark); mark(); }
     const fit = () => {
       const r = box.getBoundingClientRect();
       if (r.height > innerHeight - 24) box.style.height = (innerHeight - 24) + 'px';
@@ -13250,8 +14073,53 @@ function follow(){
 //
 // So: ONE CONTEXT FOR THE LIFE OF THE PAGE, made on the first note played or
 // clicked. Stopping walks the notes actually scheduled and silences those.
+// Play a stretch that ENDS at `to`, reaching back `bars` bars from it. The
+// cursor does not move: playback never disturbs where you are writing, and the
+// whole point here is to come back and carry on.
+var _backBars = 0, _backAt = 0, _reviewAt = -1, _reviewSel = null;
+function playUpTo(to, bars){
+  const endBar = barAt(Math.max(0, to - 1));
+  const from = (bars >= 9999) ? 0 : barStart(Math.max(0, endBar - (bars - 1)));
+  if (to <= from){ say = 'nothing written yet'; render(); return; }
+  const wasSel = sel, wasLoop = loop, wasAt = cur.tick;
+  // A HELD SWEEP IS ALREADY THE WAY TO SAY "THESE BARS ONLY" — reuse it rather
+  // than inventing a second path through play(), which is where the lateness
+  // bugs lived. The selection is put back afterwards so nothing the writer set
+  // is disturbed.
+  loop = null;
+  // One tick short of the cursor, so the note the cursor is sitting ON is not
+  // played — it has not been written yet, and hearing the note after the last
+  // one is exactly the confusion this key exists to remove.
+  sel = { span:true, staff:cur.staff, staves:shownAll().map(v => v.id),
+          from:from, to:Math.max(from + 1, to - 1), ids:null, only:null };
+  // The span it settled on, so a test can read what was chosen rather than
+  // counting oscillators and guessing.
+  window._upTo = { from: from, to: to, bars: bars };
+  const back = bars >= 9999
+    ? 'from the beginning'
+    : (bars === 1 ? 'the last bar' : 'the last ' + bars + ' bars');
+  // PUT EVERYTHING BACK WHATEVER HAPPENS.
+  //
+  // The restore sat after the call, so if play() threw on the way through, the
+  // cursor and the selection were left where this function had moved them — and
+  // the next press then measured "one bar back" from a cursor that had already
+  // been dragged backwards, reaching further each time. One fault, compounding
+  // silently.
+  // A FUNCTION THAT BORROWS STATE MUST RETURN IT ON EVERY PATH OUT.
+  try { play(false); }
+  finally { sel = wasSel; loop = wasLoop; cur.tick = wasAt; }
+  // AND STOPPING MUST NOT MOVE YOU EITHER. stop() leaves the cursor where the
+  // music stopped, which is right when you pressed play to listen and wrong
+  // when you pressed this to review: the hand is mid-phrase and wants to carry
+  // on from where it was, not from wherever the ear got to.
+  _reviewAt = wasAt; _reviewSel = wasSel;
+  say = 'hearing ' + back + ', up to where you are';
+}
+
 function stop(){
   _lastScroll = -1;              // the next play starts its own following
+  const back = _reviewAt, backSel = _reviewSel;   // set only by a review listen
+  _reviewAt = -1; _reviewSel = null;
   if (endWatch){ clearInterval(endWatch); endWatch = 0; }
   metroStop();                 // the click stops when the music does
   letSleep();
@@ -13276,6 +14144,9 @@ function stop(){
   document.querySelectorAll('.chip.sounding').forEach(c => c.classList.remove('sounding'));
   document.getElementById('bPlay').textContent = '▶ Play';
   hush();
+  // A review listen put the cursor back where the writing was; honour it here
+  // too, so letting it run out and cutting it short leave you in the same place.
+  if (back >= 0){ cur.tick = back; if (backSel) sel = backSel; render(); }
 }
 
 // ===========================================================================
