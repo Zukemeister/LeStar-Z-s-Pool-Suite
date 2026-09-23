@@ -2173,6 +2173,16 @@
     <div class="railrow">
       <button id="bPlay">▶ Play</button>
       <button id="bFaint" title="Whether the faint scaffolding notes are heard as well as seen">Faint: heard</button>
+      <!-- READING AT TEMPO, WITHOUT THE PIANO.
+           The roll scrolls at a speed you set by hand and plays nothing. This is
+           the other case: the page following the music at the PIECE'S own tempo,
+           turning where the music turns, while you play it yourself — with no
+           sound from the app to argue with what you are playing. Don: "what do
+           we do to shut off the playback sounds when we want to autoscroll for
+           purposes of reading, not listening?"
+           Q silences one voice; silencing four meant four presses in four
+           places. ONE SWITCH FOR ONE INTENTION. -->
+      <button id="bSilent" title="Play silently \u2014 the page still follows the music">Silent: off</button>
       <button id="bTest" title="Play one note through the same path playback uses. Silent here means the sound engine; sounding here but not in playback means the fault is upstream.">Test ♪</button>
       <button id="bSave">Save</button>
       <button id="bSaveAs">Save as…</button>
@@ -2455,7 +2465,7 @@ function gapsOf(offsets){
 // on Don's machine, and no way to tell from the screen which one is open — so
 // a bug report and the code being read can be from different apps. It shows in
 // the title corner and in the key panel.
-const BUILD_STAMP = '2026-09-20 b369 option-space is still the space bar';
+const BUILD_STAMP = '2026-09-23 b371 play silent, and read at tempo';
 
 // ---------------------------------------------------------------------------
 //  THE RUNTIME FLAGS THE RAIL READS, DECLARED ABOVE IT.
@@ -6269,7 +6279,24 @@ function drawEverything(){
   // fill the line, but never split a bar
   // The music gets the page LESS the voice strip, so a justified line still
   // fits once the controls are standing beside it.
-  const room = (PAGE_W || (el.clientWidth - 90)) - VSTRIP_W();
+  // MEASURE THE PAGE, AND DISBELIEVE AN IMPOSSIBLE ANSWER.
+  //
+  // The width comes from the staff element, which is right once the page has
+  // settled and wrong before it has. On a tablet the first draw can happen
+  // while the element is still narrow or not yet laid out, and a small `room`
+  // puts fewer bars on every line — so the block grows taller than the screen
+  // and bars sit below the bottom edge. Magnification does not help, because
+  // the fault is a measurement rather than a size. Don: "no matter the
+  // magnification, there are bars offscreen."
+  //
+  // A staff narrower than a phone is not a real answer, so fall back to the
+  // window itself. A MEASUREMENT THAT CANNOT BE TRUE SHOULD NOT BE BELIEVED.
+  const measured = el.clientWidth - 90;
+  const sane = (measured > 240) ? measured
+             : Math.max(320, (window.innerWidth || 900) - 110);
+  const room = (PAGE_W || sane) - VSTRIP_W();
+  window._roomFrom = (measured > 240) ? 'the staff' : 'the window \u2014 the staff measured '
+                     + Math.round(el.clientWidth) + 'px';
   window._roomUsed = room;
   let lineGut = 1;   // how much of the safe space this line can afford
   const widthOf = b => GUTTER + capacityOf(b) * PX_TICK * scaleOf(b) + TAILGAP;
@@ -8797,6 +8824,7 @@ document.addEventListener('keydown', e => {
     // whole voice — the app's own rule, one key for both scales of it.
     case 'o': setLoop(e.shiftKey); break;
     case 'q':
+      if (e.altKey){ setSilent(!SILENT_PLAY); break; }   // the whole piano at once
       if (e.shiftKey){ remember(); soloVoice(cur.staff); break; }
       toggleHush(); break;
     case 'arrowdown': e.shiftKey ? shiftOct(-1) : nudge(-1); break;
@@ -9395,6 +9423,7 @@ const KEY_BOOK = [
     ['\u2325\u21e7\u2191 \u2325\u21e7\u2193', 'move a STEP OF THE KEY (option-shift-arrow) \u2014 stays in the key, unlike \u2191\u2193 which moves a semitone'],
     ['click a chord in the chart', 'place it under the melody note, as long as that note \u2014 touch it first to hear it'],
     ['\u21e7click a chord', 'place it ABOVE the melody instead'],
+    ['\u2325Q', 'play SILENT \u2014 the page follows the music and you play it (also the Silent button)'],
     ['A', 'break the held chord into its notes, bottom to top \u2014 then edit them by hand'],
     ['\u2325space', 'hear the last bar up TO where you are \u2014 press again for another bar back'],
     ['\u21e7\u2325space', 'hear it all from the beginning up to where you are'],
@@ -9964,6 +9993,8 @@ function showVoices(){
 }
 
 document.getElementById('bVoices').addEventListener('click', showVoices);
+{ const sb = document.getElementById('bSilent');
+  if (sb){ sb.addEventListener('click', () => setSilent(!SILENT_PLAY)); paintSilent(); } }
 document.getElementById('bChords').addEventListener('click', showChords);
 {
   const ft = document.getElementById('foot'), gb = document.getElementById('footGrab');
@@ -12273,7 +12304,16 @@ function play(fromStart){
         // QUEUED, NOT STARTED. See the pump below: laying the whole piece into
         // the audio graph at once is what made a long piece fall silent after a
         // few notes.
-        for (const p of e.pitches) mine.push({ f:hz(pitchOf(p)), at, dur, midi:pitchOf(p) + 12 });
+        // SILENT KEEPS THE NOTE'S PLACE AND WITHHOLDS ONLY ITS SOUND.
+        //
+        // Skipping the note entirely was too much: with nothing queued, the
+        // playback found nothing to hear, declared the stretch empty and
+        // stopped — so the page could not follow, which is the one thing silent
+        // play exists to do. The note still counts toward how long the music
+        // runs; it simply never reaches the piano.
+        // SILENCE IS AN ABSENCE OF SOUND, NOT AN ABSENCE OF MUSIC.
+        if (!SILENT_PLAY)
+          for (const p of e.pitches) mine.push({ f:hz(pitchOf(p)), at, dur, midi:pitchOf(p) + 12 });
       }
     }
   }
@@ -14366,6 +14406,32 @@ document.getElementById('bHist').onclick = showHistory;
 //  FILES BECOME WHAT THEY SHOULD ALWAYS HAVE BEEN: export to give a piece to
 //  someone or to keep an archive, import to bring one in. Not the thing you
 //  touch every ten minutes.
+// PLAY WITH NO PIANO. The playhead runs, the page turns, the count and the
+// click still sound if they are on — only the notes are held back, because the
+// notes are the part you are playing yourself.
+var SILENT_PLAY = false;
+try { SILENT_PLAY = localStorage.getItem('island.silent') === '1'; } catch (err) {}
+function paintSilent(){
+  const b = document.getElementById('bSilent');
+  if (!b) return;
+  b.textContent = 'Silent: ' + (SILENT_PLAY ? 'on' : 'off');
+  b.setAttribute('aria-pressed', SILENT_PLAY ? 'true' : 'false');
+  b.title = SILENT_PLAY
+    ? 'the app plays nothing \u2014 the page still follows the music'
+    : 'play silently \u2014 the page still follows the music';
+}
+function setSilent(on){
+  SILENT_PLAY = !!on;
+  try { localStorage.setItem('island.silent', SILENT_PLAY ? '1' : '0'); } catch (err) {}
+  say = SILENT_PLAY
+    ? 'silent \u2014 the page will follow the music, and you play it'
+    : 'the piano is heard again';
+  paintSilent();
+  // Take effect on what is already sounding rather than at the next play.
+  if (playing){ const at = cur.tick; stop(); cur.tick = at; play(false); }
+  render();
+}
+
 const LIB_KEY = 'island.library';
 
 // THE SHELF A NEW COPY ARRIVES WITH. Fifteen pieces — the six tunes, the six
@@ -15401,9 +15467,32 @@ function onStaffDown(ev){
     // the gesture away and put nothing in its place.
     // So the tap still turns, and holding for half a second sets the start
     // instead. The turn waits for the release, so one gesture cannot be both.
-    const relX = ev.clientX;
-    let held = false;
+    // A TAP TURNS THE PAGE; A SWIPE DOES NOT.
+    //
+    // This turned on every release, with no test of whether the finger had
+    // moved — so dragging the staff to look around ended in a page turn, and on
+    // glass, where scrolling IS dragging the staff, the page appeared to jump
+    // between blocks of bars on its own. Don: "it jumps between sets of bars,
+    // seemingly without input." It was input; it just was not meant as a
+    // command, and nothing distinguished the two.
+    //
+    // A tap is a press and a release in nearly the same place. Anything that
+    // travels further than a fingertip's width is someone moving the page, and
+    // the page turner must keep out of it.
+    // A GESTURE THAT CANNOT BE DISTINGUISHED FROM SCROLLING WILL FIRE WHILE YOU
+    // SCROLL.
+    const relX = ev.clientX, relY = ev.clientY;
+    const SLOP = 12;                     // pixels a tap may wander
+    let held = false, moved = false;
+    const watch = mv => {
+      const m = (mv.touches && mv.touches[0]) || mv;
+      if (Math.abs(m.clientX - relX) > SLOP || Math.abs(m.clientY - relY) > SLOP){
+        moved = true;
+        clearTimeout(hold);              // and a drag is not a long press either
+      }
+    };
     const hold = setTimeout(() => {
+      if (moved) return;
       held = true;
       const box0 = ev.target.closest && ev.target.closest('[data-first]');
       if (!box0) return;
@@ -15419,10 +15508,17 @@ function onStaffDown(ev){
       clearTimeout(hold);
       el.removeEventListener('mouseup', go);
       el.removeEventListener('touchend', go);
-      if (!held) window._turnPage(back ? -1 : 1);
+      el.removeEventListener('mousemove', watch);
+      el.removeEventListener('touchmove', watch);
+      removeEventListener('mousemove', watch);
+      removeEventListener('touchmove', watch);
+      if (!held && !moved) window._turnPage(back ? -1 : 1);
     };
     el.addEventListener('mouseup', go);
     el.addEventListener('touchend', go);
+    el.addEventListener('touchcancel', go);
+    addEventListener('mousemove', watch);
+    addEventListener('touchmove', watch, { passive:true });
     // NOT preventDefault. On iOS, cancelling a mousedown suppresses the click
     // that follows it and the focus that goes with it — and this handler sits
     // on the whole staff area, so it would be cancelling the page's own
@@ -15829,6 +15925,27 @@ function onDragUp(){
 }
 
 addEventListener('resize', render);
+// AND DRAW AGAIN ONCE THE PAGE HAS SETTLED.
+//
+// The first draw happens as soon as the script runs, which on a tablet is
+// before the layout and the fonts have finished — so it measures a page that is
+// not yet the size it will be. One more draw after things have stopped moving
+// costs nothing and is the difference between a correct layout and a layout
+// built on a guess.
+addEventListener('load', () => setTimeout(render, 0));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => render());
+setTimeout(render, 400);
+// A tablet also changes size when the address bar hides, when the keyboard
+// appears, and when it is turned over — none of which fire a plain resize.
+if (window.visualViewport){
+  let last = window.visualViewport.width;
+  window.visualViewport.addEventListener('resize', () => {
+    if (Math.abs(window.visualViewport.width - last) < 2) return;
+    last = window.visualViewport.width;
+    render();
+  });
+}
+addEventListener('orientationchange', () => setTimeout(render, 200));
 el.focus();
 // ---------------------------------------------------------------------------
 //  A WAY BACK IN.
